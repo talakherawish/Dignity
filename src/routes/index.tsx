@@ -1,0 +1,300 @@
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useCallback, useEffect, useState } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { PageLayout, ImagePlaceholder } from "@/components/PageLayout";
+import { useLanguage, type TranslationKey } from "@/contexts/LanguageContext";
+import { ARTICLES, getField, type ArticleLang } from "@/data/articles";
+
+export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "Dignity — Academic Initiative" },
+      { name: "description", content: "Dignity is an academic initiative dedicated to research, dialogue, and the advancement of human dignity." },
+    ],
+  }),
+  component: Home,
+});
+
+
+type PillarItem = { titleKey: TranslationKey; descKey: TranslationKey; to: string; color: string };
+const PILLARS: PillarItem[] = [
+  { titleKey: "pillar.research", descKey: "pillar.research.desc", to: "/projects/research", color: "var(--brand-cyan)" },
+  { titleKey: "pillar.dialogue", descKey: "pillar.dialogue.desc", to: "/activities/seminars", color: "var(--brand-magenta)" },
+  { titleKey: "pillar.partnership", descKey: "pillar.partnership.desc", to: "/about/partners", color: "oklch(0.18 0.01 270)" },
+];
+
+type TeamMember = {
+  role1Key: TranslationKey;
+  role2Key: TranslationKey;
+};
+const TEAM_MEMBERS: TeamMember[] = [
+  { role1Key: "team.role1", role2Key: "team.role1b" },
+  { role1Key: "team.role2", role2Key: "team.role2b" },
+  { role1Key: "team.role3", role2Key: "team.role3b" },
+];
+
+// ── News carousel with 5-second autoplay and fade transition ──────────────
+function NewsCarousel() {
+  const { t, lang, isArabic } = useLanguage();
+  const [i, setI] = useState(0);
+  const [visible, setVisible] = useState(true);
+  const [paused, setPaused] = useState(false);
+
+  const goTo = useCallback((next: number) => {
+    setVisible(false);
+    setTimeout(() => {
+      setI(next);
+      setVisible(true);
+    }, 240);
+  }, []);
+
+  useEffect(() => {
+    if (paused) return;
+    const id = setInterval(() => goTo((i + 1) % ARTICLES.length), 5000);
+    return () => clearInterval(id);
+  }, [i, paused, goTo]);
+
+  const article = ARTICLES[i];
+  const l = lang as ArticleLang;
+  const fade = {
+    opacity: visible ? 1 : 0,
+    transition: "opacity 0.24s ease",
+  } as const;
+
+  return (
+    <div
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+      className="border border-border rounded-sm overflow-hidden bg-background"
+    >
+      <div className="grid md:grid-cols-[2fr_3fr]">
+        {/* Article image — fades with slide */}
+        <div style={{ ...fade, aspectRatio: "4/3", overflow: "hidden" }}>
+          <img
+            src={article.image}
+            alt={getField(article, "title", l)}
+            className="w-full h-full object-cover"
+          />
+        </div>
+
+        {/* Text panel */}
+        <div
+          className="p-7 lg:p-9 flex flex-col justify-between"
+          style={{
+            opacity: visible ? 1 : 0,
+            transform: visible ? "translateY(0)" : "translateY(5px)",
+            transition: "opacity 0.24s ease, transform 0.24s ease",
+          }}
+        >
+          <div>
+            <div className="text-[10px] uppercase tracking-[0.22em] text-[color:var(--brand-magenta)] font-semibold mb-3">
+              {getField(article, "date", l)}
+            </div>
+            <h3 className={`font-serif text-xl lg:text-2xl text-primary mb-3 leading-snug ${isArabic ? "text-right" : ""}`}>
+              {getField(article, "title", l)}
+            </h3>
+            <p className={`text-sm text-muted-foreground leading-relaxed ${isArabic ? "text-right" : ""}`}>
+              {getField(article, "excerpt", l)}
+            </p>
+          </div>
+
+          <div className="mt-6 flex items-center justify-between">
+            {/* Controls + dots */}
+            <div className="flex items-center gap-3">
+              <div className="flex gap-1">
+                <button
+                  onClick={() => goTo((i - 1 + ARTICLES.length) % ARTICLES.length)}
+                  aria-label={t("news.prev")}
+                  className="h-8 w-8 rounded-full border border-border flex items-center justify-center text-foreground/60 hover:text-accent hover:border-accent transition-colors"
+                >
+                  <ChevronLeft className="h-3.5 w-3.5" />
+                </button>
+                <button
+                  onClick={() => goTo((i + 1) % ARTICLES.length)}
+                  aria-label={t("news.next")}
+                  className="h-8 w-8 rounded-full border border-border flex items-center justify-center text-foreground/60 hover:text-accent hover:border-accent transition-colors"
+                >
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </button>
+              </div>
+
+              {/* Minimal slide dots */}
+              <div className="flex items-center gap-1" role="tablist">
+                {ARTICLES.map((_, idx) => (
+                  <button
+                    key={idx}
+                    role="tab"
+                    aria-selected={idx === i}
+                    aria-label={`Slide ${idx + 1}`}
+                    onClick={() => goTo(idx)}
+                    className={[
+                      "h-1 rounded-full transition-all duration-300",
+                      idx === i ? "w-5 bg-accent" : "w-1.5 bg-border hover:bg-muted-foreground/50",
+                    ].join(" ")}
+                  />
+                ))}
+              </div>
+            </div>
+
+            <Link
+              to="/media/news"
+              className="text-xs font-medium text-accent hover:underline tracking-wide"
+            >
+              {t("news.viewAll")}
+            </Link>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Compact editorial team row (matches screenshot layout) ───────────────
+function TeamSection() {
+  const { t } = useLanguage();
+  return (
+    <section className="border-b border-border">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-8 items-center">
+
+          {/* Left: eyebrow + title + button */}
+          <div>
+            <div className="text-[10px] uppercase tracking-[0.22em] text-[color:var(--brand-magenta)] font-semibold mb-2">
+              {t("team.eyebrow")}
+            </div>
+            <h2 className="font-serif text-2xl lg:text-[1.75rem] text-primary leading-tight mb-5">
+              {t("team.title")}
+            </h2>
+            <Link
+              to="/about/participants"
+              className="inline-flex items-center gap-1.5 text-xs font-medium text-foreground border border-border px-3.5 py-2 rounded-sm hover:bg-secondary transition-colors"
+            >
+              {t("team.btn")} <span aria-hidden>→</span>
+            </Link>
+          </div>
+
+          {/* Right: 3 compact cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {TEAM_MEMBERS.map((m, idx) => (
+              <Link
+                key={idx}
+                to="/about/participants"
+                className="group flex items-start gap-3.5 p-4 border border-border rounded-sm bg-card hover:border-accent/30 hover:shadow-sm transition-all duration-200"
+              >
+                {/* Circular portrait placeholder */}
+                <div className="shrink-0 h-[52px] w-[52px] rounded-full overflow-hidden border border-border bg-secondary flex items-center justify-center">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    className="h-6 w-6 text-muted-foreground/40"
+                    aria-hidden
+                  >
+                    <circle cx="12" cy="8" r="4" fill="currentColor" />
+                    <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" fill="currentColor" />
+                  </svg>
+                </div>
+
+                {/* Text */}
+                <div className="min-w-0 pt-0.5">
+                  <div className="font-semibold text-sm text-primary leading-tight">
+                    {t("team.name")}
+                  </div>
+                  <div className="text-xs text-muted-foreground mt-0.5 leading-snug">
+                    {t(m.role1Key)}
+                    <br />
+                    {t(m.role2Key)}
+                  </div>
+                  <div className="mt-2 text-xs font-medium text-[color:var(--brand-magenta)] group-hover:underline">
+                    {t("team.viewProfile")} →
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ── Home page ─────────────────────────────────────────────────────────────
+function Home() {
+  const { t } = useLanguage();
+  return (
+    <PageLayout>
+      {/* ── Hero ───────────────────────────────────────────────────────── */}
+      <section className="border-b border-border relative overflow-hidden">
+        {/* Subtle ambient color blobs — reduced opacity for calm aesthetic */}
+        <div
+          className="absolute -top-24 -right-24 h-72 w-72 rounded-full opacity-20 blur-3xl pointer-events-none"
+          style={{ background: "var(--brand-cyan)" }}
+        />
+        <div
+          className="absolute -bottom-24 -left-24 h-64 w-64 rounded-full opacity-15 blur-3xl pointer-events-none"
+          style={{ background: "var(--brand-magenta)" }}
+        />
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-14 grid gap-10 lg:grid-cols-2 items-center">
+          <div>
+            <div className="text-[10px] uppercase tracking-[0.22em] text-[color:var(--brand-magenta)] font-semibold mb-4">
+              {t("hero.eyebrow")}
+            </div>
+            <h1 className="font-serif text-4xl md:text-5xl lg:text-[3.25rem] text-primary tracking-tight leading-[1.07]">
+              {t("hero.title")}
+            </h1>
+            <p className="mt-5 text-base text-muted-foreground leading-relaxed max-w-lg">
+              {t("hero.desc")}
+            </p>
+            <div className="mt-7 flex flex-wrap gap-3">
+              <Link
+                to="/about"
+                className="inline-flex items-center px-5 py-2.5 bg-primary text-primary-foreground text-sm font-medium rounded-sm hover:bg-primary/90 transition-colors"
+              >
+                {t("hero.btn.about")}
+              </Link>
+              <Link
+                to="/projects/research"
+                className="inline-flex items-center px-5 py-2.5 border border-border text-foreground text-sm font-medium rounded-sm hover:bg-secondary transition-colors"
+              >
+                {t("hero.btn.research")}
+              </Link>
+            </div>
+          </div>
+          <ImagePlaceholder label="Hero image placeholder" ratio="3/2" />
+        </div>
+      </section>
+
+      {/* ── Pillars ────────────────────────────────────────────────────── */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 border-b border-border">
+        <div className="grid gap-8 md:grid-cols-3">
+          {PILLARS.map((p) => (
+            <Link key={p.titleKey} to={p.to} className="group block">
+              <div className="border-t-2 pt-5" style={{ borderColor: p.color }}>
+                <h3 className="font-serif text-xl text-primary mb-2 group-hover:text-accent transition-colors">
+                  {t(p.titleKey)}
+                </h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{t(p.descKey)}</p>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* ── News & Updates ─────────────────────────────────────────────── */}
+      <section className="bg-secondary/40 border-b border-border">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="mb-6">
+            <div className="text-[10px] uppercase tracking-[0.22em] text-[color:var(--brand-magenta)] font-semibold mb-1.5">
+              {t("news.eyebrow")}
+            </div>
+            <h2 className="font-serif text-2xl md:text-3xl text-primary">{t("news.title")}</h2>
+          </div>
+          <NewsCarousel />
+        </div>
+      </section>
+
+      {/* ── Meet the Team ──────────────────────────────────────────────── */}
+      <TeamSection />
+    </PageLayout>
+  );
+}
