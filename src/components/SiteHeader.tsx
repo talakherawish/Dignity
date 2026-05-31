@@ -6,7 +6,6 @@ import { type Language, type TranslationKey, useLanguage } from "@/contexts/Lang
 type Item = { labelKey: TranslationKey; to?: string; children?: Item[] };
 
 const NAV: Item[] = [
-  { labelKey: "home", to: "/" },
   {
     labelKey: "about",
     children: [
@@ -51,7 +50,6 @@ const NAV: Item[] = [
 
 const LANG_OPTIONS: { code: Language; label: string; ariaLabel: string }[] = [
   { code: "en", label: "EN", ariaLabel: "English" },
-  { code: "fr", label: "FR", ariaLabel: "Français" },
   { code: "ar", label: "عربي", ariaLabel: "العربية" },
 ];
 
@@ -192,23 +190,6 @@ export function SiteHeader() {
               style={{ height: "100%", width: "auto", display: "block" }}
               className="object-contain object-left"
             />
-            <div
-              className="leading-tight hidden sm:flex flex-col justify-center"
-              style={{ height: "100%", paddingTop: "0px", paddingBottom: "0px" }}
-            >
-              <div
-                className="font-serif font-semibold text-primary tracking-wide"
-                style={{ fontSize: "22px" }}
-              >
-                Dignity
-              </div>
-              <div
-                className="uppercase text-muted-foreground"
-                style={{ fontSize: "10px", letterSpacing: "0.18em" }}
-              >
-                Academic Initiative
-              </div>
-            </div>
           </Link>
 
           {/* Nav — vertically centered in the row */}

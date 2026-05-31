@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 
-export type Language = "en" | "fr" | "ar";
+export type Language = "en" | "ar";
 
 interface LanguageContextValue {
   lang: Language;
@@ -378,7 +378,7 @@ export type TranslationKey = keyof typeof translations.en;
 const LanguageContext = createContext<LanguageContextValue>({} as LanguageContextValue);
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [lang, setLang] = useState<Language>("en");
+  const [lang, setLang] = useState<Language>("ar");
   const dir = lang === "ar" ? "rtl" : "ltr";
   const isArabic = lang === "ar";
 
