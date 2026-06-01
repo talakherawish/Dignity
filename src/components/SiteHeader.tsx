@@ -1,5 +1,6 @@
-import { Link } from "@tanstack/react-router";
-import { ChevronDown } from "lucide-react";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { ChevronDown, Search, X } from "lucide-react";
+import { useState, useRef } from "react";
 import logo from "@/assets/dignity-logo.png";
 import { type Language, type TranslationKey, useLanguage } from "@/contexts/LanguageContext";
 
@@ -11,16 +12,7 @@ const NAV: Item[] = [
     children: [
       { labelKey: "about.initiative", to: "/about" },
       { labelKey: "about.mission", to: "/about/mission" },
-      {
-        labelKey: "about.participants",
-        children: [
-          { labelKey: "about.faculty", to: "/about/participants/faculty" },
-          { labelKey: "about.researchers", to: "/about/participants/researchers" },
-          { labelKey: "about.interns", to: "/about/participants/interns" },
-          { labelKey: "about.students", to: "/about/participants/students" },
-          { labelKey: "about.visitors", to: "/about/participants/visitors" },
-        ],
-      },
+      { labelKey: "about.fellows", to: "/about/participants" },
       { labelKey: "about.partners", to: "/about/partners" },
     ],
   },
@@ -52,6 +44,64 @@ const LANG_OPTIONS: { code: Language; label: string; ariaLabel: string }[] = [
   { code: "en", label: "EN", ariaLabel: "English" },
   { code: "ar", label: "عربي", ariaLabel: "العربية" },
 ];
+
+function SearchBar() {
+  const { isArabic } = useLanguage();
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
+  const navigate = useNavigate();
+
+  const handleOpen = () => {
+    setOpen(true);
+    setTimeout(() => inputRef.current?.focus(), 50);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+    setQuery("");
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!query.trim()) return;
+    navigate({ to: "/search", search: { q: query.trim() } });
+    handleClose();
+  };
+
+  return (
+    <div className="relative flex items-center">
+      {open ? (
+        <form onSubmit={handleSubmit} className="flex items-center gap-2">
+          <input
+            ref={inputRef}
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder={isArabic ? "ابحث..." : "Search..."}
+            className={`w-48 sm:w-64 px-3 py-1.5 text-sm border border-border rounded-full bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-accent transition-all ${isArabic ? "text-right" : ""}`}
+          />
+          <button
+            type="button"
+            onClick={handleClose}
+            className="text-muted-foreground hover:text-foreground transition-colors"
+            aria-label="Close search"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </form>
+      ) : (
+        <button
+          onClick={handleOpen}
+          aria-label="Open search"
+          className="p-2 text-muted-foreground hover:text-accent transition-colors"
+        >
+          <Search className="h-4 w-4" />
+        </button>
+      )}
+    </div>
+  );
+}
 
 function LanguageSwitcher() {
   const { lang, setLang } = useLanguage();
@@ -199,8 +249,9 @@ export function SiteHeader() {
             ))}
           </nav>
 
-          {/* Language switcher — vertically centered */}
-          <div className="self-center pr-4 sm:pr-6 lg:pr-8">
+          {/* Search + Language switcher — vertically centered */}
+          <div className="self-center pr-4 sm:pr-6 lg:pr-8 flex items-center gap-3">
+            <SearchBar />
             <LanguageSwitcher />
           </div>
         </div>

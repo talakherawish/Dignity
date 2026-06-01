@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Megaphone, Newspaper, Calendar } from "lucide-react";
 import { PageLayout, ImagePlaceholder } from "@/components/PageLayout";
 import { useLanguage, type TranslationKey } from "@/contexts/LanguageContext";
 import { ARTICLES, getField, type ArticleLang } from "@/data/articles";
@@ -149,6 +149,84 @@ function NewsCarousel() {
   );
 }
 
+// ── Latest Posts — mixed feed of news, announcements, activities ──────────
+type PostType = "news" | "announcement" | "activity";
+type Post = {
+  type: PostType;
+  date: string;
+  title: string;
+  titleAr: string;
+  to: string;
+};
+
+const LATEST_POSTS: Post[] = [
+  { type: "activity", date: "JUN 2026", title: "Seminar: Decolonising Knowledge Production", titleAr: "ندوة: نزع الاستعمار من إنتاج المعرفة", to: "/activities/seminars" },
+  { type: "news", date: "MAY 2026", title: "Dignity Initiative receives new research grant", titleAr: "مبادرة الكرامة تحصل على منحة بحثية جديدة", to: "/media/news" },
+  { type: "announcement", date: "MAY 2026", title: "Call for applications: Research Fellows 2026–2027", titleAr: "دعوة للتقديم: زملاء بحث 2026–2027", to: "/media/announcements" },
+  { type: "activity", date: "APR 2026", title: "Windsor-Birzeit Annual Meeting — summary now available", titleAr: "ملخص الاجتماع السنوي لمبادرة وندسور-بيرزيت", to: "/activities/windsor-birzeit" },
+  { type: "news", date: "APR 2026", title: "New publication: Arab Dignity Revolutions", titleAr: "إصدار جديد: ثورات الكرامة العربية", to: "/media/news" },
+  { type: "announcement", date: "MAR 2026", title: "Conference on Research Ethics — registration open", titleAr: "مؤتمر حول أخلاقيات البحث — التسجيل مفتوح", to: "/media/announcements" },
+];
+
+const POST_ICON: Record<PostType, React.ReactNode> = {
+  news: <Newspaper className="h-3.5 w-3.5" />,
+  announcement: <Megaphone className="h-3.5 w-3.5" />,
+  activity: <Calendar className="h-3.5 w-3.5" />,
+};
+
+const POST_LABEL: Record<PostType, { en: string; ar: string }> = {
+  news: { en: "News", ar: "أخبار" },
+  announcement: { en: "Announcement", ar: "إعلان" },
+  activity: { en: "Activity", ar: "نشاط" },
+};
+
+function LatestPostsSection() {
+  const { lang, isArabic } = useLanguage();
+  return (
+    <section className="border-b border-border">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className={`flex items-end justify-between mb-8 ${isArabic ? "flex-row-reverse" : ""}`}>
+          <div>
+            <div className="text-[10px] uppercase tracking-[0.22em] text-[color:var(--brand-magenta)] font-semibold mb-1.5">
+              {isArabic ? "آخر المستجدات" : "Latest"}
+            </div>
+            <h2 className="font-serif text-2xl md:text-3xl text-primary">
+              {isArabic ? "أخبار وأنشطة وإعلانات" : "News, Activities & Announcements"}
+            </h2>
+          </div>
+        </div>
+
+        <div className="grid gap-3">
+          {LATEST_POSTS.map((post, i) => (
+            <Link
+              key={i}
+              to={post.to}
+              className={`group flex items-start gap-4 p-4 border border-border rounded-md bg-card hover:border-accent/40 hover:bg-secondary/30 transition-all duration-150 ${isArabic ? "flex-row-reverse text-right" : ""}`}
+            >
+              {/* Type badge */}
+              <div className="shrink-0 mt-0.5 flex items-center gap-1.5 text-[10px] uppercase tracking-wider font-semibold text-accent bg-accent/10 px-2.5 py-1 rounded-full">
+                {POST_ICON[post.type]}
+                <span>{lang === "ar" ? POST_LABEL[post.type].ar : POST_LABEL[post.type].en}</span>
+              </div>
+
+              {/* Title + date */}
+              <div className="flex-1 min-w-0">
+                <div className="font-medium text-primary text-sm leading-snug group-hover:text-accent transition-colors">
+                  {lang === "ar" ? post.titleAr : post.title}
+                </div>
+                <div className="text-[11px] text-muted-foreground mt-1 tracking-wide">{post.date}</div>
+              </div>
+
+              {/* Arrow */}
+              <span className={`shrink-0 text-muted-foreground group-hover:text-accent transition-colors mt-0.5 ${isArabic ? "rotate-180" : ""}`} aria-hidden>→</span>
+            </Link>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 // ── Compact editorial team row (matches screenshot layout) ───────────────
 function TeamSection() {
   const { t } = useLanguage();
@@ -279,6 +357,9 @@ function Home() {
           ))}
         </div>
       </section>
+
+      {/* ── Latest Posts ───────────────────────────────────────────────── */}
+      <LatestPostsSection />
 
       {/* ── News & Updates ─────────────────────────────────────────────── */}
       <section className="bg-secondary/40 border-b border-border">
