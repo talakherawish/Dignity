@@ -42,7 +42,7 @@ const NAV: Item[] = [
 
 const LANG_OPTIONS: { code: Language; label: string; ariaLabel: string }[] = [
   { code: "en", label: "EN", ariaLabel: "English" },
-  { code: "ar", label: "عربي", ariaLabel: "العربية" },
+  { code: "ar", label: "ع", ariaLabel: "العربية" },
 ];
 
 function SearchBar() {
@@ -71,33 +71,30 @@ function SearchBar() {
 
   return (
     <div className="relative flex items-center">
-      {open ? (
-        <form onSubmit={handleSubmit} className="flex items-center gap-2">
+      {/* Search icon — always in layout, never moves */}
+      <button
+        onClick={open ? handleClose : handleOpen}
+        aria-label={open ? "Close search" : "Open search"}
+        className="p-2 text-muted-foreground hover:text-accent transition-colors"
+      >
+        {open ? <X className="h-4 w-4" /> : <Search className="h-4 w-4" />}
+      </button>
+
+      {/* Input overlays absolutely — zero layout impact */}
+      {open && (
+        <form
+          onSubmit={handleSubmit}
+          className="absolute right-8 top-1/2 -translate-y-1/2 z-50"
+        >
           <input
             ref={inputRef}
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder={isArabic ? "ابحث..." : "Search..."}
-            className={`w-48 sm:w-64 px-3 py-1.5 text-sm border border-border rounded-full bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-accent transition-all ${isArabic ? "text-right" : ""}`}
+            className={`w-52 sm:w-64 px-3 py-1.5 text-sm border border-border rounded-full bg-background shadow-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-accent transition-all ${isArabic ? "text-right" : ""}`}
           />
-          <button
-            type="button"
-            onClick={handleClose}
-            className="text-muted-foreground hover:text-foreground transition-colors"
-            aria-label="Close search"
-          >
-            <X className="h-4 w-4" />
-          </button>
         </form>
-      ) : (
-        <button
-          onClick={handleOpen}
-          aria-label="Open search"
-          className="p-2 text-muted-foreground hover:text-accent transition-colors"
-        >
-          <Search className="h-4 w-4" />
-        </button>
       )}
     </div>
   );

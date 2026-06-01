@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SearchRouteImport } from './routes/search'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProjectsResearchRouteImport } from './routes/projects.research'
@@ -23,12 +24,12 @@ import { Route as ActivitiesConferencesRouteImport } from './routes/activities.c
 import { Route as AboutPartnersRouteImport } from './routes/about.partners'
 import { Route as AboutParticipantsRouteImport } from './routes/about.participants'
 import { Route as AboutMissionRouteImport } from './routes/about.mission'
-import { Route as AboutParticipantsVisitorsRouteImport } from './routes/about.participants.visitors'
-import { Route as AboutParticipantsStudentsRouteImport } from './routes/about.participants.students'
-import { Route as AboutParticipantsResearchersRouteImport } from './routes/about.participants.researchers'
-import { Route as AboutParticipantsInternsRouteImport } from './routes/about.participants.interns'
-import { Route as AboutParticipantsFacultyRouteImport } from './routes/about.participants.faculty'
 
+const SearchRoute = SearchRouteImport.update({
+  id: '/search',
+  path: '/search',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
@@ -100,42 +101,13 @@ const AboutMissionRoute = AboutMissionRouteImport.update({
   path: '/mission',
   getParentRoute: () => AboutRoute,
 } as any)
-const AboutParticipantsVisitorsRoute =
-  AboutParticipantsVisitorsRouteImport.update({
-    id: '/visitors',
-    path: '/visitors',
-    getParentRoute: () => AboutParticipantsRoute,
-  } as any)
-const AboutParticipantsStudentsRoute =
-  AboutParticipantsStudentsRouteImport.update({
-    id: '/students',
-    path: '/students',
-    getParentRoute: () => AboutParticipantsRoute,
-  } as any)
-const AboutParticipantsResearchersRoute =
-  AboutParticipantsResearchersRouteImport.update({
-    id: '/researchers',
-    path: '/researchers',
-    getParentRoute: () => AboutParticipantsRoute,
-  } as any)
-const AboutParticipantsInternsRoute =
-  AboutParticipantsInternsRouteImport.update({
-    id: '/interns',
-    path: '/interns',
-    getParentRoute: () => AboutParticipantsRoute,
-  } as any)
-const AboutParticipantsFacultyRoute =
-  AboutParticipantsFacultyRouteImport.update({
-    id: '/faculty',
-    path: '/faculty',
-    getParentRoute: () => AboutParticipantsRoute,
-  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRouteWithChildren
+  '/search': typeof SearchRoute
   '/about/mission': typeof AboutMissionRoute
-  '/about/participants': typeof AboutParticipantsRouteWithChildren
+  '/about/participants': typeof AboutParticipantsRoute
   '/about/partners': typeof AboutPartnersRoute
   '/activities/conferences': typeof ActivitiesConferencesRoute
   '/activities/meetings': typeof ActivitiesMeetingsRoute
@@ -146,17 +118,13 @@ export interface FileRoutesByFullPath {
   '/media/news': typeof MediaNewsRoute
   '/media/photos': typeof MediaPhotosRoute
   '/projects/research': typeof ProjectsResearchRoute
-  '/about/participants/faculty': typeof AboutParticipantsFacultyRoute
-  '/about/participants/interns': typeof AboutParticipantsInternsRoute
-  '/about/participants/researchers': typeof AboutParticipantsResearchersRoute
-  '/about/participants/students': typeof AboutParticipantsStudentsRoute
-  '/about/participants/visitors': typeof AboutParticipantsVisitorsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRouteWithChildren
+  '/search': typeof SearchRoute
   '/about/mission': typeof AboutMissionRoute
-  '/about/participants': typeof AboutParticipantsRouteWithChildren
+  '/about/participants': typeof AboutParticipantsRoute
   '/about/partners': typeof AboutPartnersRoute
   '/activities/conferences': typeof ActivitiesConferencesRoute
   '/activities/meetings': typeof ActivitiesMeetingsRoute
@@ -167,18 +135,14 @@ export interface FileRoutesByTo {
   '/media/news': typeof MediaNewsRoute
   '/media/photos': typeof MediaPhotosRoute
   '/projects/research': typeof ProjectsResearchRoute
-  '/about/participants/faculty': typeof AboutParticipantsFacultyRoute
-  '/about/participants/interns': typeof AboutParticipantsInternsRoute
-  '/about/participants/researchers': typeof AboutParticipantsResearchersRoute
-  '/about/participants/students': typeof AboutParticipantsStudentsRoute
-  '/about/participants/visitors': typeof AboutParticipantsVisitorsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRouteWithChildren
+  '/search': typeof SearchRoute
   '/about/mission': typeof AboutMissionRoute
-  '/about/participants': typeof AboutParticipantsRouteWithChildren
+  '/about/participants': typeof AboutParticipantsRoute
   '/about/partners': typeof AboutPartnersRoute
   '/activities/conferences': typeof ActivitiesConferencesRoute
   '/activities/meetings': typeof ActivitiesMeetingsRoute
@@ -189,17 +153,13 @@ export interface FileRoutesById {
   '/media/news': typeof MediaNewsRoute
   '/media/photos': typeof MediaPhotosRoute
   '/projects/research': typeof ProjectsResearchRoute
-  '/about/participants/faculty': typeof AboutParticipantsFacultyRoute
-  '/about/participants/interns': typeof AboutParticipantsInternsRoute
-  '/about/participants/researchers': typeof AboutParticipantsResearchersRoute
-  '/about/participants/students': typeof AboutParticipantsStudentsRoute
-  '/about/participants/visitors': typeof AboutParticipantsVisitorsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/about'
+    | '/search'
     | '/about/mission'
     | '/about/participants'
     | '/about/partners'
@@ -212,15 +172,11 @@ export interface FileRouteTypes {
     | '/media/news'
     | '/media/photos'
     | '/projects/research'
-    | '/about/participants/faculty'
-    | '/about/participants/interns'
-    | '/about/participants/researchers'
-    | '/about/participants/students'
-    | '/about/participants/visitors'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about'
+    | '/search'
     | '/about/mission'
     | '/about/participants'
     | '/about/partners'
@@ -233,15 +189,11 @@ export interface FileRouteTypes {
     | '/media/news'
     | '/media/photos'
     | '/projects/research'
-    | '/about/participants/faculty'
-    | '/about/participants/interns'
-    | '/about/participants/researchers'
-    | '/about/participants/students'
-    | '/about/participants/visitors'
   id:
     | '__root__'
     | '/'
     | '/about'
+    | '/search'
     | '/about/mission'
     | '/about/participants'
     | '/about/partners'
@@ -254,16 +206,12 @@ export interface FileRouteTypes {
     | '/media/news'
     | '/media/photos'
     | '/projects/research'
-    | '/about/participants/faculty'
-    | '/about/participants/interns'
-    | '/about/participants/researchers'
-    | '/about/participants/students'
-    | '/about/participants/visitors'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRouteWithChildren
+  SearchRoute: typeof SearchRoute
   ActivitiesConferencesRoute: typeof ActivitiesConferencesRoute
   ActivitiesMeetingsRoute: typeof ActivitiesMeetingsRoute
   ActivitiesSeminarsRoute: typeof ActivitiesSeminarsRoute
@@ -277,6 +225,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/search': {
+      id: '/search'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof SearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/about': {
       id: '/about'
       path: '/about'
@@ -375,72 +330,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutMissionRouteImport
       parentRoute: typeof AboutRoute
     }
-    '/about/participants/visitors': {
-      id: '/about/participants/visitors'
-      path: '/visitors'
-      fullPath: '/about/participants/visitors'
-      preLoaderRoute: typeof AboutParticipantsVisitorsRouteImport
-      parentRoute: typeof AboutParticipantsRoute
-    }
-    '/about/participants/students': {
-      id: '/about/participants/students'
-      path: '/students'
-      fullPath: '/about/participants/students'
-      preLoaderRoute: typeof AboutParticipantsStudentsRouteImport
-      parentRoute: typeof AboutParticipantsRoute
-    }
-    '/about/participants/researchers': {
-      id: '/about/participants/researchers'
-      path: '/researchers'
-      fullPath: '/about/participants/researchers'
-      preLoaderRoute: typeof AboutParticipantsResearchersRouteImport
-      parentRoute: typeof AboutParticipantsRoute
-    }
-    '/about/participants/interns': {
-      id: '/about/participants/interns'
-      path: '/interns'
-      fullPath: '/about/participants/interns'
-      preLoaderRoute: typeof AboutParticipantsInternsRouteImport
-      parentRoute: typeof AboutParticipantsRoute
-    }
-    '/about/participants/faculty': {
-      id: '/about/participants/faculty'
-      path: '/faculty'
-      fullPath: '/about/participants/faculty'
-      preLoaderRoute: typeof AboutParticipantsFacultyRouteImport
-      parentRoute: typeof AboutParticipantsRoute
-    }
   }
 }
 
-interface AboutParticipantsRouteChildren {
-  AboutParticipantsFacultyRoute: typeof AboutParticipantsFacultyRoute
-  AboutParticipantsInternsRoute: typeof AboutParticipantsInternsRoute
-  AboutParticipantsResearchersRoute: typeof AboutParticipantsResearchersRoute
-  AboutParticipantsStudentsRoute: typeof AboutParticipantsStudentsRoute
-  AboutParticipantsVisitorsRoute: typeof AboutParticipantsVisitorsRoute
-}
-
-const AboutParticipantsRouteChildren: AboutParticipantsRouteChildren = {
-  AboutParticipantsFacultyRoute: AboutParticipantsFacultyRoute,
-  AboutParticipantsInternsRoute: AboutParticipantsInternsRoute,
-  AboutParticipantsResearchersRoute: AboutParticipantsResearchersRoute,
-  AboutParticipantsStudentsRoute: AboutParticipantsStudentsRoute,
-  AboutParticipantsVisitorsRoute: AboutParticipantsVisitorsRoute,
-}
-
-const AboutParticipantsRouteWithChildren =
-  AboutParticipantsRoute._addFileChildren(AboutParticipantsRouteChildren)
-
 interface AboutRouteChildren {
   AboutMissionRoute: typeof AboutMissionRoute
-  AboutParticipantsRoute: typeof AboutParticipantsRouteWithChildren
+  AboutParticipantsRoute: typeof AboutParticipantsRoute
   AboutPartnersRoute: typeof AboutPartnersRoute
 }
 
 const AboutRouteChildren: AboutRouteChildren = {
   AboutMissionRoute: AboutMissionRoute,
-  AboutParticipantsRoute: AboutParticipantsRouteWithChildren,
+  AboutParticipantsRoute: AboutParticipantsRoute,
   AboutPartnersRoute: AboutPartnersRoute,
 }
 
@@ -449,6 +350,7 @@ const AboutRouteWithChildren = AboutRoute._addFileChildren(AboutRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRouteWithChildren,
+  SearchRoute: SearchRoute,
   ActivitiesConferencesRoute: ActivitiesConferencesRoute,
   ActivitiesMeetingsRoute: ActivitiesMeetingsRoute,
   ActivitiesSeminarsRoute: ActivitiesSeminarsRoute,

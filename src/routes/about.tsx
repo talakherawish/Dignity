@@ -1,19 +1,26 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Outlet, useLocation } from "@tanstack/react-router";
 import { SimplePage } from "@/components/SimplePage";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 export const Route = createFileRoute("/about")({
   head: () => ({ meta: [{ title: "About the Initiative — Dignity" }] }),
-  component: AboutPage,
+  component: AboutLayout,
 });
 
-function AboutPage() {
+function AboutLayout() {
   const { t } = useLanguage();
-  return (
-    <SimplePage
-      eyebrow={t("about")}
-      title={t("about.initiative")}
-      description={t("about.page.desc")}
-    />
-  );
+  const { pathname } = useLocation();
+  const isIndex = pathname === "/about" || pathname === "/about/";
+
+  if (isIndex) {
+    return (
+      <SimplePage
+        eyebrow={t("about")}
+        title={t("about.initiative")}
+        description={t("about.page.desc")}
+      />
+    );
+  }
+
+  return <Outlet />;
 }

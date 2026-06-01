@@ -50,6 +50,11 @@ export const Participants: CollectionConfig = {
       label: 'Job Title / Role',
     },
     {
+      name: 'email',
+      type: 'email',
+      label: 'Email Address',
+    },
+    {
       name: 'bio',
       type: 'textarea',
     },
