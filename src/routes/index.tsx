@@ -103,14 +103,14 @@ function NewsCarousel() {
             <div className="flex items-center gap-3">
               <div className="flex gap-1">
                 <button
-                  onClick={() => goTo((i - 1 + ARTICLES.length) % ARTICLES.length)}
+                  onClick={() => goTo(isArabic ? (i + 1) % ARTICLES.length : (i - 1 + ARTICLES.length) % ARTICLES.length)}
                   aria-label={t("news.prev")}
                   className="h-8 w-8 rounded-full border border-border flex items-center justify-center text-foreground/60 hover:text-accent hover:border-accent transition-colors"
                 >
                   <ChevronLeft className="h-3.5 w-3.5" />
                 </button>
                 <button
-                  onClick={() => goTo((i + 1) % ARTICLES.length)}
+                  onClick={() => goTo(isArabic ? (i - 1 + ARTICLES.length) % ARTICLES.length : (i + 1) % ARTICLES.length)}
                   aria-label={t("news.next")}
                   className="h-8 w-8 rounded-full border border-border flex items-center justify-center text-foreground/60 hover:text-accent hover:border-accent transition-colors"
                 >
@@ -174,7 +174,7 @@ function AnnouncementsSection() {
           </Link>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-3">
+        <div className={`grid gap-4 sm:grid-cols-3 ${isArabic ? "direction-rtl" : ""}`} dir={isArabic ? "rtl" : "ltr"}>
           {ANNOUNCEMENTS.map((item, i) => (
             <Link
               key={i}
@@ -183,13 +183,13 @@ function AnnouncementsSection() {
             >
               <div className="h-1 w-full" style={{ background: "var(--brand-magenta)" }} />
               <div className={`p-6 ${isArabic ? "text-right" : ""}`}>
-                <div className="text-[9px] uppercase tracking-widest font-semibold mb-2 text-muted-foreground">
+                <div className={`font-semibold mb-2 text-muted-foreground ${isArabic ? "text-sm" : "text-[9px] uppercase tracking-widest"}`}>
                   {lang === "ar" ? item.typeAr : item.type}
                 </div>
-                <p className="font-medium text-sm text-primary leading-snug group-hover:text-accent transition-colors mb-4">
+                <p className={`font-medium text-primary leading-snug group-hover:text-accent transition-colors mb-4 ${isArabic ? "text-base" : "text-sm"}`}>
                   {lang === "ar" ? item.titleAr : item.title}
                 </p>
-                <div className="text-[10px] font-medium tracking-wide" style={{ color: "var(--brand-magenta)" }}>
+                <div className={`font-medium tracking-wide ${isArabic ? "text-sm" : "text-[10px]"}`} style={{ color: "var(--brand-magenta)" }}>
                   {item.date}
                 </div>
               </div>
@@ -203,7 +203,7 @@ function AnnouncementsSection() {
 
 // ── Compact editorial team row (matches screenshot layout) ───────────────
 function TeamSection() {
-  const { t } = useLanguage();
+  const { t, isArabic } = useLanguage();
   return (
     <section className="border-b border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
@@ -257,7 +257,7 @@ function TeamSection() {
                     {t(m.role2Key)}
                   </div>
                   <div className="mt-2 text-xs font-medium text-[color:var(--brand-magenta)] group-hover:underline">
-                    {t("team.viewProfile")} →
+                    {t("team.viewProfile")} {isArabic ? "←" : "→"}
                   </div>
                 </div>
               </Link>
