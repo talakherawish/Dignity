@@ -137,8 +137,8 @@ function NavItem({ item }: { item: Item }) {
         to={item.to!}
         activeOptions={{ exact: item.to === "/" }}
         className={[
-          "px-2.5 py-2 font-medium text-foreground/80 hover:text-accent transition-colors data-[status=active]:text-accent whitespace-nowrap text-[13px]",
-          isArabic ? "font-arabic text-[15px]" : "",
+          "px-2.5 py-2 font-medium text-foreground/80 hover:text-accent transition-colors data-[status=active]:text-accent whitespace-nowrap",
+          isArabic ? "font-arabic text-[15px]" : "text-[13px]",
         ].join(" ")}
       >
         {label}
@@ -150,8 +150,8 @@ function NavItem({ item }: { item: Item }) {
     <div className="relative group shrink-0">
       <button
         className={[
-          "px-2.5 py-2 font-medium text-foreground/80 hover:text-accent transition-colors inline-flex items-center gap-1 whitespace-nowrap text-[13px]",
-          isArabic ? "font-arabic text-[15px]" : "",
+          "px-2.5 py-2 font-medium text-foreground/80 hover:text-accent transition-colors inline-flex items-center gap-1 whitespace-nowrap",
+          isArabic ? "font-arabic text-[15px]" : "text-[13px]",
         ].join(" ")}
       >
         {label}
@@ -223,7 +223,7 @@ export function SiteHeader() {
         {/* px height keeps the header immune to html.lang-ar rem scaling */}
         <div
           className="grid grid-cols-[auto_1fr_auto] items-stretch"
-          style={{ height: "100px" }}
+          style={{ height: "101px" }}
         >
           {/* Logo block fills header height and stays flush left */}
           <Link

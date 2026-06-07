@@ -105,14 +105,14 @@ function NewsCarousel() {
                 <button
                   onClick={() => goTo(isArabic ? (i + 1) % ARTICLES.length : (i - 1 + ARTICLES.length) % ARTICLES.length)}
                   aria-label={t("news.prev")}
-                  className="h-8 w-8 rounded-full border border-border flex items-center justify-center text-foreground/60 hover:text-accent hover:border-accent transition-colors"
+                  className="carousel-prev h-8 w-8 rounded-full border border-border flex items-center justify-center text-foreground/60 hover:text-accent hover:border-accent transition-colors"
                 >
                   <ChevronLeft className="h-3.5 w-3.5" />
                 </button>
                 <button
                   onClick={() => goTo(isArabic ? (i - 1 + ARTICLES.length) % ARTICLES.length : (i + 1) % ARTICLES.length)}
                   aria-label={t("news.next")}
-                  className="h-8 w-8 rounded-full border border-border flex items-center justify-center text-foreground/60 hover:text-accent hover:border-accent transition-colors"
+                  className="carousel-next h-8 w-8 rounded-full border border-border flex items-center justify-center text-foreground/60 hover:text-accent hover:border-accent transition-colors"
                 >
                   <ChevronRight className="h-3.5 w-3.5" />
                 </button>
@@ -174,7 +174,7 @@ function AnnouncementsSection() {
           </Link>
         </div>
 
-        <div className={`grid gap-4 sm:grid-cols-3 ${isArabic ? "direction-rtl" : ""}`} dir={isArabic ? "rtl" : "ltr"}>
+        <div className="announcements-grid grid gap-4 sm:grid-cols-3" dir={isArabic ? "rtl" : "ltr"}>
           {ANNOUNCEMENTS.map((item, i) => (
             <Link
               key={i}

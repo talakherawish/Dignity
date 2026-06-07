@@ -10,7 +10,6 @@ import {
 import { LanguageProvider } from "@/contexts/LanguageContext";
 
 import appCss from "../styles.css?url";
-import dignityLogo from "@/assets/dignity-logo.png";
 
 function NotFoundComponent() {
   return (
@@ -80,7 +79,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:type", content: "website" },
     ],
     links: [
-      { rel: "icon", type: "image/png", href: dignityLogo },
+      { rel: "icon", type: "image/png", href: "/dignity-logo.png" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       { rel: "stylesheet", href: appCss },
