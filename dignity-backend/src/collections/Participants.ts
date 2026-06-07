@@ -51,4 +51,37 @@ export const Participants: CollectionConfig = {
         { label: 'Visitor', value: 'visitor' },
       ],
     },
-  
+    {
+      name: 'title',
+      type: 'text',
+      label: 'Job Title / Role (English)',
+    },
+    {
+      name: 'titleAr',
+      type: 'text',
+      label: 'Job Title / Role (Arabic / المسمى بالعربية)',
+      admin: { rtl: true },
+    },
+    {
+      name: 'email',
+      type: 'email',
+      label: 'Email Address',
+    },
+    {
+      name: 'bio',
+      type: 'textarea',
+      label: 'Bio (English)',
+    },
+    {
+      name: 'bioAr',
+      type: 'textarea',
+      label: 'Bio (Arabic / السيرة بالعربية)',
+      admin: { rtl: true },
+    },
+    {
+      name: 'photo',
+      type: 'upload',
+      relationTo: 'media',
+    },
+  ],
+}

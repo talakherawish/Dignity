@@ -46,4 +46,29 @@ export const MediaUpdates: CollectionConfig = {
       options: [
         { label: 'News', value: 'news' },
         { label: 'Announcement', value: 'announcement' },
-        { label: 'Photo',
+        { label: 'Photo', value: 'photo' },
+        { label: 'Clipping', value: 'clipping' },
+      ],
+    },
+    {
+      name: 'date',
+      type: 'date',
+      required: true,
+    },
+    {
+      name: 'content',
+      type: 'richText',
+      label: 'Content (English)',
+    },
+    {
+      name: 'contentAr',
+      type: 'richText',
+      label: 'Content (Arabic / المحتوى بالعربية)',
+    },
+    {
+      name: 'image',
+      type: 'upload',
+      relationTo: 'media',
+    },
+  ],
+}

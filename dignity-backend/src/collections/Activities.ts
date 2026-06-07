@@ -46,4 +46,29 @@ export const Activities: CollectionConfig = {
       options: [
         { label: 'Seminar', value: 'seminar' },
         { label: 'Conference', value: 'conference' },
-        { label: 'Meeting', value: 'm
+        { label: 'Meeting', value: 'meeting' },
+        { label: 'Windsor-Birzeit', value: 'windsor-birzeit' },
+      ],
+    },
+    {
+      name: 'date',
+      type: 'date',
+      required: true,
+    },
+    {
+      name: 'description',
+      type: 'richText',
+      label: 'Description (English)',
+    },
+    {
+      name: 'descriptionAr',
+      type: 'richText',
+      label: 'Description (Arabic / الوصف بالعربية)',
+    },
+    {
+      name: 'image',
+      type: 'upload',
+      relationTo: 'media',
+    },
+  ],
+}

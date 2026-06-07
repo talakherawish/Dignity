@@ -47,4 +47,34 @@ export const Articles: CollectionConfig = {
     {
       name: 'date',
       type: 'date',
-      requ
+      required: true,
+    },
+    {
+      name: 'excerpt',
+      type: 'textarea',
+      label: 'Short Summary (English)',
+    },
+    {
+      name: 'excerptAr',
+      type: 'textarea',
+      label: 'Short Summary (Arabic / الملخص بالعربية)',
+      admin: { rtl: true },
+    },
+    {
+      name: 'content',
+      type: 'richText',
+      label: 'Full Content (English)',
+    },
+    {
+      name: 'contentAr',
+      type: 'richText',
+      label: 'Full Content (Arabic / المحتوى بالعربية)',
+    },
+    {
+      name: 'image',
+      type: 'upload',
+      relationTo: 'media',
+      label: 'Cover Image',
+    },
+  ],
+}
