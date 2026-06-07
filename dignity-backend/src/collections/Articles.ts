@@ -20,13 +20,13 @@ export const Articles: CollectionConfig = {
     create: ({ req }) => {
       if (!req.user) return false
       if (req.user.role === 'content-manager') return true
-      return Array.isArray(req.user.section) ? req.user.section.includes('articles') : req.user.section === 'articles'
+      return Array.isArray(req.user.section) && req.user.section.includes('articles')
     },
     // Same as create
     update: ({ req }) => {
       if (!req.user) return false
       if (req.user.role === 'content-manager') return true
-      return Array.isArray(req.user.section) ? req.user.section.includes('articles') : req.user.section === 'articles'
+      return Array.isArray(req.user.section) && req.user.section.includes('articles')
     },
     // Only content managers can delete
     delete: ({ req }) => req.user?.role === 'content-manager',
@@ -47,34 +47,4 @@ export const Articles: CollectionConfig = {
     {
       name: 'date',
       type: 'date',
-      required: true,
-    },
-    {
-      name: 'excerpt',
-      type: 'textarea',
-      label: 'Short Summary (English)',
-    },
-    {
-      name: 'excerptAr',
-      type: 'textarea',
-      label: 'Short Summary (Arabic / الملخص بالعربية)',
-      admin: { rtl: true },
-    },
-    {
-      name: 'content',
-      type: 'richText',
-      label: 'Full Content (English)',
-    },
-    {
-      name: 'contentAr',
-      type: 'richText',
-      label: 'Full Content (Arabic / المحتوى بالعربية)',
-    },
-    {
-      name: 'image',
-      type: 'upload',
-      relationTo: 'media',
-      label: 'Cover Image',
-    },
-  ],
-}
+      requ

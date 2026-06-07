@@ -17,12 +17,12 @@ export const Participants: CollectionConfig = {
     create: ({ req }) => {
       if (!req.user) return false
       if (req.user.role === 'content-manager') return true
-      return Array.isArray(req.user.section) ? req.user.section.includes('participants') : req.user.section === 'participants'
+      return Array.isArray(req.user.section) && req.user.section.includes('participants')
     },
     update: ({ req }) => {
       if (!req.user) return false
       if (req.user.role === 'content-manager') return true
-      return Array.isArray(req.user.section) ? req.user.section.includes('participants') : req.user.section === 'participants'
+      return Array.isArray(req.user.section) && req.user.section.includes('participants')
     },
     delete: ({ req }) => req.user?.role === 'content-manager',
   },
@@ -51,37 +51,4 @@ export const Participants: CollectionConfig = {
         { label: 'Visitor', value: 'visitor' },
       ],
     },
-    {
-      name: 'title',
-      type: 'text',
-      label: 'Job Title / Role (English)',
-    },
-    {
-      name: 'titleAr',
-      type: 'text',
-      label: 'Job Title / Role (Arabic / المسمى بالعربية)',
-      admin: { rtl: true },
-    },
-    {
-      name: 'email',
-      type: 'email',
-      label: 'Email Address',
-    },
-    {
-      name: 'bio',
-      type: 'textarea',
-      label: 'Bio (English)',
-    },
-    {
-      name: 'bioAr',
-      type: 'textarea',
-      label: 'Bio (Arabic / السيرة بالعربية)',
-      admin: { rtl: true },
-    },
-    {
-      name: 'photo',
-      type: 'upload',
-      relationTo: 'media',
-    },
-  ],
-}
+  
