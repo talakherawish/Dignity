@@ -17,12 +17,12 @@ export const MediaUpdates: CollectionConfig = {
     create: ({ req }) => {
       if (!req.user) return false
       if (req.user.role === 'content-manager') return true
-      return req.user.section === 'media'
+      return Array.isArray(req.user.section) ? req.user.section.includes('media') : req.user.section === 'media'
     },
     update: ({ req }) => {
       if (!req.user) return false
       if (req.user.role === 'content-manager') return true
-      return req.user.section === 'media'
+      return Array.isArray(req.user.section) ? req.user.section.includes('media') : req.user.section === 'media'
     },
     delete: ({ req }) => req.user?.role === 'content-manager',
   },
@@ -31,6 +31,13 @@ export const MediaUpdates: CollectionConfig = {
       name: 'title',
       type: 'text',
       required: true,
+      label: 'Title (English)',
+    },
+    {
+      name: 'titleAr',
+      type: 'text',
+      label: 'Title (Arabic / العنوان بالعربية)',
+      admin: { rtl: true },
     },
     {
       name: 'type',
@@ -51,6 +58,12 @@ export const MediaUpdates: CollectionConfig = {
     {
       name: 'content',
       type: 'richText',
+      label: 'Content (English)',
+    },
+    {
+      name: 'contentAr',
+      type: 'richText',
+      label: 'Content (Arabic / المحتوى بالعربية)',
     },
     {
       name: 'image',

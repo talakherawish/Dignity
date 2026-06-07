@@ -17,12 +17,12 @@ export const Participants: CollectionConfig = {
     create: ({ req }) => {
       if (!req.user) return false
       if (req.user.role === 'content-manager') return true
-      return req.user.section === 'participants'
+      return Array.isArray(req.user.section) ? req.user.section.includes('participants') : req.user.section === 'participants'
     },
     update: ({ req }) => {
       if (!req.user) return false
       if (req.user.role === 'content-manager') return true
-      return req.user.section === 'participants'
+      return Array.isArray(req.user.section) ? req.user.section.includes('participants') : req.user.section === 'participants'
     },
     delete: ({ req }) => req.user?.role === 'content-manager',
   },
@@ -31,6 +31,13 @@ export const Participants: CollectionConfig = {
       name: 'name',
       type: 'text',
       required: true,
+      label: 'Name (English)',
+    },
+    {
+      name: 'nameAr',
+      type: 'text',
+      label: 'Name (Arabic / الاسم بالعربية)',
+      admin: { rtl: true },
     },
     {
       name: 'category',
@@ -47,7 +54,13 @@ export const Participants: CollectionConfig = {
     {
       name: 'title',
       type: 'text',
-      label: 'Job Title / Role',
+      label: 'Job Title / Role (English)',
+    },
+    {
+      name: 'titleAr',
+      type: 'text',
+      label: 'Job Title / Role (Arabic / المسمى بالعربية)',
+      admin: { rtl: true },
     },
     {
       name: 'email',
@@ -57,6 +70,13 @@ export const Participants: CollectionConfig = {
     {
       name: 'bio',
       type: 'textarea',
+      label: 'Bio (English)',
+    },
+    {
+      name: 'bioAr',
+      type: 'textarea',
+      label: 'Bio (Arabic / السيرة بالعربية)',
+      admin: { rtl: true },
     },
     {
       name: 'photo',

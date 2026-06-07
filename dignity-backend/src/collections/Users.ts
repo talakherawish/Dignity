@@ -25,11 +25,12 @@ export const Users: CollectionConfig = {
     {
       name: 'section',
       type: 'select',
-      label: 'Assigned Section',
-      // Only relevant for editors — which section they can manage
+      label: 'Assigned Sections',
+      hasMany: true,
+      // Only relevant for editors — which sections they can manage
       admin: {
         condition: (data) => data.role === 'editor',
-        description: 'The section this editor is allowed to manage.',
+        description: 'The sections this editor is allowed to manage.',
       },
       options: [
         { label: 'Articles', value: 'articles' },

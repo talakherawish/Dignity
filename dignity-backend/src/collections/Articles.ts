@@ -20,13 +20,13 @@ export const Articles: CollectionConfig = {
     create: ({ req }) => {
       if (!req.user) return false
       if (req.user.role === 'content-manager') return true
-      return req.user.section === 'articles'
+      return Array.isArray(req.user.section) ? req.user.section.includes('articles') : req.user.section === 'articles'
     },
     // Same as create
     update: ({ req }) => {
       if (!req.user) return false
       if (req.user.role === 'content-manager') return true
-      return req.user.section === 'articles'
+      return Array.isArray(req.user.section) ? req.user.section.includes('articles') : req.user.section === 'articles'
     },
     // Only content managers can delete
     delete: ({ req }) => req.user?.role === 'content-manager',
@@ -36,6 +36,13 @@ export const Articles: CollectionConfig = {
       name: 'title',
       type: 'text',
       required: true,
+      label: 'Title (English)',
+    },
+    {
+      name: 'titleAr',
+      type: 'text',
+      label: 'Title (Arabic / العنوان بالعربية)',
+      admin: { rtl: true },
     },
     {
       name: 'date',
@@ -45,12 +52,23 @@ export const Articles: CollectionConfig = {
     {
       name: 'excerpt',
       type: 'textarea',
-      label: 'Short Summary',
+      label: 'Short Summary (English)',
+    },
+    {
+      name: 'excerptAr',
+      type: 'textarea',
+      label: 'Short Summary (Arabic / الملخص بالعربية)',
+      admin: { rtl: true },
     },
     {
       name: 'content',
       type: 'richText',
-      label: 'Full Content',
+      label: 'Full Content (English)',
+    },
+    {
+      name: 'contentAr',
+      type: 'richText',
+      label: 'Full Content (Arabic / المحتوى بالعربية)',
     },
     {
       name: 'image',

@@ -17,12 +17,12 @@ export const Activities: CollectionConfig = {
     create: ({ req }) => {
       if (!req.user) return false
       if (req.user.role === 'content-manager') return true
-      return req.user.section === 'activities'
+      return Array.isArray(req.user.section) ? req.user.section.includes('activities') : req.user.section === 'activities'
     },
     update: ({ req }) => {
       if (!req.user) return false
       if (req.user.role === 'content-manager') return true
-      return req.user.section === 'activities'
+      return Array.isArray(req.user.section) ? req.user.section.includes('activities') : req.user.section === 'activities'
     },
     delete: ({ req }) => req.user?.role === 'content-manager',
   },
@@ -31,6 +31,13 @@ export const Activities: CollectionConfig = {
       name: 'title',
       type: 'text',
       required: true,
+      label: 'Title (English)',
+    },
+    {
+      name: 'titleAr',
+      type: 'text',
+      label: 'Title (Arabic / العنوان بالعربية)',
+      admin: { rtl: true },
     },
     {
       name: 'type',
@@ -51,6 +58,12 @@ export const Activities: CollectionConfig = {
     {
       name: 'description',
       type: 'richText',
+      label: 'Description (English)',
+    },
+    {
+      name: 'descriptionAr',
+      type: 'richText',
+      label: 'Description (Arabic / الوصف بالعربية)',
     },
     {
       name: 'image',

@@ -24,6 +24,12 @@ export default buildConfig({
   },
   collections: [Users, Media, Articles, Activities, MediaUpdates, Participants],
   editor: lexicalEditor(),
+  cors: process.env.CORS_ORIGINS
+    ? process.env.CORS_ORIGINS.split(',').map((s) => s.trim())
+    : ['http://localhost:8080', 'http://localhost:3000'],
+  csrf: process.env.CORS_ORIGINS
+    ? process.env.CORS_ORIGINS.split(',').map((s) => s.trim())
+    : ['http://localhost:8080', 'http://localhost:3000'],
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),

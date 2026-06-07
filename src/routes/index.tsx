@@ -1,9 +1,19 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { PageLayout, ImagePlaceholder } from "@/components/PageLayout";
 import { useLanguage, type TranslationKey } from "@/contexts/LanguageContext";
-import { ARTICLES, getField, type ArticleLang } from "@/data/articles";
+import { ARTICLES, getField, type Article, type ArticleLang } from "@/data/articles";
+import {
+  fetchArticles,
+  fetchMediaUpdatesByType,
+  formatDate,
+  mediaUrl,
+  extractText,
+  type PayloadArticle,
+  type PayloadMediaUpdate,
+} from "@/lib/payload";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -15,6 +25,22 @@ export const Route = createFileRoute("/")({
   component: Home,
 });
 
+
+// ── Map Payload article → local Article shape ─────────────────────────────
+function mapPayloadArticle(pa: PayloadArticle): Article {
+  return {
+    id: pa.id,
+    image: mediaUrl(pa.image) || "",
+    date: { en: formatDate(pa.date, "en"), ar: formatDate(pa.date, "ar"), fr: formatDate(pa.date, "en") },
+    title: { en: pa.title, ar: pa.titleAr ?? pa.title, fr: pa.title },
+    excerpt: { en: pa.excerpt ?? "", ar: pa.excerptAr ?? pa.excerpt ?? "", fr: pa.excerpt ?? "" },
+    body: {
+      en: extractText(pa.content),
+      ar: extractText(pa.contentAr).length ? extractText(pa.contentAr) : extractText(pa.content),
+      fr: extractText(pa.content),
+    },
+  };
+}
 
 type PillarItem = { titleKey: TranslationKey; descKey: TranslationKey; to: string; color: string };
 const PILLARS: PillarItem[] = [
@@ -40,6 +66,13 @@ function NewsCarousel() {
   const [visible, setVisible] = useState(true);
   const [paused, setPaused] = useState(false);
 
+  const { data: payloadArticles = [] } = useQuery({
+    queryKey: ["articles"],
+    queryFn: fetchArticles,
+    staleTime: 5 * 60 * 1000,
+  });
+  const articles = payloadArticles.length > 0 ? payloadArticles.map(mapPayloadArticle) : ARTICLES;
+
   const goTo = useCallback((next: number) => {
     setVisible(false);
     setTimeout(() => {
@@ -50,11 +83,11 @@ function NewsCarousel() {
 
   useEffect(() => {
     if (paused) return;
-    const id = setInterval(() => goTo((i + 1) % ARTICLES.length), 5000);
+    const id = setInterval(() => goTo((i + 1) % articles.length), 5000);
     return () => clearInterval(id);
   }, [i, paused, goTo]);
 
-  const article = ARTICLES[i];
+  const article = articles[Math.min(i, articles.length - 1)];
   const l = lang as ArticleLang;
   const fade = {
     opacity: visible ? 1 : 0,
@@ -103,14 +136,14 @@ function NewsCarousel() {
             <div className="flex items-center gap-3">
               <div className="flex gap-1">
                 <button
-                  onClick={() => goTo(isArabic ? (i + 1) % ARTICLES.length : (i - 1 + ARTICLES.length) % ARTICLES.length)}
+                  onClick={() => goTo(isArabic ? (i + 1) % articles.length : (i - 1 + articles.length) % articles.length)}
                   aria-label={t("news.prev")}
                   className="carousel-prev h-8 w-8 rounded-full border border-border flex items-center justify-center text-foreground/60 hover:text-accent hover:border-accent transition-colors"
                 >
                   <ChevronLeft className="h-3.5 w-3.5" />
                 </button>
                 <button
-                  onClick={() => goTo(isArabic ? (i - 1 + ARTICLES.length) % ARTICLES.length : (i + 1) % ARTICLES.length)}
+                  onClick={() => goTo(isArabic ? (i - 1 + articles.length) % articles.length : (i + 1) % articles.length)}
                   aria-label={t("news.next")}
                   className="carousel-next h-8 w-8 rounded-full border border-border flex items-center justify-center text-foreground/60 hover:text-accent hover:border-accent transition-colors"
                 >
@@ -120,7 +153,7 @@ function NewsCarousel() {
 
               {/* Minimal slide dots */}
               <div className="flex items-center gap-1" role="tablist">
-                {ARTICLES.map((_, idx) => (
+                {articles.map((_, idx) => (
                   <button
                     key={idx}
                     role="tab"
@@ -158,11 +191,30 @@ const ANNOUNCEMENTS: Announcement[] = [
 ];
 
 function AnnouncementsSection() {
-  const { lang, isArabic } = useLanguage();
+  const { t, lang, isArabic } = useLanguage();
+
+  const { data: payloadAnnouncements = [] } = useQuery({
+    queryKey: ["announcements"],
+    queryFn: () => fetchMediaUpdatesByType("announcement"),
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const items =
+    payloadAnnouncements.length > 0
+      ? payloadAnnouncements.map((a: PayloadMediaUpdate) => ({
+          date: formatDate(a.date, lang === "ar" ? "ar" : "en"),
+          title: a.title,
+          titleAr: a.titleAr ?? a.title,
+          type: "Announcement",
+          typeAr: "إعلان",
+          to: "/media/announcements",
+        }))
+      : ANNOUNCEMENTS;
+
   return (
     <section className="border-b border-border bg-secondary/20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className={`flex items-center justify-between mb-6 ${isArabic ? "flex-row-reverse" : ""}`}>
+        <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
             <div className="h-5 w-1 rounded-full" style={{ background: "var(--brand-magenta)" }} />
             <h2 className="font-serif text-2xl text-primary">
@@ -170,12 +222,12 @@ function AnnouncementsSection() {
             </h2>
           </div>
           <Link to="/media/announcements" className="text-xs font-medium text-muted-foreground hover:text-accent transition-colors tracking-wide">
-            {isArabic ? "عرض الكل ←" : "View all →"}
+            {t("news.viewAll")}
           </Link>
         </div>
 
         <div className="announcements-grid grid gap-4 sm:grid-cols-3" dir={isArabic ? "rtl" : "ltr"}>
-          {ANNOUNCEMENTS.map((item, i) => (
+          {items.map((item, i) => (
             <Link
               key={i}
               to={item.to}
@@ -270,6 +322,7 @@ function TeamSection() {
   );
 }
 
+
 // ── Home page ─────────────────────────────────────────────────────────────
 function Home() {
   const { t } = useLanguage();
@@ -277,15 +330,8 @@ function Home() {
     <PageLayout>
       {/* ── Hero ───────────────────────────────────────────────────────── */}
       <section className="border-b border-border relative overflow-hidden">
-        {/* Subtle ambient color blobs — reduced opacity for calm aesthetic */}
-        <div
-          className="absolute -top-24 -right-24 h-72 w-72 rounded-full opacity-20 blur-3xl pointer-events-none"
-          style={{ background: "var(--brand-cyan)" }}
-        />
-        <div
-          className="absolute -bottom-24 -left-24 h-64 w-64 rounded-full opacity-15 blur-3xl pointer-events-none"
-          style={{ background: "var(--brand-magenta)" }}
-        />
+        <div className="absolute -top-24 -right-24 h-72 w-72 rounded-full opacity-20 blur-3xl pointer-events-none" style={{ background: "var(--brand-cyan)" }} />
+        <div className="absolute -bottom-24 -left-24 h-64 w-64 rounded-full opacity-15 blur-3xl pointer-events-none" style={{ background: "var(--brand-magenta)" }} />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-14 grid gap-10 lg:grid-cols-2 items-center">
           <div>
             <div className="text-[10px] uppercase tracking-[0.22em] text-[color:var(--brand-magenta)] font-semibold mb-4">
@@ -298,16 +344,10 @@ function Home() {
               {t("hero.desc")}
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
-              <Link
-                to="/about"
-                className="inline-flex items-center px-5 py-2.5 bg-primary text-primary-foreground text-sm font-medium rounded-sm hover:bg-primary/90 transition-colors"
-              >
+              <Link to="/about" className="inline-flex items-center px-5 py-2.5 bg-primary text-primary-foreground text-sm font-medium rounded-sm hover:bg-primary/90 transition-colors">
                 {t("hero.btn.about")}
               </Link>
-              <Link
-                to="/projects/research"
-                className="inline-flex items-center px-5 py-2.5 border border-border text-foreground text-sm font-medium rounded-sm hover:bg-secondary transition-colors"
-              >
+              <Link to="/projects/research" className="inline-flex items-center px-5 py-2.5 border border-border text-foreground text-sm font-medium rounded-sm hover:bg-secondary transition-colors">
                 {t("hero.btn.research")}
               </Link>
             </div>
@@ -332,6 +372,9 @@ function Home() {
         </div>
       </section>
 
+      {/* ── Announcements (above News) ──────────────────────────────────── */}
+      <AnnouncementsSection />
+
       {/* ── News ───────────────────────────────────────────────────────── */}
       <section className="border-b border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -347,9 +390,6 @@ function Home() {
           <NewsCarousel />
         </div>
       </section>
-
-      {/* ── Announcements ──────────────────────────────────────────────── */}
-      <AnnouncementsSection />
 
       {/* ── Meet the Team ──────────────────────────────────────────────── */}
       <TeamSection />

@@ -11,9 +11,9 @@ const EXPLORE_LINKS = [
 ] as const;
 
 const PARTICIPANT_LINKS = [
-  { key: "about.faculty" as const, to: "/about/participants/faculty" },
-  { key: "about.researchers" as const, to: "/about/participants/researchers" },
-  { key: "about.students" as const, to: "/about/participants/students" },
+  { key: "about.faculty" as const, to: "/about/participants" },
+  { key: "about.researchers" as const, to: "/about/participants" },
+  { key: "about.students" as const, to: "/about/participants" },
   { key: "about.partners" as const, to: "/about/partners" },
 ] as const;
 

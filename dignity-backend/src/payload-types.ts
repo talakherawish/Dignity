@@ -134,9 +134,9 @@ export interface User {
   name: string;
   role: 'content-manager' | 'editor';
   /**
-   * The section this editor is allowed to manage.
+   * The sections this editor is allowed to manage.
    */
-  section?: ('articles' | 'activities' | 'media' | 'participants') | null;
+  section?: ('articles' | 'activities' | 'media' | 'participants')[] | null;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -182,9 +182,26 @@ export interface Media {
 export interface Article {
   id: string;
   title: string;
+  titleAr?: string | null;
   date: string;
   excerpt?: string | null;
+  excerptAr?: string | null;
   content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  contentAr?: {
     root: {
       type: string;
       children: {
@@ -211,9 +228,25 @@ export interface Article {
 export interface Activity {
   id: string;
   title: string;
+  titleAr?: string | null;
   type: 'seminar' | 'conference' | 'meeting' | 'windsor-birzeit';
   date: string;
   description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  descriptionAr?: {
     root: {
       type: string;
       children: {
@@ -240,9 +273,25 @@ export interface Activity {
 export interface MediaUpdate {
   id: string;
   title: string;
+  titleAr?: string | null;
   type: 'news' | 'announcement' | 'photo' | 'clipping';
   date: string;
   content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  contentAr?: {
     root: {
       type: string;
       children: {
@@ -269,9 +318,13 @@ export interface MediaUpdate {
 export interface Participant {
   id: string;
   name: string;
+  nameAr?: string | null;
   category: 'faculty' | 'researcher' | 'intern' | 'student' | 'visitor';
   title?: string | null;
+  titleAr?: string | null;
+  email?: string | null;
   bio?: string | null;
+  bioAr?: string | null;
   photo?: (string | null) | Media;
   updatedAt: string;
   createdAt: string;
@@ -416,9 +469,12 @@ export interface MediaSelect<T extends boolean = true> {
  */
 export interface ArticlesSelect<T extends boolean = true> {
   title?: T;
+  titleAr?: T;
   date?: T;
   excerpt?: T;
+  excerptAr?: T;
   content?: T;
+  contentAr?: T;
   image?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -430,9 +486,11 @@ export interface ArticlesSelect<T extends boolean = true> {
  */
 export interface ActivitiesSelect<T extends boolean = true> {
   title?: T;
+  titleAr?: T;
   type?: T;
   date?: T;
   description?: T;
+  descriptionAr?: T;
   image?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -444,9 +502,11 @@ export interface ActivitiesSelect<T extends boolean = true> {
  */
 export interface MediaUpdatesSelect<T extends boolean = true> {
   title?: T;
+  titleAr?: T;
   type?: T;
   date?: T;
   content?: T;
+  contentAr?: T;
   image?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -458,9 +518,13 @@ export interface MediaUpdatesSelect<T extends boolean = true> {
  */
 export interface ParticipantsSelect<T extends boolean = true> {
   name?: T;
+  nameAr?: T;
   category?: T;
   title?: T;
+  titleAr?: T;
+  email?: T;
   bio?: T;
+  bioAr?: T;
   photo?: T;
   updatedAt?: T;
   createdAt?: T;
