@@ -1,18 +1,20 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, X, Mail } from "lucide-react";
 import { PageLayout, ImagePlaceholder } from "@/components/PageLayout";
 import { useLanguage, type TranslationKey } from "@/contexts/LanguageContext";
 import { ARTICLES, getField, type Article, type ArticleLang } from "@/data/articles";
 import {
   fetchArticles,
   fetchMediaUpdatesByType,
+  fetchParticipants,
   formatDate,
   mediaUrl,
   extractText,
   type PayloadArticle,
   type PayloadMediaUpdate,
+  type PayloadParticipant,
 } from "@/lib/payload";
 
 export const Route = createFileRoute("/")({
@@ -49,15 +51,35 @@ const PILLARS: PillarItem[] = [
   { titleKey: "pillar.partnership", descKey: "pillar.partnership.desc", to: "/about/partners", color: "oklch(0.18 0.01 270)" },
 ];
 
-type TeamMember = {
-  role1Key: TranslationKey;
-  role2Key: TranslationKey;
+type TeamPerson = {
+  name: string;
+  nameAr: string;
+  title: string;
+  titleAr: string;
+  email: string;
+  bio: string;
+  bioAr: string;
+  photo?: string;
 };
-const TEAM_MEMBERS: TeamMember[] = [
-  { role1Key: "team.role1", role2Key: "team.role1b" },
-  { role1Key: "team.role2", role2Key: "team.role2b" },
-  { role1Key: "team.role3", role2Key: "team.role3b" },
+
+const TEAM_FALLBACK: TeamPerson[] = [
+  { name: "Mudar Kassis", nameAr: "مضر قسيس", title: "Director", titleAr: "المدير", email: "m.kassis@birzeit.edu", bio: "", bioAr: "", photo: undefined },
+  { name: "Eman Al-Assa", nameAr: "إيمان العصا", title: "Faculty", titleAr: "هيئة التدريس", email: "e.alassa@birzeit.edu", bio: "", bioAr: "", photo: undefined },
+  { name: "Dr. Raef Zreik", nameAr: "د. رائف زريق", title: "Senior Researcher", titleAr: "باحث أول", email: "r.zreik@birzeit.edu", bio: "Dr. Zreik is a senior researcher whose work focuses on the philosophy of law, colonialism, and dignity.", bioAr: "باحث أول يتمحور عمله حول فلسفة القانون والاستعمار والكرامة.", photo: undefined },
 ];
+
+function mapPayloadToTeamPerson(p: PayloadParticipant): TeamPerson {
+  return {
+    name: p.name,
+    nameAr: p.nameAr ?? p.name,
+    title: p.title ?? "",
+    titleAr: p.titleAr ?? p.title ?? "",
+    email: p.email ?? "",
+    bio: p.bio ?? "",
+    bioAr: p.bioAr ?? p.bio ?? "",
+    photo: mediaUrl(p.photo) || undefined,
+  };
+}
 
 // ── News carousel with 5-second autoplay and fade transition ──────────────
 function NewsCarousel() {
@@ -253,82 +275,159 @@ function AnnouncementsSection() {
   );
 }
 
-// ── Compact editorial team row (matches screenshot layout) ───────────────
-function TeamSection() {
-  const { t, isArabic } = useLanguage();
+// ── Team member modal ─────────────────────────────────────────────────────
+function TeamModal({ person, onClose, isArabic, lang }: {
+  person: TeamPerson;
+  onClose: () => void;
+  isArabic: boolean;
+  lang: string;
+}) {
   return (
-    <section className="border-b border-border">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-8 items-center">
-
-          {/* Left: eyebrow + title + button */}
-          <div>
-            <div className="text-[10px] uppercase tracking-[0.22em] text-[color:var(--brand-magenta)] font-semibold mb-2">
-              {t("team.eyebrow")}
-            </div>
-            <h2 className="font-serif text-2xl lg:text-[1.75rem] text-primary leading-tight mb-5">
-              {t("team.title")}
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+    >
+      <div className="relative w-full max-w-sm" style={{ paddingTop: "96px" }}>
+        {/* Floating avatar */}
+        <div className="absolute left-1/2 top-0 -translate-x-1/2 z-10">
+          <div className="h-48 w-48 rounded-full overflow-hidden shadow-2xl bg-secondary flex items-center justify-center">
+            {person.photo ? (
+              <img src={person.photo} alt={person.name} className="w-full h-full object-cover" />
+            ) : (
+              <svg viewBox="0 0 24 24" fill="none" className="h-20 w-20 text-muted-foreground/25" aria-hidden>
+                <circle cx="12" cy="8" r="4.5" fill="currentColor" />
+                <path d="M3 20c0-4.4 4-8 9-8s9 3.6 9 8" fill="currentColor" />
+              </svg>
+            )}
+          </div>
+        </div>
+        {/* Card */}
+        <div className={"relative bg-card border border-border rounded-lg shadow-2xl overflow-y-auto max-h-[80vh]" + (isArabic ? " text-right" : "")}>
+          <button
+            onClick={onClose}
+            className="absolute top-4 right-4 p-1.5 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors z-10"
+            aria-label="Close"
+          >
+            <X className="h-4 w-4" />
+          </button>
+          <div className="px-8 pb-8" style={{ paddingTop: "100px" }}>
+            <h2 className="font-serif text-2xl text-primary text-center">
+              {lang === "ar" ? person.nameAr : person.name}
             </h2>
-            <Link
-              to="/about/participants"
-              className="inline-flex items-center gap-1.5 text-xs font-medium text-foreground border border-border px-3.5 py-2 rounded-sm hover:bg-secondary transition-colors"
-            >
-              {t("team.btn")} <span aria-hidden>→</span>
-            </Link>
-          </div>
-
-          {/* Right: 3 compact cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {TEAM_MEMBERS.map((m, idx) => (
-              <Link
-                key={idx}
-                to="/about/participants"
-                className="group flex items-start gap-3.5 p-4 border border-border rounded-sm bg-card hover:border-accent/30 hover:shadow-sm transition-all duration-200"
+            {(person.title || person.titleAr) && (
+              <p className="text-muted-foreground text-sm text-center mt-1">
+                {lang === "ar" ? person.titleAr : person.title}
+              </p>
+            )}
+            {person.email && (
+              <a
+                href={"mailto:" + person.email}
+                className="mt-4 flex items-center justify-center gap-2 bg-secondary border border-border text-foreground/70 text-sm px-4 py-2.5 rounded-full hover:text-foreground hover:border-foreground/30 transition-colors w-fit mx-auto"
               >
-                {/* Circular portrait placeholder */}
-                <div className="shrink-0 h-[52px] w-[52px] rounded-full overflow-hidden border border-border bg-secondary flex items-center justify-center">
-                  <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    className="h-6 w-6 text-muted-foreground/40"
-                    aria-hidden
-                  >
-                    <circle cx="12" cy="8" r="4" fill="currentColor" />
-                    <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" fill="currentColor" />
-                  </svg>
-                </div>
-
-                {/* Text */}
-                <div className="min-w-0 pt-0.5">
-                  <div className="font-semibold text-sm text-primary leading-tight">
-                    {t("team.name")}
-                  </div>
-                  <div className="text-xs text-muted-foreground mt-0.5 leading-snug">
-                    {t(m.role1Key)}
-                    <br />
-                    {t(m.role2Key)}
-                  </div>
-                  <div className="mt-2 text-xs font-medium text-[color:var(--brand-magenta)] group-hover:underline">
-                    {t("team.viewProfile")} {isArabic ? "←" : "→"}
-                  </div>
-                </div>
-              </Link>
-            ))}
+                <Mail className="h-3.5 w-3.5 shrink-0" />
+                {person.email}
+              </a>
+            )}
+            {(person.bio || person.bioAr) && (
+              <p className="mt-6 text-sm text-muted-foreground leading-relaxed">
+                {lang === "ar" ? person.bioAr : person.bio}
+              </p>
+            )}
           </div>
-
         </div>
       </div>
-    </section>
+    </div>
   );
 }
 
+// ── Compact editorial team row ────────────────────────────────────────────
+function TeamSection() {
+  const { t, lang, isArabic } = useLanguage();
+  const [selected, setSelected] = useState<TeamPerson | null>(null);
+
+  const { data: payloadParticipants = [] } = useQuery({
+    queryKey: ["participants"],
+    queryFn: fetchParticipants,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const members: TeamPerson[] = (
+    payloadParticipants.length > 0
+      ? payloadParticipants.map(mapPayloadToTeamPerson)
+      : TEAM_FALLBACK
+  ).slice(0, 3);
+
+  return (
+    <>
+      <section className="border-b border-border">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+          <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-8 items-center">
+            <div>
+              <div className="text-[10px] uppercase tracking-[0.22em] text-[color:var(--brand-magenta)] font-semibold mb-2">
+                {t("team.eyebrow")}
+              </div>
+              <h2 className="font-serif text-2xl lg:text-[1.75rem] text-primary leading-tight mb-5">
+                {t("team.title")}
+              </h2>
+              <Link
+                to="/about/participants"
+                className="inline-flex items-center gap-1.5 text-xs font-medium text-foreground border border-border px-3.5 py-2 rounded-sm hover:bg-secondary transition-colors"
+              >
+                {t("team.btn")} <span aria-hidden>{isArabic ? "←" : "→"}</span>
+              </Link>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {members.map((person, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setSelected(person)}
+                  className="group flex items-start gap-3.5 p-4 border border-border rounded-sm bg-card hover:border-accent/30 hover:shadow-sm transition-all duration-200 text-left w-full"
+                >
+                  <div className="shrink-0 h-[52px] w-[52px] rounded-full overflow-hidden border border-border bg-secondary flex items-center justify-center">
+                    {person.photo ? (
+                      <img src={person.photo} alt={person.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <svg viewBox="0 0 24 24" fill="none" className="h-6 w-6 text-muted-foreground/40" aria-hidden>
+                        <circle cx="12" cy="8" r="4" fill="currentColor" />
+                        <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" fill="currentColor" />
+                      </svg>
+                    )}
+                  </div>
+                  <div className={"min-w-0 pt-0.5" + (isArabic ? " text-right" : "")}>
+                    <div className="font-semibold text-sm text-primary leading-tight group-hover:text-accent transition-colors">
+                      {lang === "ar" ? person.nameAr : person.name}
+                    </div>
+                    {(person.title || person.titleAr) && (
+                      <div className="text-xs text-muted-foreground mt-0.5 leading-snug">
+                        {lang === "ar" ? person.titleAr : person.title}
+                      </div>
+                    )}
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {selected && (
+        <TeamModal
+          person={selected}
+          onClose={() => setSelected(null)}
+          isArabic={isArabic}
+          lang={lang}
+        />
+      )}
+    </>
+  );
+}
 
 // ── Home page ─────────────────────────────────────────────────────────────
 function Home() {
   const { t } = useLanguage();
   return (
     <PageLayout>
-      {/* ── Hero ───────────────────────────────────────────────────────── */}
+      {/* Hero */}
       <section className="border-b border-border relative overflow-hidden">
         <div className="absolute -top-24 -right-24 h-72 w-72 rounded-full opacity-20 blur-3xl pointer-events-none" style={{ background: "var(--brand-cyan)" }} />
         <div className="absolute -bottom-24 -left-24 h-64 w-64 rounded-full opacity-15 blur-3xl pointer-events-none" style={{ background: "var(--brand-magenta)" }} />
@@ -356,7 +455,7 @@ function Home() {
         </div>
       </section>
 
-      {/* ── Pillars ────────────────────────────────────────────────────── */}
+      {/* Pillars */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 border-b border-border">
         <div className="grid gap-8 md:grid-cols-3">
           {PILLARS.map((p) => (
@@ -372,10 +471,10 @@ function Home() {
         </div>
       </section>
 
-      {/* ── Announcements (above News) ──────────────────────────────────── */}
+      {/* Announcements above News */}
       <AnnouncementsSection />
 
-      {/* ── News ───────────────────────────────────────────────────────── */}
+      {/* News */}
       <section className="border-b border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="flex items-center justify-between mb-6">
@@ -391,7 +490,7 @@ function Home() {
         </div>
       </section>
 
-      {/* ── Meet the Team ──────────────────────────────────────────────── */}
+      {/* Meet the Team */}
       <TeamSection />
     </PageLayout>
   );

@@ -138,7 +138,7 @@ function NavItem({ item }: { item: Item }) {
         activeOptions={{ exact: item.to === "/" }}
         className={[
           "px-2.5 py-2 font-medium text-foreground/80 hover:text-accent transition-colors data-[status=active]:text-accent whitespace-nowrap",
-          isArabic ? "font-arabic text-[15px]" : "text-[13px]",
+          isArabic ? "font-arabic text-[17px]" : "text-[15px]",
         ].join(" ")}
       >
         {label}
@@ -151,7 +151,7 @@ function NavItem({ item }: { item: Item }) {
       <button
         className={[
           "px-2.5 py-2 font-medium text-foreground/80 hover:text-accent transition-colors inline-flex items-center gap-1 whitespace-nowrap",
-          isArabic ? "font-arabic text-[15px]" : "text-[13px]",
+          isArabic ? "font-arabic text-[17px]" : "text-[15px]",
         ].join(" ")}
       >
         {label}
