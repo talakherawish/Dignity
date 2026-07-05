@@ -6,6 +6,7 @@ import { PageLayout, PageHero } from "@/components/PageLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { fetchParticipants, mediaUrl, type PayloadParticipant } from "@/lib/payload";
 import talaPhoto from "@/assets/tala.jpg";
+import { usePage } from "@/hooks/usePage";
 
 export const Route = createFileRoute("/about/participants")({
   component: FellowsPage,
@@ -167,6 +168,7 @@ function FellowCard({ fellow, onClick, lang }: {
 
 function FellowsPage() {
   const { lang, isArabic } = useLanguage();
+    const page = usePage("participants");
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("all");
   const [selected, setSelected] = useState<Fellow | null>(null);
@@ -193,12 +195,13 @@ function FellowsPage() {
     <PageLayout>
       <PageHero
         eyebrow={isArabic ? "حول المبادرة" : "About"}
-        title={isArabic ? "الزملاء" : "Fellows"}
-        description={
-          isArabic
-            ? "هؤلاء هم الأشخاص الذين أوصلونا إلى ما نحن عليه اليوم.\nباحثون وأكاديميون ومنتسبون يجمعهم الالتزام بخدمة الكرامة الإنسانية."
-            : "These are the people who got us to where we are today.\nResearchers, academics, and affiliates united by a commitment to human dignity."
-        }
+        title={page.title ?? (isArabic ? "الزملاء" : "Fellows")}
+                description={
+                            page.description ??
+                            (isArabic
+                                         ? "هؤلاء هم الأشخاص الذين أوصلونا إلى ما نحن عليه اليوم.\nباحثون وأكاديميون ومنتسبون يجمعهم الالتزام بخدمة الكرامة الإنسانية."
+                                         : "These are the people who got us to where we are today.\nResearchers, academics, and affiliates united by a commitment to human dignity.")
+                }
       />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
