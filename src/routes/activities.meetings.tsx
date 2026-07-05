@@ -11,6 +11,7 @@ export const Route = createFileRoute("/activities/meetings")({
 
 function MeetingsPage() {
   const { t, lang, isArabic } = useLanguage();
+    const page = usePage("meetings");
   const { data: items = [], isLoading } = useQuery({
     queryKey: ["activities", "meeting"],
     queryFn: () => fetchActivitiesByType("meeting"),
@@ -19,7 +20,7 @@ function MeetingsPage() {
 
   return (
     <PageLayout>
-      <PageHero eyebrow={t("activities")} title={t("activities.meetings")} description={t("meetings.page.desc")} />
+            <PageHero eyebrow={t("activities")} title={page.title ?? t("activities.meetings")} description={page.description ?? t("meetings.page.desc")} />
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {isLoading ? (
           <div className="space-y-4">
