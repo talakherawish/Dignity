@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { PageLayout, PageHero } from "@/components/PageLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { fetchActivitiesByType, formatDate, extractText, type PayloadActivity } from "@/lib/payload";
+import { usePage } from "@/hooks/usePage";
 
 export const Route = createFileRoute("/activities/conferences")({
   head: () => ({ meta: [{ title: "Conferences — Dignity" }] }),
@@ -10,6 +11,7 @@ export const Route = createFileRoute("/activities/conferences")({
 });
 
 function ConferencesPage() {
+    const page = usePage("conferences");
   const { t, lang, isArabic } = useLanguage();
   const { data: items = [], isLoading } = useQuery({
     queryKey: ["activities", "conference"],
@@ -19,7 +21,7 @@ function ConferencesPage() {
 
   return (
     <PageLayout>
-      <PageHero eyebrow={t("activities")} title={t("activities.conferences")} description={t("conferences.page.desc")} />
+            <PageHero eyebrow={t("activities")} title={page.title ?? t("activities.conferences")} description={page.description ?? t("conferences.page.desc")} />
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {isLoading ? (
           <div className="space-y-4">
