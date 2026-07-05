@@ -4,7 +4,7 @@ installCommand = "npm install"
 buildCommand = "npm run build"
 
 [deploy]
-startCommand = "npm start"
+  startCommand = "node server.js"
 healthcheckPath = "/admin"
 healthcheckTimeout = 300
 restartPolicyType = "ON_FAILURE"
