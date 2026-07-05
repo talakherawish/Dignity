@@ -11,6 +11,7 @@ export const Route = createFileRoute("/activities/windsor-birzeit")({
 
 function WindsorPage() {
   const { t, lang, isArabic } = useLanguage();
+    const page = usePage("windsor");
   const { data: items = [], isLoading } = useQuery({
     queryKey: ["activities", "windsor-birzeit"],
     queryFn: () => fetchActivitiesByType("windsor-birzeit"),
@@ -19,7 +20,7 @@ function WindsorPage() {
 
   return (
     <PageLayout>
-      <PageHero eyebrow={t("activities")} title={t("activities.windsor")} description={t("windsor.page.desc")} />
+            <PageHero eyebrow={t("activities")} title={page.title ?? t("activities.windsor")} description={page.description ?? t("windsor.page.desc")} />
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {isLoading ? (
           <div className="space-y-4">
