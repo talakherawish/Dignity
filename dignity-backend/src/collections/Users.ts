@@ -37,6 +37,8 @@ export const Users: CollectionConfig = {
         { label: 'Activities', value: 'activities' },
         { label: 'Media & Updates', value: 'media' },
         { label: 'Participants', value: 'participants' },
+        { label: 'Pages', value: 'pages' },
+        { label: 'Site Settings', value: 'site-settings' },
       ],
     },
   ],
