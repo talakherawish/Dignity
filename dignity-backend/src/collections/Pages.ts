@@ -18,12 +18,12 @@ export const Pages: CollectionConfig = {
     create: ({ req }) => {
       if (!req.user) return false
       if (req.user.role === 'content-manager') return true
-      return Array.isArray(req.user.section) && req.user.section.includes('pages')
+      return Array.isArray(req.user.section) && req.user.section.includes('pages' as any)
     },
     update: ({ req }) => {
       if (!req.user) return false
       if (req.user.role === 'content-manager') return true
-      return Array.isArray(req.user.section) && req.user.section.includes('pages')
+      return Array.isArray(req.user.section) && req.user.section.includes('pages' as any)
     },
     delete: ({ req }) => req.user?.role === 'content-manager',
   },
