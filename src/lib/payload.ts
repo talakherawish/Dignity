@@ -62,6 +62,20 @@ export type PayloadParticipant = {
   photo?: PayloadMedia
 }
 
+  export type PayloadPage = {
+      id: string
+      slug: string
+      title?: string
+      titleAr?: string
+      description?: string
+      descriptionAr?: string
+      body?: unknown
+      bodyAr?: unknown
+  }
+
+    /** All fields on the Site Settings global -- every EN key has a matching key+Ar. */
+export type PayloadSiteSettings = Record<string, string | undefined>
+
 // ── Helpers ────────────────────────────────────────────────────────────────
 
 /** Extract paragraph strings from a Payload Lexical richText JSON object. */
@@ -145,3 +159,32 @@ export const fetchMediaUpdatesByType = (type: PayloadMediaUpdate['type']) =>
 
 export const fetchParticipants = () =>
   fetchCollection<PayloadParticipant>('participants')
+
+
+/** Fetch a single editable Page document by its slug (e.g. "about", "mission"). Returns null if missing/unreachable. */
+export async function fetchPage(slug: string): Promise<PayloadPage | null> {
+    try {
+          const params = new URLSearchParams({ 'where[slug][equals]': slug, depth: '0', limit: '1' })
+          const res = await fetch(`${PAYLOAD_URL}/api/pages?${params}`, {
+                  headers: { 'Content-Type': 'application/json' },
+          })
+          if (!res.ok) return null
+          const data = (await res.json()) as { docs?: PayloadPage[] }
+          return data.docs?.[0] ?? null
+    } catch {
+          return null
+    }
+}
+
+/** Fetch the Site Settings global (nav labels, hero, footer, small UI labels). Returns null if unreachable. */
+export async function fetchSiteSettings(): Promise<PayloadSiteSettings | null> {
+    try {
+          const res = await fetch(`${PAYLOAD_URL}/api/globals/site-settings?depth=0`, {
+                  headers: { 'Content-Type': 'application/json' },
+          })
+          if (!res.ok) return null
+          return (await res.json()) as PayloadSiteSettings
+    } catch {
+          return null
+    }
+}
