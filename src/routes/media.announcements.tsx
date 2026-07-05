@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { PageLayout, PageHero } from "@/components/PageLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { fetchMediaUpdatesByType, formatDate, type PayloadMediaUpdate } from "@/lib/payload";
+import { usePage } from "@/hooks/usePage";
 
 export const Route = createFileRoute("/media/announcements")({
   head: () => ({ meta: [{ title: "Announcements — Dignity" }] }),
@@ -11,6 +12,7 @@ export const Route = createFileRoute("/media/announcements")({
 
 function AnnouncementsPage() {
   const { t, lang, isArabic } = useLanguage();
+      const page = usePage("announcements");
   const { data: items = [], isLoading } = useQuery({
     queryKey: ["media-updates", "announcement"],
     queryFn: () => fetchMediaUpdatesByType("announcement"),
@@ -19,7 +21,7 @@ function AnnouncementsPage() {
 
   return (
     <PageLayout>
-      <PageHero eyebrow={t("media")} title={t("media.announcements")} description={t("announcements.page.desc")} />
+            <PageHero eyebrow={t("media")} title={page.title ?? t("media.announcements")} description={page.description ?? t("announcements.page.desc")} />
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {isLoading ? (
           <div className="grid gap-4 sm:grid-cols-3">
