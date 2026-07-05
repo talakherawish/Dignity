@@ -188,3 +188,53 @@ export async function fetchSiteSettings(): Promise<PayloadSiteSettings | null> {
           return null
     }
 }
+
+
+
+/**
+ * Extract structured content from a Payload Lexical richText JSON object,
+ * separating plain paragraphs from any top-level bullet/numbered list items.
+ * `extractText` above silently drops list nodes entirely (a bare `<ul>` isn't
+ * a `paragraph` node so its text never got pushed) — this is used wherever a
+ * page's body may contain a list that should render distinctly, e.g. as a
+ * card grid rather than flowing prose.
+ */
+export function extractBlocks(lexical: unknown): { paragraphs: string[]; items: string[] } {
+    if (!lexical || typeof lexical !== 'object') return { paragraphs: [], items: [] }
+        const root = (lexical as Record<string, unknown>).root as Record<string, unknown> | undefined
+    if (!root) return { paragraphs: [], items: [] }
+
+        const paragraphs: string[] = []
+            const items: string[] = []
+
+                function text(node: Record<string, unknown>): string {
+                      if (node.type === 'text') return (node.text as string) ?? ''
+                      const children = node.children as Record<string, unknown>[] | undefined
+                      if (children) return children.map(text).join('')
+                      return ''
+                }
+
+  function walkTop(node: Record<string, unknown>) {
+        if (node.type === 'paragraph') {
+                const t = text(node)
+                if (t.trim()) paragraphs.push(t)
+                return
+        }
+        if (node.type === 'list') {
+                const listItems = (node.children as Record<string, unknown>[] | undefined) ?? []
+                        for (const li of listItems) {
+                                  const t = text(li)
+                                  if (t.trim()) items.push(t)
+                        }
+                return
+        }
+        // Fallback: any other top-level node, just try to read its text as a paragraph.
+      const t = text(node)
+        if (t.trim()) paragraphs.push(t)
+  }
+
+  const children = (root as Record<string, unknown>).children as Record<string, unknown>[] | undefined
+    if (children) children.forEach(walkTop)
+
+  return { paragraphs, items }
+}
