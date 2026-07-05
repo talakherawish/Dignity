@@ -18,7 +18,7 @@ export const SiteSettings: GlobalConfig = {
     update: ({ req }) => {
       if (!req.user) return false
       if (req.user.role === 'content-manager') return true
-      return Array.isArray(req.user.section) && req.user.section.includes('site-settings')
+      return Array.isArray(req.user.section) && req.user.section.includes('site-settings' as any)
     },
   },
   fields: [
