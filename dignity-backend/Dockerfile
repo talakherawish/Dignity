@@ -59,6 +59,9 @@ RUN chown nextjs:nodejs .next
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
+# Create the media upload directory so Payload can save uploaded files, owned by the nextjs runtime user
+RUN mkdir -p media && chown nextjs:nodejs media
+
 USER nextjs
 
 EXPOSE 3000
