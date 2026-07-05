@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
+import { fetchSiteSettings, type PayloadSiteSettings } from "@/lib/payload";
 
 export type Language = "en" | "ar";
 
@@ -377,12 +378,83 @@ const translations = {
 
 export type TranslationKey = keyof typeof translations.en;
 
+// Maps translation keys to the corresponding Site Settings field name (English base;
+// the Arabic value lives at `${base}Ar`). Only keys editable via Payload appear here --
+// anything absent falls back to the hardcoded dictionary above untouched.
+const SITE_SETTINGS_KEY_MAP: Partial<Record<TranslationKey, string>> = {
+    home: "navHome",
+    about: "navAbout",
+    "about.initiative": "navAboutInitiative",
+    "about.mission": "navAboutMission",
+    "about.fellows": "navAboutFellows",
+    "about.participants": "navAboutFellows",
+    "about.partners": "navAboutPartners",
+    projects: "navProjects",
+    "projects.research": "navProjectsResearch",
+    activities: "navActivities",
+    "activities.seminars": "navActivitiesSeminars",
+    "activities.conferences": "navActivitiesConferences",
+    "activities.meetings": "navActivitiesMeetings",
+    "activities.windsor": "navActivitiesWindsor",
+    media: "navMedia",
+    "media.news": "navMediaNews",
+    "media.announcements": "navMediaAnnouncements",
+    "media.photos": "navMediaPhotos",
+    "media.clippings": "navMediaClippings",
+
+    "hero.eyebrow": "heroEyebrow",
+    "hero.title": "heroTitle",
+    "hero.desc": "heroDesc",
+    "hero.btn.about": "heroBtnAbout",
+    "hero.btn.research": "heroBtnResearch",
+    "pillar.research": "pillarResearch",
+    "pillar.research.desc": "pillarResearchDesc",
+    "pillar.dialogue": "pillarDialogue",
+    "pillar.dialogue.desc": "pillarDialogueDesc",
+    "pillar.partnership": "pillarPartnership",
+    "pillar.partnership.desc": "pillarPartnershipDesc",
+    "news.viewAll": "newsViewAll",
+    "news.prev": "newsPrev",
+    "news.next": "newsNext",
+    "news.readMore": "newsReadMore",
+    "news.collapse": "newsCollapse",
+
+    "footer.about": "footerAbout",
+    "footer.explore": "footerExplore",
+    "footer.participants": "footerParticipants",
+    "footer.contact": "footerContact",
+    "footer.university": "footerUniversity",
+    "footer.pobox": "footerPobox",
+    "footer.zip": "footerZip",
+    "footer.phone": "footerPhone",
+    "footer.fax": "footerFax",
+    "footer.email": "footerEmail",
+    "footer.subscribe": "footerSubscribe",
+    "footer.subscribe.placeholder": "footerSubscribePlaceholder",
+    "footer.subscribe.btn": "footerSubscribeBtn",
+    "footer.disclaimer": "footerDisclaimer",
+    "footer.privacy": "footerPrivacy",
+    "footer.sitemap": "footerSitemap",
+    "footer.copyright": "footerCopyright",
+    "footer.resources": "footerResources",
+    "footer.studying": "footerStudying",
+    "footer.library": "footerLibrary",
+    "footer.databases": "footerDatabases",
+
+    "team.eyebrow": "teamEyebrow",
+    "team.title": "teamTitle",
+    "team.btn": "teamBtn",
+
+    "projects.area": "projectsArea",
+};
+
 const LanguageContext = createContext<LanguageContextValue>({} as LanguageContextValue);
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [lang, setLang] = useState<Language>("ar");
   const dir = lang === "ar" ? "rtl" : "ltr";
   const isArabic = lang === "ar";
+    const [overrides, setOverrides] = useState<PayloadSiteSettings | null>(null);
 
   useEffect(() => {
     document.documentElement.dir = dir;
@@ -394,7 +466,24 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     }
   }, [lang, dir, isArabic]);
 
-  const t = (key: TranslationKey) => translations[lang][key];
+    useEffect(() => {
+          let cancelled = false;
+          fetchSiteSettings().then((data) => {
+                  if (!cancelled && data) setOverrides(data);
+          });
+          return () => {
+                  cancelled = true;
+          };
+    }, []);
+
+const t = (key: TranslationKey) => {
+      const base = SITE_SETTINGS_KEY_MAP[key];
+      if (base && overrides) {
+              const value = overrides[isArabic ? `${base}Ar` : base];
+              if (value) return value;
+      }
+      return translations[lang][key];
+};
 
   return (
     <LanguageContext.Provider value={{ lang, setLang, t, dir, isArabic }}>
