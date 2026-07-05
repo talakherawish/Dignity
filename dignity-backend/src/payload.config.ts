@@ -11,6 +11,8 @@ import { Articles } from './collections/Articles'
 import { Activities } from './collections/Activities'
 import { MediaUpdates } from './collections/MediaUpdates'
 import { Participants } from './collections/Participants'
+import { Pages } from './collections/Pages'
+import { SiteSettings } from './globals/SiteSettings'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -22,13 +24,14 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Users, Media, Articles, Activities, MediaUpdates, Participants],
+  collections: [Users, Media, Articles, Activities, MediaUpdates, Participants, Pages],
+  globals: [SiteSettings],
   editor: lexicalEditor(),
   cors: process.env.CORS_ORIGINS
-    ? process.env.CORS_ORIGINS.split(',').map((s) => s.trim())
+  ? process.env.CORS_ORIGINS.split(',').map((s) => s.trim())
     : ['http://localhost:8080', 'http://localhost:3000'],
   csrf: process.env.CORS_ORIGINS
-    ? process.env.CORS_ORIGINS.split(',').map((s) => s.trim())
+  ? process.env.CORS_ORIGINS.split(',').map((s) => s.trim())
     : ['http://localhost:8080', 'http://localhost:3000'],
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
