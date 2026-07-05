@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageLayout, PageHero, ImagePlaceholder } from "@/components/PageLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { usePage } from "@/hooks/usePage";
 
 export const Route = createFileRoute("/projects/research")({
   head: () => ({ meta: [{ title: "Research Projects — Dignity" }] }),
@@ -9,12 +10,13 @@ export const Route = createFileRoute("/projects/research")({
 
 function ResearchProjects() {
   const { t } = useLanguage();
+    const page = usePage("projects");
   return (
     <PageLayout>
       <PageHero
         eyebrow={t("projects")}
-        title={t("projects.research")}
-        description={t("projects.page.desc")}
+                title={page.title ?? t("projects.research")}
+                description={page.description ?? t("projects.page.desc")}
       />
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 grid gap-10 md:grid-cols-2">
         {Array.from({ length: 4 }).map((_, i) => (
