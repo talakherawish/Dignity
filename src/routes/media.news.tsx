@@ -6,6 +6,7 @@ import { PageLayout } from "@/components/PageLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { ARTICLES, getField, getBody, type Article, type ArticleLang } from "@/data/articles";
 import { fetchArticles, formatDate, mediaUrl, extractText, type PayloadArticle } from "@/lib/payload";
+import { usePage } from "@/hooks/usePage";
 
 function mapPayloadArticle(pa: PayloadArticle): Article {
   return {
@@ -83,6 +84,7 @@ function ArticleCard({ article }: { article: Article }) {
 
 function NewsPage() {
   const { t } = useLanguage();
+    const page = usePage("news");
   const { data: payloadArticles = [], isLoading } = useQuery({
     queryKey: ["articles"],
     queryFn: fetchArticles,
@@ -98,7 +100,10 @@ function NewsPage() {
             <p className="text-[10px] uppercase tracking-[0.22em] text-[color:var(--brand-magenta)] font-semibold mb-1.5">
               {t("media")}
             </p>
-            <h1 className="font-serif text-3xl md:text-4xl text-primary">{t("media.news")}</h1>
+                    <h1 className="font-serif text-3xl md:text-4xl text-primary">{page.title ?? t("media.news")}</h1>
+            {page.description && (
+                <p className="text-sm text-muted-foreground mt-2 max-w-2xl">{page.description}</p>
+                  )}
           </div>
           {isLoading ? (
             <div className="space-y-6">
