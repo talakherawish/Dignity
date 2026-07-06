@@ -4,14 +4,14 @@ import { useState, useRef } from "react";
 import logo from "@/assets/dignity-logo.png";
 import { type Language, type TranslationKey, useLanguage } from "@/contexts/LanguageContext";
 
-type Item = { labelKey: TranslationKey; to?: string; children?: Item[] };
+type Item = { labelKey: TranslationKey; to?: string; hash?: string; children?: Item[] };
 
 const NAV: Item[] = [
   {
     labelKey: "about",
     children: [
       { labelKey: "about.initiative", to: "/about" },
-      { labelKey: "about.mission", to: "/about/mission" },
+      { labelKey: "about.mission", to: "/about", hash: "mission-vision" },
       { labelKey: "about.fellows", to: "/about/participants" },
       { labelKey: "about.partners", to: "/about/partners" },
     ],
@@ -192,6 +192,7 @@ function NavItem({ item }: { item: Item }) {
               <Link
                 key={c.labelKey}
                 to={c.to!}
+                hash={c.hash}
                 className={[
                   "block px-4 py-2 text-sm text-foreground/80 hover:bg-secondary hover:text-accent",
                   isArabic ? "font-arabic text-right" : "",

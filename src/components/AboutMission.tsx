@@ -1,18 +1,3 @@
-import {
-  BookOpen,
-  ShieldCheck,
-  Globe2,
-  Users,
-  Lightbulb,
-  CalendarDays,
-  Share2,
-  Sprout,
-  Compass,
-  Scale,
-  Gavel,
-  Flame,
-  type LucideIcon,
-} from "lucide-react";
 import { PageLayout } from "./PageLayout";
 import { Reveal } from "./Reveal";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -57,22 +42,22 @@ const FALLBACK_ITEMS_AR = [
   "دعم المبادرات الطلابية والمجتمعية التي تنسجم مع رسالة المبادرة.",
 ];
 
-const AVENUE_ICONS: LucideIcon[] = [
-  BookOpen,
-  ShieldCheck,
-  Globe2,
-  Users,
-  Lightbulb,
-  CalendarDays,
-  Share2,
-  Sprout,
+const PRINCIPLES: { en: string; ar: string }[] = [
+  { en: "Free Will", ar: "الإرادة الحرة" },
+  { en: "Equality", ar: "المساواة" },
+  { en: "Justice", ar: "العدالة" },
+  { en: "Praxis", ar: "الممارسة" },
 ];
 
-const PRINCIPLES: { en: string; ar: string; Icon: LucideIcon }[] = [
-  { en: "Free Will", ar: "الإرادة الحرة", Icon: Compass },
-  { en: "Equality", ar: "المساواة", Icon: Scale },
-  { en: "Justice", ar: "العدالة", Icon: Gavel },
-  { en: "Praxis", ar: "الممارسة", Icon: Flame },
+// Mission & Vision fallback copy (used while Payload loads / if empty)
+const FALLBACK_MISSION_PARAGRAPHS_EN = [
+  "Karama's mission is to advance a scholarly culture in which human dignity is both the object of inquiry and the standard by which research practice is judged — treating free will, equality, and justice as inseparable from the pursuit of knowledge.",
+  "Its vision is an academic environment, in Palestine and beyond, where interdisciplinary research on dignity is a recognised and sustained field — one that informs research ethics, shapes policy and public debate, and strengthens the university's role as a site of critical thought and emancipatory praxis.",
+];
+
+const FALLBACK_MISSION_PARAGRAPHS_AR = [
+  "تتمثل رسالة مبادرة كرامة في تعزيز ثقافة أكاديمية تكون فيها الكرامة الإنسانية موضوع بحث ومعيار حكم على الممارسة البحثية في آن واحد، بحيث لا تنفصل الإرادة الحرة والمساواة والعدالة عن مسار إنتاج المعرفة.",
+  "وتتمثل رؤيتها في بيئة أكاديمية، في فلسطين وخارجها، يشكّل فيها البحث متداخل الحقول حول الكرامة حقلاً معترفاً به ومستداماً، يسهم في صياغة أخلاقيات البحث العلمي، ويؤثر في السياسات والنقاش العام، ويعزز دور الجامعة بوصفها فضاءً للفكر النقدي والممارسة التحررية.",
 ];
 
 export function AboutMissionPage({
@@ -81,12 +66,19 @@ export function AboutMissionPage({
   description,
   paragraphs,
   items,
+  mission,
 }: {
   eyebrow?: string;
   title: string;
   description?: string;
   paragraphs?: string[];
   items?: string[];
+  mission: {
+    eyebrow?: string;
+    title: string;
+    description?: string;
+    paragraphs?: string[];
+  };
 }) {
   const { isArabic } = useLanguage();
 
@@ -103,110 +95,151 @@ export function AboutMissionPage({
   const introParagraphs = hasLeadIn ? resolvedParagraphs.slice(0, -1) : resolvedParagraphs;
   const leadIn = hasLeadIn ? resolvedParagraphs[resolvedParagraphs.length - 1] : undefined;
 
+  const fallbackMissionParagraphs = isArabic
+    ? FALLBACK_MISSION_PARAGRAPHS_AR
+    : FALLBACK_MISSION_PARAGRAPHS_EN;
+  const missionParagraphs =
+    mission.paragraphs && mission.paragraphs.length > 0 ? mission.paragraphs : fallbackMissionParagraphs;
+
   return (
     <PageLayout>
-      {/* Hero */}
-      <section className="relative overflow-hidden border-b border-border">
+      {/* Page-wide accent glow — spans the full page, not just the hero */}
+      <div className="relative overflow-hidden">
         <div
-          className="absolute -top-20 -right-20 h-72 w-72 rounded-full opacity-15 blur-3xl pointer-events-none"
+          className="absolute top-0 -left-24 h-72 w-72 rounded-full opacity-10 blur-3xl pointer-events-none"
           style={{ background: "var(--brand-cyan)" }}
         />
         <div
-          className="absolute -bottom-24 -left-16 h-56 w-56 rounded-full opacity-10 blur-3xl pointer-events-none"
+          className="absolute top-[45%] -right-24 h-64 w-64 rounded-full opacity-10 blur-3xl pointer-events-none"
           style={{ background: "var(--brand-magenta)" }}
         />
-        <div className="relative max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-8 text-center">
-          <Reveal>
-            {eyebrow && (
-              <div className="text-[10px] uppercase tracking-[0.22em] text-[color:var(--brand-magenta)] font-semibold mb-3">
-                {eyebrow}
-              </div>
-            )}
-            <h1 className="font-serif text-3xl md:text-4xl text-primary tracking-tight">{title}</h1>
-            {description && (
-              <p className="mt-3 max-w-xl mx-auto text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
-                {description}
-              </p>
-            )}
-          </Reveal>
-        </div>
-      </section>
+        <div
+          className="absolute bottom-0 -left-20 h-72 w-72 rounded-full opacity-10 blur-3xl pointer-events-none"
+          style={{ background: "var(--brand-cyan)" }}
+        />
 
-      {/* Intro prose */}
-      <section className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
-        <div className={`space-y-5 text-[15px] leading-[1.85] text-foreground/85 ${isArabic ? "text-right" : ""}`}>
-          {introParagraphs.map((p, i) => (
-            <Reveal key={i} delay={i * 90}>
-              <p
-                className={
-                  i === 0
-                    ? "first-letter:font-serif first-letter:text-4xl first-letter:text-primary first-letter:leading-none first-letter:me-1"
-                    : ""
-                }
-              >
-                {p}
-              </p>
-            </Reveal>
-          ))}
-        </div>
-
-        {/* Principles strip */}
-        <Reveal delay={introParagraphs.length * 90 + 80}>
-          <div
-            className={`mt-10 flex flex-wrap gap-3 ${isArabic ? "justify-end" : "justify-start"}`}
-            dir={isArabic ? "rtl" : "ltr"}
-          >
-            {PRINCIPLES.map(({ en, ar, Icon }) => (
-              <span
-                key={en}
-                className="inline-flex items-center gap-2 rounded-full border border-border bg-secondary/40 px-4 py-1.5 text-xs font-medium text-foreground/75"
-              >
-                <Icon className="h-3.5 w-3.5" style={{ color: "var(--brand-magenta)" }} />
-                {isArabic ? ar : en}
-              </span>
-            ))}
-          </div>
-        </Reveal>
-      </section>
-
-      {/* Avenues grid */}
-      {resolvedItems.length > 0 && (
-        <section className="border-t border-border bg-secondary/20">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-            {leadIn && (
-              <Reveal className="mb-10">
-                <div className={`flex items-center gap-3 ${isArabic ? "flex-row-reverse text-right" : ""}`}>
-                  <div className="h-5 w-1 rounded-full shrink-0" style={{ background: "var(--brand-cyan)" }} />
-                  <h2 className="font-serif text-xl md:text-2xl text-primary leading-snug">{leadIn}</h2>
-                </div>
+        <div className="relative">
+          {/* Hero */}
+          <section className="relative">
+            <div className="relative max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-8 text-center">
+              <Reveal>
+                {eyebrow && (
+                  <div className="text-[10px] uppercase tracking-[0.22em] text-[color:var(--brand-magenta)] font-semibold mb-3">
+                    {eyebrow}
+                  </div>
+                )}
+                <h1 className="font-serif text-3xl md:text-4xl text-primary tracking-tight">{title}</h1>
+                {description && (
+                  <p className="mt-3 max-w-xl mx-auto text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
+                    {description}
+                  </p>
+                )}
               </Reveal>
-            )}
+            </div>
+          </section>
 
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4" dir={isArabic ? "rtl" : "ltr"}>
-              {resolvedItems.map((item, i) => {
-                const Icon = AVENUE_ICONS[i % AVENUE_ICONS.length];
-                return (
-                  <Reveal key={i} delay={i * 70}>
-                    <div className="group h-full rounded-lg border border-border bg-card p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md hover:border-accent/30">
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-secondary text-foreground/70 group-hover:text-accent group-hover:bg-accent/10 transition-colors">
-                          <Icon className="h-4 w-4" />
-                        </div>
-                        <span className="font-serif text-xs text-muted-foreground/50">
-                          {String(i + 1).padStart(2, "0")}
-                        </span>
-                      </div>
-                      <p className={`text-sm leading-relaxed text-foreground/80 ${isArabic ? "text-right" : ""}`}>
-                        {item}
-                      </p>
+          {/* Intro prose */}
+          <section className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+            <div className={`space-y-5 text-[15px] leading-[1.85] text-foreground/85 ${isArabic ? "text-right" : ""}`}>
+              {introParagraphs.map((p, i) => (
+                <Reveal key={i} delay={i * 90}>
+                  <p
+                    className={
+                      i === 0 && !isArabic
+                        ? "first-letter:font-serif first-letter:text-4xl first-letter:text-primary first-letter:leading-none first-letter:me-1"
+                        : ""
+                    }
+                  >
+                    {p}
+                  </p>
+                </Reveal>
+              ))}
+            </div>
+
+            {/* Principles strip */}
+            <Reveal delay={introParagraphs.length * 90 + 80}>
+              <div
+                className={`mt-10 flex flex-wrap gap-2 ${isArabic ? "justify-end" : "justify-start"}`}
+                dir={isArabic ? "rtl" : "ltr"}
+              >
+                {PRINCIPLES.map(({ en, ar }) => (
+                  <span
+                    key={en}
+                    className="inline-flex items-center rounded-full border border-border bg-secondary/40 px-4 py-1.5 text-xs font-medium text-foreground/75"
+                  >
+                    {isArabic ? ar : en}
+                  </span>
+                ))}
+              </div>
+            </Reveal>
+          </section>
+
+          {/* Avenues grid */}
+          {resolvedItems.length > 0 && (
+            <section className="border-t border-border bg-secondary/20">
+              <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+                {leadIn && (
+                  <Reveal className="mb-10">
+                    <div className={`flex items-center gap-3 ${isArabic ? "flex-row-reverse text-right" : ""}`}>
+                      <div className="h-5 w-1 rounded-full shrink-0" style={{ background: "var(--brand-cyan)" }} />
+                      <h2 className="font-serif text-xl md:text-2xl text-primary leading-snug">{leadIn}</h2>
                     </div>
                   </Reveal>
-                );
-              })}
+                )}
+
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4" dir={isArabic ? "rtl" : "ltr"}>
+                  {resolvedItems.map((item, i) => (
+                    <Reveal key={i} delay={i * 70}>
+                      <div className="group h-full rounded-lg border border-border bg-card p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md hover:border-accent/30">
+                        <div className="mb-3">
+                          <span className="font-serif text-xs text-muted-foreground/50">
+                            {String(i + 1).padStart(2, "0")}
+                          </span>
+                        </div>
+                        <p className={`text-sm leading-relaxed text-foreground/80 ${isArabic ? "text-right" : ""}`}>
+                          {item}
+                        </p>
+                      </div>
+                    </Reveal>
+                  ))}
+                </div>
+              </div>
+            </section>
+          )}
+
+          {/* Mission & Vision */}
+          <section id="mission-vision" className="scroll-mt-[112px] border-t border-border">
+            <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+              <Reveal>
+                {mission.eyebrow && (
+                  <div
+                    className={`text-[10px] uppercase tracking-[0.22em] text-[color:var(--brand-magenta)] font-semibold mb-3 ${isArabic ? "text-right" : ""}`}
+                  >
+                    {mission.eyebrow}
+                  </div>
+                )}
+                <h2 className={`font-serif text-2xl md:text-3xl text-primary tracking-tight ${isArabic ? "text-right" : ""}`}>
+                  {mission.title}
+                </h2>
+                {mission.description && (
+                  <p
+                    className={`mt-3 text-sm text-muted-foreground leading-relaxed whitespace-pre-line ${isArabic ? "text-right" : ""}`}
+                  >
+                    {mission.description}
+                  </p>
+                )}
+              </Reveal>
+              <div className={`mt-6 space-y-5 text-[15px] leading-[1.85] text-foreground/85 ${isArabic ? "text-right" : ""}`}>
+                {missionParagraphs.map((p, i) => (
+                  <Reveal key={i} delay={i * 90}>
+                    <p>{p}</p>
+                  </Reveal>
+                ))}
+              </div>
             </div>
-          </div>
-        </section>
-      )}
+          </section>
+        </div>
+      </div>
     </PageLayout>
   );
 }
