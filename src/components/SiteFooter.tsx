@@ -122,7 +122,7 @@ export function SiteFooter() {
             <p>{t("footer.phone")}</p>
             <p>{t("footer.fax")}</p>
             <a
-              href="mailto:muwatin@birzeit.edu"
+              href="mailto:Dignity@birzeit.edu"
               className="block hover:text-[color:var(--brand-magenta)] transition-colors"
             >
               {t("footer.email")}
@@ -163,7 +163,7 @@ export function SiteFooter() {
               { Icon: Facebook, label: "Facebook", href: "#" },
               { Icon: Twitter, label: "Twitter / X", href: "#" },
               { Icon: Youtube, label: "YouTube", href: "#" },
-              { Icon: Mail, label: "Contact", href: "mailto:muwatin@birzeit.edu" },
+              { Icon: Mail, label: "Contact", href: "mailto:Dignity@birzeit.edu" },
             ].map(({ Icon, label, href }) => (
               <a
                 key={label}
