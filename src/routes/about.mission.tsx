@@ -1,22 +1,9 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { SimplePage } from "@/components/SimplePage";
-import { useLanguage } from "@/contexts/LanguageContext";
-import { usePage } from "@/hooks/usePage";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
+// Mission & Vision now lives as a section on the merged About page.
+// Keep this route so old links/bookmarks still resolve.
 export const Route = createFileRoute("/about/mission")({
-  head: () => ({ meta: [{ title: "Mission & Vision — Dignity" }] }),
-  component: MissionPage,
+  beforeLoad: () => {
+    throw redirect({ to: "/about", hash: "mission-vision" });
+  },
 });
-
-function MissionPage() {
-  const { t } = useLanguage();
-    const page = usePage("mission");
-  return (
-    <SimplePage
-      eyebrow={t("about")}
-            title={page.title ?? t("about.mission")}
-            description={page.description ?? t("mission.page.desc")}
-            body={page.body}
-    />
-  );
-}

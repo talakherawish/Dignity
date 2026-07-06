@@ -4,26 +4,33 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { usePage } from "@/hooks/usePage";
 
 export const Route = createFileRoute("/about")({
-    head: () => ({ meta: [{ title: "About the Initiative — Dignity" }] }),
-    component: AboutLayout,
+  head: () => ({ meta: [{ title: "About the Initiative — Dignity" }] }),
+  component: AboutLayout,
 });
 
 function AboutLayout() {
-    const { t } = useLanguage();
-    const { pathname } = useLocation();
-    const isIndex = pathname === "/about" || pathname === "/about/";
-    const page = usePage("about");
+  const { t } = useLanguage();
+  const { pathname } = useLocation();
+  const isIndex = pathname === "/about" || pathname === "/about/";
+  const page = usePage("about");
+  const missionPage = usePage("mission");
 
   if (isIndex) {
-        return (
-                <AboutMissionPage
-                          eyebrow={t("about")}
-                          title={page.title ?? t("about.initiative")}
-                          description={page.description ?? t("about.page.desc")}
-                          paragraphs={page.paragraphs}
-                          items={page.items}
-                        />
-              );
+    return (
+      <AboutMissionPage
+        eyebrow={t("about")}
+        title={page.title ?? t("about.initiative")}
+        description={page.description ?? t("about.page.desc")}
+        paragraphs={page.paragraphs}
+        items={page.items}
+        mission={{
+          eyebrow: t("about"),
+          title: missionPage.title ?? t("about.mission"),
+          description: missionPage.description ?? t("mission.page.desc"),
+          paragraphs: missionPage.paragraphs ?? missionPage.body,
+        }}
+      />
+    );
   }
 
   return <Outlet />;
