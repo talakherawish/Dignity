@@ -35,11 +35,13 @@ function ArticleCard({ article }: { article: Article }) {
 
   return (
     <article className="border border-border rounded-sm overflow-hidden bg-card hover:shadow-md transition-shadow duration-200">
-      <div className="grid md:grid-cols-[2fr_3fr]">
-        <div style={{ aspectRatio: "4/3" }} className="overflow-hidden">
-          <img src={article.image} alt={getField(article, "title", l)} className="w-full h-full object-cover" />
-        </div>
-        <div className="p-7 lg:p-9 flex flex-col">
+            <div className={article.image ? "grid md:grid-cols-[2fr_3fr]" : ""}>
+              {article.image && (
+                <div style={{ aspectRatio: "4/3" }} className="overflow-hidden">
+                            <img src={article.image} alt={getField(article, "title", l)} className="w-full h-full object-cover" />
+                </div>
+                    )}
+                    <div className="p-7 lg:p-9 flex flex-col">
           <div className="mb-auto">
             <p className="text-[10px] uppercase tracking-[0.22em] text-[color:var(--brand-magenta)] font-semibold mb-3">
               {getField(article, "date", l)}
