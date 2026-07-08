@@ -62,6 +62,31 @@ export type PayloadParticipant = {
   photo?: PayloadMedia
 }
 
+  export type PayloadPublication = {
+      id: string
+      title: string
+      titleAr?: string
+      type: 'books' | 'papers' | 'reports' | 'brochures' | 'theses' | 'audiovisual' | 'posters'
+      author?: string
+      authorAr?: string
+      date: string
+      description?: unknown
+      descriptionAr?: unknown
+      file?: PayloadMedia
+      image?: PayloadMedia
+  }
+
+export type PayloadInformationItem = {
+    id: string
+    title: string
+    titleAr?: string
+    type: 'readings-documents' | 'databases'
+    description?: unknown
+    descriptionAr?: unknown
+    link?: string
+    file?: PayloadMedia
+}
+
   export type PayloadPage = {
       id: string
       slug: string
@@ -159,6 +184,12 @@ export const fetchMediaUpdatesByType = (type: PayloadMediaUpdate['type']) =>
 
 export const fetchParticipants = () =>
   fetchCollection<PayloadParticipant>('participants')
+
+export const fetchPublicationsByType = (type: PayloadPublication['type']) =>
+    fetchCollection<PayloadPublication>('publications', { 'where[type][equals]': type })
+
+export const fetchInformationByType = (type: PayloadInformationItem['type']) =>
+    fetchCollection<PayloadInformationItem>('information', { 'where[type][equals]': type })
 
 
 /** Fetch a single editable Page document by its slug (e.g. "about", "mission"). Returns null if missing/unreachable. */
