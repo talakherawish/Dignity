@@ -73,6 +73,10 @@ export interface Config {
     activities: Activity;
     'media-updates': MediaUpdate;
     participants: Participant;
+    publications: Publication;
+    information: Information;
+    'research-activities': ResearchActivity;
+    pages: Page;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -86,6 +90,10 @@ export interface Config {
     activities: ActivitiesSelect<false> | ActivitiesSelect<true>;
     'media-updates': MediaUpdatesSelect<false> | MediaUpdatesSelect<true>;
     participants: ParticipantsSelect<false> | ParticipantsSelect<true>;
+    publications: PublicationsSelect<false> | PublicationsSelect<true>;
+    information: InformationSelect<false> | InformationSelect<true>;
+    'research-activities': ResearchActivitiesSelect<false> | ResearchActivitiesSelect<true>;
+    pages: PagesSelect<false> | PagesSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -95,8 +103,12 @@ export interface Config {
     defaultIDType: string;
   };
   fallbackLocale: null;
-  globals: {};
-  globalsSelect: {};
+  globals: {
+    'site-settings': SiteSetting;
+  };
+  globalsSelect: {
+    'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
+  };
   locale: null;
   widgets: {
     collections: CollectionsWidget;
@@ -136,7 +148,19 @@ export interface User {
   /**
    * The sections this editor is allowed to manage.
    */
-  section?: ('articles' | 'activities' | 'media' | 'participants')[] | null;
+  section?:
+    | (
+        | 'articles'
+        | 'activities'
+        | 'media'
+        | 'participants'
+        | 'publications'
+        | 'information'
+        | 'research'
+        | 'pages'
+        | 'site-settings'
+      )[]
+    | null;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -332,6 +356,187 @@ export interface Participant {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "publications".
+ */
+export interface Publication {
+  id: string;
+  title: string;
+  titleAr?: string | null;
+  type: 'books' | 'papers' | 'reports' | 'brochures' | 'theses' | 'audiovisual' | 'posters';
+  author?: string | null;
+  authorAr?: string | null;
+  date: string;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  descriptionAr?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  file?: (string | null) | Media;
+  image?: (string | null) | Media;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "information".
+ */
+export interface Information {
+  id: string;
+  title: string;
+  titleAr?: string | null;
+  type: 'readings-documents' | 'databases';
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  descriptionAr?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  link?: string | null;
+  file?: (string | null) | Media;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "research-activities".
+ */
+export interface ResearchActivity {
+  id: string;
+  title: string;
+  titleAr?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  descriptionAr?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  image?: (string | null) | Media;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages".
+ */
+export interface Page {
+  id: string;
+  slug: string;
+  title?: string | null;
+  titleAr?: string | null;
+  description?: string | null;
+  descriptionAr?: string | null;
+  body?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  bodyAr?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -377,6 +582,22 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'participants';
         value: string | Participant;
+      } | null)
+    | ({
+        relationTo: 'publications';
+        value: string | Publication;
+      } | null)
+    | ({
+        relationTo: 'information';
+        value: string | Information;
+      } | null)
+    | ({
+        relationTo: 'research-activities';
+        value: string | ResearchActivity;
+      } | null)
+    | ({
+        relationTo: 'pages';
+        value: string | Page;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -532,6 +753,71 @@ export interface ParticipantsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "publications_select".
+ */
+export interface PublicationsSelect<T extends boolean = true> {
+  title?: T;
+  titleAr?: T;
+  type?: T;
+  author?: T;
+  authorAr?: T;
+  date?: T;
+  description?: T;
+  descriptionAr?: T;
+  file?: T;
+  image?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "information_select".
+ */
+export interface InformationSelect<T extends boolean = true> {
+  title?: T;
+  titleAr?: T;
+  type?: T;
+  description?: T;
+  descriptionAr?: T;
+  link?: T;
+  file?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "research-activities_select".
+ */
+export interface ResearchActivitiesSelect<T extends boolean = true> {
+  title?: T;
+  titleAr?: T;
+  description?: T;
+  descriptionAr?: T;
+  image?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages_select".
+ */
+export interface PagesSelect<T extends boolean = true> {
+  slug?: T;
+  title?: T;
+  titleAr?: T;
+  description?: T;
+  descriptionAr?: T;
+  body?: T;
+  bodyAr?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv_select".
  */
 export interface PayloadKvSelect<T extends boolean = true> {
@@ -587,7 +873,258 @@ export interface CollectionsWidget {
 export interface Auth {
   [k: string]: unknown;
 }
-
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-settings".
+ */
+export interface SiteSetting {
+  navHome?: string | null;
+  navHomeAr?: string | null;
+  navAbout?: string | null;
+  navAboutAr?: string | null;
+  navAboutInitiative?: string | null;
+  navAboutInitiativeAr?: string | null;
+  navAboutMission?: string | null;
+  navAboutMissionAr?: string | null;
+  navAboutFellows?: string | null;
+  navAboutFellowsAr?: string | null;
+  navAboutPartners?: string | null;
+  navAboutPartnersAr?: string | null;
+  navProjects?: string | null;
+  navProjectsAr?: string | null;
+  navProjectsResearch?: string | null;
+  navProjectsResearchAr?: string | null;
+  navActivities?: string | null;
+  navActivitiesAr?: string | null;
+  navActivitiesSeminars?: string | null;
+  navActivitiesSeminarsAr?: string | null;
+  navActivitiesConferences?: string | null;
+  navActivitiesConferencesAr?: string | null;
+  navActivitiesMeetings?: string | null;
+  navActivitiesMeetingsAr?: string | null;
+  navActivitiesWindsor?: string | null;
+  navActivitiesWindsorAr?: string | null;
+  navMedia?: string | null;
+  navMediaAr?: string | null;
+  navMediaNews?: string | null;
+  navMediaNewsAr?: string | null;
+  navMediaAnnouncements?: string | null;
+  navMediaAnnouncementsAr?: string | null;
+  navMediaPhotos?: string | null;
+  navMediaPhotosAr?: string | null;
+  navMediaClippings?: string | null;
+  navMediaClippingsAr?: string | null;
+  heroEyebrow?: string | null;
+  heroEyebrowAr?: string | null;
+  heroTitle?: string | null;
+  heroTitleAr?: string | null;
+  heroDesc?: string | null;
+  heroDescAr?: string | null;
+  heroBtnAbout?: string | null;
+  heroBtnAboutAr?: string | null;
+  heroBtnResearch?: string | null;
+  heroBtnResearchAr?: string | null;
+  pillarResearch?: string | null;
+  pillarResearchAr?: string | null;
+  pillarResearchDesc?: string | null;
+  pillarResearchDescAr?: string | null;
+  pillarDialogue?: string | null;
+  pillarDialogueAr?: string | null;
+  pillarDialogueDesc?: string | null;
+  pillarDialogueDescAr?: string | null;
+  pillarPartnership?: string | null;
+  pillarPartnershipAr?: string | null;
+  pillarPartnershipDesc?: string | null;
+  pillarPartnershipDescAr?: string | null;
+  teamEyebrow?: string | null;
+  teamEyebrowAr?: string | null;
+  teamTitle?: string | null;
+  teamTitleAr?: string | null;
+  teamBtn?: string | null;
+  teamBtnAr?: string | null;
+  newsViewAll?: string | null;
+  newsViewAllAr?: string | null;
+  footerAbout?: string | null;
+  footerAboutAr?: string | null;
+  footerExplore?: string | null;
+  footerExploreAr?: string | null;
+  footerParticipants?: string | null;
+  footerParticipantsAr?: string | null;
+  footerContact?: string | null;
+  footerContactAr?: string | null;
+  footerUniversity?: string | null;
+  footerUniversityAr?: string | null;
+  footerPobox?: string | null;
+  footerPoboxAr?: string | null;
+  footerZip?: string | null;
+  footerZipAr?: string | null;
+  footerPhone?: string | null;
+  footerPhoneAr?: string | null;
+  footerFax?: string | null;
+  footerFaxAr?: string | null;
+  footerEmail?: string | null;
+  footerEmailAr?: string | null;
+  footerSubscribe?: string | null;
+  footerSubscribeAr?: string | null;
+  footerSubscribePlaceholder?: string | null;
+  footerSubscribePlaceholderAr?: string | null;
+  footerSubscribeBtn?: string | null;
+  footerSubscribeBtnAr?: string | null;
+  footerDisclaimer?: string | null;
+  footerDisclaimerAr?: string | null;
+  footerPrivacy?: string | null;
+  footerPrivacyAr?: string | null;
+  footerSitemap?: string | null;
+  footerSitemapAr?: string | null;
+  footerCopyright?: string | null;
+  footerCopyrightAr?: string | null;
+  footerResources?: string | null;
+  footerResourcesAr?: string | null;
+  footerStudying?: string | null;
+  footerStudyingAr?: string | null;
+  footerLibrary?: string | null;
+  footerLibraryAr?: string | null;
+  footerDatabases?: string | null;
+  footerDatabasesAr?: string | null;
+  newsPrev?: string | null;
+  newsPrevAr?: string | null;
+  newsNext?: string | null;
+  newsNextAr?: string | null;
+  newsReadMore?: string | null;
+  newsReadMoreAr?: string | null;
+  newsCollapse?: string | null;
+  newsCollapseAr?: string | null;
+  projectsArea?: string | null;
+  projectsAreaAr?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-settings_select".
+ */
+export interface SiteSettingsSelect<T extends boolean = true> {
+  navHome?: T;
+  navHomeAr?: T;
+  navAbout?: T;
+  navAboutAr?: T;
+  navAboutInitiative?: T;
+  navAboutInitiativeAr?: T;
+  navAboutMission?: T;
+  navAboutMissionAr?: T;
+  navAboutFellows?: T;
+  navAboutFellowsAr?: T;
+  navAboutPartners?: T;
+  navAboutPartnersAr?: T;
+  navProjects?: T;
+  navProjectsAr?: T;
+  navProjectsResearch?: T;
+  navProjectsResearchAr?: T;
+  navActivities?: T;
+  navActivitiesAr?: T;
+  navActivitiesSeminars?: T;
+  navActivitiesSeminarsAr?: T;
+  navActivitiesConferences?: T;
+  navActivitiesConferencesAr?: T;
+  navActivitiesMeetings?: T;
+  navActivitiesMeetingsAr?: T;
+  navActivitiesWindsor?: T;
+  navActivitiesWindsorAr?: T;
+  navMedia?: T;
+  navMediaAr?: T;
+  navMediaNews?: T;
+  navMediaNewsAr?: T;
+  navMediaAnnouncements?: T;
+  navMediaAnnouncementsAr?: T;
+  navMediaPhotos?: T;
+  navMediaPhotosAr?: T;
+  navMediaClippings?: T;
+  navMediaClippingsAr?: T;
+  heroEyebrow?: T;
+  heroEyebrowAr?: T;
+  heroTitle?: T;
+  heroTitleAr?: T;
+  heroDesc?: T;
+  heroDescAr?: T;
+  heroBtnAbout?: T;
+  heroBtnAboutAr?: T;
+  heroBtnResearch?: T;
+  heroBtnResearchAr?: T;
+  pillarResearch?: T;
+  pillarResearchAr?: T;
+  pillarResearchDesc?: T;
+  pillarResearchDescAr?: T;
+  pillarDialogue?: T;
+  pillarDialogueAr?: T;
+  pillarDialogueDesc?: T;
+  pillarDialogueDescAr?: T;
+  pillarPartnership?: T;
+  pillarPartnershipAr?: T;
+  pillarPartnershipDesc?: T;
+  pillarPartnershipDescAr?: T;
+  teamEyebrow?: T;
+  teamEyebrowAr?: T;
+  teamTitle?: T;
+  teamTitleAr?: T;
+  teamBtn?: T;
+  teamBtnAr?: T;
+  newsViewAll?: T;
+  newsViewAllAr?: T;
+  footerAbout?: T;
+  footerAboutAr?: T;
+  footerExplore?: T;
+  footerExploreAr?: T;
+  footerParticipants?: T;
+  footerParticipantsAr?: T;
+  footerContact?: T;
+  footerContactAr?: T;
+  footerUniversity?: T;
+  footerUniversityAr?: T;
+  footerPobox?: T;
+  footerPoboxAr?: T;
+  footerZip?: T;
+  footerZipAr?: T;
+  footerPhone?: T;
+  footerPhoneAr?: T;
+  footerFax?: T;
+  footerFaxAr?: T;
+  footerEmail?: T;
+  footerEmailAr?: T;
+  footerSubscribe?: T;
+  footerSubscribeAr?: T;
+  footerSubscribePlaceholder?: T;
+  footerSubscribePlaceholderAr?: T;
+  footerSubscribeBtn?: T;
+  footerSubscribeBtnAr?: T;
+  footerDisclaimer?: T;
+  footerDisclaimerAr?: T;
+  footerPrivacy?: T;
+  footerPrivacyAr?: T;
+  footerSitemap?: T;
+  footerSitemapAr?: T;
+  footerCopyright?: T;
+  footerCopyrightAr?: T;
+  footerResources?: T;
+  footerResourcesAr?: T;
+  footerStudying?: T;
+  footerStudyingAr?: T;
+  footerLibrary?: T;
+  footerLibraryAr?: T;
+  footerDatabases?: T;
+  footerDatabasesAr?: T;
+  newsPrev?: T;
+  newsPrevAr?: T;
+  newsNext?: T;
+  newsNextAr?: T;
+  newsReadMore?: T;
+  newsReadMoreAr?: T;
+  newsCollapse?: T;
+  newsCollapseAr?: T;
+  projectsArea?: T;
+  projectsAreaAr?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
 
 declare module 'payload' {
   export interface GeneratedTypes extends Config {}
