@@ -210,8 +210,7 @@ function NavItem({ item }: { item: Item }) {
 
 export function SiteHeader() {
   return (
-    /* dir="ltr" keeps the header layout fixed regardless of page language */
-    <header dir="ltr" className="sticky top-0 z-40 bg-background border-b border-border">
+    <header className="sticky top-0 z-40 bg-background border-b border-border">
       <div
         className="h-1"
         style={{
