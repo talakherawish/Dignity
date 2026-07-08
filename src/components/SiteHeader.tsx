@@ -8,37 +8,58 @@ type Item = { labelKey: TranslationKey; to?: string; hash?: string; children?: I
 
 const NAV: Item[] = [
   {
-    labelKey: "about",
-    children: [
-      { labelKey: "about.initiative", to: "/about" },
-      { labelKey: "about.mission", to: "/about", hash: "mission-vision" },
-      { labelKey: "about.fellows", to: "/about/participants" },
-      { labelKey: "about.partners", to: "/about/partners" },
-    ],
+        labelKey: "about",
+        children: [
+          { labelKey: "about.initiative", to: "/about" },
+          { labelKey: "about.mission", to: "/about", hash: "mission-vision" },
+          { labelKey: "about.fellows", to: "/about/participants" },
+          { labelKey: "media.news", to: "/media/news" },
+          { labelKey: "media.announcements", to: "/media/announcements" },
+          { labelKey: "media.photos", to: "/media/photos" },
+          { labelKey: "media.clippings", to: "/media/clippings" },
+          { labelKey: "about.partners", to: "/about/partners" },
+              ],
   },
   {
-    labelKey: "projects",
-    children: [{ labelKey: "projects.research", to: "/projects/research" }],
+        labelKey: "activities",
+        children: [
+          {
+                    labelKey: "activities.research",
+                    children: [
+                      { labelKey: "activities.research.dignityIssues", to: "/projects/research" },
+                      { labelKey: "activities.research.dignityChildren", to: "/projects/research" },
+                      { labelKey: "activities.research.ethics", to: "/projects/research" },
+                      { labelKey: "activities.research.arabRevolutions", to: "/projects/research" },
+                      { labelKey: "activities.research.decolonising", to: "/projects/research" },
+                      { labelKey: "activities.research.ai", to: "/projects/research" },
+                              ],
+          },
+          { labelKey: "activities.seminars", to: "/activities/seminars" },
+          { labelKey: "activities.conferences", to: "/activities/conferences" },
+          { labelKey: "activities.meetings", to: "/activities/meetings" },
+          { labelKey: "activities.windsor", to: "/activities/windsor-birzeit" },
+              ],
   },
   {
-    labelKey: "activities",
-    children: [
-      { labelKey: "activities.seminars", to: "/activities/seminars" },
-      { labelKey: "activities.conferences", to: "/activities/conferences" },
-      { labelKey: "activities.meetings", to: "/activities/meetings" },
-      { labelKey: "activities.windsor", to: "/activities/windsor-birzeit" },
-    ],
+        labelKey: "publications",
+        children: [
+          { labelKey: "publications.books", to: "/publications/books" },
+          { labelKey: "publications.papers", to: "/publications/papers" },
+          { labelKey: "publications.reports", to: "/publications/reports" },
+          { labelKey: "publications.brochures", to: "/publications/brochures" },
+          { labelKey: "publications.theses", to: "/publications/theses" },
+          { labelKey: "publications.audiovisual", to: "/publications/audiovisual" },
+          { labelKey: "publications.posters", to: "/publications/posters" },
+              ],
   },
   {
-    labelKey: "media",
-    children: [
-      { labelKey: "media.news", to: "/media/news" },
-      { labelKey: "media.announcements", to: "/media/announcements" },
-      { labelKey: "media.photos", to: "/media/photos" },
-      { labelKey: "media.clippings", to: "/media/clippings" },
-    ],
+        labelKey: "information",
+        children: [
+          { labelKey: "information.readings", to: "/information/readings" },
+          { labelKey: "information.databases", to: "/information/databases" },
+              ],
   },
-];
+  ];
 
 const LANG_OPTIONS: { code: Language; label: string; ariaLabel: string }[] = [
   { code: "en", label: "EN", ariaLabel: "English" },
