@@ -11,6 +11,8 @@ import { Articles } from './collections/Articles'
 import { Activities } from './collections/Activities'
 import { MediaUpdates } from './collections/MediaUpdates'
 import { Participants } from './collections/Participants'
+import { Publications } from './collections/Publications'
+import { Information } from './collections/Information'
 import { Pages } from './collections/Pages'
 import { SiteSettings } from './globals/SiteSettings'
 
@@ -24,8 +26,8 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Users, Media, Articles, Activities, MediaUpdates, Participants, Pages],
-  globals: [SiteSettings],
+  collections: [Users, Media, Articles, Activities, MediaUpdates, Participants, Publications, Information, Pages],
+    globals: [SiteSettings],
   editor: lexicalEditor(),
   cors: process.env.CORS_ORIGINS
   ? process.env.CORS_ORIGINS.split(',').map((s) => s.trim())
