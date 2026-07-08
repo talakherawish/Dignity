@@ -24,6 +24,15 @@ import { Route as ActivitiesConferencesRouteImport } from './routes/activities.c
 import { Route as AboutPartnersRouteImport } from './routes/about.partners'
 import { Route as AboutParticipantsRouteImport } from './routes/about.participants'
 import { Route as AboutMissionRouteImport } from './routes/about.mission'
+import { Route as PublicationsBooksRouteImport } from './routes/publications.books'
+import { Route as PublicationsPapersRouteImport } from './routes/publications.papers'
+import { Route as PublicationsReportsRouteImport } from './routes/publications.reports'
+import { Route as PublicationsBrochuresRouteImport } from './routes/publications.brochures'
+import { Route as PublicationsThesesRouteImport } from './routes/publications.theses'
+import { Route as PublicationsAudiovisualRouteImport } from './routes/publications.audiovisual'
+import { Route as PublicationsPostersRouteImport } from './routes/publications.posters'
+import { Route as InformationReadingsRouteImport } from './routes/information.readings'
+import { Route as InformationDatabasesRouteImport } from './routes/information.databases'
 
 const SearchRoute = SearchRouteImport.update({
   id: '/search',
@@ -101,6 +110,51 @@ const AboutMissionRoute = AboutMissionRouteImport.update({
   path: '/mission',
   getParentRoute: () => AboutRoute,
 } as any)
+const PublicationsBooksRoute = PublicationsBooksRouteImport.update({
+  id: '/publications/books',
+  path: '/publications/books',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PublicationsPapersRoute = PublicationsPapersRouteImport.update({
+  id: '/publications/papers',
+  path: '/publications/papers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PublicationsReportsRoute = PublicationsReportsRouteImport.update({
+  id: '/publications/reports',
+  path: '/publications/reports',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PublicationsBrochuresRoute = PublicationsBrochuresRouteImport.update({
+  id: '/publications/brochures',
+  path: '/publications/brochures',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PublicationsThesesRoute = PublicationsThesesRouteImport.update({
+  id: '/publications/theses',
+  path: '/publications/theses',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PublicationsAudiovisualRoute = PublicationsAudiovisualRouteImport.update({
+  id: '/publications/audiovisual',
+  path: '/publications/audiovisual',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PublicationsPostersRoute = PublicationsPostersRouteImport.update({
+  id: '/publications/posters',
+  path: '/publications/posters',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InformationReadingsRoute = InformationReadingsRouteImport.update({
+  id: '/information/readings',
+  path: '/information/readings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InformationDatabasesRoute = InformationDatabasesRouteImport.update({
+  id: '/information/databases',
+  path: '/information/databases',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -118,6 +172,15 @@ export interface FileRoutesByFullPath {
   '/media/news': typeof MediaNewsRoute
   '/media/photos': typeof MediaPhotosRoute
   '/projects/research': typeof ProjectsResearchRoute
+  '/publications/books': typeof PublicationsBooksRoute
+  '/publications/papers': typeof PublicationsPapersRoute
+  '/publications/reports': typeof PublicationsReportsRoute
+  '/publications/brochures': typeof PublicationsBrochuresRoute
+  '/publications/theses': typeof PublicationsThesesRoute
+  '/publications/audiovisual': typeof PublicationsAudiovisualRoute
+  '/publications/posters': typeof PublicationsPostersRoute
+  '/information/readings': typeof InformationReadingsRoute
+  '/information/databases': typeof InformationDatabasesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -135,6 +198,15 @@ export interface FileRoutesByTo {
   '/media/news': typeof MediaNewsRoute
   '/media/photos': typeof MediaPhotosRoute
   '/projects/research': typeof ProjectsResearchRoute
+  '/publications/books': typeof PublicationsBooksRoute
+  '/publications/papers': typeof PublicationsPapersRoute
+  '/publications/reports': typeof PublicationsReportsRoute
+  '/publications/brochures': typeof PublicationsBrochuresRoute
+  '/publications/theses': typeof PublicationsThesesRoute
+  '/publications/audiovisual': typeof PublicationsAudiovisualRoute
+  '/publications/posters': typeof PublicationsPostersRoute
+  '/information/readings': typeof InformationReadingsRoute
+  '/information/databases': typeof InformationDatabasesRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -153,6 +225,15 @@ export interface FileRoutesById {
   '/media/news': typeof MediaNewsRoute
   '/media/photos': typeof MediaPhotosRoute
   '/projects/research': typeof ProjectsResearchRoute
+  '/publications/books': typeof PublicationsBooksRoute
+  '/publications/papers': typeof PublicationsPapersRoute
+  '/publications/reports': typeof PublicationsReportsRoute
+  '/publications/brochures': typeof PublicationsBrochuresRoute
+  '/publications/theses': typeof PublicationsThesesRoute
+  '/publications/audiovisual': typeof PublicationsAudiovisualRoute
+  '/publications/posters': typeof PublicationsPostersRoute
+  '/information/readings': typeof InformationReadingsRoute
+  '/information/databases': typeof InformationDatabasesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -172,6 +253,15 @@ export interface FileRouteTypes {
     | '/media/news'
     | '/media/photos'
     | '/projects/research'
+    | '/publications/books'
+    | '/publications/papers'
+    | '/publications/reports'
+    | '/publications/brochures'
+    | '/publications/theses'
+    | '/publications/audiovisual'
+    | '/publications/posters'
+    | '/information/readings'
+    | '/information/databases'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -189,6 +279,15 @@ export interface FileRouteTypes {
     | '/media/news'
     | '/media/photos'
     | '/projects/research'
+    | '/publications/books'
+    | '/publications/papers'
+    | '/publications/reports'
+    | '/publications/brochures'
+    | '/publications/theses'
+    | '/publications/audiovisual'
+    | '/publications/posters'
+    | '/information/readings'
+    | '/information/databases'
   id:
     | '__root__'
     | '/'
@@ -206,6 +305,15 @@ export interface FileRouteTypes {
     | '/media/news'
     | '/media/photos'
     | '/projects/research'
+    | '/publications/books'
+    | '/publications/papers'
+    | '/publications/reports'
+    | '/publications/brochures'
+    | '/publications/theses'
+    | '/publications/audiovisual'
+    | '/publications/posters'
+    | '/information/readings'
+    | '/information/databases'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -221,6 +329,15 @@ export interface RootRouteChildren {
   MediaNewsRoute: typeof MediaNewsRoute
   MediaPhotosRoute: typeof MediaPhotosRoute
   ProjectsResearchRoute: typeof ProjectsResearchRoute
+  PublicationsBooksRoute: typeof PublicationsBooksRoute
+  PublicationsPapersRoute: typeof PublicationsPapersRoute
+  PublicationsReportsRoute: typeof PublicationsReportsRoute
+  PublicationsBrochuresRoute: typeof PublicationsBrochuresRoute
+  PublicationsThesesRoute: typeof PublicationsThesesRoute
+  PublicationsAudiovisualRoute: typeof PublicationsAudiovisualRoute
+  PublicationsPostersRoute: typeof PublicationsPostersRoute
+  InformationReadingsRoute: typeof InformationReadingsRoute
+  InformationDatabasesRoute: typeof InformationDatabasesRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -251,6 +368,69 @@ declare module '@tanstack/react-router' {
       path: '/projects/research'
       fullPath: '/projects/research'
       preLoaderRoute: typeof ProjectsResearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/publications/books': {
+      id: '/publications/books'
+      path: '/publications/books'
+      fullPath: '/publications/books'
+      preLoaderRoute: typeof PublicationsBooksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/publications/papers': {
+      id: '/publications/papers'
+      path: '/publications/papers'
+      fullPath: '/publications/papers'
+      preLoaderRoute: typeof PublicationsPapersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/publications/reports': {
+      id: '/publications/reports'
+      path: '/publications/reports'
+      fullPath: '/publications/reports'
+      preLoaderRoute: typeof PublicationsReportsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/publications/brochures': {
+      id: '/publications/brochures'
+      path: '/publications/brochures'
+      fullPath: '/publications/brochures'
+      preLoaderRoute: typeof PublicationsBrochuresRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/publications/theses': {
+      id: '/publications/theses'
+      path: '/publications/theses'
+      fullPath: '/publications/theses'
+      preLoaderRoute: typeof PublicationsThesesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/publications/audiovisual': {
+      id: '/publications/audiovisual'
+      path: '/publications/audiovisual'
+      fullPath: '/publications/audiovisual'
+      preLoaderRoute: typeof PublicationsAudiovisualRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/publications/posters': {
+      id: '/publications/posters'
+      path: '/publications/posters'
+      fullPath: '/publications/posters'
+      preLoaderRoute: typeof PublicationsPostersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/information/readings': {
+      id: '/information/readings'
+      path: '/information/readings'
+      fullPath: '/information/readings'
+      preLoaderRoute: typeof InformationReadingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/information/databases': {
+      id: '/information/databases'
+      path: '/information/databases'
+      fullPath: '/information/databases'
+      preLoaderRoute: typeof InformationDatabasesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/media/photos': {
@@ -360,6 +540,15 @@ const rootRouteChildren: RootRouteChildren = {
   MediaNewsRoute: MediaNewsRoute,
   MediaPhotosRoute: MediaPhotosRoute,
   ProjectsResearchRoute: ProjectsResearchRoute,
+  PublicationsBooksRoute: PublicationsBooksRoute,
+  PublicationsPapersRoute: PublicationsPapersRoute,
+  PublicationsReportsRoute: PublicationsReportsRoute,
+  PublicationsBrochuresRoute: PublicationsBrochuresRoute,
+  PublicationsThesesRoute: PublicationsThesesRoute,
+  PublicationsAudiovisualRoute: PublicationsAudiovisualRoute,
+  PublicationsPostersRoute: PublicationsPostersRoute,
+  InformationReadingsRoute: InformationReadingsRoute,
+  InformationDatabasesRoute: InformationDatabasesRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
