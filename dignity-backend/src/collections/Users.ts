@@ -39,6 +39,7 @@ export const Users: CollectionConfig = {
         { label: 'Participants', value: 'participants' },
         { label: 'Publications', value: 'publications' },
         { label: 'Information', value: 'information' },
+        { label: 'Research Activities', value: 'research' },
         { label: 'Pages', value: 'pages' },
         { label: 'Site Settings', value: 'site-settings' },
       ],
