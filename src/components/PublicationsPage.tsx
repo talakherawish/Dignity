@@ -10,6 +10,7 @@ import {
   type PayloadPublication,
 } from "@/lib/payload";
 import { usePage } from "@/hooks/usePage";
+import { withItalicQuotes } from "@/lib/text";
 
 export function PublicationsPage({
   type,
@@ -73,7 +74,7 @@ export function PublicationsPage({
                         "font-serif text-lg text-primary leading-snug mb-2" + (isArabic ? " text-right" : "")
                       }
                     >
-                      {lang === "ar" ? (item.titleAr ?? item.title) : item.title}
+                      {withItalicQuotes(lang === "ar" ? (item.titleAr ?? item.title) : item.title)}
                     </h3>
                     {desc.length > 0 && (
                       <p
