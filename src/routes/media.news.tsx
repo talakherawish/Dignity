@@ -7,6 +7,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { ARTICLES, getField, getBody, type Article, type ArticleLang } from "@/data/articles";
 import { fetchArticles, formatDate, mediaUrl, extractText, type PayloadArticle } from "@/lib/payload";
 import { usePage } from "@/hooks/usePage";
+import { withItalicQuotes } from "@/lib/text";
 
 function mapPayloadArticle(pa: PayloadArticle): Article {
   return {
@@ -47,7 +48,7 @@ function ArticleCard({ article }: { article: Article }) {
               {getField(article, "date", l)}
             </p>
             <h2 className={"font-serif text-xl lg:text-2xl text-primary mb-3 leading-snug" + (isArabic ? " text-right" : "")}>
-              {getField(article, "title", l)}
+              {withItalicQuotes(getField(article, "title", l))}
             </h2>
             <p className={"text-sm text-muted-foreground leading-relaxed" + (isArabic ? " text-right" : "")}>
               {getField(article, "excerpt", l)}
