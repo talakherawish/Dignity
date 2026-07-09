@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { ChevronDown, Search, X } from "lucide-react";
+import { ChevronDown, Menu, Search, X } from "lucide-react";
 import { useState, useRef } from "react";
 import logo from "@/assets/dignity-logo.png";
 import { type Language, type TranslationKey, useLanguage } from "@/contexts/LanguageContext";
@@ -98,12 +98,13 @@ function SearchBar() {
           className="absolute right-8 top-1/2 -translate-y-1/2 z-50"
         >
           <input
+            dir={isArabic ? "rtl" : "ltr"}
             ref={inputRef}
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder={isArabic ? "ابحث..." : "Search..."}
-            className={`w-52 sm:w-64 px-3 py-1.5 text-sm border border-border rounded-full bg-background shadow-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-accent transition-all ${isArabic ? "text-right" : ""}`}
+            className={`w-44 sm:w-64 px-3.5 py-2 border border-border rounded-full bg-background shadow-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-accent transition-all ${isArabic ? "font-arabic text-[15px] text-right" : "text-sm"}`}
           />
         </form>
       )}
@@ -218,8 +219,31 @@ function NavItem({ item }: { item: Item }) {
     </div>
   );
 }
-
+function MobileNav({ open, onNavigate }: { open: boolean; onNavigate: () => void }) {
+  const { t, isArabic } = useLanguage();
+  return (
+    <div
+      className="lg:hidden overflow-hidden border-t border-border bg-background"
+      style={{ maxHeight: open ? "80vh" : "0px", overflowY: open ? "auto" : "hidden", transition: "max-height 0.3s ease" }}
+    >
+      <nav className="px-4 py-3" dir={isArabic ? "rtl" : "ltr"}>
+        {NAV.map((item) => (
+          <div key={item.labelKey} className="py-2 border-b border-border last:border-b-0">
+            <div className={isArabic ? "font-arabic text-[15px] font-semibold text-foreground mb-1" : "text-[14px] font-semibold text-foreground mb-1"}>
+            <div className="flex flex-col gap-1">
+              {item.children?.map((c) => (
+                <Link key={c.labelKey} to={c.to!} hash={c.hash} onClick={onNavigate} className="block py-1.5 text-sm text-foreground/75 hover:text-accent">{t(c.labelKey)}</Link>
+              ))}
+            </div>
+            </div>
+          </div>
+        ))}
+      </nav>
+    </div>
+    );
+    }
 export function SiteHeader() {
+  const [mobileOpen, setMobileOpen] = useState(false);
   return (
     <header className="sticky top-0 z-40 bg-background border-b border-border">
       <div
@@ -233,14 +257,14 @@ export function SiteHeader() {
       <div className="w-full">
         {/* px height keeps the header immune to html.lang-ar rem scaling */}
         <div
-          className="grid grid-cols-[auto_1fr_auto] items-stretch"
-          style={{ height: "101px" }}
+          dir="ltr" className="grid grid-cols-[auto_1fr_auto] items-stretch h-[64px] sm:h-[80px] lg:h-[101px]"
+
         >
           {/* Logo block fills header height and stays flush left */}
           <Link
             to="/"
-            className="flex items-stretch shrink-0 pl-0"
-            style={{ height: "100px", gap: "12px", paddingInlineStart: "0px" }}
+            className="flex items-stretch shrink-0 h-full pl-0"
+            style={{ gap: "12px", paddingInlineStart: "0px" }}
           >
             <img
               src={logo}
@@ -251,7 +275,7 @@ export function SiteHeader() {
           </Link>
 
           {/* Nav — vertically centered in the row */}
-          <nav className="flex items-center justify-center gap-0 overflow-visible self-center px-4 sm:px-6">
+          <nav className="hidden lg:flex items-center justify-center gap-0 overflow-visible self-center px-4 sm:px-6">
             {NAV.map((item) => (
               <NavItem key={item.labelKey} item={item} />
             ))}
@@ -261,9 +285,19 @@ export function SiteHeader() {
           <div className="self-center pr-4 sm:pr-6 lg:pr-8 flex items-center gap-3">
             <SearchBar />
             <LanguageSwitcher />
+            <button
+            onClick={() => setMobileOpen((o) => !o)}
+            aria-label={mobileOpen ? "Close menu" : "Open menu"}
+            aria-expanded={mobileOpen}
+            className="lg:hidden p-2 text-foreground/80 hover:text-accent transition-colors"
+            >
+              {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </button>
           </div>
         </div>
       </div>
+
+      <MobileNav open={mobileOpen} onNavigate={() => setMobileOpen(false)} />
     </header>
   );
 }

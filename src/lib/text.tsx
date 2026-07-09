@@ -10,9 +10,9 @@ export function withItalicQuotes(text: string): ReactNode {
   const parts = text.split(/("[^"]*")/g);
   if (parts.length === 1) return text;
   
-  return parts.map((part, i) =>)
+    return parts.map((part, i)  =>
     part.startsWith('"') && part.endsWith('"') && part.length > 1
-      ? createElement("em", { key: i, className: "italic" }, part)
+          ? createElement("em", { key: i, className: "italic" }, part)
       : createElement("span", { key: i }, part),
 );
 }
