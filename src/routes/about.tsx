@@ -4,7 +4,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { usePage } from "@/hooks/usePage";
 
 export const Route = createFileRoute("/about")({
-  head: () => ({ meta: [{ title: "About the Initiative — Dignity" }] }),
+  head: () => ({ meta: [{ title: "The Dignity Research Initiative — Dignity" }] }),
   component: AboutLayout,
 });
 

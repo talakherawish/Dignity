@@ -3,9 +3,10 @@ import { useQuery } from "@tanstack/react-query";
 import { PageLayout, PageHero } from "@/components/PageLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { fetchActivitiesByType, formatDate, extractText, type PayloadActivity } from "@/lib/payload";
+import { usePage } from "@/hooks/usePage";
 
 export const Route = createFileRoute("/activities/windsor-birzeit")({
-  head: () => ({ meta: [{ title: "Windsor-Birzeit Initiative — Dignity" }] }),
+  head: () => ({ meta: [{ title: "The Windsor Birzeit Dignity Initiative — Dignity" }] }),
   component: WindsorPage,
 });
 

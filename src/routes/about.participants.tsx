@@ -43,10 +43,10 @@ const FELLOWS: Fellow[] = [
 const CATEGORIES = [
   { value: "all", en: "All", ar: "الكل" },
   { value: "faculty", en: "Faculty", ar: "هيئة التدريس" },
-  { value: "researcher", en: "Researchers", ar: "الباحثون" },
-  { value: "intern", en: "Interns", ar: "المتدربون" },
-  { value: "student", en: "Students", ar: "الطلاب" },
-  { value: "visitor", en: "Visitors", ar: "الزوار" },
+  { value: "researcher", en: "Researchers", ar: "باحثون" },
+  { value: "intern", en: "Interns", ar: "متدربون" },
+  { value: "student", en: "Students", ar: "طلاب" },
+  { value: "visitor", en: "Visitors", ar: "زائرون" },
 ];
 
 function mapPayloadParticipant(p: PayloadParticipant, idx: number): Fellow {
@@ -194,8 +194,8 @@ function FellowsPage() {
   return (
     <PageLayout>
       <PageHero
-        eyebrow={isArabic ? "حول المبادرة" : "About"}
-        title={page.title ?? (isArabic ? "الزملاء" : "Fellows")}
+        eyebrow={isArabic ? "عن مبادرة كرامة" : "About the Dignity Initiative"}
+        title={page.title ?? (isArabic ? "المشاركون" : "Participants")}
                 description={
                             page.description ??
                             (isArabic
@@ -249,7 +249,7 @@ function FellowsPage() {
           </div>
         ) : (
           <div className="text-center py-20 text-muted-foreground text-sm">
-            {isArabic ? "لا توجد نتائج." : "No fellows found."}
+            {isArabic ? "لا توجد نتائج." : "No participants found."}
           </div>
         )}
       </div>
