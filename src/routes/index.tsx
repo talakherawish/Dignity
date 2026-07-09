@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronRight, X, Mail } from "lucide-react";
 import { PageLayout, ImagePlaceholder } from "@/components/PageLayout";
 import { useLanguage, type TranslationKey } from "@/contexts/LanguageContext";
 import { ARTICLES, getField, type Article, type ArticleLang } from "@/data/articles";
+import { withItalicQuotes } from "@/lib/text";
 import {
   fetchArticles,
   fetchMediaUpdatesByType,
@@ -146,7 +147,7 @@ function NewsCarousel() {
               {getField(article, "date", l)}
             </div>
             <h3 className={`font-serif text-xl lg:text-2xl text-primary mb-3 leading-snug ${isArabic ? "text-right" : ""}`}>
-              {getField(article, "title", l)}
+              {withItalicQuotes(getField(article, "title", l))}
             </h3>
             <p className={`text-sm text-muted-foreground leading-relaxed ${isArabic ? "text-right" : ""}`}>
               {getField(article, "excerpt", l)}
