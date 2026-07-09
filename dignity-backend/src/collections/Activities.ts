@@ -47,7 +47,7 @@ export const Activities: CollectionConfig = {
         { label: 'Seminar', value: 'seminar' },
         { label: 'Conference', value: 'conference' },
         { label: 'Meeting', value: 'meeting' },
-        { label: 'Windsor-Birzeit', value: 'windsor-birzeit' },
+        { label: 'The Windsor Birzeit Dignity Initiative', value: 'windsor-birzeit' },
       ],
     },
     {
