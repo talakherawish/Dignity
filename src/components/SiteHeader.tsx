@@ -95,7 +95,7 @@ function SearchBar() {
       {open && (
         <form
           onSubmit={handleSubmit}
-          className="absolute right-8 top-1/2 -translate-y-1/2 z-50"
+          className={`absolute ${isArabic ? "left-8" : "right-8"} top-1/2 -translate-y-1/2 z-50`}
         >
           <input
             dir={isArabic ? "rtl" : "ltr"}
@@ -243,6 +243,7 @@ function MobileNav({ open, onNavigate }: { open: boolean; onNavigate: () => void
     );
     }
 export function SiteHeader() {
+  const { isArabic } = useLanguage();
   const [mobileOpen, setMobileOpen] = useState(false);
   return (
     <header className="sticky top-0 z-40 bg-background border-b border-border">
@@ -257,13 +258,13 @@ export function SiteHeader() {
       <div className="w-full">
         {/* px height keeps the header immune to html.lang-ar rem scaling */}
         <div
-          dir="ltr" className="grid grid-cols-[auto_1fr_auto] items-stretch h-[64px] sm:h-[80px] lg:h-[101px]"
+          dir={isArabic ? "rtl" : "ltr"} className="grid grid-cols-[auto_1fr_auto] items-stretch h-[64px] sm:h-[80px] lg:h-[101px]"
 
         >
           {/* Logo block fills header height and stays flush left */}
           <Link
             to="/"
-            className="flex items-stretch shrink-0 h-[64px] sm:h-[80px] lg:h-[101px] pl-0"
+            className="flex items-stretch shrink-0 h-[64px] sm:h-[80px] lg:h-[101px]"
             style={{ gap: "12px", paddingInlineStart: "0px" }}
           >
             <img
@@ -282,7 +283,7 @@ export function SiteHeader() {
           </nav>
 
           {/* Search + Language switcher — vertically centered */}
-          <div className="self-center pr-4 sm:pr-6 lg:pr-8 flex items-center gap-3">
+          <div className="self-center pe-4 sm:pe-6 lg:pe-8 flex items-center gap-3">
             <SearchBar />
             <LanguageSwitcher />
             <button
