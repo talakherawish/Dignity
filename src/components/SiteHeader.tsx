@@ -263,7 +263,7 @@ export function SiteHeader() {
           {/* Logo block fills header height and stays flush left */}
           <Link
             to="/"
-            className="flex items-stretch shrink-0 h-full pl-0"
+            className="flex items-stretch shrink-0 h-[64px] sm:h-[80px] lg:h-[101px] pl-0"
             style={{ gap: "12px", paddingInlineStart: "0px" }}
           >
             <img
