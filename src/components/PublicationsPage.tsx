@@ -11,23 +11,70 @@ import {
 } from "@/lib/payload";
 import { usePage } from "@/hooks/usePage";
 import { withItalicQuotes } from "@/lib/text";
+import type { PublicationFallbackItem } from "@/data/publicationsFallback";
+
+/** Normalized shape both Payload docs and hardcoded fallback items get mapped into. */
+type DisplayPublication = {
+  id: string;
+  title: string;
+  titleAr?: string;
+  author?: string;
+  authorAr?: string;
+  date: string;
+  descLines: string[];
+  descLinesAr: string[];
+  fileUrl: string;
+};
+
+function fromPayload(item: PayloadPublication): DisplayPublication {
+  return {
+    id: item.id,
+    title: item.title,
+    titleAr: item.titleAr,
+    author: item.author,
+    authorAr: item.authorAr,
+    date: item.date,
+    descLines: extractText(item.description),
+    descLinesAr: extractText(item.descriptionAr),
+    fileUrl: mediaUrl(item.file),
+  };
+}
+
+function fromFallback(item: PublicationFallbackItem): DisplayPublication {
+  return {
+    id: item.id,
+    title: item.title,
+    titleAr: item.titleAr,
+    author: item.author,
+    authorAr: item.authorAr,
+    date: item.date,
+    descLines: item.description ? [item.description] : [],
+    descLinesAr: item.descriptionAr ? [item.descriptionAr] : [],
+    fileUrl: item.fileUrl,
+  };
+}
 
 export function PublicationsPage({
   type,
   pageSlug,
   titleKey,
+  fallback = [],
 }: {
   type: PayloadPublication["type"];
   pageSlug: string;
   titleKey: TranslationKey;
+  fallback?: PublicationFallbackItem[];
 }) {
   const { t, lang, isArabic } = useLanguage();
   const page = usePage(pageSlug);
-  const { data: items = [], isLoading } = useQuery({
+  const { data: payloadItems = [], isLoading } = useQuery({
     queryKey: ["publications", type],
     queryFn: () => fetchPublicationsByType(type),
     staleTime: 5 * 60 * 1000,
   });
+
+  const items: DisplayPublication[] =
+    payloadItems.length > 0 ? payloadItems.map(fromPayload) : fallback.map(fromFallback);
 
   return (
     <PageLayout>
@@ -47,11 +94,10 @@ export function PublicationsPage({
           <p className="text-sm text-muted-foreground py-12 text-center">{t("publications.empty")}</p>
         ) : (
           <div className="space-y-4" dir={isArabic ? "rtl" : "ltr"}>
-            {items.map((item: PayloadPublication) => {
-              const desc = extractText(
-                lang === "ar" ? (item.descriptionAr ?? item.description) : item.description,
-              );
-              const fileUrl = mediaUrl(item.file);
+            {items.map((item) => {
+              const desc =
+                lang === "ar" ? (item.descLinesAr.length > 0 ? item.descLinesAr : item.descLines) : item.descLines;
+              const fileUrl = item.fileUrl;
               return (
                 <div
                   key={item.id}
