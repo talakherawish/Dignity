@@ -180,7 +180,7 @@ export function AboutMissionPage({
               <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
                 {leadIn && (
                   <Reveal className="mb-10">
-                    <div dir={isArabic ? "rtl" : "ltr"} className={`flex items-center gap-3 ${isArabic ? "flex-row-reverse text-right" : ""}`}>
+                    <div dir={isArabic ? "rtl" : "ltr"} className={`flex items-center gap-3 ${isArabic ? "text-right" : ""}`}>
                       <div className="h-5 w-1 rounded-full shrink-0" style={{ background: "var(--brand-cyan)" }} />
                       <h2 className="font-serif text-xl md:text-2xl text-primary leading-snug">{leadIn}</h2>
                     </div>
