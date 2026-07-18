@@ -8,10 +8,7 @@ const dirname = path.dirname(__filename)
 
 const nextConfig: NextConfig = {
     output: 'standalone',
-    outputFileTracingIncludes: {
-        '/*': ['./.env'],
-    },
-  images: {
+    images: {
     localPatterns: [
       {
         pathname: '/api/media/file/**',
