@@ -15,6 +15,7 @@ export type PayloadMedia = {
   alt?: string
   mimeType?: string
   filename?: string
+  thumbnail?: PayloadMedia
 }
 
 export type PayloadArticle = {
@@ -212,7 +213,9 @@ export const fetchPhotos = () =>
   fetchCollection<PayloadPhoto>('photos')
 
 export const fetchClippings = () =>
-  fetchCollection<PayloadClipping>('clippings')
+  // depth: 2 so item.image.thumbnail (the auto-generated PDF preview) resolves
+  // to a full Media object, not just an id string.
+  fetchCollection<PayloadClipping>('clippings', { depth: '2' })
 
 export const fetchParticipants = () =>
   fetchCollection<PayloadParticipant>('participants')
@@ -221,7 +224,9 @@ export const fetchResearchActivities = () =>
   fetchCollection<PayloadResearchActivity>('research-activities')
 
 export const fetchPublicationsByType = (type: PayloadPublication['type']) =>
-  fetchCollection<PayloadPublication>('publications', { 'where[type][equals]': type })
+  // depth: 2 so item.image.thumbnail (the auto-generated PDF preview) resolves
+  // to a full Media object, not just an id string.
+  fetchCollection<PayloadPublication>('publications', { 'where[type][equals]': type, depth: '2' })
 
 export const fetchInformationByType = (type: PayloadInformationItem['type']) =>
   fetchCollection<PayloadInformationItem>('information', { 'where[type][equals]': type })
