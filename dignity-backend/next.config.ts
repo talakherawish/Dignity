@@ -15,6 +15,14 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  // pdf-to-img (used for auto-generating PDF thumbnails, see
+  // src/lib/pdfThumbnail.ts) pulls in pdfjs-dist -> @napi-rs/canvas, which
+  // ships a native binary and does its own runtime path/platform detection.
+  // Turbopack's static build-time bundler cannot analyze that safely and
+  // throws "The 'path' argument must be of type string" while collecting
+  // page data for /admin. Marking these external tells Turbopack to leave
+  // them as plain runtime requires instead of trying to bundle them.
+  serverExternalPackages: ['pdf-to-img', 'pdfjs-dist', '@napi-rs/canvas'],
   webpack: (webpackConfig) => {
     webpackConfig.resolve.extensionAlias = {
       '.cjs': ['.cts', '.cjs'],
