@@ -26,9 +26,17 @@ type DisplayPublication = {
   fileUrl: string;
   imageUrl: string;
   imageIsPhoto: boolean;
+  previewUrl: string;
 };
 
 function fromPayload(item: PayloadPublication): DisplayPublication {
+  const imageIsPhoto = item.image?.mimeType?.startsWith("image/") ?? false;
+  // Prefer a manually-set cover image if one exists; otherwise fall back to
+  // the auto-generated PDF page-1 thumbnail attached to whichever media doc
+  // (cover image or the file itself) has one.
+  const previewUrl = imageIsPhoto
+    ? mediaUrl(item.image)
+    : mediaUrl(item.image?.thumbnail) || mediaUrl(item.file?.thumbnail);
   return {
     id: item.id,
     title: item.title,
@@ -40,7 +48,8 @@ function fromPayload(item: PayloadPublication): DisplayPublication {
     descLinesAr: extractText(item.descriptionAr),
     fileUrl: mediaUrl(item.file),
     imageUrl: mediaUrl(item.image),
-    imageIsPhoto: item.image?.mimeType?.startsWith("image/") ?? false,
+    imageIsPhoto,
+    previewUrl,
   };
 }
 
@@ -57,6 +66,7 @@ function fromFallback(item: PublicationFallbackItem): DisplayPublication {
     fileUrl: item.fileUrl,
     imageUrl: "",
     imageIsPhoto: false,
+    previewUrl: "",
   };
 }
 
@@ -91,15 +101,15 @@ export function PublicationsPage({
       />
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {isLoading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
             {[1, 2, 3, 4].map((n) => (
-              <div key={n} className="border border-border rounded-sm h-72 bg-secondary/30 animate-pulse" />
+              <div key={n} className="border border-border rounded-sm h-96 bg-secondary/30 animate-pulse" />
             ))}
           </div>
         ) : items.length === 0 ? (
           <p className="text-sm text-muted-foreground py-12 text-center">{t("publications.empty")}</p>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" dir={isArabic ? "rtl" : "ltr"}>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6" dir={isArabic ? "rtl" : "ltr"}>
             {items.map((item) => {
               const desc =
                 lang === "ar" ? (item.descLinesAr.length > 0 ? item.descLinesAr : item.descLines) : item.descLines;
@@ -109,9 +119,9 @@ export function PublicationsPage({
                   key={item.id}
                   className="border border-border rounded-sm bg-card overflow-hidden hover:shadow-sm transition-shadow flex flex-col"
                 >
-                  <div className="aspect-[4/3] bg-secondary/20 flex items-center justify-center">
-                    {item.imageUrl && item.imageIsPhoto ? (
-                      <img src={item.imageUrl} alt="" className="w-full h-full object-cover" />
+                  <div className="aspect-[1/1.41] bg-secondary/20 flex items-center justify-center">
+                    {item.previewUrl ? (
+                      <img src={item.previewUrl} alt="" className="w-full h-full object-cover" />
                     ) : (
                       <FileText className="h-10 w-10 text-muted-foreground/50" />
                     )}
