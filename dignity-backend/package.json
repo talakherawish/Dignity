@@ -30,7 +30,7 @@
     "react-dom": "19.2.6",
     "sharp": "0.34.2",
     "@payloadcms/db-mongodb": "3.85.0",
-    "@payloadcms/storage-vercel-blob": "3.85.0"
+    "@payloadcms/plugin-cloud-storage": "3.85.0"
   },
   "devDependencies": {
     "@playwright/test": "1.58.2",
