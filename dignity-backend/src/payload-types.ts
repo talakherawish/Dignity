@@ -71,7 +71,9 @@ export interface Config {
     media: Media;
     articles: Article;
     activities: Activity;
-    'media-updates': MediaUpdate;
+    announcements: Announcement;
+    photos: Photo;
+    clippings: Clipping;
     participants: Participant;
     publications: Publication;
     information: Information;
@@ -88,7 +90,9 @@ export interface Config {
     media: MediaSelect<false> | MediaSelect<true>;
     articles: ArticlesSelect<false> | ArticlesSelect<true>;
     activities: ActivitiesSelect<false> | ActivitiesSelect<true>;
-    'media-updates': MediaUpdatesSelect<false> | MediaUpdatesSelect<true>;
+    announcements: AnnouncementsSelect<false> | AnnouncementsSelect<true>;
+    photos: PhotosSelect<false> | PhotosSelect<true>;
+    clippings: ClippingsSelect<false> | ClippingsSelect<true>;
     participants: ParticipantsSelect<false> | ParticipantsSelect<true>;
     publications: PublicationsSelect<false> | PublicationsSelect<true>;
     information: InformationSelect<false> | InformationSelect<true>;
@@ -168,6 +172,8 @@ export interface User {
   collection: 'users';
 }
 /**
+ * All uploaded images and files across the whole site live here. You usually don't need to open this directly — upload from the "Image" or "File" field on the entry you're editing instead.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media".
  */
@@ -187,6 +193,8 @@ export interface Media {
   focalY?: number | null;
 }
 /**
+ * Shows on the website under About the Dignity Initiative → News. Add a new entry here for each news post.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "articles".
  */
@@ -233,6 +241,8 @@ export interface Article {
   _status?: ('draft' | 'published') | null;
 }
 /**
+ * Shows on the website under Activities → Seminars / Conferences / Meetings / The Windsor Birzeit Dignity Initiative. Use the Type field to choose which one.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "activities".
  */
@@ -278,16 +288,15 @@ export interface Activity {
   _status?: ('draft' | 'published') | null;
 }
 /**
- * News, Announcements, Photos, and Clippings all live here — use the Type column/filter to switch between them.
+ * Shows on the website under About the Dignity Initiative → Announcements. Add a new entry here for each announcement.
  *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media-updates".
+ * via the `definition` "announcements".
  */
-export interface MediaUpdate {
+export interface Announcement {
   id: string;
   title: string;
   titleAr?: string | null;
-  type: 'news' | 'announcement' | 'photo' | 'clipping';
   date: string;
   content?: {
     root: {
@@ -325,6 +334,46 @@ export interface MediaUpdate {
   _status?: ('draft' | 'published') | null;
 }
 /**
+ * Shows on the website under About the Dignity Initiative → Photos. Upload one photo per entry (click the Image field below to upload).
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "photos".
+ */
+export interface Photo {
+  id: string;
+  /**
+   * A short caption for this photo, e.g. "Seminar on Dignity and Praxis, March 2026".
+   */
+  title: string;
+  titleAr?: string | null;
+  date: string;
+  image: string | Media;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Shows on the website under About the Dignity Initiative → Clippings (press mentions, newspaper scans, etc). Upload a scanned image of the clipping in the Image field.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "clippings".
+ */
+export interface Clipping {
+  id: string;
+  /**
+   * The headline or name of the publication this clipping is from.
+   */
+  title: string;
+  titleAr?: string | null;
+  date: string;
+  image?: (string | null) | Media;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Shows on the website under About the Dignity Initiative → Participants. Add a new entry here for each person.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "participants".
  */
@@ -441,6 +490,8 @@ export interface Information {
   _status?: ('draft' | 'published') | null;
 }
 /**
+ * Shows on the website under Activities → Research.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "research-activities".
  */
@@ -484,7 +535,7 @@ export interface ResearchActivity {
   _status?: ('draft' | 'published') | null;
 }
 /**
- * One entry per page on the site (About, Mission and Vision, Partners, etc). Edit the text below and it updates the live site.
+ * Shows on the website under About the Dignity Initiative → About the Initiative / Mission and Vision / Partners. The Page Identifier tells you which one each entry is (about / mission / partners) — edit the text fields below to change what shows on the live site.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "pages".
@@ -574,8 +625,16 @@ export interface PayloadLockedDocument {
         value: string | Activity;
       } | null)
     | ({
-        relationTo: 'media-updates';
-        value: string | MediaUpdate;
+        relationTo: 'announcements';
+        value: string | Announcement;
+      } | null)
+    | ({
+        relationTo: 'photos';
+        value: string | Photo;
+      } | null)
+    | ({
+        relationTo: 'clippings';
+        value: string | Clipping;
       } | null)
     | ({
         relationTo: 'participants';
@@ -716,15 +775,40 @@ export interface ActivitiesSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media-updates_select".
+ * via the `definition` "announcements_select".
  */
-export interface MediaUpdatesSelect<T extends boolean = true> {
+export interface AnnouncementsSelect<T extends boolean = true> {
   title?: T;
   titleAr?: T;
-  type?: T;
   date?: T;
   content?: T;
   contentAr?: T;
+  image?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "photos_select".
+ */
+export interface PhotosSelect<T extends boolean = true> {
+  title?: T;
+  titleAr?: T;
+  date?: T;
+  image?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "clippings_select".
+ */
+export interface ClippingsSelect<T extends boolean = true> {
+  title?: T;
+  titleAr?: T;
+  date?: T;
   image?: T;
   updatedAt?: T;
   createdAt?: T;
