@@ -13,6 +13,8 @@ export { PAYLOAD_URL }
 export type PayloadMedia = {
   url: string
   alt?: string
+  mimeType?: string
+  filename?: string
 }
 
 export type PayloadArticle = {
