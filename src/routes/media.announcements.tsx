@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { PageLayout, PageHero } from "@/components/PageLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { fetchMediaUpdatesByType, formatDate, type PayloadMediaUpdate } from "@/lib/payload";
+import { fetchAnnouncements, formatDate, type PayloadAnnouncement } from "@/lib/payload";
 import { usePage } from "@/hooks/usePage";
 
 export const Route = createFileRoute("/media/announcements")({
@@ -14,8 +14,8 @@ function AnnouncementsPage() {
   const { t, lang, isArabic } = useLanguage();
       const page = usePage("announcements");
   const { data: items = [], isLoading } = useQuery({
-    queryKey: ["media-updates", "announcement"],
-    queryFn: () => fetchMediaUpdatesByType("announcement"),
+    queryKey: ["announcements"],
+    queryFn: fetchAnnouncements,
     staleTime: 5 * 60 * 1000,
   });
 
@@ -35,7 +35,7 @@ function AnnouncementsPage() {
           </p>
         ) : (
           <div className="grid gap-4 sm:grid-cols-3" dir={isArabic ? "rtl" : "ltr"}>
-            {items.map((item: PayloadMediaUpdate) => (
+            {items.map((item: PayloadAnnouncement) => (
               <div key={item.id} className="bg-card border border-border rounded-lg overflow-hidden">
                 <div className="h-1 w-full" style={{ background: "var(--brand-magenta)" }} />
                 <div className={"p-6" + (isArabic ? " text-right" : "")}>

@@ -8,13 +8,13 @@ import { ARTICLES, getField, type Article, type ArticleLang } from "@/data/artic
 import { withItalicQuotes } from "@/lib/text";
 import {
   fetchArticles,
-  fetchMediaUpdatesByType,
+  fetchAnnouncements,
   fetchParticipants,
   formatDate,
   mediaUrl,
   extractText,
   type PayloadArticle,
-  type PayloadMediaUpdate,
+  type PayloadAnnouncement,
   type PayloadParticipant,
 } from "@/lib/payload";
 
@@ -218,13 +218,13 @@ function AnnouncementsSection() {
 
   const { data: payloadAnnouncements = [] } = useQuery({
     queryKey: ["announcements"],
-    queryFn: () => fetchMediaUpdatesByType("announcement"),
+    queryFn: fetchAnnouncements,
     staleTime: 5 * 60 * 1000,
   });
 
   const items =
     payloadAnnouncements.length > 0
-      ? payloadAnnouncements.map((a: PayloadMediaUpdate) => ({
+      ? payloadAnnouncements.map((a: PayloadAnnouncement) => ({
           date: formatDate(a.date, lang === "ar" ? "ar" : "en"),
           title: a.title,
           titleAr: a.titleAr ?? a.title,

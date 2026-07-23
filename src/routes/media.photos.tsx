@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { PageLayout, PageHero } from "@/components/PageLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { fetchMediaUpdatesByType, formatDate, mediaUrl, type PayloadMediaUpdate } from "@/lib/payload";
+import { fetchPhotos, formatDate, mediaUrl, type PayloadPhoto } from "@/lib/payload";
 import { usePage } from "@/hooks/usePage";
 
 export const Route = createFileRoute("/media/photos")({
@@ -14,8 +14,8 @@ function PhotosPage() {
   const { t, lang, isArabic } = useLanguage();
       const page = usePage("photos");
   const { data: items = [], isLoading } = useQuery({
-    queryKey: ["media-updates", "photo"],
-    queryFn: () => fetchMediaUpdatesByType("photo"),
+    queryKey: ["photos"],
+    queryFn: fetchPhotos,
     staleTime: 5 * 60 * 1000,
   });
 
@@ -35,7 +35,7 @@ function PhotosPage() {
           </p>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {items.map((item: PayloadMediaUpdate) => {
+            {items.map((item: PayloadPhoto) => {
               const url = mediaUrl(item.image);
               return (
                 <div key={item.id} className="border border-border rounded-md overflow-hidden bg-card group">

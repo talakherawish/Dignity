@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { PageLayout, PageHero } from "@/components/PageLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { fetchMediaUpdatesByType, formatDate, mediaUrl, type PayloadMediaUpdate } from "@/lib/payload";
+import { fetchClippings, formatDate, mediaUrl, type PayloadClipping } from "@/lib/payload";
 import { usePage } from "@/hooks/usePage";
 
 export const Route = createFileRoute("/media/clippings")({
@@ -14,8 +14,8 @@ function ClippingsPage() {
   const { t, lang, isArabic } = useLanguage();
       const page = usePage("clippings");
   const { data: items = [], isLoading } = useQuery({
-    queryKey: ["media-updates", "clipping"],
-    queryFn: () => fetchMediaUpdatesByType("clipping"),
+    queryKey: ["clippings"],
+    queryFn: fetchClippings,
     staleTime: 5 * 60 * 1000,
   });
 
@@ -35,7 +35,7 @@ function ClippingsPage() {
           </p>
         ) : (
           <div className="space-y-4" dir={isArabic ? "rtl" : "ltr"}>
-            {items.map((item: PayloadMediaUpdate) => {
+            {items.map((item: PayloadClipping) => {
               const url = mediaUrl(item.image);
               return (
                 <div key={item.id} className="border border-border rounded-sm bg-card overflow-hidden hover:shadow-sm transition-shadow grid md:grid-cols-[120px_1fr]">
