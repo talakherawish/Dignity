@@ -155,12 +155,13 @@
 
 /* ── Arabic typography ─────────────────────────────────────────────────────
    Previously the root font-size was scaled down (0.9375em) to compensate for
-            Tajawal rendering visually larger than Latin fonts. In practice this made
+   Tajawal rendering visually larger than Latin fonts. In practice this made
    Arabic text (nav, search, About page copy, etc.) read as too small and
    washed out, so the compensation has been removed — Arabic and English now
    share the same base scale, and any sizing differences are set explicitly
    per component instead of via a blanket root scale.
    ────────────────────────────────────────────────────────────────────────── */
+
 html.lang-ar body,
 html.lang-ar *:not(.font-serif):not([class*="font-serif"]) {
   font-family: 'Tajawal', 'Noto Sans Arabic', system-ui, sans-serif;
@@ -189,6 +190,7 @@ html.lang-ar h4 {
    (Arabic labels read better slightly larger than the 15px English nav) —
    no CSS override needed here; a stray !important rule used to force nav
    text back down to 15px, silently undoing that intended size bump. */
+
 /* Announcements grid RTL in Arabic */
 html.lang-ar .announcements-grid {
   direction: rtl;
