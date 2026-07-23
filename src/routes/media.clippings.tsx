@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { Download } from "lucide-react";
 import { PageLayout, PageHero } from "@/components/PageLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { fetchClippings, formatDate, mediaUrl, type PayloadClipping } from "@/lib/payload";
@@ -24,9 +25,9 @@ function ClippingsPage() {
             <PageHero eyebrow={t("media")} title={page.title ?? t("media.clippings")} description={page.description ?? t("clippings.page.desc")} />
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {isLoading ? (
-          <div className="space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3].map((n) => (
-              <div key={n} className="border border-border rounded-sm h-24 bg-secondary/30 animate-pulse" />
+              <div key={n} className="border border-border rounded-sm h-72 bg-secondary/30 animate-pulse" />
             ))}
           </div>
         ) : items.length === 0 ? (
@@ -34,21 +35,34 @@ function ClippingsPage() {
             {isArabic ? "لا توجد مقالات صحفية منشورة حالياً." : "No clippings published yet."}
           </p>
         ) : (
-          <div className="space-y-4" dir={isArabic ? "rtl" : "ltr"}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" dir={isArabic ? "rtl" : "ltr"}>
             {items.map((item: PayloadClipping) => {
               const url = mediaUrl(item.image);
               return (
-                <div key={item.id} className="border border-border rounded-sm bg-card overflow-hidden hover:shadow-sm transition-shadow grid md:grid-cols-[120px_1fr]">
+                <div key={item.id} className="border border-border rounded-sm bg-card overflow-hidden hover:shadow-sm transition-shadow flex flex-col">
                   {url && (
-                    <img src={url} alt="" className="w-full h-full object-cover md:h-28" />
+                    <div className="aspect-[4/3] bg-secondary/20">
+                      <img src={url} alt="" className="w-full h-full object-cover" />
+                    </div>
                   )}
-                  <div className={"p-5" + (isArabic ? " text-right" : "")}>
+                  <div className={"p-5 flex flex-col flex-1" + (isArabic ? " text-right" : "")}>
                     <div className="text-[9px] uppercase tracking-widest text-muted-foreground font-semibold mb-1.5">
                       {formatDate(item.date, lang === "ar" ? "ar" : "en")}
                     </div>
-                    <h3 className="font-serif text-lg text-primary leading-snug">
+                    <h3 className="font-serif text-lg text-primary leading-snug mb-4">
                       {lang === "ar" ? (item.titleAr ?? item.title) : item.title}
                     </h3>
+                    {url && (
+                      <a
+                        href={url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-auto inline-flex items-center justify-center gap-2 w-full px-4 py-2 rounded-full border border-border text-sm text-foreground/80 hover:text-accent hover:border-accent/40 transition-colors"
+                      >
+                        <Download className="h-3.5 w-3.5" />
+                        {t("publications.download")}
+                      </a>
+                    )}
                   </div>
                 </div>
               );
