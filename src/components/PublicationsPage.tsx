@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { Download } from "lucide-react";
+import { Download, FileText } from "lucide-react";
 import { PageLayout, PageHero } from "@/components/PageLayout";
 import { useLanguage, type TranslationKey } from "@/contexts/LanguageContext";
 import {
@@ -24,6 +24,8 @@ type DisplayPublication = {
   descLines: string[];
   descLinesAr: string[];
   fileUrl: string;
+  imageUrl: string;
+  imageIsPhoto: boolean;
 };
 
 function fromPayload(item: PayloadPublication): DisplayPublication {
@@ -37,6 +39,8 @@ function fromPayload(item: PayloadPublication): DisplayPublication {
     descLines: extractText(item.description),
     descLinesAr: extractText(item.descriptionAr),
     fileUrl: mediaUrl(item.file),
+    imageUrl: mediaUrl(item.image),
+    imageIsPhoto: item.image?.mimeType?.startsWith("image/") ?? false,
   };
 }
 
@@ -51,6 +55,8 @@ function fromFallback(item: PublicationFallbackItem): DisplayPublication {
     descLines: item.description ? [item.description] : [],
     descLinesAr: item.descriptionAr ? [item.descriptionAr] : [],
     fileUrl: item.fileUrl,
+    imageUrl: "",
+    imageIsPhoto: false,
   };
 }
 
@@ -85,15 +91,15 @@ export function PublicationsPage({
       />
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {isLoading ? (
-          <div className="space-y-4">
-            {[1, 2, 3].map((n) => (
-              <div key={n} className="border border-border rounded-sm h-28 bg-secondary/30 animate-pulse" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[1, 2, 3, 4].map((n) => (
+              <div key={n} className="border border-border rounded-sm h-72 bg-secondary/30 animate-pulse" />
             ))}
           </div>
         ) : items.length === 0 ? (
           <p className="text-sm text-muted-foreground py-12 text-center">{t("publications.empty")}</p>
         ) : (
-          <div className="space-y-4" dir={isArabic ? "rtl" : "ltr"}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" dir={isArabic ? "rtl" : "ltr"}>
             {items.map((item) => {
               const desc =
                 lang === "ar" ? (item.descLinesAr.length > 0 ? item.descLinesAr : item.descLines) : item.descLines;
@@ -101,12 +107,19 @@ export function PublicationsPage({
               return (
                 <div
                   key={item.id}
-                  className="border border-border rounded-sm bg-card p-6 hover:shadow-sm transition-shadow flex flex-col sm:flex-row sm:items-start gap-4"
+                  className="border border-border rounded-sm bg-card overflow-hidden hover:shadow-sm transition-shadow flex flex-col"
                 >
-                  <div className="flex-1">
+                  <div className="aspect-[4/3] bg-secondary/20 flex items-center justify-center">
+                    {item.imageUrl && item.imageIsPhoto ? (
+                      <img src={item.imageUrl} alt="" className="w-full h-full object-cover" />
+                    ) : (
+                      <FileText className="h-10 w-10 text-muted-foreground/50" />
+                    )}
+                  </div>
+                  <div className="p-5 flex flex-col flex-1">
                     <div
                       className={
-                        "text-[9px] uppercase tracking-widest text-muted-foreground font-semibold mb-2" +
+                        "text-[9px] uppercase tracking-widest text-muted-foreground font-semibold mb-1.5" +
                         (isArabic ? " text-right" : "")
                       }
                     >
@@ -115,34 +128,39 @@ export function PublicationsPage({
                         <span> · {lang === "ar" ? (item.authorAr ?? item.author) : item.author}</span>
                       )}
                     </div>
-                    <h3
+                    <div
                       className={
-                        "font-serif text-lg text-primary leading-snug mb-2" + (isArabic ? " text-right" : "")
+                        "flex items-start justify-between gap-3" +
+                        (isArabic ? " flex-row-reverse text-right" : "")
                       }
                     >
-                      {withItalicQuotes(lang === "ar" ? (item.titleAr ?? item.title) : item.title)}
-                    </h3>
+                      <h3 className="font-serif text-lg text-primary leading-snug">
+                        {withItalicQuotes(lang === "ar" ? (item.titleAr ?? item.title) : item.title)}
+                      </h3>
+                      {fileUrl && (
+                        <a
+                          href={fileUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label={t("publications.download")}
+                          title={t("publications.download")}
+                          className="shrink-0 inline-flex items-center justify-center h-8 w-8 rounded-full border border-border text-foreground/70 hover:text-accent hover:border-accent/40 transition-colors"
+                        >
+                          <Download className="h-3.5 w-3.5" />
+                        </a>
+                      )}
+                    </div>
                     {desc.length > 0 && (
                       <p
                         className={
-                          "text-sm text-muted-foreground leading-relaxed" + (isArabic ? " text-right" : "")
+                          "text-sm text-muted-foreground leading-relaxed mt-2" +
+                          (isArabic ? " text-right" : "")
                         }
                       >
                         {desc[0]}
                       </p>
                     )}
                   </div>
-                  {fileUrl && (
-                    <a
-                      href={fileUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 shrink-0 px-4 py-2 rounded-full border border-border text-sm text-foreground/80 hover:text-accent hover:border-accent/40 transition-colors self-start"
-                    >
-                      <Download className="h-3.5 w-3.5" />
-                      {t("publications.download")}
-                    </a>
-                  )}
                 </div>
               );
             })}
