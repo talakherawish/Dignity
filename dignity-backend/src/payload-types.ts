@@ -144,23 +144,10 @@ export interface UserAuthOperations {
 export interface User {
   id: string;
   name: string;
-  role: 'content-manager' | 'editor';
   /**
-   * The sections this editor is allowed to manage.
+   * Content Managers can manage Users and Pages. Editors can create/edit/delete everything else.
    */
-  section?:
-    | (
-        | 'articles'
-        | 'activities'
-        | 'media'
-        | 'participants'
-        | 'publications'
-        | 'information'
-        | 'research'
-        | 'pages'
-        | 'site-settings'
-      )[]
-    | null;
+  role: 'content-manager' | 'editor';
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -291,6 +278,8 @@ export interface Activity {
   _status?: ('draft' | 'published') | null;
 }
 /**
+ * News, Announcements, Photos, and Clippings all live here — use the Type column/filter to switch between them.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media-updates".
  */
@@ -355,6 +344,8 @@ export interface Participant {
   _status?: ('draft' | 'published') | null;
 }
 /**
+ * Books, Papers, Reports, Brochures, Theses, Audiovisual, and Posters all live here — use the Type column/filter to switch between them.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "publications".
  */
@@ -403,6 +394,8 @@ export interface Publication {
   _status?: ('draft' | 'published') | null;
 }
 /**
+ * Readings and Documents, and Databases live here — use the Type column/filter to switch between them.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "information".
  */
@@ -491,11 +484,16 @@ export interface ResearchActivity {
   _status?: ('draft' | 'published') | null;
 }
 /**
+ * One entry per page on the site (About, Mission and Vision, Partners, etc). Edit the text below and it updates the live site.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "pages".
  */
 export interface Page {
   id: string;
+  /**
+   * Matches a fixed page on the site, e.g. about, mission, partners. Do not edit unless you know what this connects to.
+   */
   slug: string;
   title?: string | null;
   titleAr?: string | null;
@@ -648,7 +646,6 @@ export interface PayloadMigration {
 export interface UsersSelect<T extends boolean = true> {
   name?: T;
   role?: T;
-  section?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -857,27 +854,13 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   createdAt?: T;
 }
 /**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "collections_widget".
- */
-export interface CollectionsWidget {
-  data?: {
-    [k: string]: unknown;
-  };
-  width: 'full';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "auth".
- */
-export interface Auth {
-  [k: string]: unknown;
-}
-/**
+ * Site-wide text: navigation menu, homepage hero, footer, and small UI labels. Editing a field here updates it everywhere it appears on the site.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "site-settings".
  */
 export interface SiteSetting {
+  id: string;
   navHome?: string | null;
   navHomeAr?: string | null;
   navAbout?: string | null;
@@ -1124,7 +1107,26 @@ export interface SiteSettingsSelect<T extends boolean = true> {
   projectsAreaAr?: T;
   updatedAt?: T;
   createdAt?: T;
+  globalType?: T;
 }
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "collections_widget".
+ */
+export interface CollectionsWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "auth".
+ */
+export interface Auth {
+  [k: string]: unknown;
+}
+
 
 declare module 'payload' {
   export interface GeneratedTypes extends Config {}
