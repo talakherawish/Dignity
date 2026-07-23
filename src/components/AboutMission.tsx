@@ -130,7 +130,7 @@ export function AboutMissionPage({
                 )}
                 <h1 className="font-serif text-3xl md:text-4xl text-primary tracking-tight">{title}</h1>
                 {description && (
-                            <p className="mt-3 max-w-2xl mx-auto text-[15px] text-muted-foreground leading-relaxed whitespace-pre-line">
+                  <p className="mt-3 max-w-2xl mx-auto text-[15px] text-muted-foreground leading-relaxed whitespace-pre-line">
                     {description}
                   </p>
                 )}
@@ -140,14 +140,14 @@ export function AboutMissionPage({
 
           {/* Intro prose */}
           <section className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
-                      <div dir={isArabic ? "rtl" : "ltr"} className={`space-y-5 text-[17px] leading-[1.85] text-foreground/90 ${isArabic ? "text-right" : ""}`}>
+            <div className={`space-y-5 text-[17px] leading-[1.85] text-foreground/90 ${isArabic ? "text-right" : ""}`}>
               {introParagraphs.map((p, i) => (
                 <Reveal key={i} delay={i * 90}>
                   <p
                     className={
-                                    i === 0
-                                                    ? `text-lg md:text-xl font-medium text-foreground leading-[1.7] ${isArabic ? "" : "first-letter:font-serif first-letter:text-4xl first-letter:text-primary first-letter:leading-none first-letter:me-1 first-letter:font-normal"}`
-                                                                    : ""
+                      i === 0
+                        ? `text-lg md:text-xl font-medium text-foreground leading-[1.7] ${isArabic ? "" : "first-letter:font-serif first-letter:text-4xl first-letter:text-primary first-letter:leading-none first-letter:me-1 first-letter:font-normal"}`
+                        : ""
                     }
                   >
                     {p}
@@ -180,7 +180,7 @@ export function AboutMissionPage({
               <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
                 {leadIn && (
                   <Reveal className="mb-10">
-                    <div dir={isArabic ? "rtl" : "ltr"} className={`flex items-center gap-3 ${isArabic ? "text-right" : ""}`}>
+                    <div className={`flex items-center gap-3 ${isArabic ? "flex-row-reverse text-right" : ""}`}>
                       <div className="h-5 w-1 rounded-full shrink-0" style={{ background: "var(--brand-cyan)" }} />
                       <h2 className="font-serif text-xl md:text-2xl text-primary leading-snug">{leadIn}</h2>
                     </div>
@@ -229,7 +229,7 @@ export function AboutMissionPage({
                   </p>
                 )}
               </Reveal>
-<div dir={isArabic ? "rtl" : "ltr"} className={`mt-6 space-y-5 text-[17px] leading-[1.85] text-foreground/90 ${isArabic ? "text-right" : ""}`}>
+              <div className={`mt-6 space-y-5 text-[17px] leading-[1.85] text-foreground/90 ${isArabic ? "text-right" : ""}`}>
                 {missionParagraphs.map((p, i) => (
                   <Reveal key={i} delay={i * 90}>
                     <p>{p}</p>

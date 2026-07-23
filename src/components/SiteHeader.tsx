@@ -91,16 +91,20 @@ function SearchBar() {
         {open ? <X className="h-4 w-4" /> : <Search className="h-4 w-4" />}
       </button>
 
-      {/* Input overlays absolutely — zero layout impact */}
+      {/* Input overlays absolutely — zero layout impact.
+          Anchored to the side that has open header space to grow into:
+          in Arabic the search icon sits on the header's left edge, so the
+          input expands rightward; in English it sits on the right edge, so
+          it expands leftward. */}
       {open && (
         <form
           onSubmit={handleSubmit}
           className={`absolute ${isArabic ? "left-8" : "right-8"} top-1/2 -translate-y-1/2 z-50`}
         >
           <input
-            dir={isArabic ? "rtl" : "ltr"}
             ref={inputRef}
             type="text"
+            dir={isArabic ? "rtl" : "ltr"}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder={isArabic ? "ابحث..." : "Search..."}
@@ -219,32 +223,103 @@ function NavItem({ item }: { item: Item }) {
     </div>
   );
 }
+
 function MobileNav({ open, onNavigate }: { open: boolean; onNavigate: () => void }) {
   const { t, isArabic } = useLanguage();
+  const [expanded, setExpanded] = useState<string | null>(null);
+
   return (
     <div
       className="lg:hidden overflow-hidden border-t border-border bg-background"
-      style={{ maxHeight: open ? "80vh" : "0px", overflowY: open ? "auto" : "hidden", transition: "max-height 0.3s ease" }}
+      style={{
+        maxHeight: open ? "80vh" : "0px",
+        overflowY: open ? "auto" : "hidden",
+        transition: "max-height 0.3s ease",
+      }}
     >
-      <nav className="px-4 py-3" dir={isArabic ? "rtl" : "ltr"}>
+      <nav className="px-4 py-2" dir={isArabic ? "rtl" : "ltr"}>
         {NAV.map((item) => (
-          <div key={item.labelKey} className="py-2 border-b border-border last:border-b-0">
-            <div className={isArabic ? "font-arabic text-[15px] font-semibold text-foreground mb-1" : "text-[14px] font-semibold text-foreground mb-1"}>
-            <div className="flex flex-col gap-1">
-              {item.children?.map((c) => (
-                <Link key={c.labelKey} to={c.to!} hash={c.hash} onClick={onNavigate} className="block py-1.5 text-sm text-foreground/75 hover:text-accent">{t(c.labelKey)}</Link>
-              ))}
-            </div>
-            </div>
+          <div key={item.labelKey} className="border-b border-border last:border-b-0">
+            {item.children ? (
+              <>
+                <button
+                  onClick={() => setExpanded((cur) => (cur === item.labelKey ? null : item.labelKey))}
+                  className={[
+                    "w-full flex items-center justify-between py-3 font-medium text-foreground/80",
+                    isArabic ? "font-arabic text-[16px]" : "text-[15px]",
+                  ].join(" ")}
+                >
+                  {t(item.labelKey)}
+                  <ChevronDown
+                    className="h-4 w-4 shrink-0 transition-transform duration-200"
+                    style={{ transform: expanded === item.labelKey ? "rotate(180deg)" : "rotate(0deg)" }}
+                  />
+                </button>
+                <div
+                  className="overflow-hidden"
+                  style={{
+                    maxHeight: expanded === item.labelKey ? "600px" : "0px",
+                    transition: "max-height 0.25s ease",
+                  }}
+                >
+                  <div className={`pb-2 flex flex-col gap-0.5 ${isArabic ? "pr-3" : "pl-3"}`}>
+                    {item.children.map((c) =>
+                      c.children ? (
+                        <div key={c.labelKey} className="py-1">
+                          <div className="text-xs uppercase tracking-wide text-muted-foreground/70 py-1">
+                            {t(c.labelKey)}
+                          </div>
+                          <div className={isArabic ? "pr-3" : "pl-3"}>
+                            {c.children.map((s) => (
+                              <Link
+                                key={s.labelKey}
+                                to={s.to!}
+                                onClick={onNavigate}
+                                className="block py-2 text-sm text-foreground/75 hover:text-accent"
+                              >
+                                {t(s.labelKey)}
+                              </Link>
+                            ))}
+                          </div>
+                        </div>
+                      ) : (
+                        <Link
+                          key={c.labelKey}
+                          to={c.to!}
+                          hash={c.hash}
+                          onClick={onNavigate}
+                          className="block py-2 text-sm text-foreground/75 hover:text-accent"
+                        >
+                          {t(c.labelKey)}
+                        </Link>
+                      ),
+                    )}
+                  </div>
+                </div>
+              </>
+            ) : (
+              <Link
+                to={item.to!}
+                onClick={onNavigate}
+                className={[
+                  "block py-3 font-medium text-foreground/80",
+                  isArabic ? "font-arabic text-[16px]" : "text-[15px]",
+                ].join(" ")}
+              >
+                {t(item.labelKey)}
+              </Link>
+            )}
           </div>
         ))}
       </nav>
     </div>
-    );
-    }
+  );
+}
+
 export function SiteHeader() {
   const { isArabic } = useLanguage();
   const [mobileOpen, setMobileOpen] = useState(false);
+
   return (
     <header className="sticky top-0 z-40 bg-background border-b border-border">
       <div
@@ -254,43 +329,46 @@ export function SiteHeader() {
             "linear-gradient(90deg, var(--brand-cyan) 0%, var(--brand-cyan) 33%, var(--brand-magenta) 33%, var(--brand-magenta) 66%, oklch(0.18 0.01 270) 66%, oklch(0.18 0.01 270) 100%)",
         }}
       />
-      {/* Full-width wrapper keeps the logo pinned to the far-left edge */}
+      {/* Full-width wrapper keeps the logo pinned to the leading edge */}
       <div className="w-full">
-        {/* px height keeps the header immune to html.lang-ar rem scaling */}
+        {/*
+          dir follows the active language: logo / nav / actions mirror to
+          RTL in Arabic and stay LTR in English — nothing is locked anymore.
+          Row height uses px-based arbitrary values (not rem) so it can't be
+          shrunk/enlarged by the html.lang-ar scale, and shrinks responsively
+          so the logo (a wide ~3:1 image) never forces the page wider than
+          the viewport on mobile.
+        */}
         <div
-          dir={isArabic ? "rtl" : "ltr"} className="grid grid-cols-[auto_1fr_auto] items-stretch h-[64px] sm:h-[80px] lg:h-[101px]"
-
+          dir={isArabic ? "rtl" : "ltr"}
+          className="grid grid-cols-[auto_1fr_auto] items-stretch h-[64px] sm:h-[80px] lg:h-[101px]"
         >
-          {/* Logo block fills header height and stays flush left */}
-          <Link
-            to="/"
-            className="flex items-stretch shrink-0 h-[64px] sm:h-[80px] lg:h-[101px]"
-            style={{ gap: "12px", paddingInlineStart: "0px" }}
-          >
+          {/* Logo block fills header height and stays flush to the leading edge */}
+          <Link to="/" className="flex items-stretch shrink-0 h-[64px] sm:h-[80px] lg:h-[101px]">
             <img
               src={logo}
               alt="Dignity Initiative"
               style={{ height: "100%", width: "auto", display: "block" }}
-              className="object-contain object-left"
+              className="object-contain"
             />
           </Link>
 
-          {/* Nav — vertically centered in the row */}
+          {/* Desktop nav — vertically centered, hidden below lg to avoid overflow */}
           <nav className="hidden lg:flex items-center justify-center gap-0 overflow-visible self-center px-4 sm:px-6">
             {NAV.map((item) => (
               <NavItem key={item.labelKey} item={item} />
             ))}
           </nav>
 
-          {/* Search + Language switcher — vertically centered */}
-          <div className="self-center pe-4 sm:pe-6 lg:pe-8 flex items-center gap-3">
+          {/* Search + Language switcher + mobile menu toggle — vertically centered */}
+          <div className="self-center pe-3 sm:pe-6 lg:pe-8 flex items-center gap-1.5 sm:gap-3">
             <SearchBar />
             <LanguageSwitcher />
             <button
-            onClick={() => setMobileOpen((o) => !o)}
-            aria-label={mobileOpen ? "Close menu" : "Open menu"}
-            aria-expanded={mobileOpen}
-            className="lg:hidden p-2 text-foreground/80 hover:text-accent transition-colors"
+              onClick={() => setMobileOpen((o) => !o)}
+              aria-label={mobileOpen ? "Close menu" : "Open menu"}
+              aria-expanded={mobileOpen}
+              className="lg:hidden p-2 text-foreground/80 hover:text-accent transition-colors"
             >
               {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
