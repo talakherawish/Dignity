@@ -29,6 +29,6 @@ export const Media: CollectionConfig = {
   ],
   upload: true,
   hooks: {
-    beforeChange: [generatePdfThumbnail],
+    afterChange: [generatePdfThumbnail],
   },
 }

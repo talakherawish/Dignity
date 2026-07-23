@@ -3,10 +3,10 @@ import type { CollectionConfig } from 'payload'
 export const Pages: CollectionConfig = {
   slug: 'pages',
   admin: {
-    group: 'Site',
+    group: 'About the Dignity Initiative',
     useAsTitle: 'slug',
     defaultColumns: ['slug', 'title', 'updatedAt'],
-    description: 'One entry per page on the site (About, Mission and Vision, Partners, etc). Edit the text below and it updates the live site.',
+    description: 'Shows on the website under About the Dignity Initiative → About the Initiative / Mission and Vision / Partners. The Page Identifier tells you which one each entry is (about / mission / partners) — edit the text fields below to change what shows on the live site.',
   },
   versions: {
     drafts: true,

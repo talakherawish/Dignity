@@ -3,9 +3,10 @@ import type { CollectionConfig } from 'payload'
 export const Articles: CollectionConfig = {
   slug: 'articles',
   admin: {
-    group: 'Content',
+    group: 'About the Dignity Initiative',
     useAsTitle: 'title',
     defaultColumns: ['title', 'status', 'publishedAt', 'updatedAt'],
+    description: 'Shows on the website under About the Dignity Initiative → News. Add a new entry here for each news post.',
   },
   // Enable draft/publish — nothing goes live until content manager publishes
   versions: {

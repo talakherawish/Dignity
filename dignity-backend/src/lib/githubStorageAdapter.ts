@@ -23,10 +23,16 @@ import type { Adapter } from '@payloadcms/plugin-cloud-storage/types'
  *  - handleDelete: removes the file from the repo when the corresponding
  *    Payload document is deleted. GitHub's delete endpoint requires the
  *    blob's current SHA, so this looks the file up first.
- *  - staticHandler: a fallback that redirects to the same raw GitHub URL,
- *    in case anything still requests a file through Payload's own
- *    /api/media/file/:filename route rather than using generateURL's
- *    direct link.
+ *  - staticHandler: handles requests through Payload's own
+ *    /api/media/file/:filename route (the URL every uploaded document's
+ *    `url` field points to — that's normal, expected Payload behavior for
+ *    upload-enabled collections, not a misconfiguration) by redirecting to
+ *    the equivalent raw GitHub URL. Decodes the incoming filename param
+ *    defensively (it may arrive still percent-encoded) and never throws
+ *    uncaught — any failure returns a real error response instead of an
+ *    unhandled exception, which Payload's REST layer would otherwise mask
+ *    as a generic {"errors":[{"message":"Something went wrong."}]} with no
+ *    way to see what actually broke.
  *
  * Required environment variables (set these in Railway/Vercel/wherever this
  * runs — never commit them):
@@ -206,9 +212,42 @@ export function createGithubStorageAdapter({
     },
 
     staticHandler: async (_req, { params: { filename } }) => {
-      const repoPath = buildRepoPath(uploadsPath, filename)
-      const rawUrl = buildRawUrl(owner, repo, branch, repoPath)
-      return Response.redirect(rawUrl, 302)
+      try {
+        // Payload's route param may arrive still percent-encoded (this is
+        // the raw URL path segment, e.g. "%D8%B9%D9%82%D8%AF...") rather
+        // than the decoded unicode filename. buildRawUrl always
+        // encodeURIComponent()s its input, so passing an already-encoded
+        // string through unchanged would double-encode it (%25 in place of
+        // %) and point at a path that doesn't exist in the repo — a 404,
+        // not a crash, but broken either way. Decode first (decodeURIComponent
+        // is a no-op on a string with no % sequences, so this is safe for
+        // filenames that arrive already decoded too).
+        let decodedFilename = filename
+        try {
+          decodedFilename = decodeURIComponent(filename)
+        } catch {
+          // Malformed percent-encoding (a stray "%" not part of a valid
+          // escape) — fall back to the raw value rather than failing the
+          // whole request over a decode edge case.
+        }
+
+        const repoPath = buildRepoPath(uploadsPath, decodedFilename)
+        const rawUrl = buildRawUrl(owner, repo, branch, repoPath)
+        return Response.redirect(rawUrl, 302)
+      } catch (error) {
+        // Never let this throw uncaught — Payload's REST layer wraps any
+        // unhandled error from a static handler into a generic
+        // {"errors":[{"message":"Something went wrong."}]} response with no
+        // detail visible to the person clicking Download. Logging here at
+        // least puts the real cause in Vercel's function logs.
+        console.error(
+          `github-contents staticHandler failed for filename "${filename}": ${error instanceof Error ? error.message : String(error)}`,
+        )
+        return new Response(
+          JSON.stringify({ error: 'Failed to resolve file location.' }),
+          { status: 500, headers: { 'Content-Type': 'application/json' } },
+        )
+      }
     },
   })
 }

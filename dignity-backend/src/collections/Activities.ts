@@ -3,9 +3,10 @@ import type { CollectionConfig } from 'payload'
 export const Activities: CollectionConfig = {
   slug: 'activities',
   admin: {
-    group: 'Content',
+    group: 'Activities',
     useAsTitle: 'title',
     defaultColumns: ['title', 'type', 'date', 'status'],
+    description: 'Shows on the website under Activities → Seminars / Conferences / Meetings / The Windsor Birzeit Dignity Initiative. Use the Type field to choose which one.',
   },
   versions: {
     drafts: true,

@@ -3,9 +3,10 @@ import type { CollectionConfig } from 'payload'
 export const ResearchActivities: CollectionConfig = {
   slug: 'research-activities',
   admin: {
-    group: 'Content',
+    group: 'Activities',
     useAsTitle: 'title',
     defaultColumns: ['title', 'status'],
+    description: 'Shows on the website under Activities → Research.',
   },
   versions: {
     drafts: true,
