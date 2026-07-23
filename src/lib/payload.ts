@@ -38,14 +38,29 @@ export type PayloadActivity = {
   image?: PayloadMedia
 }
 
-export type PayloadMediaUpdate = {
+export type PayloadAnnouncement = {
   id: string
   title: string
   titleAr?: string
-  type: 'news' | 'announcement' | 'photo' | 'clipping'
   date: string
   content?: unknown
   contentAr?: unknown
+  image?: PayloadMedia
+}
+
+export type PayloadPhoto = {
+  id: string
+  title: string
+  titleAr?: string
+  date: string
+  image: PayloadMedia
+}
+
+export type PayloadClipping = {
+  id: string
+  title: string
+  titleAr?: string
+  date: string
   image?: PayloadMedia
 }
 
@@ -188,8 +203,14 @@ export const fetchArticles = () =>
 export const fetchActivitiesByType = (type: PayloadActivity['type']) =>
   fetchCollection<PayloadActivity>('activities', { 'where[type][equals]': type })
 
-export const fetchMediaUpdatesByType = (type: PayloadMediaUpdate['type']) =>
-  fetchCollection<PayloadMediaUpdate>('media-updates', { 'where[type][equals]': type })
+export const fetchAnnouncements = () =>
+  fetchCollection<PayloadAnnouncement>('announcements')
+
+export const fetchPhotos = () =>
+  fetchCollection<PayloadPhoto>('photos')
+
+export const fetchClippings = () =>
+  fetchCollection<PayloadClipping>('clippings')
 
 export const fetchParticipants = () =>
   fetchCollection<PayloadParticipant>('participants')
