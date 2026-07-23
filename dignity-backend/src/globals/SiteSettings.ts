@@ -11,15 +11,12 @@ function pair(name: string, label: string, textarea?: boolean): Field[] {
 export const SiteSettings: GlobalConfig = {
   slug: 'site-settings',
   admin: {
+    group: 'Site',
     description: 'Site-wide text: navigation menu, homepage hero, footer, and small UI labels. Editing a field here updates it everywhere it appears on the site.',
   },
   access: {
     read: () => true,
-    update: ({ req }) => {
-      if (!req.user) return false
-      if (req.user.role === 'content-manager') return true
-      return Array.isArray(req.user.section) && req.user.section.includes('site-settings' as any)
-    },
+    update: ({ req }) => req.user?.role === 'content-manager',
   },
   fields: [
     {
