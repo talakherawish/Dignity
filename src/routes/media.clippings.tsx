@@ -25,9 +25,9 @@ function ClippingsPage() {
             <PageHero eyebrow={t("media")} title={page.title ?? t("media.clippings")} description={page.description ?? t("clippings.page.desc")} />
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {isLoading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1, 2, 3].map((n) => (
-              <div key={n} className="border border-border rounded-sm h-72 bg-secondary/30 animate-pulse" />
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+            {[1, 2, 3, 4].map((n) => (
+              <div key={n} className="border border-border rounded-sm h-96 bg-secondary/30 animate-pulse" />
             ))}
           </div>
         ) : items.length === 0 ? (
@@ -35,16 +35,18 @@ function ClippingsPage() {
             {isArabic ? "لا توجد مقالات صحفية منشورة حالياً." : "No clippings published yet."}
           </p>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" dir={isArabic ? "rtl" : "ltr"}>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6" dir={isArabic ? "rtl" : "ltr"}>
             {items.map((item: PayloadClipping) => {
               const url = mediaUrl(item.image);
               const isImage = item.image?.mimeType?.startsWith("image/") ?? false;
+              const thumbnailUrl = item.image?.thumbnail ? mediaUrl(item.image.thumbnail) : "";
+              const previewUrl = isImage ? url : thumbnailUrl;
               return (
                 <div key={item.id} className="border border-border rounded-sm bg-card overflow-hidden hover:shadow-sm transition-shadow flex flex-col">
                   {url && (
-                    <div className="aspect-[4/3] bg-secondary/20 flex items-center justify-center">
-                      {isImage ? (
-                        <img src={url} alt="" className="w-full h-full object-cover" />
+                    <div className="aspect-[1/1.41] bg-secondary/20 flex items-center justify-center">
+                      {previewUrl ? (
+                        <img src={previewUrl} alt="" className="w-full h-full object-cover" />
                       ) : (
                         <FileText className="h-10 w-10 text-muted-foreground/50" />
                       )}
