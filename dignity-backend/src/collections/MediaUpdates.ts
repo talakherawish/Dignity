@@ -3,8 +3,10 @@ import type { CollectionConfig } from 'payload'
 export const MediaUpdates: CollectionConfig = {
   slug: 'media-updates',
   admin: {
+    group: 'Media & Updates',
     useAsTitle: 'title',
     defaultColumns: ['title', 'type', 'date', 'status'],
+    description: 'News, Announcements, Photos, and Clippings all live here — use the Type column/filter to switch between them.',
   },
   versions: {
     drafts: true,
@@ -14,17 +16,9 @@ export const MediaUpdates: CollectionConfig = {
       if (req.user) return true
       return { _status: { equals: 'published' } }
     },
-    create: ({ req }) => {
-      if (!req.user) return false
-      if (req.user.role === 'content-manager') return true
-      return Array.isArray(req.user.section) && req.user.section.includes('media')
-    },
-    update: ({ req }) => {
-      if (!req.user) return false
-      if (req.user.role === 'content-manager') return true
-      return Array.isArray(req.user.section) && req.user.section.includes('media')
-    },
-    delete: ({ req }) => req.user?.role === 'content-manager',
+    create: ({ req }) => !!req.user,
+    update: ({ req }) => !!req.user,
+    delete: ({ req }) => !!req.user,
   },
   fields: [
     {

@@ -3,6 +3,7 @@ import type { CollectionConfig } from 'payload'
 export const Pages: CollectionConfig = {
   slug: 'pages',
   admin: {
+    group: 'Site',
     useAsTitle: 'slug',
     defaultColumns: ['slug', 'title', 'updatedAt'],
     description: 'One entry per page on the site (About, Mission and Vision, Partners, etc). Edit the text below and it updates the live site.',
@@ -15,16 +16,8 @@ export const Pages: CollectionConfig = {
       if (req.user) return true
       return { _status: { equals: 'published' } }
     },
-    create: ({ req }) => {
-      if (!req.user) return false
-      if (req.user.role === 'content-manager') return true
-      return Array.isArray(req.user.section) && req.user.section.includes('pages' as any)
-    },
-    update: ({ req }) => {
-      if (!req.user) return false
-      if (req.user.role === 'content-manager') return true
-      return Array.isArray(req.user.section) && req.user.section.includes('pages' as any)
-    },
+    create: ({ req }) => req.user?.role === 'content-manager',
+    update: ({ req }) => req.user?.role === 'content-manager',
     delete: ({ req }) => req.user?.role === 'content-manager',
   },
   fields: [

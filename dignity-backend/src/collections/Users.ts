@@ -3,6 +3,7 @@ import type { CollectionConfig } from 'payload'
 export const Users: CollectionConfig = {
   slug: 'users',
   admin: {
+    group: 'Admin',
     useAsTitle: 'email',
   },
   auth: true,
@@ -17,31 +18,12 @@ export const Users: CollectionConfig = {
       type: 'select',
       required: true,
       defaultValue: 'editor',
+      admin: {
+        description: 'Content Managers can manage Users and Pages. Editors can create/edit/delete everything else.',
+      },
       options: [
         { label: 'Content Manager', value: 'content-manager' },
         { label: 'Editor', value: 'editor' },
-      ],
-    },
-    {
-      name: 'section',
-      type: 'select',
-      label: 'Assigned Sections',
-      hasMany: true,
-      // Only relevant for editors — which sections they can manage
-      admin: {
-        condition: (data) => data.role === 'editor',
-        description: 'The sections this editor is allowed to manage.',
-      },
-      options: [
-        { label: 'Articles', value: 'articles' },
-        { label: 'Activities', value: 'activities' },
-        { label: 'Media & Updates', value: 'media' },
-        { label: 'Participants', value: 'participants' },
-        { label: 'Publications', value: 'publications' },
-        { label: 'Information', value: 'information' },
-        { label: 'Research Activities', value: 'research' },
-        { label: 'Pages', value: 'pages' },
-        { label: 'Site Settings', value: 'site-settings' },
       ],
     },
   ],

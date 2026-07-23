@@ -3,6 +3,7 @@ import type { CollectionConfig } from 'payload'
 export const Articles: CollectionConfig = {
   slug: 'articles',
   admin: {
+    group: 'Content',
     useAsTitle: 'title',
     defaultColumns: ['title', 'status', 'publishedAt', 'updatedAt'],
   },
@@ -16,20 +17,12 @@ export const Articles: CollectionConfig = {
       if (req.user) return true
       return { _status: { equals: 'published' } }
     },
-    // Editors assigned to 'articles' section + content managers can create
-    create: ({ req }) => {
-      if (!req.user) return false
-      if (req.user.role === 'content-manager') return true
-      return Array.isArray(req.user.section) && req.user.section.includes('articles')
-    },
-    // Same as create
-    update: ({ req }) => {
-      if (!req.user) return false
-      if (req.user.role === 'content-manager') return true
-      return Array.isArray(req.user.section) && req.user.section.includes('articles')
-    },
-    // Only content managers can delete
-    delete: ({ req }) => req.user?.role === 'content-manager',
+    // Any logged-in user can create
+    create: ({ req }) => !!req.user,
+    // Any logged-in user can update
+    update: ({ req }) => !!req.user,
+    // Any logged-in user can delete
+    delete: ({ req }) => !!req.user,
   },
   fields: [
     {

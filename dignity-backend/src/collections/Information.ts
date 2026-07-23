@@ -3,8 +3,10 @@ import type { CollectionConfig } from 'payload'
 export const Information: CollectionConfig = {
   slug: 'information',
   admin: {
+    group: 'Resources',
     useAsTitle: 'title',
     defaultColumns: ['title', 'type', 'status'],
+    description: 'Readings and Documents, and Databases live here — use the Type column/filter to switch between them.',
   },
   versions: {
     drafts: true,
@@ -14,17 +16,9 @@ export const Information: CollectionConfig = {
       if (req.user) return true
       return { _status: { equals: 'published' } }
     },
-    create: ({ req }) => {
-      if (!req.user) return false
-      if (req.user.role === 'content-manager') return true
-      return Array.isArray(req.user.section) && req.user.section.includes('information')
-    },
-    update: ({ req }) => {
-      if (!req.user) return false
-      if (req.user.role === 'content-manager') return true
-      return Array.isArray(req.user.section) && req.user.section.includes('information')
-    },
-    delete: ({ req }) => req.user?.role === 'content-manager',
+    create: ({ req }) => !!req.user,
+    update: ({ req }) => !!req.user,
+    delete: ({ req }) => !!req.user,
   },
   fields: [
     {

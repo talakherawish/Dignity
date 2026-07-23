@@ -3,6 +3,7 @@ import type { CollectionConfig } from 'payload'
 export const Activities: CollectionConfig = {
   slug: 'activities',
   admin: {
+    group: 'Content',
     useAsTitle: 'title',
     defaultColumns: ['title', 'type', 'date', 'status'],
   },
@@ -14,17 +15,9 @@ export const Activities: CollectionConfig = {
       if (req.user) return true
       return { _status: { equals: 'published' } }
     },
-    create: ({ req }) => {
-      if (!req.user) return false
-      if (req.user.role === 'content-manager') return true
-      return Array.isArray(req.user.section) && req.user.section.includes('activities')
-    },
-    update: ({ req }) => {
-      if (!req.user) return false
-      if (req.user.role === 'content-manager') return true
-      return Array.isArray(req.user.section) && req.user.section.includes('activities')
-    },
-    delete: ({ req }) => req.user?.role === 'content-manager',
+    create: ({ req }) => !!req.user,
+    update: ({ req }) => !!req.user,
+    delete: ({ req }) => !!req.user,
   },
   fields: [
     {

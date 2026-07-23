@@ -3,6 +3,7 @@ import type { CollectionConfig } from 'payload'
 export const ResearchActivities: CollectionConfig = {
   slug: 'research-activities',
   admin: {
+    group: 'Content',
     useAsTitle: 'title',
     defaultColumns: ['title', 'status'],
   },
@@ -14,17 +15,9 @@ export const ResearchActivities: CollectionConfig = {
       if (req.user) return true
       return { _status: { equals: 'published' } }
     },
-    create: ({ req }) => {
-      if (!req.user) return false
-      if (req.user.role === 'content-manager') return true
-      return Array.isArray(req.user.section) && req.user.section.includes('research')
-    },
-    update: ({ req }) => {
-      if (!req.user) return false
-      if (req.user.role === 'content-manager') return true
-      return Array.isArray(req.user.section) && req.user.section.includes('research')
-    },
-    delete: ({ req }) => req.user?.role === 'content-manager',
+    create: ({ req }) => !!req.user,
+    update: ({ req }) => !!req.user,
+    delete: ({ req }) => !!req.user,
   },
   fields: [
     {

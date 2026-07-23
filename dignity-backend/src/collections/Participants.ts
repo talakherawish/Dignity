@@ -3,6 +3,7 @@ import type { CollectionConfig } from 'payload'
 export const Participants: CollectionConfig = {
   slug: 'participants',
   admin: {
+    group: 'People',
     useAsTitle: 'name',
     defaultColumns: ['name', 'role', 'category', 'status'],
   },
@@ -14,17 +15,9 @@ export const Participants: CollectionConfig = {
       if (req.user) return true
       return { _status: { equals: 'published' } }
     },
-    create: ({ req }) => {
-      if (!req.user) return false
-      if (req.user.role === 'content-manager') return true
-      return Array.isArray(req.user.section) && req.user.section.includes('participants')
-    },
-    update: ({ req }) => {
-      if (!req.user) return false
-      if (req.user.role === 'content-manager') return true
-      return Array.isArray(req.user.section) && req.user.section.includes('participants')
-    },
-    delete: ({ req }) => req.user?.role === 'content-manager',
+    create: ({ req }) => !!req.user,
+    update: ({ req }) => !!req.user,
+    delete: ({ req }) => !!req.user,
   },
   fields: [
     {
