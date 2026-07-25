@@ -1,6 +1,19 @@
-import { pdf } from 'pdf-to-img'
 import { after } from 'next/server'
 import type { BasePayload, CollectionAfterChangeHook } from 'payload'
+
+// `pdf-to-img` is imported lazily (inside generateThumbnailForPdf) rather than
+// at module top-level. This file is pulled in by Media.ts -> payload.config.ts,
+// so a static top-level import runs the moment the whole Payload config loads —
+// and pdf-to-img's pdfjs-dist dependency throws `ReferenceError: DOMMatrix is
+// not defined` on Vercel's Node runtime (DOMMatrix is a browser/Canvas API, not
+// available in Node by default). That crashed EVERY collection's API route
+// (participants, articles, pages, etc.), not just Media/PDF ones, since it's a
+// module-evaluation failure, not a runtime one. Deferring the import to the
+// moment a PDF is actually processed means a pdf-to-img failure is caught by
+// the existing try/catch in generatePdfThumbnail's after() block below (PDF
+// just keeps its generic-icon placeholder) instead of taking down the whole
+// backend. See [[project_clippings_preview_download_unresolved]]-adjacent
+// incident from 2026-07-25: this exact crash caused a full Payload outage.
 
 /**
  * Auto-generates a page-1 thumbnail for any PDF uploaded to the Media
@@ -92,6 +105,8 @@ export async function generateThumbnailForPdf(
   args: { id: string | number; filename: string; sourceBuffer: Buffer },
 ): Promise<{ thumbnailId: string | number }> {
   const { id, filename, sourceBuffer } = args
+
+  const { pdf } = await import('pdf-to-img')
 
   const base64 = sourceBuffer.toString('base64')
   const dataUrl = `data:application/pdf;base64,${base64}`
