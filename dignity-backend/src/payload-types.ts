@@ -180,6 +180,9 @@ export interface User {
 export interface Media {
   id: string;
   alt: string;
+  /**
+   * Auto-generated preview image (page 1) for PDF uploads. Left empty for non-PDF files.
+   */
   thumbnail?: (string | null) | Media;
   updatedAt: string;
   createdAt: string;
