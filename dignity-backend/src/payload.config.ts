@@ -10,7 +10,7 @@ import { createGithubStorageAdapter } from './lib/githubStorageAdapter'
 
 import { Users } from './collections/Users'
 import { Media } from './collections/Media'
-import { Articles } from './collections/Articles'
+import { News } from './collections/News'
 import { Activities } from './collections/Activities'
 import { Announcements } from './collections/Announcements'
 import { Photos } from './collections/Photos'
@@ -20,6 +20,12 @@ import { Publications } from './collections/Publications'
 import { Information } from './collections/Information'
 import { ResearchActivities } from './collections/ResearchActivities'
 import { Pages } from './collections/Pages'
+import { Research } from './collections/Research'
+import { WindsorDignity } from './collections/WindsorDignity'
+import { PublicationsCollection } from './collections/PublicationsCollection'
+import { Seminars } from './collections/Seminars'
+import { Conferences } from './collections/Conferences'
+import { Meetings } from './collections/Meetings'
 import { SiteSettings } from './globals/SiteSettings'
 
 const filename = fileURLToPath(import.meta.url)
@@ -32,7 +38,7 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Users, Media, Articles, Activities, Announcements, Photos, Clippings, Participants, Publications, Information, ResearchActivities, Pages],
+  collections: [Users, Media, News, Announcements, Photos, Clippings, Participants, Pages, Activities, Research, WindsorDignity, Seminars, Conferences, Meetings, Publications, PublicationsCollection, Information],
   globals: [SiteSettings],
   editor: lexicalEditor(),
   cors: process.env.CORS_ORIGINS

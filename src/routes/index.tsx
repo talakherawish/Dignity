@@ -7,13 +7,13 @@ import { useLanguage, type TranslationKey } from "@/contexts/LanguageContext";
 import { ARTICLES, getField, type Article, type ArticleLang } from "@/data/articles";
 import { withItalicQuotes } from "@/lib/text";
 import {
-  fetchArticles,
+  fetchNews,
   fetchAnnouncements,
   fetchParticipants,
   formatDate,
   mediaUrl,
   extractText,
-  type PayloadArticle,
+  type PayloadNews,
   type PayloadAnnouncement,
   type PayloadParticipant,
 } from "@/lib/payload";
@@ -29,8 +29,8 @@ export const Route = createFileRoute("/")({
 });
 
 
-// ── Map Payload article → local Article shape ─────────────────────────────
-function mapPayloadArticle(pa: PayloadArticle): Article {
+// ── Map Payload news item → local Article shape ─────────────────────────────
+function mapPayloadNews(pa: PayloadNews): Article {
   return {
     id: pa.id,
     image: mediaUrl(pa.image) || "",
@@ -89,12 +89,12 @@ function NewsCarousel() {
   const [visible, setVisible] = useState(true);
   const [paused, setPaused] = useState(false);
 
-  const { data: payloadArticles = [] } = useQuery({
-    queryKey: ["articles"],
-    queryFn: fetchArticles,
+  const { data: payloadNews = [] } = useQuery({
+    queryKey: ["news"],
+    queryFn: fetchNews,
     staleTime: 5 * 60 * 1000,
   });
-  const articles = payloadArticles.length > 0 ? payloadArticles.map(mapPayloadArticle) : ARTICLES;
+  const articles = payloadNews.length > 0 ? payloadNews.map(mapPayloadNews) : ARTICLES;
 
   const goTo = useCallback((next: number) => {
     setVisible(false);
@@ -456,22 +456,6 @@ function Home() {
         </div>
       </section>
 
-      {/* Pillars */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 border-b border-border">
-        <div className="grid gap-8 md:grid-cols-3">
-          {PILLARS.map((p) => (
-            <Link key={p.titleKey} to={p.to} className="group block">
-              <div className="border-t-2 pt-5" style={{ borderColor: p.color }}>
-                <h3 className="font-serif text-xl text-primary mb-2 group-hover:text-accent transition-colors">
-                  {t(p.titleKey)}
-                </h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{t(p.descKey)}</p>
-              </div>
-            </Link>
-          ))}
-        </div>
-      </section>
-
       {/* Latest News — prominently featured */}
       <section className="border-b border-border bg-gradient-to-b from-secondary/5 to-transparent">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -490,6 +474,22 @@ function Home() {
             </Link>
           </div>
           <NewsCarousel />
+        </div>
+      </section>
+
+      {/* Pillars */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 border-b border-border">
+        <div className="grid gap-8 md:grid-cols-3">
+          {PILLARS.map((p) => (
+            <Link key={p.titleKey} to={p.to} className="group block">
+              <div className="border-t-2 pt-5" style={{ borderColor: p.color }}>
+                <h3 className="font-serif text-xl text-primary mb-2 group-hover:text-accent transition-colors">
+                  {t(p.titleKey)}
+                </h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{t(p.descKey)}</p>
+              </div>
+            </Link>
+          ))}
         </div>
       </section>
 

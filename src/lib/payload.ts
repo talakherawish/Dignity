@@ -18,7 +18,7 @@ export type PayloadMedia = {
   thumbnail?: PayloadMedia
 }
 
-export type PayloadArticle = {
+export type PayloadNews = {
   id: string
   title: string
   titleAr?: string
@@ -200,8 +200,8 @@ async function fetchCollection<T>(
 
 // ── Public fetch functions ─────────────────────────────────────────────────
 
-export const fetchArticles = () =>
-  fetchCollection<PayloadArticle>('articles')
+export const fetchNews = () =>
+  fetchCollection<PayloadNews>('news')
 
 export const fetchActivitiesByType = (type: PayloadActivity['type']) =>
   fetchCollection<PayloadActivity>('activities', { 'where[type][equals]': type })

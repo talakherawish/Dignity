@@ -5,11 +5,11 @@ import { ChevronDown } from "lucide-react";
 import { PageLayout } from "@/components/PageLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { ARTICLES, getField, getBody, type Article, type ArticleLang } from "@/data/articles";
-import { fetchArticles, formatDate, mediaUrl, extractText, type PayloadArticle } from "@/lib/payload";
+import { fetchNews, formatDate, mediaUrl, extractText, type PayloadNews } from "@/lib/payload";
 import { usePage } from "@/hooks/usePage";
 import { withItalicQuotes } from "@/lib/text";
 
-function mapPayloadArticle(pa: PayloadArticle): Article {
+function mapPayloadNews(pa: PayloadNews): Article {
   return {
     id: pa.id,
     image: mediaUrl(pa.image) || "",
@@ -88,12 +88,12 @@ function ArticleCard({ article }: { article: Article }) {
 function NewsPage() {
   const { t } = useLanguage();
     const page = usePage("news");
-  const { data: payloadArticles = [], isLoading } = useQuery({
-    queryKey: ["articles"],
-    queryFn: fetchArticles,
+  const { data: payloadNews = [], isLoading } = useQuery({
+    queryKey: ["news"],
+    queryFn: fetchNews,
     staleTime: 5 * 60 * 1000,
   });
-  const articles = payloadArticles.length > 0 ? payloadArticles.map(mapPayloadArticle) : ARTICLES;
+  const articles = payloadNews.length > 0 ? payloadNews.map(mapPayloadNews) : ARTICLES;
 
   return (
     <PageLayout>

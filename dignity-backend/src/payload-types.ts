@@ -69,16 +69,21 @@ export interface Config {
   collections: {
     users: User;
     media: Media;
-    articles: Article;
-    activities: Activity;
+    news: News;
     announcements: Announcement;
     photos: Photo;
     clippings: Clipping;
     participants: Participant;
-    publications: Publication;
-    information: Information;
-    'research-activities': ResearchActivity;
     pages: Page;
+    activities: Activity;
+    research: Research;
+    'windsor-dignity': WindsorDignity;
+    seminars: Seminar;
+    conferences: Conference;
+    meetings: Meeting;
+    publications: Publication;
+    'publications-items': PublicationsItem;
+    information: Information;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -88,16 +93,21 @@ export interface Config {
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
-    articles: ArticlesSelect<false> | ArticlesSelect<true>;
-    activities: ActivitiesSelect<false> | ActivitiesSelect<true>;
+    news: NewsSelect<false> | NewsSelect<true>;
     announcements: AnnouncementsSelect<false> | AnnouncementsSelect<true>;
     photos: PhotosSelect<false> | PhotosSelect<true>;
     clippings: ClippingsSelect<false> | ClippingsSelect<true>;
     participants: ParticipantsSelect<false> | ParticipantsSelect<true>;
-    publications: PublicationsSelect<false> | PublicationsSelect<true>;
-    information: InformationSelect<false> | InformationSelect<true>;
-    'research-activities': ResearchActivitiesSelect<false> | ResearchActivitiesSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
+    activities: ActivitiesSelect<false> | ActivitiesSelect<true>;
+    research: ResearchSelect<false> | ResearchSelect<true>;
+    'windsor-dignity': WindsorDignitySelect<false> | WindsorDignitySelect<true>;
+    seminars: SeminarsSelect<false> | SeminarsSelect<true>;
+    conferences: ConferencesSelect<false> | ConferencesSelect<true>;
+    meetings: MeetingsSelect<false> | MeetingsSelect<true>;
+    publications: PublicationsSelect<false> | PublicationsSelect<true>;
+    'publications-items': PublicationsItemsSelect<false> | PublicationsItemsSelect<true>;
+    information: InformationSelect<false> | InformationSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -197,12 +207,12 @@ export interface Media {
   focalY?: number | null;
 }
 /**
- * Shows on the website under About the Dignity Initiative → News. Add a new entry here for each news post.
+ * Add a new entry here for each news post.
  *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "articles".
+ * via the `definition` "news".
  */
-export interface Article {
+export interface News {
   id: string;
   title: string;
   titleAr?: string | null;
@@ -225,53 +235,6 @@ export interface Article {
     [k: string]: unknown;
   } | null;
   contentAr?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  image?: (string | null) | Media;
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
-}
-/**
- * Shows on the website under Activities → Seminars / Conferences / Meetings / The Windsor Birzeit Dignity Initiative. Use the Type field to choose which one.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "activities".
- */
-export interface Activity {
-  id: string;
-  title: string;
-  titleAr?: string | null;
-  type: 'seminar' | 'conference' | 'meeting' | 'windsor-birzeit';
-  date: string;
-  description?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  descriptionAr?: {
     root: {
       type: string;
       children: {
@@ -397,6 +360,342 @@ export interface Participant {
   _status?: ('draft' | 'published') | null;
 }
 /**
+ * Shows on the website under About the Dignity Initiative → About the Initiative / Mission and Vision / Partners. The Page Identifier tells you which one each entry is (about / mission / partners) — edit the text fields below to change what shows on the live site.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages".
+ */
+export interface Page {
+  id: string;
+  /**
+   * Matches a fixed page on the site, e.g. about, mission, partners. Do not edit unless you know what this connects to.
+   */
+  slug: string;
+  title?: string | null;
+  titleAr?: string | null;
+  description?: string | null;
+  descriptionAr?: string | null;
+  body?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  bodyAr?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Shows on the website under Activities → Seminars / Conferences / Meetings / The Windsor Birzeit Dignity Initiative. Use the Type field to choose which one.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "activities".
+ */
+export interface Activity {
+  id: string;
+  title: string;
+  titleAr?: string | null;
+  type: 'seminar' | 'conference' | 'meeting' | 'windsor-birzeit';
+  date: string;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  descriptionAr?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  image?: (string | null) | Media;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Research projects and areas undertaken by the Dignity initiative.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "research".
+ */
+export interface Research {
+  id: string;
+  title: string;
+  titleAr?: string | null;
+  description?: string | null;
+  descriptionAr?: string | null;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  contentAr?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  image?: (string | null) | Media;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Windsor Birzeit Dignity Initiative events, activities, and information.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "windsor-dignity".
+ */
+export interface WindsorDignity {
+  id: string;
+  title: string;
+  titleAr?: string | null;
+  date?: string | null;
+  description?: string | null;
+  descriptionAr?: string | null;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  contentAr?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  image?: (string | null) | Media;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Seminars organized through the Dignity initiative.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "seminars".
+ */
+export interface Seminar {
+  id: string;
+  title: string;
+  titleAr?: string | null;
+  date: string;
+  description?: string | null;
+  descriptionAr?: string | null;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  contentAr?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  image?: (string | null) | Media;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Conferences organized through the Dignity initiative.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "conferences".
+ */
+export interface Conference {
+  id: string;
+  title: string;
+  titleAr?: string | null;
+  date: string;
+  description?: string | null;
+  descriptionAr?: string | null;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  contentAr?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  image?: (string | null) | Media;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Meetings organized through the Dignity initiative.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "meetings".
+ */
+export interface Meeting {
+  id: string;
+  title: string;
+  titleAr?: string | null;
+  date: string;
+  description?: string | null;
+  descriptionAr?: string | null;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  contentAr?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  image?: (string | null) | Media;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
  * Books, Papers, Reports, Brochures, Theses, Audiovisual, and Posters all live here — use the Type column/filter to switch between them.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -440,6 +739,28 @@ export interface Publication {
     };
     [k: string]: unknown;
   } | null;
+  file?: (string | null) | Media;
+  image?: (string | null) | Media;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Books, papers, reports, brochures, theses, audiovisual, and posters produced by the Dignity initiative.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "publications-items".
+ */
+export interface PublicationsItem {
+  id: string;
+  type: 'books' | 'papers' | 'reports' | 'brochures' | 'theses' | 'audiovisual' | 'posters';
+  title: string;
+  titleAr?: string | null;
+  author?: string | null;
+  authorAr?: string | null;
+  date?: string | null;
+  description?: string | null;
+  descriptionAr?: string | null;
   file?: (string | null) | Media;
   image?: (string | null) | Media;
   updatedAt: string;
@@ -494,101 +815,6 @@ export interface Information {
   _status?: ('draft' | 'published') | null;
 }
 /**
- * Shows on the website under Activities → Research.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "research-activities".
- */
-export interface ResearchActivity {
-  id: string;
-  title: string;
-  titleAr?: string | null;
-  description?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  descriptionAr?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  image?: (string | null) | Media;
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
-}
-/**
- * Shows on the website under About the Dignity Initiative → About the Initiative / Mission and Vision / Partners. The Page Identifier tells you which one each entry is (about / mission / partners) — edit the text fields below to change what shows on the live site.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "pages".
- */
-export interface Page {
-  id: string;
-  /**
-   * Matches a fixed page on the site, e.g. about, mission, partners. Do not edit unless you know what this connects to.
-   */
-  slug: string;
-  title?: string | null;
-  titleAr?: string | null;
-  description?: string | null;
-  descriptionAr?: string | null;
-  body?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  bodyAr?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
-}
-/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
@@ -621,12 +847,8 @@ export interface PayloadLockedDocument {
         value: string | Media;
       } | null)
     | ({
-        relationTo: 'articles';
-        value: string | Article;
-      } | null)
-    | ({
-        relationTo: 'activities';
-        value: string | Activity;
+        relationTo: 'news';
+        value: string | News;
       } | null)
     | ({
         relationTo: 'announcements';
@@ -645,20 +867,44 @@ export interface PayloadLockedDocument {
         value: string | Participant;
       } | null)
     | ({
+        relationTo: 'pages';
+        value: string | Page;
+      } | null)
+    | ({
+        relationTo: 'activities';
+        value: string | Activity;
+      } | null)
+    | ({
+        relationTo: 'research';
+        value: string | Research;
+      } | null)
+    | ({
+        relationTo: 'windsor-dignity';
+        value: string | WindsorDignity;
+      } | null)
+    | ({
+        relationTo: 'seminars';
+        value: string | Seminar;
+      } | null)
+    | ({
+        relationTo: 'conferences';
+        value: string | Conference;
+      } | null)
+    | ({
+        relationTo: 'meetings';
+        value: string | Meeting;
+      } | null)
+    | ({
         relationTo: 'publications';
         value: string | Publication;
       } | null)
     | ({
+        relationTo: 'publications-items';
+        value: string | PublicationsItem;
+      } | null)
+    | ({
         relationTo: 'information';
         value: string | Information;
-      } | null)
-    | ({
-        relationTo: 'research-activities';
-        value: string | ResearchActivity;
-      } | null)
-    | ({
-        relationTo: 'pages';
-        value: string | Page;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -747,9 +993,9 @@ export interface MediaSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "articles_select".
+ * via the `definition` "news_select".
  */
-export interface ArticlesSelect<T extends boolean = true> {
+export interface NewsSelect<T extends boolean = true> {
   title?: T;
   titleAr?: T;
   date?: T;
@@ -757,22 +1003,6 @@ export interface ArticlesSelect<T extends boolean = true> {
   excerptAr?: T;
   content?: T;
   contentAr?: T;
-  image?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  _status?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "activities_select".
- */
-export interface ActivitiesSelect<T extends boolean = true> {
-  title?: T;
-  titleAr?: T;
-  type?: T;
-  date?: T;
-  description?: T;
-  descriptionAr?: T;
   image?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -839,12 +1069,147 @@ export interface ParticipantsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages_select".
+ */
+export interface PagesSelect<T extends boolean = true> {
+  slug?: T;
+  title?: T;
+  titleAr?: T;
+  description?: T;
+  descriptionAr?: T;
+  body?: T;
+  bodyAr?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "activities_select".
+ */
+export interface ActivitiesSelect<T extends boolean = true> {
+  title?: T;
+  titleAr?: T;
+  type?: T;
+  date?: T;
+  description?: T;
+  descriptionAr?: T;
+  image?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "research_select".
+ */
+export interface ResearchSelect<T extends boolean = true> {
+  title?: T;
+  titleAr?: T;
+  description?: T;
+  descriptionAr?: T;
+  content?: T;
+  contentAr?: T;
+  image?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "windsor-dignity_select".
+ */
+export interface WindsorDignitySelect<T extends boolean = true> {
+  title?: T;
+  titleAr?: T;
+  date?: T;
+  description?: T;
+  descriptionAr?: T;
+  content?: T;
+  contentAr?: T;
+  image?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "seminars_select".
+ */
+export interface SeminarsSelect<T extends boolean = true> {
+  title?: T;
+  titleAr?: T;
+  date?: T;
+  description?: T;
+  descriptionAr?: T;
+  content?: T;
+  contentAr?: T;
+  image?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "conferences_select".
+ */
+export interface ConferencesSelect<T extends boolean = true> {
+  title?: T;
+  titleAr?: T;
+  date?: T;
+  description?: T;
+  descriptionAr?: T;
+  content?: T;
+  contentAr?: T;
+  image?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "meetings_select".
+ */
+export interface MeetingsSelect<T extends boolean = true> {
+  title?: T;
+  titleAr?: T;
+  date?: T;
+  description?: T;
+  descriptionAr?: T;
+  content?: T;
+  contentAr?: T;
+  image?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "publications_select".
  */
 export interface PublicationsSelect<T extends boolean = true> {
   title?: T;
   titleAr?: T;
   type?: T;
+  author?: T;
+  authorAr?: T;
+  date?: T;
+  description?: T;
+  descriptionAr?: T;
+  file?: T;
+  image?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "publications-items_select".
+ */
+export interface PublicationsItemsSelect<T extends boolean = true> {
+  type?: T;
+  title?: T;
+  titleAr?: T;
   author?: T;
   authorAr?: T;
   date?: T;
@@ -868,36 +1233,6 @@ export interface InformationSelect<T extends boolean = true> {
   descriptionAr?: T;
   link?: T;
   file?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  _status?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "research-activities_select".
- */
-export interface ResearchActivitiesSelect<T extends boolean = true> {
-  title?: T;
-  titleAr?: T;
-  description?: T;
-  descriptionAr?: T;
-  image?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  _status?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "pages_select".
- */
-export interface PagesSelect<T extends boolean = true> {
-  slug?: T;
-  title?: T;
-  titleAr?: T;
-  description?: T;
-  descriptionAr?: T;
-  body?: T;
-  bodyAr?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
