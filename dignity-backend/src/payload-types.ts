@@ -215,7 +215,7 @@ export interface Media {
 export interface News {
   id: string;
   title: string;
-  titleAr?: string | null;
+  titleAr: string;
   date: string;
   excerpt?: string | null;
   excerptAr?: string | null;
@@ -263,7 +263,7 @@ export interface News {
 export interface Announcement {
   id: string;
   title: string;
-  titleAr?: string | null;
+  titleAr: string;
   date: string;
   content?: {
     root: {
@@ -312,7 +312,7 @@ export interface Photo {
    * A short caption for this photo, e.g. "Seminar on Dignity and Praxis, March 2026".
    */
   title: string;
-  titleAr?: string | null;
+  titleAr: string;
   date: string;
   image: string | Media;
   updatedAt: string;
@@ -331,7 +331,7 @@ export interface Clipping {
    * The headline or name of the publication this clipping is from.
    */
   title: string;
-  titleAr?: string | null;
+  titleAr: string;
   date: string;
   image?: (string | null) | Media;
   updatedAt: string;
@@ -347,7 +347,7 @@ export interface Clipping {
 export interface Participant {
   id: string;
   name: string;
-  nameAr?: string | null;
+  nameAr: string;
   category: 'faculty' | 'researcher' | 'intern' | 'student' | 'visitor';
   title?: string | null;
   titleAr?: string | null;
@@ -418,7 +418,7 @@ export interface Page {
 export interface Activity {
   id: string;
   title: string;
-  titleAr?: string | null;
+  titleAr: string;
   type: 'seminar' | 'conference' | 'meeting' | 'windsor-birzeit';
   date: string;
   description?: {
@@ -465,7 +465,7 @@ export interface Activity {
 export interface Research {
   id: string;
   title: string;
-  titleAr?: string | null;
+  titleAr: string;
   description?: string | null;
   descriptionAr?: string | null;
   content?: {
@@ -512,7 +512,7 @@ export interface Research {
 export interface WindsorDignity {
   id: string;
   title: string;
-  titleAr?: string | null;
+  titleAr: string;
   date?: string | null;
   description?: string | null;
   descriptionAr?: string | null;
@@ -560,7 +560,7 @@ export interface WindsorDignity {
 export interface Seminar {
   id: string;
   title: string;
-  titleAr?: string | null;
+  titleAr: string;
   date: string;
   description?: string | null;
   descriptionAr?: string | null;
@@ -608,7 +608,7 @@ export interface Seminar {
 export interface Conference {
   id: string;
   title: string;
-  titleAr?: string | null;
+  titleAr: string;
   date: string;
   description?: string | null;
   descriptionAr?: string | null;
@@ -656,7 +656,7 @@ export interface Conference {
 export interface Meeting {
   id: string;
   title: string;
-  titleAr?: string | null;
+  titleAr: string;
   date: string;
   description?: string | null;
   descriptionAr?: string | null;
@@ -704,7 +704,7 @@ export interface Meeting {
 export interface Publication {
   id: string;
   title: string;
-  titleAr?: string | null;
+  titleAr: string;
   type: 'books' | 'papers' | 'reports' | 'brochures' | 'theses' | 'audiovisual' | 'posters';
   author?: string | null;
   authorAr?: string | null;
@@ -755,7 +755,7 @@ export interface PublicationsItem {
   id: string;
   type: 'books' | 'papers' | 'reports' | 'brochures' | 'theses' | 'audiovisual' | 'posters';
   title: string;
-  titleAr?: string | null;
+  titleAr: string;
   author?: string | null;
   authorAr?: string | null;
   date?: string | null;
@@ -776,7 +776,7 @@ export interface PublicationsItem {
 export interface Information {
   id: string;
   title: string;
-  titleAr?: string | null;
+  titleAr: string;
   type: 'readings-documents' | 'databases';
   description?: {
     root: {

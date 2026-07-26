@@ -1,21 +1,6 @@
-import { Link } from "@tanstack/react-router";
 import { BookOpen, Database, Facebook, Library, Mail, Twitter, Youtube } from "lucide-react";
 import { useState } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
-
-const EXPLORE_LINKS = [
-  { key: "about.initiative" as const, to: "/about" },
-  { key: "projects.research" as const, to: "/projects/research" },
-  { key: "activities.seminars" as const, to: "/activities/seminars" },
-  { key: "media.news" as const, to: "/media/news" },
-] as const;
-
-const PARTICIPANT_LINKS = [
-  { key: "about.faculty" as const, to: "/about/participants" },
-  { key: "about.researchers" as const, to: "/about/participants" },
-  { key: "about.students" as const, to: "/about/participants" },
-  { key: "about.partners" as const, to: "/about/partners" },
-] as const;
 
 const RESOURCES = [
   { key: "footer.studying" as const, Icon: BookOpen },
@@ -40,7 +25,7 @@ export function SiteFooter() {
 
       {/* Resources bar */}
       <div className="border-b border-white/10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
           <div className="flex flex-wrap items-center justify-center gap-2">
             <span className="text-[10px] uppercase tracking-[0.18em] text-white/35 font-semibold me-2">
               {t("footer.resources")}
@@ -61,53 +46,20 @@ export function SiteFooter() {
         </div>
       </div>
 
-      {/* Main grid */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-9 grid gap-7 sm:grid-cols-2 lg:grid-cols-4">
+      {/*
+        Main grid — three balanced columns. The subscribe form + socials used to
+        sit in their own full-width band below; folding them in here as a third
+        column removes an entire horizontal band (shorter footer) and keeps the
+        remaining content from looking sparse now that Explore/Participants are gone.
+      */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-7 grid gap-x-8 gap-y-7 sm:grid-cols-2 lg:grid-cols-3">
         {/* Brand */}
         <div>
           <div className="font-serif text-lg font-semibold text-white mb-0.5">Dignity</div>
           <div className="text-[9px] uppercase tracking-[0.18em] text-white/35 mb-3">
             Academic Initiative
           </div>
-          <p className="text-xs text-white/55 leading-relaxed">{t("footer.about")}</p>
-        </div>
-
-        {/* Explore */}
-        <div>
-          <h4 className="text-[9px] uppercase tracking-[0.18em] font-semibold text-white/35 mb-3">
-            {t("footer.explore")}
-          </h4>
-          <ul className="space-y-2">
-            {EXPLORE_LINKS.map(({ key, to }) => (
-              <li key={key}>
-                <Link
-                  to={to}
-                  className="text-xs text-white/60 hover:text-[color:var(--brand-magenta)] transition-colors"
-                >
-                  {t(key)}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        {/* Participants */}
-        <div>
-          <h4 className="text-[9px] uppercase tracking-[0.18em] font-semibold text-white/35 mb-3">
-            {t("footer.participants")}
-          </h4>
-          <ul className="space-y-2">
-            {PARTICIPANT_LINKS.map(({ key, to }) => (
-              <li key={key}>
-                <Link
-                  to={to}
-                  className="text-xs text-white/60 hover:text-[color:var(--brand-magenta)] transition-colors"
-                >
-                  {t(key)}
-                </Link>
-              </li>
-            ))}
-          </ul>
+          <p className="text-xs text-white/55 leading-relaxed max-w-xs">{t("footer.about")}</p>
         </div>
 
         {/* Contact */}
@@ -116,11 +68,14 @@ export function SiteFooter() {
             {t("footer.contact")}
           </h4>
           <address className="not-italic space-y-1 text-xs text-white/60">
-            <p className="font-semibold text-white/75 mb-1">{t("footer.university")}</p>
+            <p className="font-semibold text-white/75">{t("footer.university")}</p>
             <p>{t("footer.pobox")}</p>
             <p>{t("footer.zip")}</p>
-            <p>{t("footer.phone")}</p>
-            <p>{t("footer.fax")}</p>
+            {/* Phone + fax share a row — they're short, and it keeps the block compact */}
+            <p className="flex flex-wrap gap-x-3">
+              <span>{t("footer.phone")}</span>
+              <span>{t("footer.fax")}</span>
+            </p>
             <a
               href="mailto:Dignity@birzeit.edu"
               className="block hover:text-[color:var(--brand-magenta)] transition-colors"
@@ -129,36 +84,32 @@ export function SiteFooter() {
             </a>
           </address>
         </div>
-      </div>
 
-      {/* Subscribe + socials */}
-      <div className="border-t border-white/10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-3 flex-wrap">
-            <span className="text-xs font-medium text-white/60 whitespace-nowrap">
-              {t("footer.subscribe")}
-            </span>
-            <form
-              onSubmit={(e) => { e.preventDefault(); setEmail(""); }}
-              className="flex items-center gap-2"
+        {/* Stay in touch — subscribe + socials */}
+        <div className="sm:col-span-2 lg:col-span-1">
+          <h4 className="text-[9px] uppercase tracking-[0.18em] font-semibold text-white/35 mb-3">
+            {t("footer.subscribe")}
+          </h4>
+          <form
+            onSubmit={(e) => { e.preventDefault(); setEmail(""); }}
+            className="flex items-center gap-2 max-w-xs"
+          >
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder={t("footer.subscribe.placeholder")}
+              className="h-8 min-w-0 flex-1 rounded-sm border border-white/20 bg-white/5 px-3 text-xs text-white placeholder:text-white/30 focus:outline-none focus:border-[color:var(--brand-magenta)] transition-colors"
+            />
+            <button
+              type="submit"
+              className="h-8 px-3.5 rounded-sm bg-[color:var(--brand-magenta)] text-white text-xs font-medium hover:bg-[color:var(--brand-magenta)]/80 transition-colors shrink-0"
             >
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder={t("footer.subscribe.placeholder")}
-                className="h-8 w-40 rounded-sm border border-white/20 bg-white/5 px-3 text-xs text-white placeholder:text-white/30 focus:outline-none focus:border-[color:var(--brand-magenta)] transition-colors"
-              />
-              <button
-                type="submit"
-                className="h-8 px-3.5 rounded-sm bg-[color:var(--brand-magenta)] text-white text-xs font-medium hover:bg-[color:var(--brand-magenta)]/80 transition-colors shrink-0"
-              >
-                {t("footer.subscribe.btn")}
-              </button>
-            </form>
-          </div>
+              {t("footer.subscribe.btn")}
+            </button>
+          </form>
 
-          <div className="flex items-center gap-2">
+          <div className="mt-4 flex items-center gap-2">
             {[
               { Icon: Facebook, label: "Facebook", href: "#" },
               { Icon: Twitter, label: "Twitter / X", href: "#" },
@@ -181,7 +132,7 @@ export function SiteFooter() {
 
       {/* Copyright */}
       <div className="border-t border-white/10 bg-black/20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-col sm:flex-row items-center justify-between gap-2">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-col sm:flex-row items-center justify-between gap-2">
           <p className="text-[10px] text-white/35">{t("footer.copyright")}</p>
           <nav className="flex items-center gap-4">
             {[

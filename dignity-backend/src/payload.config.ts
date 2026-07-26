@@ -7,6 +7,14 @@ import { fileURLToPath } from 'url'
 import sharp from 'sharp'
 
 import { createGithubStorageAdapter } from './lib/githubStorageAdapter'
+import { enforceBilingual, enforceBilingualGlobal } from './lib/bilingual'
+import { resolveGithubStorageConfig } from './lib/storageConfig'
+
+// Resolved once at config load so a missing/half-set storage configuration is
+// reported immediately and loudly, rather than silently degrading to the
+// ephemeral local filesystem (which is what destroyed every previously
+// uploaded file). See src/lib/storageConfig.ts.
+const storage = resolveGithubStorageConfig()
 
 import { Users } from './collections/Users'
 import { Media } from './collections/Media'
@@ -38,8 +46,12 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Users, Media, News, Announcements, Photos, Clippings, Participants, Pages, Activities, Research, WindsorDignity, Seminars, Conferences, Meetings, Publications, PublicationsCollection, Information],
-  globals: [SiteSettings],
+  // Every collection is wrapped in enforceBilingual() so that any English /
+  // Arabic field pair (title/titleAr, body/bodyAr, …) must be filled in both
+  // languages before a document can be published — see src/lib/bilingual.ts.
+  // Wrapping centrally means new collections are covered automatically.
+  collections: [Users, Media, News, Announcements, Photos, Clippings, Participants, Pages, Activities, Research, WindsorDignity, Seminars, Conferences, Meetings, Publications, PublicationsCollection, Information].map(enforceBilingual),
+  globals: [SiteSettings].map(enforceBilingualGlobal),
   editor: lexicalEditor(),
   cors: process.env.CORS_ORIGINS
   ? process.env.CORS_ORIGINS.split(',').map((s) => s.trim())
@@ -62,15 +74,15 @@ export default buildConfig({
     // src/lib/githubStorageAdapter.ts for the full explanation and the
     // required GITHUB_* environment variables.
     cloudStoragePlugin({
-      enabled: Boolean(process.env.GITHUB_TOKEN),
+      enabled: storage.enabled,
       collections: {
         media: {
           adapter: createGithubStorageAdapter({
-            token: process.env.GITHUB_TOKEN || '',
-            owner: process.env.GITHUB_REPO_OWNER || '',
-            repo: process.env.GITHUB_REPO_NAME || '',
-            branch: process.env.GITHUB_REPO_BRANCH || 'main',
-            uploadsPath: process.env.GITHUB_UPLOADS_PATH || 'public/uploads',
+            token: storage.settings?.token ?? '',
+            owner: storage.settings?.owner ?? '',
+            repo: storage.settings?.repo ?? '',
+            branch: storage.settings?.branch ?? 'main',
+            uploadsPath: storage.settings?.uploadsPath ?? 'public/uploads',
           }),
           disablePayloadAccessControl: true,
         },

@@ -1,4 +1,5 @@
 import { after } from 'next/server'
+import sharp from 'sharp'
 import type { BasePayload, CollectionAfterChangeHook } from 'payload'
 
 // `pdf-to-img` is imported lazily (inside generateThumbnailForPdf) rather than
@@ -86,7 +87,20 @@ import type { BasePayload, CollectionAfterChangeHook } from 'payload'
 // expensive steps stacked on top of the original upload. Skip files above
 // this size — those are exactly the ones most likely to time out, and are
 // unusually large for a press clipping/brochure PDF in the first place.
-export const MAX_SOURCE_BYTES = 10 * 1024 * 1024 // 10MB
+export const MAX_SOURCE_BYTES = 25 * 1024 * 1024 // 25MB
+
+/**
+ * Width (px) the page-1 render is downscaled to before being stored.
+ *
+ * pdf-to-img at `scale: 2` renders a poster-sized page at ~2834x3968, which
+ * encodes to a ~7MB PNG — measured on this project's own clipping PDFs. That
+ * is far too heavy to store and then load a dozen of into a card grid, and
+ * base64-inflates to ~10MB when committed through the GitHub Contents API.
+ * The cards display at roughly 300px wide, so 800px still leaves 2x headroom
+ * for high-DPI screens while cutting the stored file ~24x (7.18MB -> ~299KB
+ * on the measured sample).
+ */
+const THUMBNAIL_WIDTH = 800
 
 /**
  * Core rasterize-and-attach logic, shared by the afterChange hook (for new
@@ -118,6 +132,18 @@ export async function generateThumbnailForPdf(
     throw new Error('pdf-to-img returned no page-1 buffer (empty or corrupt PDF?)')
   }
 
+  // Downscale before storing — see THUMBNAIL_WIDTH. `withoutEnlargement` keeps
+  // pages that are already narrower than the target at their native size
+  // instead of upscaling them into a blurry, needlessly larger file.
+  // `palette: true` quantises to an indexed palette, which suits the flat
+  // colour of scanned documents and infographic-style posters and roughly
+  // halves the stored file again (measured 883KB -> 357KB on this project's
+  // own clipping) with no visible loss at the size these are displayed.
+  const thumbnailBuffer = await sharp(firstPageBuffer)
+    .resize({ width: THUMBNAIL_WIDTH, withoutEnlargement: true })
+    .png({ palette: true, quality: 85, compressionLevel: 9 })
+    .toBuffer()
+
   const originalName = filename.replace(/\.pdf$/i, '')
   const thumbnailFilename = `${originalName}-thumb.png`
 
@@ -127,10 +153,10 @@ export async function generateThumbnailForPdf(
       alt: `Preview of ${filename}`,
     },
     file: {
-      data: firstPageBuffer,
+      data: thumbnailBuffer,
       mimetype: 'image/png',
       name: thumbnailFilename,
-      size: firstPageBuffer.length,
+      size: thumbnailBuffer.length,
     },
   })
 

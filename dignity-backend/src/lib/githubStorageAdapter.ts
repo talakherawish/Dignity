@@ -68,6 +68,41 @@ interface GithubContentsApiFile {
 
 const GITHUB_API_BASE = 'https://api.github.com'
 
+/**
+ * Turn GitHub's opaque write failures into something a human can act on.
+ *
+ * The most common misconfiguration by far is a fine-grained personal access
+ * token created with "Contents: Read-only" instead of "Contents: Read and
+ * write". GitHub answers that with a bare
+ * `403 {"message":"Resource not accessible by personal access token"}`, which
+ * names neither the permission involved nor how to grant it — and, because a
+ * read-only token still passes every *read* check (the repo is visible, the
+ * file listing works), it looks exactly like a working configuration until the
+ * first upload. Spelling out the fix here saves rediscovering it from scratch.
+ */
+function explainGithubWriteFailure(status: number, body: string): string | undefined {
+  if (status === 403 && body.includes('Resource not accessible by personal access token')) {
+    return (
+      'The GitHub token is missing write access. Fine-grained tokens need ' +
+      'Repository permissions -> Contents: "Read and write" (a read-only token ' +
+      'passes every read check, so this only surfaces on the first upload). ' +
+      'Update the token at github.com -> Settings -> Developer settings -> ' +
+      'Personal access tokens -> Fine-grained tokens, and make sure this ' +
+      'repository is included in its selected repositories.'
+    )
+  }
+  if (status === 401) {
+    return 'The GitHub token is invalid or expired — generate a new one and update GITHUB_TOKEN.'
+  }
+  if (status === 404) {
+    return (
+      'GitHub returned 404 for this repository path. Check GITHUB_REPO_OWNER / ' +
+      'GITHUB_REPO_NAME / GITHUB_REPO_BRANCH, and that the token grants access to this repository.'
+    )
+  }
+  return undefined
+}
+
 function buildRepoPath(uploadsPath: string, filename: string): string {
   // Normalize slashes and strip any leading/trailing slash so we always end
   // up with a clean "public/uploads/filename.ext" style path, regardless of
@@ -173,8 +208,10 @@ export function createGithubStorageAdapter({
 
       if (!response.ok) {
         const errorBody = await response.text()
+        const hint = explainGithubWriteFailure(response.status, errorBody)
         throw new Error(
-          `GitHub upload failed for "${filename}" (${mimeType}): ${response.status} ${errorBody}`,
+          `GitHub upload failed for "${filename}" (${mimeType}): ${response.status} ${errorBody}` +
+            (hint ? `\n\n  -> ${hint}` : ''),
         )
       }
 
@@ -207,7 +244,11 @@ export function createGithubStorageAdapter({
 
       if (!response.ok) {
         const errorBody = await response.text()
-        throw new Error(`GitHub delete failed for "${filename}": ${response.status} ${errorBody}`)
+        const hint = explainGithubWriteFailure(response.status, errorBody)
+        throw new Error(
+          `GitHub delete failed for "${filename}": ${response.status} ${errorBody}` +
+            (hint ? `\n\n  -> ${hint}` : ''),
+        )
       }
     },
 

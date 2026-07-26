@@ -122,8 +122,6 @@ const translations = {
     "projects.placeholder.desc": "A short description of the project, its objectives, methodology, and expected outcomes will be added here.",
     // FOOTER
     "footer.about": "An academic initiative dedicated to research, dialogue, and human dignity.",
-    "footer.explore": "Explore",
-    "footer.participants": "Participants",
     "footer.contact": "Contact",
     "footer.university": "Birzeit University",
         "footer.pobox": "Room 5, Graduate Studies Building",
@@ -243,8 +241,6 @@ const translations = {
     "projects.placeholder.desc": "Une courte description du projet, ses objectifs, sa méthodologie et les résultats attendus seront ajoutés ici.",
     // FOOTER
     "footer.about": "Une initiative académique dédiée à la recherche, au dialogue et à la dignité humaine.",
-    "footer.explore": "Explorer",
-    "footer.participants": "Participants",
     "footer.contact": "Contact",
     "footer.university": "Université Birzeit",
         "footer.pobox": "Salle 5, Bâtiment des études supérieures",
@@ -388,8 +384,6 @@ const translations = {
     "projects.placeholder.desc": "سيُضاف هنا وصف مختصر للمشروع وأهدافه ومنهجيته والنتائج المتوقعة.",
     // FOOTER
     "footer.about": "مبادرة أكاديمية مكرسة للبحث والحوار والكرامة الإنسانية.",
-    "footer.explore": "استكشف",
-    "footer.participants": "المشاركون",
     "footer.contact": "اتصل بنا",
     "footer.university": "جامعة بيرزيت",
         "footer.pobox": "غرفة 5، مبنى الدراسات العليا",
@@ -468,8 +462,6 @@ const SITE_SETTINGS_KEY_MAP: Partial<Record<TranslationKey, string>> = {
     "news.collapse": "newsCollapse",
 
     "footer.about": "footerAbout",
-    "footer.explore": "footerExplore",
-    "footer.participants": "footerParticipants",
     "footer.contact": "footerContact",
     "footer.university": "footerUniversity",
     "footer.pobox": "footerPobox",

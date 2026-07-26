@@ -3,8 +3,10 @@ import { Reveal } from "./Reveal";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 // ── Fallback content (shown while Payload loads, or if a field is empty) ───
-// Mirrors the real copy stored in the Payload "about" page doc, so there's
-// no visible flash/placeholder mismatch once the fetch resolves.
+// Mirrors the real copy stored in the Payload "about"/"mission" page docs
+// (see dignity-backend /api/seed-pages), so there's no visible flash or blank
+// state if the fetch is slow, fails, or the page hasn't been seeded yet.
+// Keep this in sync with the seed route so both sources stay 100% equivalent.
 
 const FALLBACK_PARAGRAPHS_EN = [
   "The Dignity Initiative (Karama) is a research initiative at Birzeit University. Its mission is to advance knowledge production that safeguards and fosters human dignity. The initiative is grounded in the understanding that dignity — an interdisciplinary concept — serves as a meaningful point of intersection between diverse academic fields, and a foundational pillar for scientific research ethics.",
@@ -42,13 +44,6 @@ const FALLBACK_ITEMS_AR = [
   "دعم المبادرات الطلابية والمجتمعية التي تنسجم مع رسالة المبادرة.",
 ];
 
-const PRINCIPLES: { en: string; ar: string }[] = [
-  { en: "Free Will", ar: "الإرادة الحرة" },
-  { en: "Equality", ar: "المساواة" },
-  { en: "Justice", ar: "العدالة" },
-  { en: "Praxis", ar: "الممارسة" },
-];
-
 // Mission & Vision fallback copy (used while Payload loads / if empty)
 const FALLBACK_MISSION_PARAGRAPHS_EN = [
   "Karama's mission is to advance a scholarly culture in which human dignity is both the object of inquiry and the standard by which research practice is judged — treating free will, equality, and justice as inseparable from the pursuit of knowledge.",
@@ -58,6 +53,13 @@ const FALLBACK_MISSION_PARAGRAPHS_EN = [
 const FALLBACK_MISSION_PARAGRAPHS_AR = [
   "تتمثل رسالة مبادرة كرامة في تعزيز ثقافة أكاديمية تكون فيها الكرامة الإنسانية موضوع بحث ومعيار حكم على الممارسة البحثية في آن واحد، بحيث لا تنفصل الإرادة الحرة والمساواة والعدالة عن مسار إنتاج المعرفة.",
   "وتتمثل رؤيتها في بيئة أكاديمية، في فلسطين وخارجها، يشكّل فيها البحث متداخل الحقول حول الكرامة حقلاً معترفاً به ومستداماً، يسهم في صياغة أخلاقيات البحث العلمي، ويؤثر في السياسات والنقاش العام، ويعزز دور الجامعة بوصفها فضاءً للفكر النقدي والممارسة التحررية.",
+];
+
+const PRINCIPLES: { en: string; ar: string }[] = [
+  { en: "Free Will", ar: "الإرادة الحرة" },
+  { en: "Equality", ar: "المساواة" },
+  { en: "Justice", ar: "العدالة" },
+  { en: "Praxis", ar: "الممارسة" },
 ];
 
 export function AboutMissionPage({
@@ -85,8 +87,16 @@ export function AboutMissionPage({
   const fallbackParagraphs = isArabic ? FALLBACK_PARAGRAPHS_AR : FALLBACK_PARAGRAPHS_EN;
   const fallbackItems = isArabic ? FALLBACK_ITEMS_AR : FALLBACK_ITEMS_EN;
 
+  // Prefer Payload content; fall back to the equivalent hardcoded copy above
+  // while loading, on fetch failure, or if the page hasn't been seeded.
   const resolvedItems = items && items.length > 0 ? items : fallbackItems;
   const resolvedParagraphs = paragraphs && paragraphs.length > 0 ? paragraphs : fallbackParagraphs;
+
+  const fallbackMissionParagraphs = isArabic
+    ? FALLBACK_MISSION_PARAGRAPHS_AR
+    : FALLBACK_MISSION_PARAGRAPHS_EN;
+  const missionParagraphs =
+    mission.paragraphs && mission.paragraphs.length > 0 ? mission.paragraphs : fallbackMissionParagraphs;
 
   // The last paragraph, when present alongside items, is treated as the
   // lead-in line introducing the avenues grid (e.g. "Karama realizes its
@@ -94,12 +104,6 @@ export function AboutMissionPage({
   const hasLeadIn = resolvedParagraphs.length > 1 && resolvedItems.length > 0;
   const introParagraphs = hasLeadIn ? resolvedParagraphs.slice(0, -1) : resolvedParagraphs;
   const leadIn = hasLeadIn ? resolvedParagraphs[resolvedParagraphs.length - 1] : undefined;
-
-  const fallbackMissionParagraphs = isArabic
-    ? FALLBACK_MISSION_PARAGRAPHS_AR
-    : FALLBACK_MISSION_PARAGRAPHS_EN;
-  const missionParagraphs =
-    mission.paragraphs && mission.paragraphs.length > 0 ? mission.paragraphs : fallbackMissionParagraphs;
 
   return (
     <PageLayout>

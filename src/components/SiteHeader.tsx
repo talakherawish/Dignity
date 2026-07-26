@@ -99,7 +99,7 @@ function SearchBar() {
       {open && (
         <form
           onSubmit={handleSubmit}
-          className={`absolute ${isArabic ? "left-8" : "right-8"} top-1/2 -translate-y-1/2 z-50`}
+          className={`absolute ${isArabic ? "left-6 sm:left-8" : "right-6 sm:right-8"} top-1/2 -translate-y-1/2 z-50`}
         >
           <input
             ref={inputRef}
@@ -108,7 +108,7 @@ function SearchBar() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder={isArabic ? "ابحث..." : "Search..."}
-            className={`w-44 sm:w-64 px-3.5 py-2 border border-border rounded-full bg-background shadow-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-accent transition-all ${isArabic ? "font-arabic text-[15px] text-right" : "text-sm"}`}
+            className={`w-28 sm:w-40 lg:w-48 px-3 sm:px-3.5 py-1.5 sm:py-2 border border-border rounded-full bg-background shadow-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-accent transition-all text-xs sm:text-sm ${isArabic ? "font-arabic text-[13px] sm:text-[15px] text-right" : ""}`}
           />
         </form>
       )}
@@ -128,7 +128,7 @@ function LanguageSwitcher() {
             aria-label={ariaLabel}
             onClick={() => setLang(code)}
             className={[
-              "rounded-full px-2.5 py-1 text-[11px] font-medium transition-all duration-200 select-none",
+              "rounded-full px-2 sm:px-2.5 py-0.5 sm:py-1 text-[10px] sm:text-[11px] font-medium transition-all duration-200 select-none",
               code === "ar" ? "font-arabic tracking-normal" : "tracking-wide",
               active
                 ? "bg-accent text-white shadow-sm scale-105"
@@ -173,7 +173,7 @@ function NavItem({ item }: { item: Item }) {
         {label}
         <ChevronDown className="h-3 w-3 shrink-0" />
       </button>
-      <div className="absolute left-0 top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 pointer-events-none group-hover:pointer-events-auto">
+      <div className={`absolute ${isArabic ? "right-0" : "left-0"} top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 pointer-events-none group-hover:pointer-events-auto`}>
         <div className="min-w-56 bg-card border border-border rounded-md shadow-lg py-2 pointer-events-auto">
           {item.children.map((c) =>
             c.children ? (
@@ -187,7 +187,7 @@ function NavItem({ item }: { item: Item }) {
                   {t(c.labelKey)}
                   <ChevronDown className="h-3 w-3 -rotate-90 shrink-0" />
                 </button>
-                <div className="absolute left-full top-0 pl-1 opacity-0 invisible group-hover/sub:opacity-100 group-hover/sub:visible transition-all z-[60] pointer-events-none group-hover/sub:pointer-events-auto">
+                <div className={`absolute ${isArabic ? "right-full -mr-1" : "left-full pl-1"} top-0 opacity-0 invisible group-hover/sub:opacity-100 group-hover/sub:visible transition-all z-[60] pointer-events-none group-hover/sub:pointer-events-auto`}>
                   <div className="min-w-48 bg-card border border-border rounded-md shadow-lg py-2 pointer-events-auto">
                     {c.children.map((s) => (
                       <Link
@@ -329,8 +329,11 @@ export function SiteHeader() {
             "linear-gradient(90deg, var(--brand-cyan) 0%, var(--brand-cyan) 33%, var(--brand-magenta) 33%, var(--brand-magenta) 66%, oklch(0.18 0.01 270) 66%, oklch(0.18 0.01 270) 100%)",
         }}
       />
-      {/* Full-width wrapper keeps the logo pinned to the leading edge */}
-      <div className="w-full">
+      {/* Full-width wrapper keeps the logo pinned to the leading edge.
+          overflow-hidden only below lg: it stops the wide logo from forcing
+          horizontal scroll on mobile, but must NOT clip on desktop or it would
+          cut off the nav dropdowns (which hang below the header row). */}
+      <div className="w-full overflow-hidden lg:overflow-visible">
         {/*
           dir follows the active language: logo / nav / actions mirror to
           RTL in Arabic and stay LTR in English — nothing is locked anymore.
@@ -338,17 +341,20 @@ export function SiteHeader() {
           shrunk/enlarged by the html.lang-ar scale, and shrinks responsively
           so the logo (a wide ~3:1 image) never forces the page wider than
           the viewport on mobile.
+
+          Mobile layout: [logo_shrink | spacer | actions]
+          Desktop layout: [logo_shrink | nav_center | actions]
         */}
         <div
           dir={isArabic ? "rtl" : "ltr"}
-          className="grid grid-cols-[auto_1fr_auto] items-stretch h-[64px] sm:h-[80px] lg:h-[101px]"
+          className="grid grid-cols-[minmax(0,_auto)_1fr_auto] items-stretch h-[60px] sm:h-[80px] lg:h-[101px]"
         >
           {/* Logo block fills header height and stays flush to the leading edge */}
-          <Link to="/" className="flex items-stretch shrink-0 h-[64px] sm:h-[80px] lg:h-[101px]">
+          <Link to="/" className="flex items-stretch shrink-0 min-w-0 h-[60px] sm:h-[80px] lg:h-[101px]">
             <img
               src={logo}
               alt="Dignity Initiative"
-              style={{ height: "100%", width: "auto", display: "block" }}
+              style={{ height: "100%", width: "auto", display: "block", maxHeight: "100%", objectFit: "contain" }}
               className="object-contain"
             />
           </Link>
@@ -361,7 +367,7 @@ export function SiteHeader() {
           </nav>
 
           {/* Search + Language switcher + mobile menu toggle — vertically centered */}
-          <div className="self-center pe-3 sm:pe-6 lg:pe-8 flex items-center gap-1.5 sm:gap-3">
+          <div className="self-center pe-2 sm:pe-4 lg:pe-8 flex items-center gap-1 sm:gap-2 lg:gap-3 shrink-0">
             <SearchBar />
             <LanguageSwitcher />
             <button
