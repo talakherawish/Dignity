@@ -472,16 +472,18 @@ function Home() {
         </div>
       </section>
 
-      {/* Announcements above News */}
-      <AnnouncementsSection />
-
-      {/* News */}
-      <section className="border-b border-border">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="flex items-center justify-between mb-6">
+      {/* Latest News — prominently featured */}
+      <section className="border-b border-border bg-gradient-to-b from-secondary/5 to-transparent">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <div className="flex items-center justify-between mb-8">
             <div className="flex items-center gap-3">
-              <div className="h-5 w-1 rounded-full" style={{ background: "var(--brand-cyan)" }} />
-              <h2 className="font-serif text-2xl text-primary">{t("media.news")}</h2>
+              <div className="h-6 w-1.5 rounded-full" style={{ background: "var(--brand-cyan)" }} />
+              <div>
+                <div className="text-[10px] uppercase tracking-[0.22em] text-[color:var(--brand-cyan)] font-semibold mb-1">
+                  {t("news.eyebrow")}
+                </div>
+                <h2 className="font-serif text-3xl lg:text-[2.25rem] text-primary">{t("news.title")}</h2>
+              </div>
             </div>
             <Link to="/media/news" className="text-xs font-medium text-muted-foreground hover:text-accent transition-colors tracking-wide">
               {t("news.viewAll")}
@@ -490,6 +492,9 @@ function Home() {
           <NewsCarousel />
         </div>
       </section>
+
+      {/* Announcements */}
+      <AnnouncementsSection />
 
       {/* Meet the Team */}
       <TeamSection />
