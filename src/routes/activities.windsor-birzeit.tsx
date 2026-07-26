@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { PageLayout, PageHero } from "@/components/PageLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { fetchActivitiesByType, formatDate, extractText, type PayloadActivity } from "@/lib/payload";
+import { fetchWindsorDignity, formatDate, extractText, type PayloadActivity } from "@/lib/payload";
 import { usePage } from "@/hooks/usePage";
 
 export const Route = createFileRoute("/activities/windsor-birzeit")({
@@ -14,8 +14,8 @@ function WindsorPage() {
   const { t, lang, isArabic } = useLanguage();
     const page = usePage("windsor");
   const { data: items = [], isLoading } = useQuery({
-    queryKey: ["activities", "windsor-birzeit"],
-    queryFn: () => fetchActivitiesByType("windsor-birzeit"),
+    queryKey: ["windsor-dignity"],
+    queryFn: fetchWindsorDignity,
     staleTime: 5 * 60 * 1000,
   });
 

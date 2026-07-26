@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { PageLayout, PageHero } from "@/components/PageLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { fetchActivitiesByType, formatDate, extractText, type PayloadActivity } from "@/lib/payload";
+import { fetchMeetings, formatDate, extractText, type PayloadActivity } from "@/lib/payload";
 import { usePage } from "@/hooks/usePage";
 
 export const Route = createFileRoute("/activities/meetings")({
@@ -14,8 +14,8 @@ function MeetingsPage() {
   const { t, lang, isArabic } = useLanguage();
     const page = usePage("meetings");
   const { data: items = [], isLoading } = useQuery({
-    queryKey: ["activities", "meeting"],
-    queryFn: () => fetchActivitiesByType("meeting"),
+    queryKey: ["meetings"],
+    queryFn: fetchMeetings,
     staleTime: 5 * 60 * 1000,
   });
 

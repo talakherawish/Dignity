@@ -203,6 +203,23 @@ async function fetchCollection<T>(
 export const fetchNews = () =>
   fetchCollection<PayloadNews>('news')
 
+// Activities — separated into individual collections
+export const fetchSeminars = () =>
+  fetchCollection<PayloadActivity>('seminars')
+
+export const fetchConferences = () =>
+  fetchCollection<PayloadActivity>('conferences')
+
+export const fetchMeetings = () =>
+  fetchCollection<PayloadActivity>('meetings')
+
+export const fetchResearch = () =>
+  fetchCollection<PayloadActivity>('research')
+
+export const fetchWindsorDignity = () =>
+  fetchCollection<PayloadActivity>('windsor-dignity')
+
+// Legacy function — kept for compatibility, falls back to old activities collection if needed
 export const fetchActivitiesByType = (type: PayloadActivity['type']) =>
   fetchCollection<PayloadActivity>('activities', { 'where[type][equals]': type })
 
@@ -223,10 +240,20 @@ export const fetchParticipants = () =>
 export const fetchResearchActivities = () =>
   fetchCollection<PayloadResearchActivity>('research-activities')
 
+// Publications — fetch from unified publications-items collection
 export const fetchPublicationsByType = (type: PayloadPublication['type']) =>
   // depth: 2 so item.image.thumbnail (the auto-generated PDF preview) resolves
   // to a full Media object, not just an id string.
-  fetchCollection<PayloadPublication>('publications', { 'where[type][equals]': type, depth: '2' })
+  fetchCollection<PayloadPublication>('publications-items', { 'where[type][equals]': type, depth: '2' })
+
+// Convenience functions for each publication type
+export const fetchBooks = () => fetchPublicationsByType('books')
+export const fetchPapers = () => fetchPublicationsByType('papers')
+export const fetchReports = () => fetchPublicationsByType('reports')
+export const fetchBrochures = () => fetchPublicationsByType('brochures')
+export const fetchTheses = () => fetchPublicationsByType('theses')
+export const fetchAudiovisual = () => fetchPublicationsByType('audiovisual')
+export const fetchPosters = () => fetchPublicationsByType('posters')
 
 export const fetchInformationByType = (type: PayloadInformationItem['type']) =>
   fetchCollection<PayloadInformationItem>('information', { 'where[type][equals]': type })
