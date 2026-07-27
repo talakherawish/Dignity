@@ -44,7 +44,7 @@ function ClippingsPage() {
               return (
                 <div key={item.id} className="border border-border rounded-sm bg-card overflow-hidden hover:shadow-sm transition-shadow flex flex-col">
                   {url && (
-                    <div className="aspect-[1/1.41] bg-secondary/20 flex items-center justify-center">
+                    <div className="aspect-[3/4] bg-secondary/20 flex items-center justify-center">
                       {previewUrl ? (
                         <img src={previewUrl} alt="" className="w-full h-full object-cover" />
                       ) : (
@@ -52,7 +52,7 @@ function ClippingsPage() {
                       )}
                     </div>
                   )}
-                  <div className={"p-5 flex flex-col flex-1"}>
+                  <div className={"p-4 flex flex-col flex-1"}>
                     <div className="text-[9px] uppercase tracking-widest text-muted-foreground font-semibold mb-1.5">
                       {formatDate(item.date, lang === "ar" ? "ar" : "en")}
                     </div>
