@@ -35,14 +35,16 @@ function ClippingsPage() {
             {isArabic ? "لا توجد مقالات صحفية منشورة حالياً." : "No clippings published yet."}
           </p>
         ) : (
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6" dir={isArabic ? "rtl" : "ltr"}>
+          // flex-wrap so a partly-filled last row centres rather than hugging
+          // the leading edge; card widths reproduce the 2 / 4 column steps.
+          <div className="flex flex-wrap justify-center gap-6" dir={isArabic ? "rtl" : "ltr"}>
             {items.map((item: PayloadClipping) => {
               const url = mediaUrl(item.image);
               const isImage = item.image?.mimeType?.startsWith("image/") ?? false;
               const thumbnailUrl = item.image?.thumbnail ? mediaUrl(item.image.thumbnail) : "";
               const previewUrl = isImage ? url : thumbnailUrl;
               return (
-                <div key={item.id} className="border border-border rounded-sm bg-card overflow-hidden hover:shadow-sm transition-shadow flex flex-col">
+                <div key={item.id} className="w-[calc(50%-0.75rem)] lg:w-[calc(25%-1.125rem)] border border-border rounded-sm bg-card overflow-hidden hover:shadow-sm transition-shadow flex flex-col">
                   {url && (
                     <div className="aspect-[3/4] bg-secondary/20 flex items-center justify-center">
                       {previewUrl ? (

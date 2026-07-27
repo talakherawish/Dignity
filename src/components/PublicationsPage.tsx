@@ -8,6 +8,7 @@ import {
   extractText,
   mediaUrl,
   youtubeThumbnail,
+  youtubeThumbnailFallback,
   type PayloadPublication,
 } from "@/lib/payload";
 import { usePage } from "@/hooks/usePage";
@@ -118,7 +119,14 @@ export function PublicationsPage({
         ) : items.length === 0 ? (
           <p className="text-sm text-muted-foreground py-12 text-center">{t("publications.empty")}</p>
         ) : (
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6" dir={isArabic ? "rtl" : "ltr"}>
+          // flex-wrap rather than grid so a partly-filled last row centres
+          // instead of hugging the leading edge — a section with two entries
+          // would otherwise sit alone in the first two of four columns. Card
+          // widths reproduce the 2 / 4 column steps, less their share of the gap.
+          <div
+            className="flex flex-wrap justify-center gap-6"
+            dir={isArabic ? "rtl" : "ltr"}
+          >
             {items.map((item) => {
               const desc =
                 lang === "ar" ? (item.descLinesAr.length > 0 ? item.descLinesAr : item.descLines) : item.descLines;
@@ -126,7 +134,7 @@ export function PublicationsPage({
               return (
                 <div
                   key={item.id}
-                  className="border border-border rounded-sm bg-card overflow-hidden hover:shadow-sm transition-shadow flex flex-col"
+                  className="w-[calc(50%-0.75rem)] lg:w-[calc(25%-1.125rem)] border border-border rounded-sm bg-card overflow-hidden hover:shadow-sm transition-shadow flex flex-col"
                 >
                   {/* Video items open on YouTube; document items keep the plain
                       preview, since their action lives in the download button. */}
@@ -136,24 +144,30 @@ export function PublicationsPage({
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label={isArabic ? "مشاهدة الفيديو" : "Watch video"}
-                      className="group relative block aspect-[1/1.41] bg-secondary/20 overflow-hidden"
+                      className="group block aspect-[1/1.41] bg-secondary/20 overflow-hidden"
                     >
                       {item.previewUrl ? (
                         <img
                           src={item.previewUrl}
                           alt=""
+                          // A 16:9 still inside a portrait card: object-cover
+                          // fills the width and trims the top and bottom rather
+                          // than pillarboxing it against the card background.
                           className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                          onError={(e) => {
+                            // maxresdefault does not exist for every video —
+                            // drop to the always-present, equally unpadded mq
+                            // still rather than showing a broken image.
+                            const img = e.currentTarget;
+                            const fallback = youtubeThumbnailFallback(item.linkUrl);
+                            if (fallback && img.src !== fallback) img.src = fallback;
+                          }}
                         />
                       ) : (
-                        <span className="absolute inset-0 flex items-center justify-center">
+                        <span className="flex h-full w-full items-center justify-center">
                           <FileText className="h-10 w-10 text-muted-foreground/50" />
                         </span>
                       )}
-                      <span className="absolute inset-0 flex items-center justify-center bg-black/15 group-hover:bg-black/25 transition-colors">
-                        <span className="flex h-12 w-12 items-center justify-center rounded-full bg-black/60 text-white shadow-lg transition-transform duration-200 group-hover:scale-110">
-                          <Play className="h-5 w-5 translate-x-[1px]" fill="currentColor" />
-                        </span>
-                      </span>
                     </a>
                   ) : (
                     <div className="aspect-[1/1.41] bg-secondary/20 flex items-center justify-center">

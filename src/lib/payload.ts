@@ -96,22 +96,36 @@ export type PayloadPublication = {
   link?: string
 }
 
+/** The video id inside a YouTube watch/embed/short/youtu.be URL. */
+function youtubeId(url: string | undefined): string | undefined {
+  if (!url) return undefined
+  const match = url.match(
+    /(?:youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/,
+  )
+  return match?.[1]
+}
+
 /**
  * Poster image for a YouTube URL, derived from the video id.
  *
  * Audiovisual items are links rather than uploads, so they have no file to
- * rasterise a preview from and would otherwise render as a bare document
- * icon. YouTube exposes a still for every video at a predictable path, which
- * gives these cards the same visual weight as the PDF ones. `hqdefault` is
- * used rather than `maxresdefault` because the latter 404s for videos that
- * were never uploaded in HD.
+ * rasterise a preview from and would otherwise render as a bare document icon.
+ *
+ * `maxresdefault` is deliberate: YouTube's `hqdefault` is a 4:3 canvas with the
+ * 16:9 frame letterboxed inside it, so cards built from it carry black bars
+ * along the top and bottom. The `maxres`/`mq` variants are the true frame with
+ * no padding. `maxresdefault` is absent for videos never uploaded in HD, hence
+ * the fallback below.
  */
 export function youtubeThumbnail(url: string | undefined): string {
-  if (!url) return ''
-  const match = url.match(
-    /(?:youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/,
-  )
-  return match ? `https://img.youtube.com/vi/${match[1]}/hqdefault.jpg` : ''
+  const id = youtubeId(url)
+  return id ? `https://img.youtube.com/vi/${id}/maxresdefault.jpg` : ''
+}
+
+/** Always-present, letterbox-free fallback for when `maxresdefault` 404s. */
+export function youtubeThumbnailFallback(url: string | undefined): string {
+  const id = youtubeId(url)
+  return id ? `https://img.youtube.com/vi/${id}/mqdefault.jpg` : ''
 }
 
 export type PayloadInformationItem = {
@@ -150,8 +164,25 @@ export type PayloadSiteSettings = Record<string, string | undefined>
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
-/** Extract paragraph strings from a Payload Lexical richText JSON object. */
+/**
+ * Extract paragraph strings from a Payload field that holds prose.
+ *
+ * Collections are not consistent about how they store it: the page/news
+ * bodies are Lexical richText, while the per-activity collections
+ * (seminars, conferences, meetings, research, windsor-dignity) declare
+ * `description` as a plain textarea. Callers render both through this, and a
+ * string used to fall straight through the `typeof !== 'object'` guard and
+ * return `[]` — which is why a seminar with a full write-up displayed as a
+ * bare headline. Handle both shapes, splitting plain text on blank lines the
+ * way the textarea presents it.
+ */
 export function extractText(lexical: unknown): string[] {
+  if (typeof lexical === 'string') {
+    return lexical
+      .split(/\n\s*\n/)
+      .map((p) => p.trim())
+      .filter(Boolean)
+  }
   if (!lexical || typeof lexical !== 'object') return []
   const root = (lexical as Record<string, unknown>).root as Record<string, unknown> | undefined
   if (!root) return []
