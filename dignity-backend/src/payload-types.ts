@@ -762,6 +762,10 @@ export interface PublicationsItem {
   description?: string | null;
   descriptionAr?: string | null;
   file?: (string | null) | Media;
+  /**
+   * Use for items that live elsewhere rather than as an uploaded file — a YouTube video, for example. Leave empty when a file is attached above.
+   */
+  link?: string | null;
   image?: (string | null) | Media;
   updatedAt: string;
   createdAt: string;
@@ -1216,6 +1220,7 @@ export interface PublicationsItemsSelect<T extends boolean = true> {
   description?: T;
   descriptionAr?: T;
   file?: T;
+  link?: T;
   image?: T;
   updatedAt?: T;
   createdAt?: T;

@@ -172,13 +172,34 @@ export async function generateThumbnailForPdf(
 }
 
 export const generatePdfThumbnail: CollectionAfterChangeHook = async ({ doc, req, operation, previousDoc }) => {
-  if (operation !== 'create') return doc
   if (doc.mimeType !== 'application/pdf') return doc
-  // Guard against re-triggering on the thumbnail PNG this hook itself
-  // creates via payload.update below (that write has no `mimeType` change
-  // relevant here since PNGs never match the check above, but keeping this
-  // explicit protects against future edits to this file).
-  if (previousDoc?.thumbnail) return doc
+
+  // Runs for BOTH create and update. Replacing the file on an existing Media
+  // document used to leave the old (or missing) thumbnail in place, so an
+  // editor fixing a broken PDF had to delete the document and start over —
+  // re-uploading in place appeared to do nothing.
+  //
+  // `req.file` is the thing that makes this safe to run on update: it is only
+  // populated when the request actually carried a new file. Editing metadata
+  // (alt text, say) leaves it undefined and exits here, so a metadata-only
+  // save never burns a rasterise + two GitHub writes.
+  //
+  // It also breaks the potential hook loop: the `payload.update` that attaches
+  // the thumbnail below is a programmatic write with no file, so it re-enters
+  // this hook and immediately returns at this guard. (The thumbnail PNG's own
+  // `payload.create` is filtered earlier by the mimeType check.)
+  const sourceFileBuffer = req.file?.data
+  if (!sourceFileBuffer) return doc
+
+  // The thumbnail being replaced, so it can be cleaned up once its
+  // replacement exists — otherwise every re-upload would strand an orphaned
+  // PNG in both the Media collection and the storage repo.
+  const previousThumbnailId =
+    operation === 'update' && previousDoc?.thumbnail
+      ? typeof previousDoc.thumbnail === 'object'
+        ? previousDoc.thumbnail.id
+        : previousDoc.thumbnail
+      : undefined
 
   const filesize = typeof doc.filesize === 'number' ? doc.filesize : 0
   if (filesize > MAX_SOURCE_BYTES) {
@@ -188,15 +209,14 @@ export const generatePdfThumbnail: CollectionAfterChangeHook = async ({ doc, req
     return doc
   }
 
-  // Capture the already-uploaded file's bytes now, synchronously, while
-  // req.file is still guaranteed to be populated (this is the same request
-  // that just uploaded it). This buffer is closed over by the after()
-  // callback below so thumbnailing never depends on req.file surviving
-  // until that deferred callback actually runs, nor on re-fetching the file
-  // back over the network (which requires a correctly configured
-  // `serverURL` — not currently set in payload.config.ts — and would add an
-  // avoidable network round-trip on top of everything else).
-  const sourceFileBuffer = req.file?.data
+  // The bytes were captured above, synchronously, while req.file is still
+  // guaranteed to be populated (this is the same request that just uploaded
+  // it). That buffer is closed over by the after() callback below so
+  // thumbnailing never depends on req.file surviving until that deferred
+  // callback actually runs, nor on re-fetching the file back over the network
+  // (which requires a correctly configured `serverURL` — not currently set in
+  // payload.config.ts — and would add an avoidable network round-trip on top
+  // of everything else).
   const docId = doc.id
   const docFilename = doc.filename ?? 'file'
 
@@ -214,6 +234,20 @@ export const generatePdfThumbnail: CollectionAfterChangeHook = async ({ doc, req
         filename: docFilename,
         sourceBuffer: sourceFileBuffer,
       })
+
+      // Only once the replacement exists — deleting first would leave the
+      // document with no preview at all if rasterising then failed.
+      if (previousThumbnailId) {
+        try {
+          await req.payload.delete({ collection: 'media', id: previousThumbnailId })
+        } catch (cleanupError) {
+          // A stranded thumbnail is untidy, not broken: the document already
+          // points at its new preview. Log and move on.
+          req.payload.logger.warn(
+            `Could not remove the replaced thumbnail (${previousThumbnailId}) for "${docFilename}": ${cleanupError instanceof Error ? cleanupError.message : String(cleanupError)}`,
+          )
+        }
+      }
     } catch (error) {
       // Never let a thumbnail-generation failure surface anywhere the
       // editor would see it — the original file (and its normal

@@ -81,6 +81,15 @@ export const PublicationsCollection: CollectionConfig = {
       label: 'PDF or File',
     },
     {
+      name: 'link',
+      type: 'text',
+      label: 'External Link (e.g. YouTube video)',
+      admin: {
+        description:
+          'Use for items that live elsewhere rather than as an uploaded file — a YouTube video, for example. Leave empty when a file is attached above.',
+      },
+    },
+    {
       name: 'image',
       type: 'upload',
       relationTo: 'media',
