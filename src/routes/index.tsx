@@ -2,7 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { ChevronLeft, ChevronRight, X, Mail } from "lucide-react";
-import { PageLayout, ImagePlaceholder } from "@/components/PageLayout";
+import { PageLayout } from "@/components/PageLayout";
+import officeImg from "@/assets/dignity-office.jpg";
 import { useLanguage, type TranslationKey } from "@/contexts/LanguageContext";
 import { ARTICLES, getField, type Article, type ArticleLang } from "@/data/articles";
 import { withItalicQuotes } from "@/lib/text";
@@ -452,7 +453,16 @@ function Home() {
               </Link>
             </div>
           </div>
-          <ImagePlaceholder label="Hero image placeholder" ratio="3/2" />
+          {/* The initiative's entrance at Birzeit's Faculty of Graduate Studies
+              and Research. `aspect-[3/2]` matches the placeholder this replaced,
+              so the hero's two columns stay balanced; the photo is 4:3, so
+              object-cover trims the top and bottom rather than letterboxing. */}
+          <img
+            src={officeImg}
+            alt="Entrance to the Dignity Initiative at Birzeit University's Faculty of Graduate Studies and Research"
+            loading="eager"
+            className="w-full aspect-[3/2] object-cover rounded-sm border border-border"
+          />
         </div>
       </section>
 
