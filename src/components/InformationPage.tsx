@@ -4,7 +4,6 @@ import { PageLayout, PageHero } from "@/components/PageLayout";
 import { useLanguage, type TranslationKey } from "@/contexts/LanguageContext";
 import {
   fetchInformationByType,
-  extractText,
   mediaUrl,
   type PayloadInformationItem,
 } from "@/lib/payload";
@@ -46,9 +45,6 @@ export function InformationPage({
         ) : (
           <div className="space-y-4" dir={isArabic ? "rtl" : "ltr"}>
             {items.map((item: PayloadInformationItem) => {
-              const desc = extractText(
-                lang === "ar" ? (item.descriptionAr ?? item.description) : item.description,
-              );
               const fileUrl = mediaUrl(item.file);
               return (
                 <div
@@ -63,15 +59,6 @@ export function InformationPage({
                     >
                       {lang === "ar" ? (item.titleAr ?? item.title) : item.title}
                     </h3>
-                    {desc.length > 0 && (
-                      <p
-                        className={
-                          "text-sm text-muted-foreground leading-relaxed" + (isArabic ? " text-right" : "")
-                        }
-                      >
-                        {desc[0]}
-                      </p>
-                    )}
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
                     {item.link && (

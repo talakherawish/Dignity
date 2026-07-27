@@ -5,7 +5,6 @@ import { useLanguage, type TranslationKey } from "@/contexts/LanguageContext";
 import {
   fetchPublicationsByType,
   formatDate,
-  extractText,
   mediaUrl,
   youtubeThumbnail,
   youtubeThumbnailFallback,
@@ -23,8 +22,6 @@ type DisplayPublication = {
   author?: string;
   authorAr?: string;
   date: string;
-  descLines: string[];
-  descLinesAr: string[];
   fileUrl: string;
   imageUrl: string;
   imageIsPhoto: boolean;
@@ -53,8 +50,6 @@ function fromPayload(item: PayloadPublication): DisplayPublication {
     author: item.author,
     authorAr: item.authorAr,
     date: item.date,
-    descLines: extractText(item.description),
-    descLinesAr: extractText(item.descriptionAr),
     fileUrl: mediaUrl(item.file),
     imageUrl: mediaUrl(item.image),
     imageIsPhoto,
@@ -70,8 +65,6 @@ function fromFallback(item: PublicationFallbackItem): DisplayPublication {
     author: item.author,
     authorAr: item.authorAr,
     date: item.date,
-    descLines: item.description ? [item.description] : [],
-    descLinesAr: item.descriptionAr ? [item.descriptionAr] : [],
     fileUrl: item.fileUrl,
     imageUrl: "",
     imageIsPhoto: false,
@@ -128,8 +121,6 @@ export function PublicationsPage({
             dir={isArabic ? "rtl" : "ltr"}
           >
             {items.map((item) => {
-              const desc =
-                lang === "ar" ? (item.descLinesAr.length > 0 ? item.descLinesAr : item.descLines) : item.descLines;
               const fileUrl = item.fileUrl;
               return (
                 <div
@@ -225,16 +216,6 @@ export function PublicationsPage({
                         )
                       )}
                     </div>
-                    {desc.length > 0 && (
-                      <p
-                        className={
-                          "text-sm text-muted-foreground leading-relaxed mt-2" +
-                          (isArabic ? " text-right" : "")
-                        }
-                      >
-                        {desc[0]}
-                      </p>
-                    )}
                   </div>
                 </div>
               );
