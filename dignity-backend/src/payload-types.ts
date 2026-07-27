@@ -360,7 +360,7 @@ export interface Participant {
   _status?: ('draft' | 'published') | null;
 }
 /**
- * Shows on the website under About the Dignity Initiative → About the Initiative / Mission and Vision / Partners. The Page Identifier tells you which one each entry is (about / mission / partners) — edit the text fields below to change what shows on the live site.
+ * The heading and intro text for each page on the site — including About the Initiative and Mission & Vision. Open an entry and edit the title, intro and body in English and Arabic; the live site updates to match. The Page Identifier column shows which page each entry drives.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "pages".
@@ -410,7 +410,7 @@ export interface Page {
   _status?: ('draft' | 'published') | null;
 }
 /**
- * Shows on the website under Activities → Seminars / Conferences / Meetings / The Windsor Birzeit Dignity Initiative. Use the Type field to choose which one.
+ * Superseded — add activities to Seminars, Conferences, Meetings, Research or The Windsor Birzeit Dignity Initiative instead.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "activities".

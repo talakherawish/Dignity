@@ -4,9 +4,13 @@ export const Pages: CollectionConfig = {
   slug: 'pages',
   admin: {
     group: 'About the Dignity Initiative',
-    useAsTitle: 'slug',
-    defaultColumns: ['slug', 'title', 'updatedAt'],
-    description: 'Shows on the website under About the Dignity Initiative → About the Initiative / Mission and Vision / Partners. The Page Identifier tells you which one each entry is (about / mission / partners) — edit the text fields below to change what shows on the live site.',
+    // Listed by title rather than slug: the list previously showed raw
+    // identifiers ("about", "mission", "publications-books"), which made the
+    // editable About and Mission & Vision text genuinely hard to find.
+    useAsTitle: 'title',
+    defaultColumns: ['title', 'slug', 'updatedAt'],
+    description:
+      'The heading and intro text for each page on the site — including About the Initiative and Mission & Vision. Open an entry and edit the title, intro and body in English and Arabic; the live site updates to match. The Page Identifier column shows which page each entry drives.',
   },
   versions: {
     drafts: true,

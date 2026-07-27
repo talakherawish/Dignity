@@ -6,7 +6,15 @@ export const Activities: CollectionConfig = {
     group: 'Activities',
     useAsTitle: 'title',
     defaultColumns: ['title', 'type', 'date', 'status'],
-    description: 'Shows on the website under Activities → Seminars / Conferences / Meetings / The Windsor Birzeit Dignity Initiative. Use the Type field to choose which one.',
+    description: 'Superseded — add activities to Seminars, Conferences, Meetings, Research or The Windsor Birzeit Dignity Initiative instead.',
+    // Superseded by the five per-activity collections (Seminars, Conferences,
+    // Meetings, Research, WindsorDignity), which is where the website actually
+    // reads from. Leaving this listed put a sixth, redundant entry in the
+    // Activities group and made it ambiguous where a new activity should go —
+    // anything added here would silently never appear on the site. Hidden
+    // rather than deleted so existing documents remain reachable via the API
+    // if anything still needs recovering from them.
+    hidden: true,
   },
   versions: {
     drafts: true,
