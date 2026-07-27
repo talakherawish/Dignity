@@ -92,6 +92,26 @@ export type PayloadPublication = {
   descriptionAr?: unknown
   file?: PayloadMedia
   image?: PayloadMedia
+  /** External destination for items that aren't uploads — a YouTube video, say. */
+  link?: string
+}
+
+/**
+ * Poster image for a YouTube URL, derived from the video id.
+ *
+ * Audiovisual items are links rather than uploads, so they have no file to
+ * rasterise a preview from and would otherwise render as a bare document
+ * icon. YouTube exposes a still for every video at a predictable path, which
+ * gives these cards the same visual weight as the PDF ones. `hqdefault` is
+ * used rather than `maxresdefault` because the latter 404s for videos that
+ * were never uploaded in HD.
+ */
+export function youtubeThumbnail(url: string | undefined): string {
+  if (!url) return ''
+  const match = url.match(
+    /(?:youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/,
+  )
+  return match ? `https://img.youtube.com/vi/${match[1]}/hqdefault.jpg` : ''
 }
 
 export type PayloadInformationItem = {

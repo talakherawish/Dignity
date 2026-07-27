@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { Download, FileText } from "lucide-react";
+import { Download, FileText, Play } from "lucide-react";
 import { PageLayout, PageHero } from "@/components/PageLayout";
 import { useLanguage, type TranslationKey } from "@/contexts/LanguageContext";
 import {
@@ -7,6 +7,7 @@ import {
   formatDate,
   extractText,
   mediaUrl,
+  youtubeThumbnail,
   type PayloadPublication,
 } from "@/lib/payload";
 import { usePage } from "@/hooks/usePage";
@@ -27,17 +28,24 @@ type DisplayPublication = {
   imageUrl: string;
   imageIsPhoto: boolean;
   previewUrl: string;
+  /** External destination (YouTube) for items that aren't uploads. */
+  linkUrl: string;
 };
 
 function fromPayload(item: PayloadPublication): DisplayPublication {
   const imageIsPhoto = item.image?.mimeType?.startsWith("image/") ?? false;
   // Prefer a manually-set cover image if one exists; otherwise fall back to
   // the auto-generated PDF page-1 thumbnail attached to whichever media doc
-  // (cover image or the file itself) has one.
+  // (cover image or the file itself) has one, and finally — for link-only
+  // items such as videos, which have no file to rasterise — the poster frame
+  // published alongside the video itself.
   const previewUrl = imageIsPhoto
     ? mediaUrl(item.image)
-    : mediaUrl(item.image?.thumbnail) || mediaUrl(item.file?.thumbnail);
+    : mediaUrl(item.image?.thumbnail) ||
+      mediaUrl(item.file?.thumbnail) ||
+      youtubeThumbnail(item.link);
   return {
+    linkUrl: item.link ?? "",
     id: item.id,
     title: item.title,
     titleAr: item.titleAr,
@@ -67,6 +75,7 @@ function fromFallback(item: PublicationFallbackItem): DisplayPublication {
     imageUrl: "",
     imageIsPhoto: false,
     previewUrl: "",
+    linkUrl: "",
   };
 }
 
@@ -119,13 +128,42 @@ export function PublicationsPage({
                   key={item.id}
                   className="border border-border rounded-sm bg-card overflow-hidden hover:shadow-sm transition-shadow flex flex-col"
                 >
-                  <div className="aspect-[1/1.41] bg-secondary/20 flex items-center justify-center">
-                    {item.previewUrl ? (
-                      <img src={item.previewUrl} alt="" className="w-full h-full object-cover" />
-                    ) : (
-                      <FileText className="h-10 w-10 text-muted-foreground/50" />
-                    )}
-                  </div>
+                  {/* Video items open on YouTube; document items keep the plain
+                      preview, since their action lives in the download button. */}
+                  {item.linkUrl ? (
+                    <a
+                      href={item.linkUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={isArabic ? "مشاهدة الفيديو" : "Watch video"}
+                      className="group relative block aspect-[1/1.41] bg-secondary/20 overflow-hidden"
+                    >
+                      {item.previewUrl ? (
+                        <img
+                          src={item.previewUrl}
+                          alt=""
+                          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                        />
+                      ) : (
+                        <span className="absolute inset-0 flex items-center justify-center">
+                          <FileText className="h-10 w-10 text-muted-foreground/50" />
+                        </span>
+                      )}
+                      <span className="absolute inset-0 flex items-center justify-center bg-black/15 group-hover:bg-black/25 transition-colors">
+                        <span className="flex h-12 w-12 items-center justify-center rounded-full bg-black/60 text-white shadow-lg transition-transform duration-200 group-hover:scale-110">
+                          <Play className="h-5 w-5 translate-x-[1px]" fill="currentColor" />
+                        </span>
+                      </span>
+                    </a>
+                  ) : (
+                    <div className="aspect-[1/1.41] bg-secondary/20 flex items-center justify-center">
+                      {item.previewUrl ? (
+                        <img src={item.previewUrl} alt="" className="w-full h-full object-cover" />
+                      ) : (
+                        <FileText className="h-10 w-10 text-muted-foreground/50" />
+                      )}
+                    </div>
+                  )}
                   <div className="p-5 flex flex-col flex-1">
                     <div
                       className={
@@ -147,17 +185,30 @@ export function PublicationsPage({
                       <h3 className="font-serif text-lg text-primary leading-snug">
                         {withItalicQuotes(lang === "ar" ? (item.titleAr ?? item.title) : item.title)}
                       </h3>
-                      {fileUrl && (
+                      {item.linkUrl ? (
                         <a
-                          href={fileUrl}
+                          href={item.linkUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          aria-label={t("publications.download")}
-                          title={t("publications.download")}
+                          aria-label={isArabic ? "مشاهدة الفيديو" : "Watch video"}
+                          title={isArabic ? "مشاهدة الفيديو" : "Watch video"}
                           className="shrink-0 inline-flex items-center justify-center h-8 w-8 rounded-full border border-border text-foreground/70 hover:text-accent hover:border-accent/40 transition-colors"
                         >
-                          <Download className="h-3.5 w-3.5" />
+                          <Play className="h-3.5 w-3.5 translate-x-[1px]" fill="currentColor" />
                         </a>
+                      ) : (
+                        fileUrl && (
+                          <a
+                            href={fileUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label={t("publications.download")}
+                            title={t("publications.download")}
+                            className="shrink-0 inline-flex items-center justify-center h-8 w-8 rounded-full border border-border text-foreground/70 hover:text-accent hover:border-accent/40 transition-colors"
+                          >
+                            <Download className="h-3.5 w-3.5" />
+                          </a>
+                        )
                       )}
                     </div>
                     {desc.length > 0 && (
