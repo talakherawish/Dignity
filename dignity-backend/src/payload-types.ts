@@ -119,9 +119,53 @@ export interface Config {
   fallbackLocale: null;
   globals: {
     'site-settings': SiteSetting;
+    'page-about': PageAbout;
+    'page-mission': PageMission;
+    'page-participants': PageParticipant;
+    'page-partners': PagePartner;
+    'page-news': PageNew;
+    'page-announcements': PageAnnouncement;
+    'page-photos': PagePhoto;
+    'page-clippings': PageClipping;
+    'page-research': PageResearch;
+    'page-seminars': PageSeminar;
+    'page-conferences': PageConference;
+    'page-meetings': PageMeeting;
+    'page-windsor': PageWindsor;
+    'page-publications-books': PagePublicationsBook;
+    'page-publications-papers': PagePublicationsPaper;
+    'page-publications-reports': PagePublicationsReport;
+    'page-publications-brochures': PagePublicationsBrochure;
+    'page-publications-theses': PagePublicationsThesis;
+    'page-publications-audiovisual': PagePublicationsAudiovisual;
+    'page-publications-posters': PagePublicationsPoster;
+    'page-information-readings': PageInformationReading;
+    'page-information-databases': PageInformationDatabase;
   };
   globalsSelect: {
     'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
+    'page-about': PageAboutSelect<false> | PageAboutSelect<true>;
+    'page-mission': PageMissionSelect<false> | PageMissionSelect<true>;
+    'page-participants': PageParticipantsSelect<false> | PageParticipantsSelect<true>;
+    'page-partners': PagePartnersSelect<false> | PagePartnersSelect<true>;
+    'page-news': PageNewsSelect<false> | PageNewsSelect<true>;
+    'page-announcements': PageAnnouncementsSelect<false> | PageAnnouncementsSelect<true>;
+    'page-photos': PagePhotosSelect<false> | PagePhotosSelect<true>;
+    'page-clippings': PageClippingsSelect<false> | PageClippingsSelect<true>;
+    'page-research': PageResearchSelect<false> | PageResearchSelect<true>;
+    'page-seminars': PageSeminarsSelect<false> | PageSeminarsSelect<true>;
+    'page-conferences': PageConferencesSelect<false> | PageConferencesSelect<true>;
+    'page-meetings': PageMeetingsSelect<false> | PageMeetingsSelect<true>;
+    'page-windsor': PageWindsorSelect<false> | PageWindsorSelect<true>;
+    'page-publications-books': PagePublicationsBooksSelect<false> | PagePublicationsBooksSelect<true>;
+    'page-publications-papers': PagePublicationsPapersSelect<false> | PagePublicationsPapersSelect<true>;
+    'page-publications-reports': PagePublicationsReportsSelect<false> | PagePublicationsReportsSelect<true>;
+    'page-publications-brochures': PagePublicationsBrochuresSelect<false> | PagePublicationsBrochuresSelect<true>;
+    'page-publications-theses': PagePublicationsThesesSelect<false> | PagePublicationsThesesSelect<true>;
+    'page-publications-audiovisual': PagePublicationsAudiovisualSelect<false> | PagePublicationsAudiovisualSelect<true>;
+    'page-publications-posters': PagePublicationsPostersSelect<false> | PagePublicationsPostersSelect<true>;
+    'page-information-readings': PageInformationReadingsSelect<false> | PageInformationReadingsSelect<true>;
+    'page-information-databases': PageInformationDatabasesSelect<false> | PageInformationDatabasesSelect<true>;
   };
   locale: null;
   widgets: {
@@ -360,7 +404,7 @@ export interface Participant {
   _status?: ('draft' | 'published') | null;
 }
 /**
- * The heading and intro text for each page on the site — including About the Initiative and Mission & Vision. Open an entry and edit the title, intro and body in English and Arabic; the live site updates to match. The Page Identifier column shows which page each entry drives.
+ * Superseded — each page is now edited directly in the sidebar group it belongs to (About the Initiative, Mission & Vision, Partners, and so on).
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "pages".
@@ -1412,6 +1456,456 @@ export interface SiteSetting {
   createdAt?: string | null;
 }
 /**
+ * Heading and intro text for the "About the Initiative" page on the website. Both languages are required.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "page-about".
+ */
+export interface PageAbout {
+  id: string;
+  title?: string | null;
+  titleAr?: string | null;
+  description?: string | null;
+  descriptionAr?: string | null;
+  body?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  bodyAr?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * Heading and intro text for the "Mission & Vision" page on the website. Both languages are required.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "page-mission".
+ */
+export interface PageMission {
+  id: string;
+  title?: string | null;
+  titleAr?: string | null;
+  description?: string | null;
+  descriptionAr?: string | null;
+  body?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  bodyAr?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * Heading and intro text for the "Participants" page on the website. Both languages are required.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "page-participants".
+ */
+export interface PageParticipant {
+  id: string;
+  title?: string | null;
+  titleAr?: string | null;
+  description?: string | null;
+  descriptionAr?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * Heading and intro text for the "Partners" page on the website. Both languages are required.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "page-partners".
+ */
+export interface PagePartner {
+  id: string;
+  title?: string | null;
+  titleAr?: string | null;
+  description?: string | null;
+  descriptionAr?: string | null;
+  body?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  bodyAr?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * Heading and intro text for the "News" page on the website. Both languages are required.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "page-news".
+ */
+export interface PageNew {
+  id: string;
+  title?: string | null;
+  titleAr?: string | null;
+  description?: string | null;
+  descriptionAr?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * Heading and intro text for the "Announcements" page on the website. Both languages are required.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "page-announcements".
+ */
+export interface PageAnnouncement {
+  id: string;
+  title?: string | null;
+  titleAr?: string | null;
+  description?: string | null;
+  descriptionAr?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * Heading and intro text for the "Photos" page on the website. Both languages are required.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "page-photos".
+ */
+export interface PagePhoto {
+  id: string;
+  title?: string | null;
+  titleAr?: string | null;
+  description?: string | null;
+  descriptionAr?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * Heading and intro text for the "Clippings" page on the website. Both languages are required.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "page-clippings".
+ */
+export interface PageClipping {
+  id: string;
+  title?: string | null;
+  titleAr?: string | null;
+  description?: string | null;
+  descriptionAr?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * Heading and intro text for the "Research" page on the website. Both languages are required.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "page-research".
+ */
+export interface PageResearch {
+  id: string;
+  title?: string | null;
+  titleAr?: string | null;
+  description?: string | null;
+  descriptionAr?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * Heading and intro text for the "Seminars" page on the website. Both languages are required.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "page-seminars".
+ */
+export interface PageSeminar {
+  id: string;
+  title?: string | null;
+  titleAr?: string | null;
+  description?: string | null;
+  descriptionAr?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * Heading and intro text for the "Conferences" page on the website. Both languages are required.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "page-conferences".
+ */
+export interface PageConference {
+  id: string;
+  title?: string | null;
+  titleAr?: string | null;
+  description?: string | null;
+  descriptionAr?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * Heading and intro text for the "Meetings" page on the website. Both languages are required.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "page-meetings".
+ */
+export interface PageMeeting {
+  id: string;
+  title?: string | null;
+  titleAr?: string | null;
+  description?: string | null;
+  descriptionAr?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * Heading and intro text for the "The Windsor Birzeit Dignity Initiative" page on the website. Both languages are required.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "page-windsor".
+ */
+export interface PageWindsor {
+  id: string;
+  title?: string | null;
+  titleAr?: string | null;
+  description?: string | null;
+  descriptionAr?: string | null;
+  body?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  bodyAr?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * Heading and intro text for the "Books" page on the website. Both languages are required.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "page-publications-books".
+ */
+export interface PagePublicationsBook {
+  id: string;
+  title?: string | null;
+  titleAr?: string | null;
+  description?: string | null;
+  descriptionAr?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * Heading and intro text for the "Papers" page on the website. Both languages are required.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "page-publications-papers".
+ */
+export interface PagePublicationsPaper {
+  id: string;
+  title?: string | null;
+  titleAr?: string | null;
+  description?: string | null;
+  descriptionAr?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * Heading and intro text for the "Reports" page on the website. Both languages are required.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "page-publications-reports".
+ */
+export interface PagePublicationsReport {
+  id: string;
+  title?: string | null;
+  titleAr?: string | null;
+  description?: string | null;
+  descriptionAr?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * Heading and intro text for the "Brochures" page on the website. Both languages are required.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "page-publications-brochures".
+ */
+export interface PagePublicationsBrochure {
+  id: string;
+  title?: string | null;
+  titleAr?: string | null;
+  description?: string | null;
+  descriptionAr?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * Heading and intro text for the "Theses" page on the website. Both languages are required.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "page-publications-theses".
+ */
+export interface PagePublicationsThesis {
+  id: string;
+  title?: string | null;
+  titleAr?: string | null;
+  description?: string | null;
+  descriptionAr?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * Heading and intro text for the "Audiovisual" page on the website. Both languages are required.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "page-publications-audiovisual".
+ */
+export interface PagePublicationsAudiovisual {
+  id: string;
+  title?: string | null;
+  titleAr?: string | null;
+  description?: string | null;
+  descriptionAr?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * Heading and intro text for the "Posters" page on the website. Both languages are required.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "page-publications-posters".
+ */
+export interface PagePublicationsPoster {
+  id: string;
+  title?: string | null;
+  titleAr?: string | null;
+  description?: string | null;
+  descriptionAr?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * Heading and intro text for the "Readings and Documents" page on the website. Both languages are required.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "page-information-readings".
+ */
+export interface PageInformationReading {
+  id: string;
+  title?: string | null;
+  titleAr?: string | null;
+  description?: string | null;
+  descriptionAr?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * Heading and intro text for the "Databases" page on the website. Both languages are required.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "page-information-databases".
+ */
+export interface PageInformationDatabase {
+  id: string;
+  title?: string | null;
+  titleAr?: string | null;
+  description?: string | null;
+  descriptionAr?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "site-settings_select".
  */
@@ -1534,6 +2028,300 @@ export interface SiteSettingsSelect<T extends boolean = true> {
   newsCollapseAr?: T;
   projectsArea?: T;
   projectsAreaAr?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "page-about_select".
+ */
+export interface PageAboutSelect<T extends boolean = true> {
+  title?: T;
+  titleAr?: T;
+  description?: T;
+  descriptionAr?: T;
+  body?: T;
+  bodyAr?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "page-mission_select".
+ */
+export interface PageMissionSelect<T extends boolean = true> {
+  title?: T;
+  titleAr?: T;
+  description?: T;
+  descriptionAr?: T;
+  body?: T;
+  bodyAr?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "page-participants_select".
+ */
+export interface PageParticipantsSelect<T extends boolean = true> {
+  title?: T;
+  titleAr?: T;
+  description?: T;
+  descriptionAr?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "page-partners_select".
+ */
+export interface PagePartnersSelect<T extends boolean = true> {
+  title?: T;
+  titleAr?: T;
+  description?: T;
+  descriptionAr?: T;
+  body?: T;
+  bodyAr?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "page-news_select".
+ */
+export interface PageNewsSelect<T extends boolean = true> {
+  title?: T;
+  titleAr?: T;
+  description?: T;
+  descriptionAr?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "page-announcements_select".
+ */
+export interface PageAnnouncementsSelect<T extends boolean = true> {
+  title?: T;
+  titleAr?: T;
+  description?: T;
+  descriptionAr?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "page-photos_select".
+ */
+export interface PagePhotosSelect<T extends boolean = true> {
+  title?: T;
+  titleAr?: T;
+  description?: T;
+  descriptionAr?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "page-clippings_select".
+ */
+export interface PageClippingsSelect<T extends boolean = true> {
+  title?: T;
+  titleAr?: T;
+  description?: T;
+  descriptionAr?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "page-research_select".
+ */
+export interface PageResearchSelect<T extends boolean = true> {
+  title?: T;
+  titleAr?: T;
+  description?: T;
+  descriptionAr?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "page-seminars_select".
+ */
+export interface PageSeminarsSelect<T extends boolean = true> {
+  title?: T;
+  titleAr?: T;
+  description?: T;
+  descriptionAr?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "page-conferences_select".
+ */
+export interface PageConferencesSelect<T extends boolean = true> {
+  title?: T;
+  titleAr?: T;
+  description?: T;
+  descriptionAr?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "page-meetings_select".
+ */
+export interface PageMeetingsSelect<T extends boolean = true> {
+  title?: T;
+  titleAr?: T;
+  description?: T;
+  descriptionAr?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "page-windsor_select".
+ */
+export interface PageWindsorSelect<T extends boolean = true> {
+  title?: T;
+  titleAr?: T;
+  description?: T;
+  descriptionAr?: T;
+  body?: T;
+  bodyAr?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "page-publications-books_select".
+ */
+export interface PagePublicationsBooksSelect<T extends boolean = true> {
+  title?: T;
+  titleAr?: T;
+  description?: T;
+  descriptionAr?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "page-publications-papers_select".
+ */
+export interface PagePublicationsPapersSelect<T extends boolean = true> {
+  title?: T;
+  titleAr?: T;
+  description?: T;
+  descriptionAr?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "page-publications-reports_select".
+ */
+export interface PagePublicationsReportsSelect<T extends boolean = true> {
+  title?: T;
+  titleAr?: T;
+  description?: T;
+  descriptionAr?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "page-publications-brochures_select".
+ */
+export interface PagePublicationsBrochuresSelect<T extends boolean = true> {
+  title?: T;
+  titleAr?: T;
+  description?: T;
+  descriptionAr?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "page-publications-theses_select".
+ */
+export interface PagePublicationsThesesSelect<T extends boolean = true> {
+  title?: T;
+  titleAr?: T;
+  description?: T;
+  descriptionAr?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "page-publications-audiovisual_select".
+ */
+export interface PagePublicationsAudiovisualSelect<T extends boolean = true> {
+  title?: T;
+  titleAr?: T;
+  description?: T;
+  descriptionAr?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "page-publications-posters_select".
+ */
+export interface PagePublicationsPostersSelect<T extends boolean = true> {
+  title?: T;
+  titleAr?: T;
+  description?: T;
+  descriptionAr?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "page-information-readings_select".
+ */
+export interface PageInformationReadingsSelect<T extends boolean = true> {
+  title?: T;
+  titleAr?: T;
+  description?: T;
+  descriptionAr?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "page-information-databases_select".
+ */
+export interface PageInformationDatabasesSelect<T extends boolean = true> {
+  title?: T;
+  titleAr?: T;
+  description?: T;
+  descriptionAr?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

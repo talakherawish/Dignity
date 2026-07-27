@@ -4,13 +4,16 @@ export const Pages: CollectionConfig = {
   slug: 'pages',
   admin: {
     group: 'About the Dignity Initiative',
-    // Listed by title rather than slug: the list previously showed raw
-    // identifiers ("about", "mission", "publications-books"), which made the
-    // editable About and Mission & Vision text genuinely hard to find.
     useAsTitle: 'title',
     defaultColumns: ['title', 'slug', 'updatedAt'],
     description:
-      'The heading and intro text for each page on the site — including About the Initiative and Mission & Vision. Open an entry and edit the title, intro and body in English and Arabic; the live site updates to match. The Page Identifier column shows which page each entry drives.',
+      'Superseded — each page is now edited directly in the sidebar group it belongs to (About the Initiative, Mission & Vision, Partners, and so on).',
+    // Replaced by one global per page (src/globals/pageGlobals.ts), which puts
+    // each page under the sidebar group matching the website's navigation
+    // instead of burying all 22 in a single undifferentiated list. Hidden
+    // rather than deleted so the original documents remain intact and
+    // recoverable through the API; nothing reads from this collection now.
+    hidden: true,
   },
   versions: {
     drafts: true,

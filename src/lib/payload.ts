@@ -279,16 +279,23 @@ export const fetchInformationByType = (type: PayloadInformationItem['type']) =>
   fetchCollection<PayloadInformationItem>('information', { 'where[type][equals]': type })
 
 
-/** Fetch a single editable Page document by its slug (e.g. "about", "mission"). Returns null if missing/unreachable. */
+/**
+ * Fetch the editable text for a single page (e.g. "about", "mission").
+ * Returns null if missing/unreachable, so callers fall back to their own copy.
+ *
+ * Each page is a Payload global rather than a row in a `pages` collection, so
+ * that it appears in the admin sidebar under the same grouping the site's own
+ * navigation uses. Globals share a slug namespace with collections and several
+ * pages are named after one ("news", "participants", …), so they are stored
+ * under a `page-` prefix — applied here, keeping callers on the plain key.
+ */
 export async function fetchPage(slug: string): Promise<PayloadPage | null> {
     try {
-          const params = new URLSearchParams({ 'where[slug][equals]': slug, depth: '0', limit: '1' })
-          const res = await fetch(`${PAYLOAD_URL}/api/pages?${params}`, {
+          const res = await fetch(`${PAYLOAD_URL}/api/globals/page-${slug}?depth=0`, {
                   headers: { 'Content-Type': 'application/json' },
           })
           if (!res.ok) return null
-          const data = (await res.json()) as { docs?: PayloadPage[] }
-          return data.docs?.[0] ?? null
+          return (await res.json()) as PayloadPage
     } catch {
           return null
     }
