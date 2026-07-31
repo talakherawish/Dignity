@@ -18,6 +18,40 @@
  * 2. Register it in @theme inline as --color-<name>: var(--<name>)
  */
 
+/*
+ * Type scale.
+ *
+ * Overrides Tailwind's defaults, which ran small for a site whose body copy is
+ * mostly text-sm: 14px reading text and 9–10px eyebrow labels. Each step is
+ * about 12–15% larger, tapering at the display sizes where the default was
+ * already big enough. Spacing utilities are untouched, so this grows the text
+ * without inflating the layout around it.
+ */
+@theme {
+  --text-xs: 0.8125rem;          /* 13px */
+  --text-xs--line-height: 1.15rem;
+  --text-sm: 1rem;               /* 16px */
+  --text-sm--line-height: 1.5rem;
+  --text-base: 1.0625rem;        /* 17px */
+  --text-base--line-height: 1.65rem;
+  --text-lg: 1.1875rem;          /* 19px */
+  --text-lg--line-height: 1.8rem;
+  --text-xl: 1.375rem;           /* 22px */
+  --text-xl--line-height: 1.9rem;
+  --text-2xl: 1.625rem;          /* 26px */
+  --text-2xl--line-height: 2.1rem;
+  --text-3xl: 2rem;              /* 32px */
+  --text-3xl--line-height: 2.35rem;
+  --text-4xl: 2.5rem;            /* 40px */
+  --text-4xl--line-height: 2.7rem;
+  --text-5xl: 3.25rem;           /* 52px */
+  --text-5xl--line-height: 1.05;
+  --text-6xl: 4rem;              /* 64px */
+  --text-6xl--line-height: 1.05;
+  --text-7xl: 4.75rem;           /* 76px */
+  --text-7xl--line-height: 1.05;
+}
+
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);

@@ -172,7 +172,7 @@ export function PublicationsPage({
                   <div className="p-5 flex flex-col flex-1">
                     <div
                       className={
-                        "text-[9px] uppercase tracking-widest text-muted-foreground font-semibold mb-1.5" +
+                        "text-[11px] uppercase tracking-widest text-muted-foreground font-semibold mb-1.5" +
                         (isArabic ? " text-right" : "")
                       }
                     >

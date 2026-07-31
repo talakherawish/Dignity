@@ -38,7 +38,7 @@ function MeetingsPage() {
             {items.map((item: PayloadActivity) => {
               return (
                 <div key={item.id} className="border border-border rounded-sm bg-card p-6 hover:shadow-sm transition-shadow">
-                  <div className={"text-[9px] uppercase tracking-widest text-muted-foreground font-semibold mb-2" + (isArabic ? " text-right" : "")}>
+                  <div className={"text-[11px] uppercase tracking-widest text-muted-foreground font-semibold mb-2" + (isArabic ? " text-right" : "")}>
                     {formatDate(item.date, lang === "ar" ? "ar" : "en")}
                   </div>
                   <h3 className={"font-serif text-lg text-primary leading-snug mb-2" + (isArabic ? " text-right" : "")}>

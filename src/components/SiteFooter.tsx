@@ -27,7 +27,7 @@ export function SiteFooter() {
       <div className="border-b border-white/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
           <div className="flex flex-wrap items-center justify-center gap-2">
-            <span className="text-[10px] uppercase tracking-[0.18em] text-white/35 font-semibold me-2">
+            <span className="text-[12px] uppercase tracking-[0.18em] text-white/35 font-semibold me-2">
               {t("footer.resources")}
             </span>
             {RESOURCES.map(({ key, Icon }) => (
@@ -56,7 +56,7 @@ export function SiteFooter() {
         {/* Brand */}
         <div>
           <div className="font-serif text-lg font-semibold text-white mb-0.5">Dignity</div>
-          <div className="text-[9px] uppercase tracking-[0.18em] text-white/35 mb-3">
+          <div className="text-[11px] uppercase tracking-[0.18em] text-white/35 mb-3">
             Academic Initiative
           </div>
           <p className="text-xs text-white/55 leading-relaxed max-w-xs">{t("footer.about")}</p>
@@ -64,7 +64,7 @@ export function SiteFooter() {
 
         {/* Contact */}
         <div>
-          <h4 className="text-[9px] uppercase tracking-[0.18em] font-semibold text-white/35 mb-3">
+          <h4 className="text-[11px] uppercase tracking-[0.18em] font-semibold text-white/35 mb-3">
             {t("footer.contact")}
           </h4>
           <address className="not-italic space-y-1 text-xs text-white/60">
@@ -87,7 +87,7 @@ export function SiteFooter() {
 
         {/* Stay in touch — subscribe + socials */}
         <div className="sm:col-span-2 lg:col-span-1">
-          <h4 className="text-[9px] uppercase tracking-[0.18em] font-semibold text-white/35 mb-3">
+          <h4 className="text-[11px] uppercase tracking-[0.18em] font-semibold text-white/35 mb-3">
             {t("footer.subscribe")}
           </h4>
           <form
@@ -133,7 +133,7 @@ export function SiteFooter() {
       {/* Copyright */}
       <div className="border-t border-white/10 bg-black/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-col sm:flex-row items-center justify-between gap-2">
-          <p className="text-[10px] text-white/35">{t("footer.copyright")}</p>
+          <p className="text-[12px] text-white/35">{t("footer.copyright")}</p>
           <nav className="flex items-center gap-4">
             {[
               { key: "footer.disclaimer" as const, href: "#" },
@@ -143,7 +143,7 @@ export function SiteFooter() {
               <a
                 key={key}
                 href={href}
-                className="text-[10px] text-white/35 hover:text-white/60 transition-colors"
+                className="text-[12px] text-white/35 hover:text-white/60 transition-colors"
               >
                 {t(key)}
               </a>

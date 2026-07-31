@@ -39,13 +39,13 @@ function AnnouncementsPage() {
               <div key={item.id} className="bg-card border border-border rounded-lg overflow-hidden">
                 <div className="h-1 w-full" style={{ background: "var(--brand-magenta)" }} />
                 <div className={"p-6" + (isArabic ? " text-right" : "")}>
-                  <div className={"font-semibold mb-2 text-muted-foreground" + (isArabic ? " text-sm" : " text-[9px] uppercase tracking-widest")}>
+                  <div className={"font-semibold mb-2 text-muted-foreground" + (isArabic ? " text-sm" : " text-[11px] uppercase tracking-widest")}>
                     {isArabic ? "إعلان" : "Announcement"}
                   </div>
                   <p className={"font-medium text-primary leading-snug mb-4" + (isArabic ? " text-base" : " text-sm")}>
                     {lang === "ar" ? (item.titleAr ?? item.title) : item.title}
                   </p>
-                  <div className={"font-medium tracking-wide" + (isArabic ? " text-sm" : " text-[10px]")} style={{ color: "var(--brand-magenta)" }}>
+                  <div className={"font-medium tracking-wide" + (isArabic ? " text-sm" : " text-[12px]")} style={{ color: "var(--brand-magenta)" }}>
                     {formatDate(item.date, lang === "ar" ? "ar" : "en")}
                   </div>
                 </div>

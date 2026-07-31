@@ -144,7 +144,7 @@ function NewsCarousel() {
           }}
         >
           <div>
-            <div className="text-[10px] uppercase tracking-[0.22em] text-[color:var(--brand-magenta)] font-semibold mb-3">
+            <div className="text-[12px] uppercase tracking-[0.22em] text-[color:var(--brand-magenta)] font-semibold mb-3">
               {getField(article, "date", l)}
             </div>
             <h3 className={`font-serif text-xl lg:text-2xl text-primary mb-3 leading-snug ${isArabic ? "text-right" : ""}`}>
@@ -207,33 +207,20 @@ function NewsCarousel() {
 }
 
 
-type Announcement = { date: string; title: string; titleAr: string; type: string; typeAr: string; to: string };
-const ANNOUNCEMENTS: Announcement[] = [
-  { date: "JUN 15, 2026", title: "Call for applications: Research Fellows 2026–2027", titleAr: "دعوة للتقديم: زملاء بحث 2026–2027", type: "Fellowship", typeAr: "زمالة", to: "/media/announcements" },
-  { date: "JUL 3, 2026", title: "Upcoming Conference on Research Ethics — registration open", titleAr: "مؤتمر قادم حول أخلاقيات البحث — التسجيل مفتوح", type: "Conference", typeAr: "مؤتمر", to: "/media/announcements" },
-  { date: "AUG 10, 2026", title: "Seminar: Artificial Intelligence and Human Dignity", titleAr: "ندوة: الذكاء الاصطناعي والكرامة الإنسانية", type: "Seminar", typeAr: "ندوة", to: "/media/announcements" },
-];
-
 function AnnouncementsSection() {
   const { t, lang, isArabic } = useLanguage();
 
-  const { data: payloadAnnouncements = [] } = useQuery({
+  const { data: items = [] } = useQuery({
     queryKey: ["announcements"],
     queryFn: fetchAnnouncements,
     staleTime: 5 * 60 * 1000,
   });
 
-  const items =
-    payloadAnnouncements.length > 0
-      ? payloadAnnouncements.map((a: PayloadAnnouncement) => ({
-          date: formatDate(a.date, lang === "ar" ? "ar" : "en"),
-          title: a.title,
-          titleAr: a.titleAr ?? a.title,
-          type: "Announcement",
-          typeAr: "إعلان",
-          to: "/media/announcements",
-        }))
-      : ANNOUNCEMENTS;
+  // Every announcement comes from Payload. With nothing authored (or the
+  // backend unreachable, which fetchAnnouncements reports as an empty list)
+  // the whole block goes away rather than leaving a heading over an empty
+  // grid — the homepage shouldn't advertise announcements there aren't any of.
+  if (items.length === 0) return null;
 
   return (
     <section className="border-b border-border bg-secondary/20">
@@ -251,22 +238,22 @@ function AnnouncementsSection() {
         </div>
 
         <div className="announcements-grid grid gap-4 sm:grid-cols-3" dir={isArabic ? "rtl" : "ltr"}>
-          {items.map((item, i) => (
+          {items.map((item: PayloadAnnouncement) => (
             <Link
-              key={i}
-              to={item.to}
+              key={item.id}
+              to="/media/announcements"
               className="group block bg-card border border-border rounded-lg overflow-hidden hover:shadow-md transition-all duration-200"
             >
               <div className="h-1 w-full" style={{ background: "var(--brand-magenta)" }} />
               <div className={`p-6 ${isArabic ? "text-right" : ""}`}>
-                <div className={`font-semibold mb-2 text-muted-foreground ${isArabic ? "text-sm" : "text-[9px] uppercase tracking-widest"}`}>
-                  {lang === "ar" ? item.typeAr : item.type}
+                <div className={`font-semibold mb-2 text-muted-foreground ${isArabic ? "text-sm" : "text-[11px] uppercase tracking-widest"}`}>
+                  {isArabic ? "إعلان" : "Announcement"}
                 </div>
                 <p className={`font-medium text-primary leading-snug group-hover:text-accent transition-colors mb-4 ${isArabic ? "text-base" : "text-sm"}`}>
-                  {lang === "ar" ? item.titleAr : item.title}
+                  {lang === "ar" ? (item.titleAr ?? item.title) : item.title}
                 </p>
-                <div className={`font-medium tracking-wide ${isArabic ? "text-sm" : "text-[10px]"}`} style={{ color: "var(--brand-magenta)" }}>
-                  {item.date}
+                <div className={`font-medium tracking-wide ${isArabic ? "text-sm" : "text-[12px]"}`} style={{ color: "var(--brand-magenta)" }}>
+                  {formatDate(item.date, lang === "ar" ? "ar" : "en")}
                 </div>
               </div>
             </Link>
@@ -289,10 +276,12 @@ function TeamModal({ person, onClose, isArabic, lang }: {
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="relative w-full max-w-sm" style={{ paddingTop: "96px" }}>
+      {/* Sized to match FellowModal on /about/participants — the two are the
+          same card and should stay in step. */}
+      <div className="relative w-full max-w-md" style={{ paddingTop: "112px" }}>
         {/* Floating avatar */}
         <div className="absolute left-1/2 top-0 -translate-x-1/2 z-10">
-          <div className="h-48 w-48 rounded-full overflow-hidden shadow-2xl bg-secondary flex items-center justify-center">
+          <div className="h-56 w-56 rounded-full overflow-hidden shadow-2xl bg-secondary flex items-center justify-center">
             {person.photo ? (
               <img src={person.photo} alt={person.name} className="w-full h-full object-cover" />
             ) : (
@@ -312,7 +301,7 @@ function TeamModal({ person, onClose, isArabic, lang }: {
           >
             <X className="h-4 w-4" />
           </button>
-          <div className="px-8 pb-8" style={{ paddingTop: "100px" }}>
+          <div className="px-8 pb-8" style={{ paddingTop: "116px" }}>
             <h2 className="font-serif text-2xl text-primary text-center">
               {lang === "ar" ? person.nameAr : person.name}
             </h2>
@@ -365,10 +354,10 @@ function TeamSection() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
           <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-8 items-center">
             <div>
-              <div className="text-[10px] uppercase tracking-[0.22em] text-[color:var(--brand-magenta)] font-semibold mb-2">
+              <div className="text-[12px] uppercase tracking-[0.22em] text-[color:var(--brand-magenta)] font-semibold mb-2">
                 {t("team.eyebrow")}
               </div>
-              <h2 className="font-serif text-2xl lg:text-[1.75rem] text-primary leading-tight mb-5">
+              <h2 className="font-serif text-2xl lg:text-[2rem] text-primary leading-tight mb-5">
                 {t("team.title")}
               </h2>
               <Link
@@ -435,10 +424,10 @@ function Home() {
         <div className="absolute -bottom-24 -left-24 h-64 w-64 rounded-full opacity-15 blur-3xl pointer-events-none" style={{ background: "var(--brand-magenta)" }} />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-14 grid gap-10 lg:grid-cols-2 items-center">
           <div>
-            <div className="text-[10px] uppercase tracking-[0.22em] text-[color:var(--brand-magenta)] font-semibold mb-4">
+            <div className="text-[12px] uppercase tracking-[0.22em] text-[color:var(--brand-magenta)] font-semibold mb-4">
               {t("hero.eyebrow")}
             </div>
-            <h1 className="font-serif text-4xl md:text-5xl lg:text-[3.25rem] text-primary tracking-tight leading-[1.07]">
+            <h1 className="font-serif text-4xl md:text-5xl lg:text-[3.6rem] text-primary tracking-tight leading-[1.07]">
               {t("hero.title")}
             </h1>
             <p className="mt-5 text-base text-muted-foreground leading-relaxed max-w-lg">
@@ -473,10 +462,10 @@ function Home() {
             <div className="flex items-center gap-3">
               <div className="h-6 w-1.5 rounded-full" style={{ background: "var(--brand-cyan)" }} />
               <div>
-                <div className="text-[10px] uppercase tracking-[0.22em] text-[color:var(--brand-cyan)] font-semibold mb-1">
+                <div className="text-[12px] uppercase tracking-[0.22em] text-[color:var(--brand-cyan)] font-semibold mb-1">
                   {t("news.eyebrow")}
                 </div>
-                <h2 className="font-serif text-3xl lg:text-[2.25rem] text-primary">{t("news.title")}</h2>
+                <h2 className="font-serif text-3xl lg:text-[2.5rem] text-primary">{t("news.title")}</h2>
               </div>
             </div>
             <Link to="/media/news" className="text-xs font-medium text-muted-foreground hover:text-accent transition-colors tracking-wide">

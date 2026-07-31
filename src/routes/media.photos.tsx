@@ -50,7 +50,7 @@ function PhotosPage() {
                     <p className="text-sm font-medium text-primary">
                       {lang === "ar" ? (item.titleAr ?? item.title) : item.title}
                     </p>
-                    <p className="text-[10px] text-muted-foreground mt-1">
+                    <p className="text-[12px] text-muted-foreground mt-1">
                       {formatDate(item.date, lang === "ar" ? "ar" : "en")}
                     </p>
                   </div>

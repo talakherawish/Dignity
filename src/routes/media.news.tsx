@@ -44,7 +44,7 @@ function ArticleCard({ article }: { article: Article }) {
                     )}
                     <div className="p-7 lg:p-9 flex flex-col">
           <div className="mb-auto">
-            <p className="text-[10px] uppercase tracking-[0.22em] text-[color:var(--brand-magenta)] font-semibold mb-3">
+            <p className="text-[12px] uppercase tracking-[0.22em] text-[color:var(--brand-magenta)] font-semibold mb-3">
               {getField(article, "date", l)}
             </p>
             <h2 className={"font-serif text-xl lg:text-2xl text-primary mb-3 leading-snug" + (isArabic ? " text-right" : "")}>
@@ -100,7 +100,7 @@ function NewsPage() {
       <section className="border-b border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="mb-8">
-            <p className="text-[10px] uppercase tracking-[0.22em] text-[color:var(--brand-magenta)] font-semibold mb-1.5">
+            <p className="text-[12px] uppercase tracking-[0.22em] text-[color:var(--brand-magenta)] font-semibold mb-1.5">
               {t("media")}
             </p>
                     <h1 className="font-serif text-3xl md:text-4xl text-primary">{page.title ?? t("media.news")}</h1>

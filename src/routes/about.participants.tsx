@@ -87,9 +87,13 @@ function FellowModal({ fellow, onClose, isArabic, lang }: {
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="relative w-full max-w-sm" style={{ paddingTop: "96px" }}>
+      {/* The avatar is half outside the card, so the wrapper's top padding is
+          half the avatar's height and the card's own top padding clears the
+          overlapping half. Both follow from the h-56 below — keep them in step
+          if the avatar is resized. */}
+      <div className="relative w-full max-w-md" style={{ paddingTop: "112px" }}>
         <div className="absolute left-1/2 top-0 -translate-x-1/2 z-10">
-          <div className="h-48 w-48 rounded-full overflow-hidden shadow-2xl bg-secondary">
+          <div className="h-56 w-56 rounded-full overflow-hidden shadow-2xl bg-secondary flex items-center justify-center">
             <Avatar photo={fellow.photo} name={fellow.name} />
           </div>
         </div>
@@ -101,7 +105,7 @@ function FellowModal({ fellow, onClose, isArabic, lang }: {
           >
             <X className="h-4 w-4" />
           </button>
-          <div className="px-8 pb-8" style={{ paddingTop: "100px" }}>
+          <div className="px-8 pb-8" style={{ paddingTop: "116px" }}>
             <h2 className="font-serif text-2xl text-primary text-center">
               {lang === "ar" ? fellow.nameAr : fellow.name}
             </h2>

@@ -16,7 +16,6 @@ type Result = { type: string; title: string; titleAr: string; excerpt: string; e
 
 const ALL_CONTENT: Result[] = [
   { type: "News", title: "Dignity Initiative receives new research grant", titleAr: "مبادرة الكرامة تحصل على منحة بحثية جديدة", excerpt: "The initiative has secured funding for a three-year research programme.", excerptAr: "حصلت المبادرة على تمويل لبرنامج بحثي لمدة ثلاث سنوات.", to: "/media/news" },
-  { type: "Announcement", title: "Call for applications: Research Fellows 2026–2027", titleAr: "دعوة للتقديم: زملاء بحث 2026–2027", excerpt: "Applications are open for the next cohort of research fellows.", excerptAr: "يفتح باب التقديم لمجموعة الزملاء البحثيين القادمة.", to: "/media/announcements" },
   { type: "Activity", title: "Seminar: Decolonising Knowledge Production", titleAr: "ندوة: نزع الاستعمار من إنتاج المعرفة", excerpt: "An interdisciplinary seminar exploring colonial legacies in academic research.", excerptAr: "ندوة متعددة التخصصات تستكشف الإرث الاستعماري في البحث الأكاديمي.", to: "/activities/seminars" },
   { type: "Activity", title: "Windsor-Birzeit Annual Meeting", titleAr: "الاجتماع السنوي لمبادرة وندسور-بيرزيت", excerpt: "Annual gathering of the Windsor-Birzeit Dignity Initiative partners.", excerptAr: "التجمع السنوي لشركاء مبادرة وندسور-بيرزيت للكرامة.", to: "/activities/windsor-birzeit" },
   { type: "Fellow", title: "Dr. Raef Zreik", titleAr: "د. رائف زريق", excerpt: "Senior Researcher — Dignity Initiative", excerptAr: "باحث أول — مبادرة الكرامة", to: "/about/participants" },
@@ -61,7 +60,7 @@ function SearchPage() {
                 to={result.to}
                 className={`group block p-5 border border-border rounded-md bg-card hover:border-accent/40 hover:shadow-sm transition-all duration-150 ${isArabic ? "text-right" : ""}`}
               >
-                <div className="text-[10px] uppercase tracking-wider font-semibold text-accent mb-1.5">
+                <div className="text-[12px] uppercase tracking-wider font-semibold text-accent mb-1.5">
                   {result.type}
                 </div>
                 <div className="font-serif text-lg text-primary group-hover:text-accent transition-colors">

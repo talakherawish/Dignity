@@ -108,7 +108,7 @@ function SearchBar() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder={isArabic ? "ابحث..." : "Search..."}
-            className={`w-28 sm:w-40 lg:w-48 px-3 sm:px-3.5 py-1.5 sm:py-2 border border-border rounded-full bg-background shadow-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-accent transition-all text-xs sm:text-sm ${isArabic ? "font-arabic text-[13px] sm:text-[15px] text-right" : ""}`}
+            className={`w-28 sm:w-40 lg:w-48 px-3 sm:px-3.5 py-1.5 sm:py-2 border border-border rounded-full bg-background shadow-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-accent transition-all text-xs sm:text-sm ${isArabic ? "font-arabic text-[15px] sm:text-[17px] text-right" : ""}`}
           />
         </form>
       )}
@@ -128,7 +128,7 @@ function LanguageSwitcher() {
             aria-label={ariaLabel}
             onClick={() => setLang(code)}
             className={[
-              "rounded-full px-2 sm:px-2.5 py-0.5 sm:py-1 text-[10px] sm:text-[11px] font-medium transition-all duration-200 select-none",
+              "rounded-full px-2 sm:px-2.5 py-0.5 sm:py-1 text-[12px] sm:text-[12px] font-medium transition-all duration-200 select-none",
               code === "ar" ? "font-arabic tracking-normal" : "tracking-wide",
               active
                 ? "bg-accent text-white shadow-sm scale-105"
@@ -154,7 +154,7 @@ function NavItem({ item }: { item: Item }) {
         activeOptions={{ exact: item.to === "/" }}
         className={[
           "px-2.5 py-2 font-medium text-foreground/80 hover:text-accent transition-colors data-[status=active]:text-accent whitespace-nowrap",
-          isArabic ? "font-arabic text-[17px]" : "text-[15px]",
+          isArabic ? "font-arabic text-[19px]" : "text-[17px]",
         ].join(" ")}
       >
         {label}
@@ -167,7 +167,7 @@ function NavItem({ item }: { item: Item }) {
       <button
         className={[
           "px-2.5 py-2 font-medium text-foreground/80 hover:text-accent transition-colors inline-flex items-center gap-1 whitespace-nowrap",
-          isArabic ? "font-arabic text-[17px]" : "text-[15px]",
+          isArabic ? "font-arabic text-[19px]" : "text-[17px]",
         ].join(" ")}
       >
         {label}
@@ -246,7 +246,7 @@ function MobileNav({ open, onNavigate }: { open: boolean; onNavigate: () => void
                   onClick={() => setExpanded((cur) => (cur === item.labelKey ? null : item.labelKey))}
                   className={[
                     "w-full flex items-center justify-between py-3 font-medium text-foreground/80",
-                    isArabic ? "font-arabic text-[16px]" : "text-[15px]",
+                    isArabic ? "font-arabic text-[18px]" : "text-[17px]",
                   ].join(" ")}
                 >
                   {t(item.labelKey)}
@@ -303,7 +303,7 @@ function MobileNav({ open, onNavigate }: { open: boolean; onNavigate: () => void
                 onClick={onNavigate}
                 className={[
                   "block py-3 font-medium text-foreground/80",
-                  isArabic ? "font-arabic text-[16px]" : "text-[15px]",
+                  isArabic ? "font-arabic text-[18px]" : "text-[17px]",
                 ].join(" ")}
               >
                 {t(item.labelKey)}

@@ -128,13 +128,13 @@ export function AboutMissionPage({
             <div className="relative max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-8 text-center">
               <Reveal>
                 {eyebrow && (
-                  <div className="text-[10px] uppercase tracking-[0.22em] text-[color:var(--brand-magenta)] font-semibold mb-3">
+                  <div className="text-[12px] uppercase tracking-[0.22em] text-[color:var(--brand-magenta)] font-semibold mb-3">
                     {eyebrow}
                   </div>
                 )}
                 <h1 className="font-serif text-3xl md:text-4xl text-primary tracking-tight">{title}</h1>
                 {description && (
-                  <p className="mt-3 max-w-2xl mx-auto text-[15px] text-muted-foreground leading-relaxed whitespace-pre-line">
+                  <p className="mt-3 max-w-2xl mx-auto text-[17px] text-muted-foreground leading-relaxed whitespace-pre-line">
                     {description}
                   </p>
                 )}
@@ -144,7 +144,7 @@ export function AboutMissionPage({
 
           {/* Intro prose */}
           <section className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
-            <div className={`space-y-5 text-[17px] leading-[1.85] text-foreground/90 ${isArabic ? "text-right" : ""}`}>
+            <div className={`space-y-5 text-[19px] leading-[1.85] text-foreground/90 ${isArabic ? "text-right" : ""}`}>
               {introParagraphs.map((p, i) => (
                 <Reveal key={i} delay={i * 90}>
                   <p
@@ -200,7 +200,7 @@ export function AboutMissionPage({
                             {String(i + 1).padStart(2, "0")}
                           </span>
                         </div>
-                        <p className={`text-[15px] leading-relaxed text-foreground/85 ${isArabic ? "text-right" : ""}`}>
+                        <p className={`text-[17px] leading-relaxed text-foreground/85 ${isArabic ? "text-right" : ""}`}>
                           {item}
                         </p>
                       </div>
@@ -217,7 +217,7 @@ export function AboutMissionPage({
               <Reveal>
                 {mission.eyebrow && (
                   <div
-                    className={`text-[10px] uppercase tracking-[0.22em] text-[color:var(--brand-magenta)] font-semibold mb-3 ${isArabic ? "text-right" : ""}`}
+                    className={`text-[12px] uppercase tracking-[0.22em] text-[color:var(--brand-magenta)] font-semibold mb-3 ${isArabic ? "text-right" : ""}`}
                   >
                     {mission.eyebrow}
                   </div>
@@ -227,13 +227,13 @@ export function AboutMissionPage({
                 </h2>
                 {mission.description && (
                   <p
-                    className={`mt-3 text-[15px] text-muted-foreground leading-relaxed whitespace-pre-line ${isArabic ? "text-right" : ""}`}
+                    className={`mt-3 text-[17px] text-muted-foreground leading-relaxed whitespace-pre-line ${isArabic ? "text-right" : ""}`}
                   >
                     {mission.description}
                   </p>
                 )}
               </Reveal>
-              <div className={`mt-6 space-y-5 text-[17px] leading-[1.85] text-foreground/90 ${isArabic ? "text-right" : ""}`}>
+              <div className={`mt-6 space-y-5 text-[19px] leading-[1.85] text-foreground/90 ${isArabic ? "text-right" : ""}`}>
                 {missionParagraphs.map((p, i) => (
                   <Reveal key={i} delay={i * 90}>
                     <p>{p}</p>

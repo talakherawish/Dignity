@@ -55,7 +55,7 @@ function ClippingsPage() {
                     </div>
                   )}
                   <div className={"p-4 flex flex-col flex-1"}>
-                    <div className="text-[9px] uppercase tracking-widest text-muted-foreground font-semibold mb-1.5">
+                    <div className="text-[11px] uppercase tracking-widest text-muted-foreground font-semibold mb-1.5">
                       {formatDate(item.date, lang === "ar" ? "ar" : "en")}
                     </div>
                     <div className={"flex items-start justify-between gap-3 mt-auto" + (isArabic ? " flex-row-reverse text-right" : "")}>
