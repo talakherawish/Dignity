@@ -6,7 +6,16 @@ export const Publications: CollectionConfig = {
     group: 'Resources',
     useAsTitle: 'title',
     defaultColumns: ['title', 'type', 'date', 'status'],
-    description: 'Books, Papers, Reports, Brochures, Theses, Audiovisual, and Posters all live here — use the Type column/filter to switch between them.',
+    description:
+      'Superseded — publications are now edited under Publications → Publications (the publications-items collection). Nothing here reaches the website.',
+    // Two collections described the same thing and both appeared in the
+    // sidebar, so an editor had no way to tell which one the site reads. It
+    // reads `publications-items`; anything published here was invisible, which
+    // is exactly what happened to "Collective Bargaining and Agreements".
+    // Hidden rather than deleted, following Pages: the documents stay intact
+    // and reachable through the API. /api/migrate-orphans copies anything left
+    // here into the collection the site does read.
+    hidden: true,
   },
   versions: {
     drafts: true,

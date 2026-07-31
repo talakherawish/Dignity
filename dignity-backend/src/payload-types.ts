@@ -776,7 +776,7 @@ export interface Meeting {
   _status?: ('draft' | 'published') | null;
 }
 /**
- * Books, Papers, Reports, Brochures, Theses, Audiovisual, and Posters all live here — use the Type column/filter to switch between them.
+ * Superseded — publications are now edited under Publications → Publications (the publications-items collection). Nothing here reaches the website.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "publications".

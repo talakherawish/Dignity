@@ -308,10 +308,6 @@ export async function fetchResearchBySlug(
 export const fetchWindsorDignity = () =>
   fetchCollection<PayloadActivity>('windsor-dignity', NEWEST_FIRST)
 
-// Legacy function — kept for compatibility, falls back to old activities collection if needed
-export const fetchActivitiesByType = (type: PayloadActivity['type']) =>
-  fetchCollection<PayloadActivity>('activities', { 'where[type][equals]': type, ...NEWEST_FIRST })
-
 export const fetchAnnouncements = () =>
   fetchCollection<PayloadAnnouncement>('announcements', NEWEST_FIRST)
 

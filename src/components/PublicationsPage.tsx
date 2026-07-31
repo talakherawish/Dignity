@@ -12,7 +12,6 @@ import {
 } from "@/lib/payload";
 import { usePage } from "@/hooks/usePage";
 import { withItalicQuotes } from "@/lib/text";
-import type { PublicationFallbackItem } from "@/data/publicationsFallback";
 
 /** Normalized shape both Payload docs and hardcoded fallback items get mapped into. */
 type DisplayPublication = {
@@ -57,32 +56,14 @@ function fromPayload(item: PayloadPublication): DisplayPublication {
   };
 }
 
-function fromFallback(item: PublicationFallbackItem): DisplayPublication {
-  return {
-    id: item.id,
-    title: item.title,
-    titleAr: item.titleAr,
-    author: item.author,
-    authorAr: item.authorAr,
-    date: item.date,
-    fileUrl: item.fileUrl,
-    imageUrl: "",
-    imageIsPhoto: false,
-    previewUrl: "",
-    linkUrl: "",
-  };
-}
-
 export function PublicationsPage({
   type,
   pageSlug,
   titleKey,
-  fallback = [],
 }: {
   type: PayloadPublication["type"];
   pageSlug: string;
   titleKey: TranslationKey;
-  fallback?: PublicationFallbackItem[];
 }) {
   const { t, lang, isArabic } = useLanguage();
   const page = usePage(pageSlug);
@@ -92,8 +73,9 @@ export function PublicationsPage({
     staleTime: 5 * 60 * 1000,
   });
 
-  const items: DisplayPublication[] =
-    payloadItems.length > 0 ? payloadItems.map(fromPayload) : fallback.map(fromFallback);
+  // Payload is the only source. A type with nothing published shows the empty
+  // state below rather than a hardcoded stand-in nobody can edit.
+  const items: DisplayPublication[] = payloadItems.map(fromPayload);
 
   return (
     <PageLayout>
