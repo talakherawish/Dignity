@@ -7,7 +7,7 @@ export const Pages: CollectionConfig = {
     useAsTitle: 'title',
     defaultColumns: ['title', 'slug', 'updatedAt'],
     description:
-      'Superseded — each page is now edited directly in the sidebar group it belongs to (About the Initiative, Mission & Vision, Partners, and so on).',
+      'Superseded — each page is now edited directly in the sidebar group it belongs to (About the Initiative, Partners, and so on).',
     // Replaced by one global per page (src/globals/pageGlobals.ts), which puts
     // each page under the sidebar group matching the website's navigation
     // instead of burying all 22 in a single undifferentiated list. Hidden
@@ -35,7 +35,7 @@ export const Pages: CollectionConfig = {
       unique: true,
       label: 'Page Identifier (do not change after creation)',
       admin: {
-        description: 'Matches a fixed page on the site, e.g. about, mission, partners. Do not edit unless you know what this connects to.',
+        description: 'Matches a fixed page on the site, e.g. about, partners, news. Do not edit unless you know what this connects to.',
       },
     },
     {

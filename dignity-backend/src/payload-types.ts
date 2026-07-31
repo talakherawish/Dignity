@@ -120,7 +120,6 @@ export interface Config {
   globals: {
     'site-settings': SiteSetting;
     'page-about': PageAbout;
-    'page-mission': PageMission;
     'page-participants': PageParticipant;
     'page-partners': PagePartner;
     'page-news': PageNew;
@@ -145,7 +144,6 @@ export interface Config {
   globalsSelect: {
     'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
     'page-about': PageAboutSelect<false> | PageAboutSelect<true>;
-    'page-mission': PageMissionSelect<false> | PageMissionSelect<true>;
     'page-participants': PageParticipantsSelect<false> | PageParticipantsSelect<true>;
     'page-partners': PagePartnersSelect<false> | PagePartnersSelect<true>;
     'page-news': PageNewsSelect<false> | PageNewsSelect<true>;
@@ -404,7 +402,7 @@ export interface Participant {
   _status?: ('draft' | 'published') | null;
 }
 /**
- * Superseded — each page is now edited directly in the sidebar group it belongs to (About the Initiative, Mission & Vision, Partners, and so on).
+ * Superseded — each page is now edited directly in the sidebar group it belongs to (About the Initiative, Partners, and so on).
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "pages".
@@ -412,7 +410,7 @@ export interface Participant {
 export interface Page {
   id: string;
   /**
-   * Matches a fixed page on the site, e.g. about, mission, partners. Do not edit unless you know what this connects to.
+   * Matches a fixed page on the site, e.g. about, partners, news. Do not edit unless you know what this connects to.
    */
   slug: string;
   title?: string | null;
@@ -1354,8 +1352,6 @@ export interface SiteSetting {
   navAboutAr?: string | null;
   navAboutInitiative?: string | null;
   navAboutInitiativeAr?: string | null;
-  navAboutMission?: string | null;
-  navAboutMissionAr?: string | null;
   navAboutFellows?: string | null;
   navAboutFellowsAr?: string | null;
   navAboutPartners?: string | null;
@@ -1476,51 +1472,6 @@ export interface SiteSetting {
  * via the `definition` "page-about".
  */
 export interface PageAbout {
-  id: string;
-  title?: string | null;
-  titleAr?: string | null;
-  description?: string | null;
-  descriptionAr?: string | null;
-  body?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  bodyAr?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  updatedAt?: string | null;
-  createdAt?: string | null;
-}
-/**
- * Heading and intro text for the "Mission & Vision" page on the website. Both languages are required.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "page-mission".
- */
-export interface PageMission {
   id: string;
   title?: string | null;
   titleAr?: string | null;
@@ -1930,8 +1881,6 @@ export interface SiteSettingsSelect<T extends boolean = true> {
   navAboutAr?: T;
   navAboutInitiative?: T;
   navAboutInitiativeAr?: T;
-  navAboutMission?: T;
-  navAboutMissionAr?: T;
   navAboutFellows?: T;
   navAboutFellowsAr?: T;
   navAboutPartners?: T;
@@ -2051,21 +2000,6 @@ export interface SiteSettingsSelect<T extends boolean = true> {
  * via the `definition` "page-about_select".
  */
 export interface PageAboutSelect<T extends boolean = true> {
-  title?: T;
-  titleAr?: T;
-  description?: T;
-  descriptionAr?: T;
-  body?: T;
-  bodyAr?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  globalType?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "page-mission_select".
- */
-export interface PageMissionSelect<T extends boolean = true> {
   title?: T;
   titleAr?: T;
   description?: T;

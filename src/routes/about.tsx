@@ -1,5 +1,5 @@
 import { createFileRoute, Outlet, useLocation } from "@tanstack/react-router";
-import { AboutMissionPage } from "@/components/AboutMission";
+import { AboutPage } from "@/components/About";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { usePage } from "@/hooks/usePage";
 
@@ -13,22 +13,15 @@ function AboutLayout() {
   const { pathname } = useLocation();
   const isIndex = pathname === "/about" || pathname === "/about/";
   const page = usePage("about");
-  const missionPage = usePage("mission");
 
   if (isIndex) {
     return (
-      <AboutMissionPage
+      <AboutPage
         eyebrow={t("about")}
         title={page.title ?? t("about.initiative")}
         description={page.description ?? t("about.page.desc")}
         paragraphs={page.paragraphs}
         items={page.items}
-        mission={{
-          eyebrow: t("about"),
-          title: missionPage.title ?? t("about.mission"),
-          description: missionPage.description ?? t("mission.page.desc"),
-          paragraphs: missionPage.paragraphs ?? missionPage.body,
-        }}
       />
     );
   }

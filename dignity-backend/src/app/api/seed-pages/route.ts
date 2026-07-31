@@ -3,7 +3,7 @@ import config from '@payload-config'
 import { PAGE_SEEDS } from '@/lib/pagesContent'
 
 /**
- * Seed / repair the editable About + Mission/Vision pages.
+ * Seed / repair the editable About page.
  * Visit http://localhost:3000/api/seed-pages in your browser to run this.
  *
  * Upsert behaviour: creates a page if its slug is missing, otherwise updates

@@ -27,8 +27,7 @@ export const SiteSettings: GlobalConfig = {
           fields: [
             ...pair('navHome', 'Home'),
             ...pair('navAbout', 'About (menu heading)'),
-            ...pair('navAboutInitiative', 'About the Initiative'),
-            ...pair('navAboutMission', 'Mission and Vision'),
+            ...pair('navAboutInitiative', 'About the Initiative'),
             ...pair('navAboutFellows', 'Participants'),
             ...pair('navAboutPartners', 'Partners'),
             ...pair('navProjects', 'Projects (menu heading)'),

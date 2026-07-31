@@ -343,7 +343,7 @@ export const fetchInformationByType = (type: PayloadInformationItem['type']) =>
 
 
 /**
- * Fetch the editable text for a single page (e.g. "about", "mission").
+ * Fetch the editable text for a single page (e.g. "about", "partners").
  * Returns null if missing/unreachable, so callers fall back to their own copy.
  *
  * Each page is a Payload global rather than a row in a `pages` collection, so

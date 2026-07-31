@@ -5,17 +5,17 @@ import type { Field, GlobalConfig } from 'payload'
  * global per page.
  *
  * These used to live as 22 documents inside a single `pages` collection, which
- * meant every page's copy — About the Initiative, Mission & Vision, Partners,
+ * meant every page's copy — About the Initiative, Partners,
  * the Windsor initiative — was buried in one undifferentiated list sitting
  * under "About the Dignity Initiative", regardless of which part of the site it
- * actually drove. Finding the Mission & Vision text meant knowing to look in
- * "Pages" and recognising the `mission` slug.
+ * actually drove. Finding a page's text meant knowing to look in "Pages" and
+ * recognising its slug.
  *
  * As globals each page instead appears by name in the sidebar group matching
  * the website's own navigation, so the admin mirrors the public site: the
  * Windsor initiative sits under Activities, Partners under About the Dignity
  * Initiative, and so on. Globals are the right fit because these are
- * single, fixed pages — there is never more than one "Mission & Vision" — so
+ * single, fixed pages — there is never more than one "Partners" page — so
  * nothing here should be creatable or deletable.
  *
  * The global slug is the same string the frontend already passes to
@@ -45,7 +45,6 @@ type PageGlobalSpec = {
 const PAGE_GLOBALS: PageGlobalSpec[] = [
   // ── About the Dignity Initiative ────────────────────────────────────────
   { slug: 'about', label: 'About the Initiative', group: 'About the Dignity Initiative', withBody: true },
-  { slug: 'mission', label: 'Mission & Vision', group: 'About the Dignity Initiative', withBody: true },
   { slug: 'participants', label: 'Participants (page text)', group: 'About the Dignity Initiative' },
   { slug: 'partners', label: 'Partners', group: 'About the Dignity Initiative', withBody: true },
   { slug: 'news', label: 'News (page text)', group: 'About the Dignity Initiative' },

@@ -3,7 +3,7 @@ import config from '@payload-config'
 import { PAGE_SEEDS } from '@/lib/pagesContent'
 
 /**
- * Update existing About + Mission/Vision pages so they are published and their
+ * Update the existing About page so it is published and its
  * content matches the canonical copy in @/lib/pagesContent (mirrors the
  * frontend fallback 1:1). Unlike /api/seed-pages this only touches pages that
  * already exist — it never creates missing ones.

@@ -1,10 +1,10 @@
 /**
- * Canonical content for the editable About + Mission/Vision pages.
+ * Canonical content for the editable About page.
  *
  * This is the SINGLE SOURCE OF TRUTH for seeding/repairing the Payload `pages`
- * docs (slugs `about` and `mission`). The wording here is kept 100% equivalent
+ * doc (slug `about`). The wording here is kept 100% equivalent
  * to the frontend fallback copy in:
- *   - src/components/AboutMission.tsx  (paragraphs + avenue items)
+ *   - src/components/About.tsx           (paragraphs + avenue items)
  *   - src/contexts/LanguageContext.tsx (titles + short descriptions)
  * so the live site looks identical whether it renders Payload content or the
  * hardcoded fallback (while Payload loads / on fetch failure / before seeding).
@@ -129,23 +129,13 @@ const ABOUT_ITEMS_AR = [
   'دعم المبادرات الطلابية والمجتمعية التي تنسجم مع رسالة المبادرة.',
 ]
 
-const MISSION_PARAGRAPHS_EN = [
-  "Karama's mission is to advance a scholarly culture in which human dignity is both the object of inquiry and the standard by which research practice is judged — treating free will, equality, and justice as inseparable from the pursuit of knowledge.",
-  "Its vision is an academic environment, in Palestine and beyond, where interdisciplinary research on dignity is a recognised and sustained field — one that informs research ethics, shapes policy and public debate, and strengthens the university's role as a site of critical thought and emancipatory praxis.",
-]
-
-const MISSION_PARAGRAPHS_AR = [
-  'تتمثل رسالة مبادرة كرامة في تعزيز ثقافة أكاديمية تكون فيها الكرامة الإنسانية موضوع بحث ومعيار حكم على الممارسة البحثية في آن واحد، بحيث لا تنفصل الإرادة الحرة والمساواة والعدالة عن مسار إنتاج المعرفة.',
-  'وتتمثل رؤيتها في بيئة أكاديمية، في فلسطين وخارجها، يشكّل فيها البحث متداخل الحقول حول الكرامة حقلاً معترفاً به ومستداماً، يسهم في صياغة أخلاقيات البحث العلمي، ويؤثر في السياسات والنقاش العام، ويعزز دور الجامعة بوصفها فضاءً للفكر النقدي والممارسة التحررية.',
-]
-
 export type PageSeed = {
   slug: string
   title: string
   titleAr: string
   description: string
   descriptionAr: string
-  /** Optional — only the long-form pages (about / mission) ship prose here. */
+  /** Optional — only the long-form pages ship prose here. */
   body?: ReturnType<typeof buildBody>
   bodyAr?: ReturnType<typeof buildBody>
 }
@@ -319,15 +309,6 @@ export const PAGE_SEEDS: PageSeed[] = [
     descriptionAr: 'نظرة عامة على مبادرة الكرامة وأصولها وغرضها الأكاديمي.',
     body: buildBody(ABOUT_PARAGRAPHS_EN, ABOUT_ITEMS_EN, 'ltr'),
     bodyAr: buildBody(ABOUT_PARAGRAPHS_AR, ABOUT_ITEMS_AR, 'rtl'),
-  },
-  {
-    slug: 'mission',
-    title: 'Mission & Vision',
-    titleAr: 'الرسالة والرؤية',
-    description: 'Our guiding mission and the vision that shapes our scholarly community.',
-    descriptionAr: 'مهمتنا التوجيهية والرؤية التي تشكل مجتمعنا الأكاديمي.',
-    body: buildBody(MISSION_PARAGRAPHS_EN, [], 'ltr'),
-    bodyAr: buildBody(MISSION_PARAGRAPHS_AR, [], 'rtl'),
   },
   ...SECTION_PAGES,
 ]

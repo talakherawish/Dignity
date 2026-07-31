@@ -11,7 +11,6 @@ const NAV: Item[] = [
     labelKey: "about",
     children: [
       { labelKey: "about.initiative", to: "/about" },
-      { labelKey: "about.mission", to: "/about", hash: "mission-vision" },
       { labelKey: "about.fellows", to: "/about/participants" },
       { labelKey: "media.news", to: "/media/news" },
       { labelKey: "media.announcements", to: "/media/announcements" },

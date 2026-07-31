@@ -12,7 +12,6 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as SearchRouteImport } from './routes/search'
-import { Route as AboutMissionRouteImport } from './routes/about.mission'
 import { Route as AboutParticipantsRouteImport } from './routes/about.participants'
 import { Route as AboutPartnersRouteImport } from './routes/about.partners'
 import { Route as ActivitiesConferencesRouteImport } from './routes/activities.conferences'
@@ -49,11 +48,6 @@ const SearchRoute = SearchRouteImport.update({
   id: '/search',
   path: '/search',
   getParentRoute: () => rootRouteImport,
-} as any)
-const AboutMissionRoute = AboutMissionRouteImport.update({
-  id: '/mission',
-  path: '/mission',
-  getParentRoute: () => AboutRoute,
 } as any)
 const AboutParticipantsRoute = AboutParticipantsRouteImport.update({
   id: '/participants',
@@ -166,7 +160,6 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRouteWithChildren
   '/search': typeof SearchRoute
-  '/about/mission': typeof AboutMissionRoute
   '/about/participants': typeof AboutParticipantsRoute
   '/about/partners': typeof AboutPartnersRoute
   '/activities/conferences': typeof ActivitiesConferencesRoute
@@ -193,7 +186,6 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRouteWithChildren
   '/search': typeof SearchRoute
-  '/about/mission': typeof AboutMissionRoute
   '/about/participants': typeof AboutParticipantsRoute
   '/about/partners': typeof AboutPartnersRoute
   '/activities/conferences': typeof ActivitiesConferencesRoute
@@ -221,7 +213,6 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/about': typeof AboutRouteWithChildren
   '/search': typeof SearchRoute
-  '/about/mission': typeof AboutMissionRoute
   '/about/participants': typeof AboutParticipantsRoute
   '/about/partners': typeof AboutPartnersRoute
   '/activities/conferences': typeof ActivitiesConferencesRoute
@@ -250,7 +241,6 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/search'
-    | '/about/mission'
     | '/about/participants'
     | '/about/partners'
     | '/activities/conferences'
@@ -277,7 +267,6 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/search'
-    | '/about/mission'
     | '/about/participants'
     | '/about/partners'
     | '/activities/conferences'
@@ -304,7 +293,6 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/search'
-    | '/about/mission'
     | '/about/participants'
     | '/about/partners'
     | '/activities/conferences'
@@ -375,13 +363,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/search'
       preLoaderRoute: typeof SearchRouteImport
       parentRoute: typeof rootRouteImport
-    }
-    '/about/mission': {
-      id: '/about/mission'
-      path: '/mission'
-      fullPath: '/about/mission'
-      preLoaderRoute: typeof AboutMissionRouteImport
-      parentRoute: typeof AboutRoute
     }
     '/about/participants': {
       id: '/about/participants'
@@ -534,13 +515,11 @@ declare module '@tanstack/react-router' {
 }
 
 interface AboutRouteChildren {
-  AboutMissionRoute: typeof AboutMissionRoute
   AboutParticipantsRoute: typeof AboutParticipantsRoute
   AboutPartnersRoute: typeof AboutPartnersRoute
 }
 
 const AboutRouteChildren: AboutRouteChildren = {
-  AboutMissionRoute: AboutMissionRoute,
   AboutParticipantsRoute: AboutParticipantsRoute,
   AboutPartnersRoute: AboutPartnersRoute,
 }

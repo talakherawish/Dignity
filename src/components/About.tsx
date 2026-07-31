@@ -3,7 +3,7 @@ import { Reveal } from "./Reveal";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 // ── Fallback content (shown while Payload loads, or if a field is empty) ───
-// Mirrors the real copy stored in the Payload "about"/"mission" page docs
+// Mirrors the real copy stored in the Payload "about" page doc
 // (see dignity-backend /api/seed-pages), so there's no visible flash or blank
 // state if the fetch is slow, fails, or the page hasn't been seeded yet.
 // Keep this in sync with the seed route so both sources stay 100% equivalent.
@@ -44,17 +44,6 @@ const FALLBACK_ITEMS_AR = [
   "دعم المبادرات الطلابية والمجتمعية التي تنسجم مع رسالة المبادرة.",
 ];
 
-// Mission & Vision fallback copy (used while Payload loads / if empty)
-const FALLBACK_MISSION_PARAGRAPHS_EN = [
-  "Karama's mission is to advance a scholarly culture in which human dignity is both the object of inquiry and the standard by which research practice is judged — treating free will, equality, and justice as inseparable from the pursuit of knowledge.",
-  "Its vision is an academic environment, in Palestine and beyond, where interdisciplinary research on dignity is a recognised and sustained field — one that informs research ethics, shapes policy and public debate, and strengthens the university's role as a site of critical thought and emancipatory praxis.",
-];
-
-const FALLBACK_MISSION_PARAGRAPHS_AR = [
-  "تتمثل رسالة مبادرة كرامة في تعزيز ثقافة أكاديمية تكون فيها الكرامة الإنسانية موضوع بحث ومعيار حكم على الممارسة البحثية في آن واحد، بحيث لا تنفصل الإرادة الحرة والمساواة والعدالة عن مسار إنتاج المعرفة.",
-  "وتتمثل رؤيتها في بيئة أكاديمية، في فلسطين وخارجها، يشكّل فيها البحث متداخل الحقول حول الكرامة حقلاً معترفاً به ومستداماً، يسهم في صياغة أخلاقيات البحث العلمي، ويؤثر في السياسات والنقاش العام، ويعزز دور الجامعة بوصفها فضاءً للفكر النقدي والممارسة التحررية.",
-];
-
 const PRINCIPLES: { en: string; ar: string }[] = [
   { en: "Free Will", ar: "الإرادة الحرة" },
   { en: "Equality", ar: "المساواة" },
@@ -62,25 +51,18 @@ const PRINCIPLES: { en: string; ar: string }[] = [
   { en: "Praxis", ar: "الممارسة" },
 ];
 
-export function AboutMissionPage({
+export function AboutPage({
   eyebrow,
   title,
   description,
   paragraphs,
   items,
-  mission,
 }: {
   eyebrow?: string;
   title: string;
   description?: string;
   paragraphs?: string[];
   items?: string[];
-  mission: {
-    eyebrow?: string;
-    title: string;
-    description?: string;
-    paragraphs?: string[];
-  };
 }) {
   const { isArabic } = useLanguage();
 
@@ -91,12 +73,6 @@ export function AboutMissionPage({
   // while loading, on fetch failure, or if the page hasn't been seeded.
   const resolvedItems = items && items.length > 0 ? items : fallbackItems;
   const resolvedParagraphs = paragraphs && paragraphs.length > 0 ? paragraphs : fallbackParagraphs;
-
-  const fallbackMissionParagraphs = isArabic
-    ? FALLBACK_MISSION_PARAGRAPHS_AR
-    : FALLBACK_MISSION_PARAGRAPHS_EN;
-  const missionParagraphs =
-    mission.paragraphs && mission.paragraphs.length > 0 ? mission.paragraphs : fallbackMissionParagraphs;
 
   // The last paragraph, when present alongside items, is treated as the
   // lead-in line introducing the avenues grid (e.g. "Karama realizes its
@@ -211,37 +187,6 @@ export function AboutMissionPage({
             </section>
           )}
 
-          {/* Mission & Vision */}
-          <section id="mission-vision" className="scroll-mt-[112px] border-t border-border">
-            <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
-              <Reveal>
-                {mission.eyebrow && (
-                  <div
-                    className={`text-[12px] uppercase tracking-[0.22em] text-[color:var(--brand-magenta)] font-semibold mb-3 ${isArabic ? "text-right" : ""}`}
-                  >
-                    {mission.eyebrow}
-                  </div>
-                )}
-                <h2 className={`font-serif text-2xl md:text-3xl text-primary tracking-tight ${isArabic ? "text-right" : ""}`}>
-                  {mission.title}
-                </h2>
-                {mission.description && (
-                  <p
-                    className={`mt-3 text-[17px] text-muted-foreground leading-relaxed whitespace-pre-line ${isArabic ? "text-right" : ""}`}
-                  >
-                    {mission.description}
-                  </p>
-                )}
-              </Reveal>
-              <div className={`mt-6 space-y-5 text-[19px] leading-[1.85] text-foreground/90 ${isArabic ? "text-right" : ""}`}>
-                {missionParagraphs.map((p, i) => (
-                  <Reveal key={i} delay={i * 90}>
-                    <p>{p}</p>
-                  </Reveal>
-                ))}
-              </div>
-            </div>
-          </section>
         </div>
       </div>
     </PageLayout>
