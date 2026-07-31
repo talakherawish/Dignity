@@ -251,40 +251,53 @@ async function fetchCollection<T>(
 
 // ── Public fetch functions ─────────────────────────────────────────────────
 
+/**
+ * Newest first, by the entry's own date field.
+ *
+ * Without this Payload falls back to its own default ordering, which keyed off
+ * createdAt — so a feed showed whatever was typed into the admin most recently
+ * rather than the most recent entry, and the visible dates came out scrambled
+ * (the news list ran 2022, 2022, 2023 top to bottom). Every collection with a
+ * date field is ordered this way so the homepage feeds and the listing pages
+ * agree with each other.
+ */
+const NEWEST_FIRST = { sort: '-date' }
+
 export const fetchNews = () =>
-  fetchCollection<PayloadNews>('news')
+  fetchCollection<PayloadNews>('news', NEWEST_FIRST)
 
 // Activities — separated into individual collections
 export const fetchSeminars = () =>
-  fetchCollection<PayloadActivity>('seminars')
+  fetchCollection<PayloadActivity>('seminars', NEWEST_FIRST)
 
 export const fetchConferences = () =>
-  fetchCollection<PayloadActivity>('conferences')
+  fetchCollection<PayloadActivity>('conferences', NEWEST_FIRST)
 
 export const fetchMeetings = () =>
-  fetchCollection<PayloadActivity>('meetings')
+  fetchCollection<PayloadActivity>('meetings', NEWEST_FIRST)
 
 export const fetchResearch = () =>
-  fetchCollection<PayloadActivity>('research')
+  fetchCollection<PayloadActivity>('research', NEWEST_FIRST)
 
 export const fetchWindsorDignity = () =>
-  fetchCollection<PayloadActivity>('windsor-dignity')
+  fetchCollection<PayloadActivity>('windsor-dignity', NEWEST_FIRST)
 
 // Legacy function — kept for compatibility, falls back to old activities collection if needed
 export const fetchActivitiesByType = (type: PayloadActivity['type']) =>
-  fetchCollection<PayloadActivity>('activities', { 'where[type][equals]': type })
+  fetchCollection<PayloadActivity>('activities', { 'where[type][equals]': type, ...NEWEST_FIRST })
 
 export const fetchAnnouncements = () =>
-  fetchCollection<PayloadAnnouncement>('announcements')
+  fetchCollection<PayloadAnnouncement>('announcements', NEWEST_FIRST)
 
 export const fetchPhotos = () =>
-  fetchCollection<PayloadPhoto>('photos')
+  fetchCollection<PayloadPhoto>('photos', NEWEST_FIRST)
 
 export const fetchClippings = () =>
   // depth: 2 so item.image.thumbnail (the auto-generated PDF preview) resolves
   // to a full Media object, not just an id string.
-  fetchCollection<PayloadClipping>('clippings', { depth: '2' })
+  fetchCollection<PayloadClipping>('clippings', { depth: '2', ...NEWEST_FIRST })
 
+// Participants carry no date — Payload's own ordering is what the admin sees.
 export const fetchParticipants = () =>
   fetchCollection<PayloadParticipant>('participants')
 
@@ -295,7 +308,7 @@ export const fetchResearchActivities = () =>
 export const fetchPublicationsByType = (type: PayloadPublication['type']) =>
   // depth: 2 so item.image.thumbnail (the auto-generated PDF preview) resolves
   // to a full Media object, not just an id string.
-  fetchCollection<PayloadPublication>('publications-items', { 'where[type][equals]': type, depth: '2' })
+  fetchCollection<PayloadPublication>('publications-items', { 'where[type][equals]': type, depth: '2', ...NEWEST_FIRST })
 
 // Convenience functions for each publication type
 export const fetchBooks = () => fetchPublicationsByType('books')
