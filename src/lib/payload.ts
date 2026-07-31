@@ -141,11 +141,19 @@ export type PayloadInformationItem = {
 
 export type PayloadResearchActivity = {
   id: string
+  /** End of the entry's URL, generated from the English title in the admin. */
+  slug?: string
   title: string
   titleAr?: string
   description?: unknown
   descriptionAr?: unknown
+  content?: unknown
+  contentAr?: unknown
   image?: PayloadMedia
+  /** Outputs attached to this research area in the admin. */
+  relatedPublications?: PayloadPublication[]
+  relatedClippings?: PayloadClipping[]
+  relatedPhotos?: PayloadPhoto[]
 }
 
   export type PayloadPage = {
@@ -276,8 +284,26 @@ export const fetchConferences = () =>
 export const fetchMeetings = () =>
   fetchCollection<PayloadActivity>('meetings', NEWEST_FIRST)
 
+/**
+ * Research areas, shown under Activities → Research.
+ *
+ * depth: 2 so the attached publications, clippings and photos arrive as whole
+ * documents (with their own uploads resolved) rather than bare ids.
+ */
 export const fetchResearch = () =>
-  fetchCollection<PayloadActivity>('research', NEWEST_FIRST)
+  fetchCollection<PayloadResearchActivity>('research', { depth: '2' })
+
+/** One research area by its slug, for its own page. Undefined if no match. */
+export async function fetchResearchBySlug(
+  slug: string,
+): Promise<PayloadResearchActivity | undefined> {
+  const docs = await fetchCollection<PayloadResearchActivity>('research', {
+    'where[slug][equals]': slug,
+    depth: '2',
+    limit: '1',
+  })
+  return docs[0]
+}
 
 export const fetchWindsorDignity = () =>
   fetchCollection<PayloadActivity>('windsor-dignity', NEWEST_FIRST)
@@ -300,9 +326,6 @@ export const fetchClippings = () =>
 // Participants carry no date — Payload's own ordering is what the admin sees.
 export const fetchParticipants = () =>
   fetchCollection<PayloadParticipant>('participants')
-
-export const fetchResearchActivities = () =>
-  fetchCollection<PayloadResearchActivity>('research-activities')
 
 // Publications — fetch from unified publications-items collection
 export const fetchPublicationsByType = (type: PayloadPublication['type']) =>

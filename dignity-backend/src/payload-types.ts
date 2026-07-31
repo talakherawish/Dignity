@@ -501,7 +501,7 @@ export interface Activity {
   _status?: ('draft' | 'published') | null;
 }
 /**
- * Research projects and areas undertaken by the Dignity initiative.
+ * Shows on the website under Activities → Research. Each entry gets its own page, where the publications, clippings and photos selected below appear alongside it.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "research".
@@ -542,6 +542,42 @@ export interface Research {
     };
     [k: string]: unknown;
   } | null;
+  image?: (string | null) | Media;
+  /**
+   * Filled in automatically from the English title. It is the end of this entry's web address, so changing it after the page has been shared will break the old link.
+   */
+  slug?: string | null;
+  /**
+   * Books, papers, reports, theses and so on produced by this research.
+   */
+  relatedPublications?: (string | PublicationsItem)[] | null;
+  relatedClippings?: (string | Clipping)[] | null;
+  relatedPhotos?: (string | Photo)[] | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Books, papers, reports, brochures, theses, audiovisual, and posters produced by the Dignity initiative.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "publications-items".
+ */
+export interface PublicationsItem {
+  id: string;
+  type: 'books' | 'papers' | 'reports' | 'brochures' | 'theses' | 'audiovisual' | 'posters';
+  title: string;
+  titleAr: string;
+  author?: string | null;
+  authorAr?: string | null;
+  date?: string | null;
+  description?: string | null;
+  descriptionAr?: string | null;
+  file?: (string | null) | Media;
+  /**
+   * Use for items that live elsewhere rather than as an uploaded file — a YouTube video, for example. Leave empty when a file is attached above.
+   */
+  link?: string | null;
   image?: (string | null) | Media;
   updatedAt: string;
   createdAt: string;
@@ -784,32 +820,6 @@ export interface Publication {
     [k: string]: unknown;
   } | null;
   file?: (string | null) | Media;
-  image?: (string | null) | Media;
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
-}
-/**
- * Books, papers, reports, brochures, theses, audiovisual, and posters produced by the Dignity initiative.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "publications-items".
- */
-export interface PublicationsItem {
-  id: string;
-  type: 'books' | 'papers' | 'reports' | 'brochures' | 'theses' | 'audiovisual' | 'posters';
-  title: string;
-  titleAr: string;
-  author?: string | null;
-  authorAr?: string | null;
-  date?: string | null;
-  description?: string | null;
-  descriptionAr?: string | null;
-  file?: (string | null) | Media;
-  /**
-   * Use for items that live elsewhere rather than as an uploaded file — a YouTube video, for example. Leave empty when a file is attached above.
-   */
-  link?: string | null;
   image?: (string | null) | Media;
   updatedAt: string;
   createdAt: string;
@@ -1159,6 +1169,10 @@ export interface ResearchSelect<T extends boolean = true> {
   content?: T;
   contentAr?: T;
   image?: T;
+  slug?: T;
+  relatedPublications?: T;
+  relatedClippings?: T;
+  relatedPhotos?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
