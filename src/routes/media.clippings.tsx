@@ -4,7 +4,6 @@ import { Download, FileText } from "lucide-react";
 import { PageLayout, PageHero } from "@/components/PageLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { fetchClippings, formatDate, mediaUrl, type PayloadClipping } from "@/lib/payload";
-import { usePage } from "@/hooks/usePage";
 
 export const Route = createFileRoute("/media/clippings")({
   head: () => ({ meta: [{ title: "Clippings — Dignity" }] }),
@@ -13,7 +12,6 @@ export const Route = createFileRoute("/media/clippings")({
 
 function ClippingsPage() {
   const { t, lang, isArabic } = useLanguage();
-      const page = usePage("clippings");
   const { data: items = [], isLoading } = useQuery({
     queryKey: ["clippings"],
     queryFn: fetchClippings,
@@ -22,7 +20,7 @@ function ClippingsPage() {
 
   return (
     <PageLayout>
-            <PageHero eyebrow={t("media")} title={page.title ?? t("media.clippings")} description={page.description ?? t("clippings.page.desc")} />
+            <PageHero eyebrow={`${t("media")} — ${t("media.clippings")}`} title={t("media.clippings")} />
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {isLoading ? (
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
@@ -59,7 +57,7 @@ function ClippingsPage() {
                       {formatDate(item.date, lang === "ar" ? "ar" : "en")}
                     </div>
                     <div className={"flex items-start justify-between gap-3 mt-auto" + (isArabic ? " flex-row-reverse text-right" : "")}>
-                      <h3 className="font-serif text-lg text-primary leading-snug">
+                      <h3 className="font-serif text-sm text-primary leading-snug">
                         {lang === "ar" ? (item.titleAr ?? item.title) : item.title}
                       </h3>
                       {url && (

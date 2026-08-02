@@ -9,8 +9,6 @@ import {
   mediaUrl,
   type PayloadResearchActivity,
 } from "@/lib/payload";
-import { usePage } from "@/hooks/usePage";
-
 export const Route = createFileRoute("/projects/research/")({
   head: () => ({ meta: [{ title: "Research — Dignity" }] }),
   component: ResearchPage,
@@ -27,7 +25,6 @@ function outputCount(item: PayloadResearchActivity): number {
 
 function ResearchPage() {
   const { lang, isArabic } = useLanguage();
-  const page = usePage("research");
 
   const { data: items = [], isLoading } = useQuery({
     queryKey: ["research"],
@@ -39,13 +36,7 @@ function ResearchPage() {
     <PageLayout>
       <PageHero
         eyebrow={isArabic ? "الأنشطة" : "Activities"}
-        title={page.title ?? (isArabic ? "الأبحاث" : "Research")}
-        description={
-          page.description ??
-          (isArabic
-            ? "مجالات البحث الجارية التي تعمل عليها مبادرة الكرامة."
-            : "The ongoing research areas the Dignity initiative is working on.")
-        }
+        title={isArabic ? "الأبحاث" : "Research"}
       />
       <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {isLoading ? (

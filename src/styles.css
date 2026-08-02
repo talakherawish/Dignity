@@ -186,6 +186,15 @@
   .scrollbar-none { scrollbar-width: none; }
 }
 
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 /* ── Arabic typography ─────────────────────────────────────────────────────
    Fall back to system fonts for Arabic text. No custom font import to avoid
    slow loading. Uses system-native Arabic fonts which are faster.

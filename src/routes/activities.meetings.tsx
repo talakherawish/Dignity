@@ -3,8 +3,6 @@ import { useQuery } from "@tanstack/react-query";
 import { PageLayout, PageHero } from "@/components/PageLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { fetchMeetings, formatDate, type PayloadActivity } from "@/lib/payload";
-import { usePage } from "@/hooks/usePage";
-
 export const Route = createFileRoute("/activities/meetings")({
   head: () => ({ meta: [{ title: "Meetings — Dignity" }] }),
   component: MeetingsPage,
@@ -12,7 +10,6 @@ export const Route = createFileRoute("/activities/meetings")({
 
 function MeetingsPage() {
   const { t, lang, isArabic } = useLanguage();
-    const page = usePage("meetings");
   const { data: items = [], isLoading } = useQuery({
     queryKey: ["meetings"],
     queryFn: fetchMeetings,
@@ -21,7 +18,7 @@ function MeetingsPage() {
 
   return (
     <PageLayout>
-            <PageHero eyebrow={t("activities")} title={page.title ?? t("activities.meetings")} description={page.description ?? t("meetings.page.desc")} />
+            <PageHero eyebrow={`${t("activities")} — ${t("activities.meetings")}`} title={t("activities.meetings")} />
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {isLoading ? (
           <div className="space-y-4">
@@ -41,7 +38,7 @@ function MeetingsPage() {
                   <div className={"text-[11px] uppercase tracking-widest text-muted-foreground font-semibold mb-2" + (isArabic ? " text-right" : "")}>
                     {formatDate(item.date, lang === "ar" ? "ar" : "en")}
                   </div>
-                  <h3 className={"font-serif text-lg text-primary leading-snug mb-2" + (isArabic ? " text-right" : "")}>
+                  <h3 className={"font-serif text-sm text-primary leading-snug mb-2" + (isArabic ? " text-right" : "")}>
                     {lang === "ar" ? (item.titleAr ?? item.title) : item.title}
                   </h3>
                 </div>

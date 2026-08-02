@@ -12,10 +12,15 @@ export function PageLayout({ children }: { children: ReactNode }) {
   );
 }
 
-export function PageHero({ title, description }: { eyebrow?: string; title: string; description?: string }) {
+export function PageHero({ eyebrow, title, description }: { eyebrow?: string; title: string; description?: string }) {
   return (
     <section>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-4 text-center">
+        {eyebrow && (
+          <p className="text-[11px] uppercase tracking-[0.22em] text-[color:var(--brand-magenta)] font-semibold mb-3">
+            {eyebrow}
+          </p>
+        )}
         <h1 className="font-serif text-3xl md:text-4xl text-primary tracking-tight">{title}</h1>
         {description && (
           <p className="mt-3 max-w-xl mx-auto text-sm text-muted-foreground leading-relaxed whitespace-pre-line">{description}</p>

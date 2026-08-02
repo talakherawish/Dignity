@@ -6,7 +6,6 @@ import { PageLayout } from "@/components/PageLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { ARTICLES, getField, getBody, type Article, type ArticleLang } from "@/data/articles";
 import { fetchNews, formatDate, mediaUrl, extractText, type PayloadNews } from "@/lib/payload";
-import { usePage } from "@/hooks/usePage";
 import { withItalicQuotes } from "@/lib/text";
 
 function mapPayloadNews(pa: PayloadNews): Article {
@@ -87,7 +86,6 @@ function ArticleCard({ article }: { article: Article }) {
 
 function NewsPage() {
   const { t } = useLanguage();
-    const page = usePage("news");
   const { data: payloadNews = [], isLoading } = useQuery({
     queryKey: ["news"],
     queryFn: fetchNews,
@@ -98,15 +96,12 @@ function NewsPage() {
   return (
     <PageLayout>
       <section className="border-b border-border">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center">
           <div className="mb-8">
             <p className="text-[12px] uppercase tracking-[0.22em] text-[color:var(--brand-magenta)] font-semibold mb-1.5">
               {t("media")}
             </p>
-                    <h1 className="font-serif text-3xl md:text-4xl text-primary">{page.title ?? t("media.news")}</h1>
-            {page.description && (
-                <p className="text-sm text-muted-foreground mt-2 max-w-2xl">{page.description}</p>
-                  )}
+            <h1 className="font-serif text-3xl md:text-4xl text-primary">{t("media.news")}</h1>
           </div>
           {isLoading ? (
             <div className="space-y-6">

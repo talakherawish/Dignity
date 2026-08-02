@@ -6,7 +6,6 @@ export const Route = createFileRoute("/information/readings")({
   component: () => (
     <InformationPage
       type="readings-documents"
-      pageSlug="information-readings"
       titleKey="information.readings"
     />
   ),

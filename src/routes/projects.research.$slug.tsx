@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, Download, FileText, Newspaper, Image as ImageIcon } from "lucide-react";
+import { ArrowLeft, Download, FileText } from "lucide-react";
 import { PageLayout } from "@/components/PageLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
 import {
@@ -36,7 +36,7 @@ function OutputSection({
     <section className="mt-12">
       <div className={"flex items-center gap-2.5 mb-5" + (isArabic ? " flex-row-reverse" : "")}>
         <span className="text-muted-foreground">{icon}</span>
-        <h2 className="font-serif text-xl text-primary">{title}</h2>
+        <h2 className="font-serif text-4xl md:text-5xl text-primary">{title}</h2>
       </div>
       {children}
     </section>
@@ -144,13 +144,19 @@ function ResearchDetailPage() {
     return extractText(lang === "ar" ? (research.descriptionAr ?? research.description) : research.description);
   })();
 
-  const publications = research.relatedPublications ?? [];
+  const books = research.relatedBooks ?? [];
+  const papers = research.relatedPapers ?? [];
+  const reports = research.relatedReports ?? [];
+  const brochures = research.relatedBrochures ?? [];
+  const theses = research.relatedTheses ?? [];
+  const audiovisual = research.relatedAudiovisual ?? [];
+  const posters = research.relatedPosters ?? [];
   const clippings = research.relatedClippings ?? [];
   const photos = research.relatedPhotos ?? [];
 
   return (
     <PageLayout>
-      <article className={"max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12" + (isArabic ? " text-right" : "")}>
+      <article className={"max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 animate-fade-in" + (isArabic ? " text-right" : "")}>
         {backLink}
 
         <div className="text-[11px] uppercase tracking-[0.22em] text-[color:var(--brand-magenta)] font-semibold mt-8 mb-3">
@@ -163,7 +169,7 @@ function ResearchDetailPage() {
         )}
 
         {body.length > 0 ? (
-          <div className="mt-8 space-y-5 text-base leading-[1.85] text-foreground/90">
+          <div className="mt-8 space-y-5 text-base leading-[1.85] text-foreground/90 opacity-0 animate-[fadeIn_0.8s_ease-in-out_0.3s_forwards]">
             {body.map((paragraph, i) => (
               <p key={i}>{paragraph}</p>
             ))}
@@ -174,74 +180,322 @@ function ResearchDetailPage() {
           </p>
         )}
 
-        {publications.length > 0 && (
-          <OutputSection
-            title={isArabic ? "المنشورات" : "Publications"}
-            icon={<FileText className="h-4 w-4" />}
-            isArabic={isArabic}
-          >
-            <div className="grid gap-4 sm:grid-cols-2">
-              {publications.map((p) => (
-                <PublicationCard key={p.id} item={p} lang={lang} isArabic={isArabic} />
-              ))}
+        {(books.length > 0 || papers.length > 0 || reports.length > 0 || brochures.length > 0 || theses.length > 0 || audiovisual.length > 0 || posters.length > 0 || clippings.length > 0 || photos.length > 0) && (
+          <section className="mt-16">
+            <div className={"flex items-center gap-2.5 mb-8" + (isArabic ? " flex-row-reverse" : "")}>
+              <span className="text-muted-foreground"><FileText className="h-5 w-5" /></span>
+              <h2 className="font-serif text-4xl md:text-5xl text-primary">{isArabic ? "المخرجات" : "Outputs"}</h2>
             </div>
-          </OutputSection>
-        )}
 
-        {clippings.length > 0 && (
-          <OutputSection
-            title={isArabic ? "قصاصات صحفية" : "Press clippings"}
-            icon={<Newspaper className="h-4 w-4" />}
-            isArabic={isArabic}
-          >
-            <div className="grid gap-4 sm:grid-cols-2">
-              {clippings.map((c: PayloadClipping) => {
-                const src = mediaUrl(c.image?.thumbnail ?? c.image);
-                return (
-                  <div key={c.id} className="bg-card border border-border rounded-lg overflow-hidden">
-                    {src && (
-                      <div className="w-full bg-secondary/20 overflow-hidden" style={{ aspectRatio: "4/3" }}>
-                        <img src={src} alt={c.title} className="w-full h-full object-cover" />
-                      </div>
-                    )}
-                    <div className="p-4">
-                      <div className="text-sm font-medium text-primary leading-snug">
-                        {lang === "ar" ? (c.titleAr ?? c.title) : c.title}
-                      </div>
-                      {c.date && (
-                        <div className="text-xs text-muted-foreground mt-1.5">
-                          {formatDate(c.date, lang === "ar" ? "ar" : "en")}
+            {books.length > 0 && (
+              <div className="mb-12">
+                <h3 className="font-serif text-2xl md:text-3xl text-primary mb-6">{isArabic ? "الكتب" : "Books"}</h3>
+                <div className="flex flex-wrap justify-center gap-6" dir={isArabic ? "rtl" : "ltr"}>
+                  {books.map((p) => {
+                    const fileUrl = p.file ? mediaUrl(p.file) : "";
+                    const previewUrl = mediaUrl(p.image?.thumbnail) || mediaUrl(p.image) || mediaUrl(p.file?.thumbnail) || "";
+                    return (
+                      <div key={p.id} className="w-[calc(50%-0.75rem)] lg:w-[calc(25%-1.125rem)] border border-border rounded-sm bg-card overflow-hidden hover:shadow-sm transition-shadow flex flex-col">
+                        <div className="aspect-[1/1.41] bg-secondary/20 flex items-center justify-center">
+                          {previewUrl ? (
+                            <img src={previewUrl} alt="" className="w-full h-full object-cover" />
+                          ) : (
+                            <FileText className="h-10 w-10 text-muted-foreground/50" />
+                          )}
                         </div>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </OutputSection>
-        )}
+                        <div className="p-5 flex flex-col flex-1">
+                          <div className="text-[11px] uppercase tracking-widest text-muted-foreground font-semibold mb-1.5">
+                            {formatDate(p.date, lang === "ar" ? "ar" : "en")}
+                            {(p.author || p.authorAr) && (
+                              <span> · {lang === "ar" ? (p.authorAr ?? p.author) : p.author}</span>
+                            )}
+                          </div>
+                          <div className={"flex items-start justify-between gap-3 mt-auto" + (isArabic ? " flex-row-reverse text-right" : "")}>
+                            <h4 className="font-serif text-sm text-primary leading-snug">{lang === "ar" ? (p.titleAr ?? p.title) : p.title}</h4>
+                            {fileUrl && (
+                              <a
+                                href={fileUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                aria-label={isArabic ? "تحميل" : "Download"}
+                                title={isArabic ? "تحميل" : "Download"}
+                                className="shrink-0 inline-flex items-center justify-center h-8 w-8 rounded-full border border-border text-foreground/70 hover:text-accent hover:border-accent/40 transition-colors"
+                              >
+                                <Download className="h-3.5 w-3.5" />
+                              </a>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
 
-        {photos.length > 0 && (
-          <OutputSection
-            title={isArabic ? "صور" : "Photos"}
-            icon={<ImageIcon className="h-4 w-4" />}
-            isArabic={isArabic}
-          >
-            <div className="grid gap-3 grid-cols-2 sm:grid-cols-3">
-              {photos.map((p: PayloadPhoto) => {
-                const src = mediaUrl(p.image);
-                return src ? (
-                  <img
-                    key={p.id}
-                    src={src}
-                    alt={lang === "ar" ? (p.titleAr ?? p.title) : p.title}
-                    className="w-full rounded-md object-cover"
-                    style={{ aspectRatio: "1/1" }}
-                  />
-                ) : null;
-              })}
-            </div>
-          </OutputSection>
+            {papers.length > 0 && (
+              <div className="mb-12">
+                <h3 className="font-serif text-2xl md:text-3xl text-primary mb-6">{isArabic ? "الأوراق البحثية" : "Papers"}</h3>
+                <div className="flex flex-wrap justify-center gap-6" dir={isArabic ? "rtl" : "ltr"}>
+                  {papers.map((p) => {
+                    const fileUrl = p.file ? mediaUrl(p.file) : "";
+                    const previewUrl = mediaUrl(p.image?.thumbnail) || mediaUrl(p.image) || mediaUrl(p.file?.thumbnail) || "";
+                    return (
+                    <div key={p.id} className="w-[calc(50%-0.75rem)] lg:w-[calc(25%-1.125rem)] border border-border rounded-sm bg-card overflow-hidden hover:shadow-sm transition-shadow flex flex-col">
+                      <div className="aspect-[1/1.41] bg-secondary/20 flex items-center justify-center">
+                        {previewUrl ? (
+                          <img src={previewUrl} alt="" className="w-full h-full object-cover" />
+                        ) : (
+                          <FileText className="h-10 w-10 text-muted-foreground/50" />
+                        )}
+                      </div>
+                      <div className="p-5 flex flex-col flex-1">
+                        <div className="text-[11px] uppercase tracking-widest text-muted-foreground font-semibold mb-1.5">
+                          {formatDate(p.date, lang === "ar" ? "ar" : "en")}
+                          {(p.author || p.authorAr) && (
+                            <span> · {lang === "ar" ? (p.authorAr ?? p.author) : p.author}</span>
+                          )}
+                        </div>
+                        <div className={"flex items-start justify-between gap-3 mt-auto" + (isArabic ? " flex-row-reverse text-right" : "")}>
+                          <h4 className="font-serif text-sm text-primary leading-snug">{lang === "ar" ? (p.titleAr ?? p.title) : p.title}</h4>
+                          {fileUrl && (
+                            <a href={fileUrl} target="_blank" rel="noopener noreferrer" aria-label={isArabic ? "تحميل" : "Download"} title={isArabic ? "تحميل" : "Download"} className="shrink-0 inline-flex items-center justify-center h-8 w-8 rounded-full border border-border text-foreground/70 hover:text-accent hover:border-accent/40 transition-colors">
+                              <Download className="h-3.5 w-3.5" />
+                            </a>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {reports.length > 0 && (
+              <div className="mb-12">
+                <h3 className="font-serif text-2xl md:text-3xl text-primary mb-6">{isArabic ? "التقارير" : "Reports"}</h3>
+                <div className="flex flex-wrap justify-center gap-6" dir={isArabic ? "rtl" : "ltr"}>
+                  {reports.map((p) => {
+                    const fileUrl = p.file ? mediaUrl(p.file) : "";
+                    const previewUrl = mediaUrl(p.image?.thumbnail) || mediaUrl(p.image) || mediaUrl(p.file?.thumbnail) || "";
+                    return (
+                    <div key={p.id} className="w-[calc(50%-0.75rem)] lg:w-[calc(25%-1.125rem)] border border-border rounded-sm bg-card overflow-hidden hover:shadow-sm transition-shadow flex flex-col">
+                      <div className="aspect-[1/1.41] bg-secondary/20 flex items-center justify-center">
+                        {previewUrl ? (
+                          <img src={previewUrl} alt="" className="w-full h-full object-cover" />
+                        ) : (
+                          <FileText className="h-10 w-10 text-muted-foreground/50" />
+                        )}
+                      </div>
+                      <div className="p-5 flex flex-col flex-1">
+                        <div className="text-[11px] uppercase tracking-widest text-muted-foreground font-semibold mb-1.5">
+                          {formatDate(p.date, lang === "ar" ? "ar" : "en")}
+                          {(p.author || p.authorAr) && (
+                            <span> · {lang === "ar" ? (p.authorAr ?? p.author) : p.author}</span>
+                          )}
+                        </div>
+                        <div className={"flex items-start justify-between gap-3 mt-auto" + (isArabic ? " flex-row-reverse text-right" : "")}>
+                          <h4 className="font-serif text-sm text-primary leading-snug">{lang === "ar" ? (p.titleAr ?? p.title) : p.title}</h4>
+                          {fileUrl && (
+                            <a href={fileUrl} target="_blank" rel="noopener noreferrer" aria-label={isArabic ? "تحميل" : "Download"} title={isArabic ? "تحميل" : "Download"} className="shrink-0 inline-flex items-center justify-center h-8 w-8 rounded-full border border-border text-foreground/70 hover:text-accent hover:border-accent/40 transition-colors">
+                              <Download className="h-3.5 w-3.5" />
+                            </a>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {brochures.length > 0 && (
+              <div className="mb-12">
+                <h3 className="font-serif text-2xl md:text-3xl text-primary mb-6">{isArabic ? "الكتيبات" : "Brochures"}</h3>
+                <div className="flex flex-wrap justify-center gap-6" dir={isArabic ? "rtl" : "ltr"}>
+                  {brochures.map((p) => {
+                    const fileUrl = p.file ? mediaUrl(p.file) : "";
+                    const previewUrl = mediaUrl(p.image?.thumbnail) || mediaUrl(p.image) || mediaUrl(p.file?.thumbnail) || "";
+                    return (
+                    <div key={p.id} className="w-[calc(50%-0.75rem)] lg:w-[calc(25%-1.125rem)] border border-border rounded-sm bg-card overflow-hidden hover:shadow-sm transition-shadow flex flex-col">
+                      <div className="aspect-[1/1.41] bg-secondary/20 flex items-center justify-center">
+                        {previewUrl ? (
+                          <img src={previewUrl} alt="" className="w-full h-full object-cover" />
+                        ) : (
+                          <FileText className="h-10 w-10 text-muted-foreground/50" />
+                        )}
+                      </div>
+                      <div className="p-5 flex flex-col flex-1">
+                        <div className="text-[11px] uppercase tracking-widest text-muted-foreground font-semibold mb-1.5">
+                          {formatDate(p.date, lang === "ar" ? "ar" : "en")}
+                          {(p.author || p.authorAr) && (
+                            <span> · {lang === "ar" ? (p.authorAr ?? p.author) : p.author}</span>
+                          )}
+                        </div>
+                        <div className={"flex items-start justify-between gap-3 mt-auto" + (isArabic ? " flex-row-reverse text-right" : "")}>
+                          <h4 className="font-serif text-sm text-primary leading-snug">{lang === "ar" ? (p.titleAr ?? p.title) : p.title}</h4>
+                          {fileUrl && (
+                            <a href={fileUrl} target="_blank" rel="noopener noreferrer" aria-label={isArabic ? "تحميل" : "Download"} title={isArabic ? "تحميل" : "Download"} className="shrink-0 inline-flex items-center justify-center h-8 w-8 rounded-full border border-border text-foreground/70 hover:text-accent hover:border-accent/40 transition-colors">
+                              <Download className="h-3.5 w-3.5" />
+                            </a>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {theses.length > 0 && (
+              <div className="mb-12">
+                <h3 className="font-serif text-2xl md:text-3xl text-primary mb-6">{isArabic ? "الرسائل العلمية" : "Theses"}</h3>
+                <div className="flex flex-wrap justify-center gap-6" dir={isArabic ? "rtl" : "ltr"}>
+                  {theses.map((p) => {
+                    const previewUrl = mediaUrl(p.image?.thumbnail) || mediaUrl(p.image) || mediaUrl(p.file?.thumbnail) || "";
+                    return (
+                    <div key={p.id} className="w-[calc(50%-0.75rem)] lg:w-[calc(25%-1.125rem)] border border-border rounded-sm bg-card overflow-hidden hover:shadow-sm transition-shadow flex flex-col">
+                      <div className="aspect-[1/1.41] bg-secondary/20 flex items-center justify-center">
+                        {previewUrl ? (
+                          <img src={previewUrl} alt="" className="w-full h-full object-cover" />
+                        ) : (
+                          <FileText className="h-10 w-10 text-muted-foreground/50" />
+                        )}
+                      </div>
+                      <div className="p-5 flex flex-col flex-1">
+                        <div className="text-[11px] uppercase tracking-widest text-muted-foreground font-semibold mb-1.5">
+                          {formatDate(p.date, lang === "ar" ? "ar" : "en")}
+                          {(p.author || p.authorAr) && (
+                            <span> · {lang === "ar" ? (p.authorAr ?? p.author) : p.author}</span>
+                          )}
+                        </div>
+                        <h4 className="font-serif text-sm text-primary leading-snug">{lang === "ar" ? (p.titleAr ?? p.title) : p.title}</h4>
+                      </div>
+                    </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {audiovisual.length > 0 && (
+              <div className="mb-12">
+                <h3 className="font-serif text-2xl md:text-3xl text-primary mb-6">{isArabic ? "محتوى مرئي" : "Audiovisual"}</h3>
+                <div className="flex flex-wrap justify-center gap-6" dir={isArabic ? "rtl" : "ltr"}>
+                  {audiovisual.map((p) => {
+                    const previewUrl = mediaUrl(p.image?.thumbnail) || mediaUrl(p.image) || mediaUrl(p.file?.thumbnail) || youtubeThumbnail(p.link) || "";
+                    return (
+                    <div key={p.id} className="w-[calc(50%-0.75rem)] lg:w-[calc(25%-1.125rem)] border border-border rounded-sm bg-card overflow-hidden hover:shadow-sm transition-shadow flex flex-col">
+                      <div className="aspect-[1/1.41] bg-secondary/20 flex items-center justify-center">
+                        {previewUrl ? (
+                          <img src={previewUrl} alt="" className="w-full h-full object-cover" />
+                        ) : (
+                          <FileText className="h-10 w-10 text-muted-foreground/50" />
+                        )}
+                      </div>
+                      <div className="p-5 flex flex-col flex-1">
+                        <div className="text-[11px] uppercase tracking-widest text-muted-foreground font-semibold mb-1.5">
+                          {formatDate(p.date, lang === "ar" ? "ar" : "en")}
+                          {(p.author || p.authorAr) && (
+                            <span> · {lang === "ar" ? (p.authorAr ?? p.author) : p.author}</span>
+                          )}
+                        </div>
+                        <h4 className="font-serif text-sm text-primary leading-snug">{lang === "ar" ? (p.titleAr ?? p.title) : p.title}</h4>
+                      </div>
+                    </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {posters.length > 0 && (
+              <div className="mb-12">
+                <h3 className="font-serif text-2xl md:text-3xl text-primary mb-6">{isArabic ? "الملصقات" : "Posters"}</h3>
+                <div className="flex flex-wrap justify-center gap-6" dir={isArabic ? "rtl" : "ltr"}>
+                  {posters.map((p) => {
+                    const previewUrl = mediaUrl(p.image?.thumbnail) || mediaUrl(p.image) || mediaUrl(p.file?.thumbnail) || "";
+                    return (
+                    <div key={p.id} className="w-[calc(50%-0.75rem)] lg:w-[calc(25%-1.125rem)] border border-border rounded-sm bg-card overflow-hidden hover:shadow-sm transition-shadow flex flex-col">
+                      <div className="aspect-[1/1.41] bg-secondary/20 flex items-center justify-center">
+                        {previewUrl ? (
+                          <img src={previewUrl} alt="" className="w-full h-full object-cover" />
+                        ) : (
+                          <FileText className="h-10 w-10 text-muted-foreground/50" />
+                        )}
+                      </div>
+                      <div className="p-5 flex flex-col flex-1">
+                        <div className="text-[11px] uppercase tracking-widest text-muted-foreground font-semibold mb-1.5">
+                          {formatDate(p.date, lang === "ar" ? "ar" : "en")}
+                          {(p.author || p.authorAr) && (
+                            <span> · {lang === "ar" ? (p.authorAr ?? p.author) : p.author}</span>
+                          )}
+                        </div>
+                        <h4 className="font-serif text-sm text-primary leading-snug">{lang === "ar" ? (p.titleAr ?? p.title) : p.title}</h4>
+                      </div>
+                    </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {clippings.length > 0 && (
+              <div className="mb-12">
+                <h3 className="font-serif text-2xl md:text-3xl text-primary mb-6">{isArabic ? "قصاصات صحفية" : "Press Clippings"}</h3>
+                <div className="flex flex-wrap justify-center gap-6" dir={isArabic ? "rtl" : "ltr"}>
+                  {clippings.map((c: PayloadClipping) => {
+                    const url = mediaUrl(c.image);
+                    const isImage = c.image?.mimeType?.startsWith("image/") ?? false;
+                    const thumbnailUrl = c.image?.thumbnail ? mediaUrl(c.image.thumbnail) : "";
+                    const previewUrl = isImage ? url : thumbnailUrl;
+                    return (
+                      <div key={c.id} className="w-[calc(50%-0.75rem)] lg:w-[calc(25%-1.125rem)] border border-border rounded-sm bg-card overflow-hidden hover:shadow-sm transition-shadow flex flex-col">
+                        {url && (
+                          <div className="aspect-[3/4] bg-secondary/20 flex items-center justify-center">
+                            {previewUrl ? (
+                              <img src={previewUrl} alt="" className="w-full h-full object-cover" />
+                            ) : (
+                              <FileText className="h-10 w-10 text-muted-foreground/50" />
+                            )}
+                          </div>
+                        )}
+                        <div className="p-4 flex flex-col flex-1">
+                          <div className="text-[11px] uppercase tracking-widest text-muted-foreground font-semibold mb-1.5">
+                            {formatDate(c.date, lang === "ar" ? "ar" : "en")}
+                          </div>
+                          <h4 className="font-serif text-sm text-primary leading-snug">{lang === "ar" ? (c.titleAr ?? c.title) : c.title}</h4>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {photos.length > 0 && (
+              <div>
+                <h3 className="font-serif text-2xl md:text-3xl text-primary mb-6">{isArabic ? "صور" : "Photos"}</h3>
+                <div className="flex flex-wrap justify-center gap-6" dir={isArabic ? "rtl" : "ltr"}>
+                  {photos.map((p: PayloadPhoto) => {
+                    const src = mediaUrl(p.image);
+                    return src ? (
+                      <img
+                        key={p.id}
+                        src={src}
+                        alt={lang === "ar" ? (p.titleAr ?? p.title) : p.title}
+                        className="w-[calc(50%-0.75rem)] lg:w-[calc(25%-1.125rem)] rounded-sm object-cover hover:shadow-sm transition-shadow"
+                        style={{ aspectRatio: "1/1" }}
+                      />
+                    ) : null;
+                  })}
+                </div>
+              </div>
+            )}
+          </section>
         )}
       </article>
     </PageLayout>

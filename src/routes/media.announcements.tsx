@@ -3,7 +3,6 @@ import { useQuery } from "@tanstack/react-query";
 import { PageLayout, PageHero } from "@/components/PageLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { fetchAnnouncements, formatDate, type PayloadAnnouncement } from "@/lib/payload";
-import { usePage } from "@/hooks/usePage";
 
 export const Route = createFileRoute("/media/announcements")({
   head: () => ({ meta: [{ title: "Announcements — Dignity" }] }),
@@ -12,7 +11,6 @@ export const Route = createFileRoute("/media/announcements")({
 
 function AnnouncementsPage() {
   const { t, lang, isArabic } = useLanguage();
-      const page = usePage("announcements");
   const { data: items = [], isLoading } = useQuery({
     queryKey: ["announcements"],
     queryFn: fetchAnnouncements,
@@ -21,7 +19,7 @@ function AnnouncementsPage() {
 
   return (
     <PageLayout>
-            <PageHero eyebrow={t("media")} title={page.title ?? t("media.announcements")} description={page.description ?? t("announcements.page.desc")} />
+            <PageHero eyebrow={`${t("media")} — ${t("media.announcements")}`} title={t("media.announcements")} />
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {isLoading ? (
           <div className="grid gap-4 sm:grid-cols-3">
@@ -42,7 +40,7 @@ function AnnouncementsPage() {
                   <div className={"font-semibold mb-2 text-muted-foreground" + (isArabic ? " text-sm" : " text-[11px] uppercase tracking-widest")}>
                     {isArabic ? "إعلان" : "Announcement"}
                   </div>
-                  <p className={"font-medium text-primary leading-snug mb-4" + (isArabic ? " text-base" : " text-sm")}>
+                  <p className={"font-medium text-primary leading-snug mb-4" + (isArabic ? " text-lg md:text-xl" : " text-base md:text-lg")}>
                     {lang === "ar" ? (item.titleAr ?? item.title) : item.title}
                   </p>
                   <div className={"font-medium tracking-wide" + (isArabic ? " text-sm" : " text-[12px]")} style={{ color: "var(--brand-magenta)" }}>

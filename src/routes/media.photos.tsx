@@ -3,7 +3,6 @@ import { useQuery } from "@tanstack/react-query";
 import { PageLayout, PageHero } from "@/components/PageLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { fetchPhotos, formatDate, mediaUrl, type PayloadPhoto } from "@/lib/payload";
-import { usePage } from "@/hooks/usePage";
 
 export const Route = createFileRoute("/media/photos")({
   head: () => ({ meta: [{ title: "Photos — Dignity" }] }),
@@ -12,7 +11,6 @@ export const Route = createFileRoute("/media/photos")({
 
 function PhotosPage() {
   const { t, lang, isArabic } = useLanguage();
-      const page = usePage("photos");
   const { data: items = [], isLoading } = useQuery({
     queryKey: ["photos"],
     queryFn: fetchPhotos,
@@ -21,7 +19,7 @@ function PhotosPage() {
 
   return (
     <PageLayout>
-            <PageHero eyebrow={t("media")} title={page.title ?? t("media.photos")} description={page.description ?? t("photos.page.desc")} />
+            <PageHero eyebrow={`${t("media")} — ${t("media.photos")}`} title={t("media.photos")} />
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {isLoading ? (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

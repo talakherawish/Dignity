@@ -10,7 +10,6 @@ import {
   youtubeThumbnailFallback,
   type PayloadPublication,
 } from "@/lib/payload";
-import { usePage } from "@/hooks/usePage";
 import { withItalicQuotes } from "@/lib/text";
 
 /** Normalized shape both Payload docs and hardcoded fallback items get mapped into. */
@@ -58,15 +57,14 @@ function fromPayload(item: PayloadPublication): DisplayPublication {
 
 export function PublicationsPage({
   type,
-  pageSlug,
   titleKey,
+  breadcrumb,
 }: {
   type: PayloadPublication["type"];
-  pageSlug: string;
   titleKey: TranslationKey;
+  breadcrumb?: string;
 }) {
   const { t, lang, isArabic } = useLanguage();
-  const page = usePage(pageSlug);
   const { data: payloadItems = [], isLoading } = useQuery({
     queryKey: ["publications", type],
     queryFn: () => fetchPublicationsByType(type),
@@ -80,9 +78,8 @@ export function PublicationsPage({
   return (
     <PageLayout>
       <PageHero
-        eyebrow={t("publications")}
-        title={page.title ?? t(titleKey)}
-        description={page.description ?? t("publications.page.desc")}
+        eyebrow={breadcrumb || `${t("publications")} — ${t(titleKey)}`}
+        title={t(titleKey)}
       />
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {isLoading ? (
@@ -169,7 +166,7 @@ export function PublicationsPage({
                         (isArabic ? " flex-row-reverse text-right" : "")
                       }
                     >
-                      <h3 className="font-serif text-lg text-primary leading-snug">
+                      <h3 className="font-serif text-sm text-primary leading-snug">
                         {withItalicQuotes(lang === "ar" ? (item.titleAr ?? item.title) : item.title)}
                       </h3>
                       {item.linkUrl ? (

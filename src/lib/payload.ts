@@ -150,22 +150,18 @@ export type PayloadResearchActivity = {
   content?: unknown
   contentAr?: unknown
   image?: PayloadMedia
-  /** Outputs attached to this research area in the admin. */
-  relatedPublications?: PayloadPublication[]
+  /** Outputs attached to this research area in the admin - organized by type. */
+  relatedBooks?: PayloadPublication[]
+  relatedPapers?: PayloadPublication[]
+  relatedReports?: PayloadPublication[]
+  relatedBrochures?: PayloadPublication[]
+  relatedTheses?: PayloadPublication[]
+  relatedAudiovisual?: PayloadPublication[]
+  relatedPosters?: PayloadPublication[]
   relatedClippings?: PayloadClipping[]
   relatedPhotos?: PayloadPhoto[]
 }
 
-  export type PayloadPage = {
-      id: string
-      slug: string
-      title?: string
-      titleAr?: string
-      description?: string
-      descriptionAr?: string
-      body?: unknown
-      bodyAr?: unknown
-  }
 
     /** All fields on the Site Settings global -- every EN key has a matching key+Ar. */
 export type PayloadSiteSettings = Record<string, string | undefined>
@@ -341,28 +337,6 @@ export const fetchPosters = () => fetchPublicationsByType('posters')
 export const fetchInformationByType = (type: PayloadInformationItem['type']) =>
   fetchCollection<PayloadInformationItem>('information', { 'where[type][equals]': type })
 
-
-/**
- * Fetch the editable text for a single page (e.g. "about", "partners").
- * Returns null if missing/unreachable, so callers fall back to their own copy.
- *
- * Each page is a Payload global rather than a row in a `pages` collection, so
- * that it appears in the admin sidebar under the same grouping the site's own
- * navigation uses. Globals share a slug namespace with collections and several
- * pages are named after one ("news", "participants", …), so they are stored
- * under a `page-` prefix — applied here, keeping callers on the plain key.
- */
-export async function fetchPage(slug: string): Promise<PayloadPage | null> {
-    try {
-          const res = await fetch(`${PAYLOAD_URL}/api/globals/page-${slug}?depth=0`, {
-                  headers: { 'Content-Type': 'application/json' },
-          })
-          if (!res.ok) return null
-          return (await res.json()) as PayloadPage
-    } catch {
-          return null
-    }
-}
 
 /** Fetch the Site Settings global (nav labels, hero, footer, small UI labels). Returns null if unreachable. */
 export async function fetchSiteSettings(): Promise<PayloadSiteSettings | null> {

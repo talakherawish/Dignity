@@ -7,19 +7,17 @@ import {
   mediaUrl,
   type PayloadInformationItem,
 } from "@/lib/payload";
-import { usePage } from "@/hooks/usePage";
 
 export function InformationPage({
   type,
-  pageSlug,
   titleKey,
+  breadcrumb,
 }: {
   type: PayloadInformationItem["type"];
-  pageSlug: string;
   titleKey: TranslationKey;
+  breadcrumb?: string;
 }) {
   const { t, lang, isArabic } = useLanguage();
-  const page = usePage(pageSlug);
   const { data: items = [], isLoading } = useQuery({
     queryKey: ["information", type],
     queryFn: () => fetchInformationByType(type),
@@ -29,9 +27,8 @@ export function InformationPage({
   return (
     <PageLayout>
       <PageHero
-        eyebrow={t("information")}
-        title={page.title ?? t(titleKey)}
-        description={page.description ?? t("information.page.desc")}
+        eyebrow={breadcrumb || `${t("information")} — ${t(titleKey)}`}
+        title={t(titleKey)}
       />
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {isLoading ? (
@@ -54,7 +51,7 @@ export function InformationPage({
                   <div className="flex-1">
                     <h3
                       className={
-                        "font-serif text-lg text-primary leading-snug mb-2" + (isArabic ? " text-right" : "")
+                        "font-serif text-sm text-primary leading-snug mb-2" + (isArabic ? " text-right" : "")
                       }
                     >
                       {lang === "ar" ? (item.titleAr ?? item.title) : item.title}

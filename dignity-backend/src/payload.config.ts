@@ -34,7 +34,6 @@ import { Seminars } from './collections/Seminars'
 import { Conferences } from './collections/Conferences'
 import { Meetings } from './collections/Meetings'
 import { SiteSettings } from './globals/SiteSettings'
-import { pageGlobals } from './globals/pageGlobals'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -51,9 +50,7 @@ export default buildConfig({
   // languages before a document can be published — see src/lib/bilingual.ts.
   // Wrapping centrally means new collections are covered automatically.
   collections: [Users, Media, News, Announcements, Photos, Clippings, Participants, Pages, Activities, Research, WindsorDignity, Seminars, Conferences, Meetings, Publications, PublicationsCollection, Information].map(enforceBilingual),
-  // Each editable page is a global sitting in the sidebar group that matches
-  // the website's navigation — see src/globals/pageGlobals.ts.
-  globals: [SiteSettings, ...pageGlobals].map(enforceBilingualGlobal),
+  globals: [SiteSettings].map(enforceBilingualGlobal),
   editor: lexicalEditor(),
   cors: process.env.CORS_ORIGINS
   ? process.env.CORS_ORIGINS.split(',').map((s) => s.trim())
