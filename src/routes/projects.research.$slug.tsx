@@ -9,6 +9,9 @@ import {
   mediaUrl,
   formatDate,
   youtubeThumbnail,
+  fetchPublicationsByType,
+  fetchClippings,
+  fetchPhotos,
   type PayloadResearchActivity,
   type PayloadPublication,
   type PayloadClipping,
@@ -96,6 +99,60 @@ function ResearchDetailPage() {
     staleTime: 5 * 60 * 1000,
   });
 
+  const { data: books = [] } = useQuery({
+    queryKey: ["publications", "books"],
+    queryFn: () => fetchPublicationsByType("books"),
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const { data: papers = [] } = useQuery({
+    queryKey: ["publications", "papers"],
+    queryFn: () => fetchPublicationsByType("papers"),
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const { data: reports = [] } = useQuery({
+    queryKey: ["publications", "reports"],
+    queryFn: () => fetchPublicationsByType("reports"),
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const { data: brochures = [] } = useQuery({
+    queryKey: ["publications", "brochures"],
+    queryFn: () => fetchPublicationsByType("brochures"),
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const { data: theses = [] } = useQuery({
+    queryKey: ["publications", "theses"],
+    queryFn: () => fetchPublicationsByType("theses"),
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const { data: audiovisual = [] } = useQuery({
+    queryKey: ["publications", "audiovisual"],
+    queryFn: () => fetchPublicationsByType("audiovisual"),
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const { data: posters = [] } = useQuery({
+    queryKey: ["publications", "posters"],
+    queryFn: () => fetchPublicationsByType("posters"),
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const { data: clippings = [] } = useQuery({
+    queryKey: ["clippings"],
+    queryFn: fetchClippings,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const { data: photos = [] } = useQuery({
+    queryKey: ["photos"],
+    queryFn: fetchPhotos,
+    staleTime: 5 * 60 * 1000,
+  });
+
   const backLink = (
     <Link
       to="/projects/research"
@@ -143,16 +200,6 @@ function ResearchDetailPage() {
     if (full.length) return full;
     return extractText(lang === "ar" ? (research.descriptionAr ?? research.description) : research.description);
   })();
-
-  const books = research.relatedBooks ?? [];
-  const papers = research.relatedPapers ?? [];
-  const reports = research.relatedReports ?? [];
-  const brochures = research.relatedBrochures ?? [];
-  const theses = research.relatedTheses ?? [];
-  const audiovisual = research.relatedAudiovisual ?? [];
-  const posters = research.relatedPosters ?? [];
-  const clippings = research.relatedClippings ?? [];
-  const photos = research.relatedPhotos ?? [];
 
   return (
     <PageLayout>
