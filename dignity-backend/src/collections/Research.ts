@@ -13,6 +13,7 @@ export const Research: CollectionConfig = {
   slug: 'research',
   admin: {
     group: 'Activities',
+    position: 1,
     useAsTitle: 'title',
     defaultColumns: ['title', 'slug', 'status', 'updatedAt'],
     description:

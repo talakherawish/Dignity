@@ -4,6 +4,7 @@ export const Information: CollectionConfig = {
   slug: 'information',
   admin: {
     group: 'Information',
+    position: 1,
     useAsTitle: 'title',
     defaultColumns: ['title', 'type', 'status'],
     description: 'Readings and Documents, and Databases live here — use the Type column/filter to switch between them.',

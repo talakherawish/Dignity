@@ -3,7 +3,8 @@ import type { CollectionConfig } from 'payload'
 export const Participants: CollectionConfig = {
   slug: 'participants',
   admin: {
-    group: 'About',
+    group: 'About the Dignity Initiative',
+    position: 2,
     useAsTitle: 'name',
     defaultColumns: ['name', 'role', 'category', 'status'],
     description: 'Shows on the website under About the Dignity Initiative → Participants. Add a new entry here for each person.',

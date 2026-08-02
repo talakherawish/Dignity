@@ -4,6 +4,7 @@ export const WindsorDignity: CollectionConfig = {
   slug: 'windsor-dignity',
   admin: {
     group: 'Activities',
+    position: 5,
     useAsTitle: 'title',
     defaultColumns: ['title', 'status', 'updatedAt'],
     description: 'Windsor Birzeit Dignity Initiative events, activities, and information.',

@@ -3,7 +3,8 @@ import type { CollectionConfig } from 'payload'
 export const Photos: CollectionConfig = {
   slug: 'photos',
   admin: {
-    group: 'Media',
+    group: 'About the Dignity Initiative',
+    position: 5,
     useAsTitle: 'title',
     defaultColumns: ['title', 'date', 'status'],
     description: 'Shows on the website under About the Dignity Initiative → Photos. Upload one photo per entry (click the Image field below to upload).',

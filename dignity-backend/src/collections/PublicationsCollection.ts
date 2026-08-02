@@ -4,6 +4,7 @@ export const PublicationsCollection: CollectionConfig = {
   slug: 'publications-items',
   admin: {
     group: 'Publications',
+    position: 1,
     useAsTitle: 'title',
     defaultColumns: ['title', 'type', 'status', 'updatedAt'],
     description: 'Books, papers, reports, brochures, theses, audiovisual, and posters produced by the Dignity initiative.',

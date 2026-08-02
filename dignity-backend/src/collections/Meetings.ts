@@ -4,6 +4,7 @@ export const Meetings: CollectionConfig = {
   slug: 'meetings',
   admin: {
     group: 'Activities',
+    position: 4,
     useAsTitle: 'title',
     defaultColumns: ['title', 'date', 'status', 'updatedAt'],
     description: 'Meetings organized through the Dignity initiative.',
