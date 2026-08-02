@@ -3,7 +3,7 @@ import type { CollectionConfig } from 'payload'
 export const Pages: CollectionConfig = {
   slug: 'pages',
   admin: {
-    group: 'About the Dignity Initiative',
+    group: 'About',
     useAsTitle: 'title',
     defaultColumns: ['title', 'slug', 'updatedAt'],
     description:

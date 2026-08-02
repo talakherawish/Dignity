@@ -3,7 +3,7 @@ import type { CollectionConfig } from 'payload'
 export const Clippings: CollectionConfig = {
   slug: 'clippings',
   admin: {
-    group: 'About the Dignity Initiative',
+    group: 'Media',
     useAsTitle: 'title',
     defaultColumns: ['title', 'date', 'status'],
     description: 'Shows on the website under About the Dignity Initiative → Clippings (press mentions, newspaper scans, etc). Upload a scanned image of the clipping in the Image field.',

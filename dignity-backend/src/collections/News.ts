@@ -3,7 +3,7 @@ import type { CollectionConfig } from 'payload'
 export const News: CollectionConfig = {
   slug: 'news',
   admin: {
-    group: 'About the Dignity Initiative',
+    group: 'Media',
     useAsTitle: 'title',
     defaultColumns: ['title', 'status', 'publishedAt', 'updatedAt'],
     description: 'Add a new entry here for each news post.',
