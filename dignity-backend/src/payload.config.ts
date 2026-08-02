@@ -49,7 +49,7 @@ export default buildConfig({
   // Arabic field pair (title/titleAr, body/bodyAr, …) must be filled in both
   // languages before a document can be published — see src/lib/bilingual.ts.
   // Wrapping centrally means new collections are covered automatically.
-  collections: [Users, Media, News, Announcements, Photos, Clippings, Participants, Pages, Activities, Research, WindsorDignity, Seminars, Conferences, Meetings, Publications, PublicationsCollection, Information].map(enforceBilingual),
+  collections: [Users, Participants, Activities, Seminars, Conferences, Meetings, WindsorDignity, PublicationsCollection, Publications, Information, News, Announcements, Photos, Clippings, Research, Media, Pages].map(enforceBilingual),
   globals: [SiteSettings].map(enforceBilingualGlobal),
   editor: lexicalEditor(),
   cors: process.env.CORS_ORIGINS
