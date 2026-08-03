@@ -20,12 +20,15 @@ function ClippingsPage() {
 
   return (
     <PageLayout>
-            <PageHero eyebrow={`${t("media")} — ${t("media.clippings")}`} title={t("media.clippings")} />
+      <PageHero eyebrow={`${t("media")} — ${t("media.clippings")}`} title={t("media.clippings")} />
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {isLoading ? (
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
             {[1, 2, 3, 4].map((n) => (
-              <div key={n} className="border border-border rounded-sm h-96 bg-secondary/30 animate-pulse" />
+              <div
+                key={n}
+                className="border border-border rounded-sm h-96 bg-secondary/30 animate-pulse"
+              />
             ))}
           </div>
         ) : items.length === 0 ? (
@@ -42,7 +45,10 @@ function ClippingsPage() {
               const thumbnailUrl = item.image?.thumbnail ? mediaUrl(item.image.thumbnail) : "";
               const previewUrl = isImage ? url : thumbnailUrl;
               return (
-                <div key={item.id} className="w-[calc(50%-0.75rem)] lg:w-[calc(25%-1.125rem)] border border-border rounded-sm bg-card overflow-hidden hover:shadow-sm transition-shadow flex flex-col">
+                <div
+                  key={item.id}
+                  className="w-[calc(50%-0.75rem)] lg:w-[calc(25%-1.125rem)] border border-border rounded-sm bg-card overflow-hidden hover:shadow-sm transition-shadow flex flex-col"
+                >
                   {url && (
                     <div className="aspect-[3/4] bg-secondary/20 flex items-center justify-center">
                       {previewUrl ? (
@@ -56,7 +62,12 @@ function ClippingsPage() {
                     <div className="text-[11px] uppercase tracking-widest text-muted-foreground font-semibold mb-1.5">
                       {formatDate(item.date, lang === "ar" ? "ar" : "en")}
                     </div>
-                    <div className={"flex items-start justify-between gap-3 mt-auto" + (isArabic ? " flex-row-reverse text-right" : "")}>
+                    <div
+                      className={
+                        "flex items-start justify-between gap-3 mt-auto" +
+                        (isArabic ? " flex-row-reverse text-right" : "")
+                      }
+                    >
                       <h3 className="font-serif text-sm text-primary leading-snug">
                         {lang === "ar" ? (item.titleAr ?? item.title) : item.title}
                       </h3>

@@ -21,7 +21,11 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Dignity — Academic Initiative" },
-      { name: "description", content: "Dignity is an academic initiative dedicated to research, dialogue, and the advancement of human dignity." },
+      {
+        name: "description",
+        content:
+          "Dignity is an academic initiative dedicated to research, dialogue, and the advancement of human dignity.",
+      },
     ],
   }),
   component: Home,
@@ -29,9 +33,24 @@ export const Route = createFileRoute("/")({
 
 type PillarItem = { titleKey: TranslationKey; descKey: TranslationKey; to: string; color: string };
 const PILLARS: PillarItem[] = [
-  { titleKey: "pillar.research", descKey: "pillar.research.desc", to: "/projects/research", color: "var(--brand-cyan)" },
-  { titleKey: "pillar.dialogue", descKey: "pillar.dialogue.desc", to: "/activities/seminars", color: "var(--brand-magenta)" },
-  { titleKey: "pillar.partnership", descKey: "pillar.partnership.desc", to: "/about/partners", color: "oklch(0.18 0.01 270)" },
+  {
+    titleKey: "pillar.research",
+    descKey: "pillar.research.desc",
+    to: "/projects/research",
+    color: "var(--brand-cyan)",
+  },
+  {
+    titleKey: "pillar.dialogue",
+    descKey: "pillar.dialogue.desc",
+    to: "/activities/seminars",
+    color: "var(--brand-magenta)",
+  },
+  {
+    titleKey: "pillar.partnership",
+    descKey: "pillar.partnership.desc",
+    to: "/about/partners",
+    color: "oklch(0.18 0.01 270)",
+  },
 ];
 
 type TeamPerson = {
@@ -46,9 +65,36 @@ type TeamPerson = {
 };
 
 const TEAM_FALLBACK: TeamPerson[] = [
-  { name: "Mudar Kassis", nameAr: "مضر قسيس", title: "Director", titleAr: "المدير", email: "m.kassis@birzeit.edu", bio: "", bioAr: "", photo: undefined },
-  { name: "Eman Al-Assa", nameAr: "إيمان العصا", title: "Faculty", titleAr: "هيئة التدريس", email: "e.alassa@birzeit.edu", bio: "", bioAr: "", photo: undefined },
-  { name: "Dr. Raef Zreik", nameAr: "د. رائف زريق", title: "Senior Researcher", titleAr: "باحث أول", email: "r.zreik@birzeit.edu", bio: "Dr. Zreik is a senior researcher whose work focuses on the philosophy of law, colonialism, and dignity.", bioAr: "باحث أول يتمحور عمله حول فلسفة القانون والاستعمار والكرامة.", photo: undefined },
+  {
+    name: "Mudar Kassis",
+    nameAr: "مضر قسيس",
+    title: "Director",
+    titleAr: "المدير",
+    email: "m.kassis@birzeit.edu",
+    bio: "",
+    bioAr: "",
+    photo: undefined,
+  },
+  {
+    name: "Eman Al-Assa",
+    nameAr: "إيمان العصا",
+    title: "Faculty",
+    titleAr: "هيئة التدريس",
+    email: "e.alassa@birzeit.edu",
+    bio: "",
+    bioAr: "",
+    photo: undefined,
+  },
+  {
+    name: "Dr. Raef Zreik",
+    nameAr: "د. رائف زريق",
+    title: "Senior Researcher",
+    titleAr: "باحث أول",
+    email: "r.zreik@birzeit.edu",
+    bio: "Dr. Zreik is a senior researcher whose work focuses on the philosophy of law, colonialism, and dignity.",
+    bioAr: "باحث أول يتمحور عمله حول فلسفة القانون والاستعمار والكرامة.",
+    photo: undefined,
+  },
 ];
 
 function mapPayloadToTeamPerson(p: PayloadParticipant): TeamPerson {
@@ -86,11 +132,15 @@ function NewsCarousel() {
     }, 240);
   }, []);
 
+  // articles.length belongs in the deps: the Payload feed arrives after mount
+  // and usually has a different number of entries than the built-in fallback,
+  // so an interval left over from the old length would wrap at the wrong point.
+  const slideCount = articles.length;
   useEffect(() => {
     if (paused) return;
-    const id = setInterval(() => goTo((i + 1) % articles.length), 5000);
+    const id = setInterval(() => goTo((i + 1) % slideCount), 5000);
     return () => clearInterval(id);
-  }, [i, paused, goTo]);
+  }, [i, paused, goTo, slideCount]);
 
   const article = articles[Math.min(i, articles.length - 1)];
   const l = lang;
@@ -128,10 +178,14 @@ function NewsCarousel() {
             <div className="text-[12px] uppercase tracking-[0.22em] text-[color:var(--brand-magenta)] font-semibold mb-3">
               {getField(article, "date", l)}
             </div>
-            <h3 className={`font-serif text-xl lg:text-2xl text-primary mb-3 leading-snug ${isArabic ? "text-right" : ""}`}>
+            <h3
+              className={`font-serif text-xl lg:text-2xl text-primary mb-3 leading-snug ${isArabic ? "text-right" : ""}`}
+            >
               {withItalicQuotes(getField(article, "title", l))}
             </h3>
-            <p className={`text-sm text-muted-foreground leading-relaxed ${isArabic ? "text-right" : ""}`}>
+            <p
+              className={`text-sm text-muted-foreground leading-relaxed ${isArabic ? "text-right" : ""}`}
+            >
               {getField(article, "excerpt", l)}
             </p>
           </div>
@@ -141,14 +195,26 @@ function NewsCarousel() {
             <div className="flex items-center gap-3">
               <div className="flex gap-1">
                 <button
-                  onClick={() => goTo(isArabic ? (i + 1) % articles.length : (i - 1 + articles.length) % articles.length)}
+                  onClick={() =>
+                    goTo(
+                      isArabic
+                        ? (i + 1) % articles.length
+                        : (i - 1 + articles.length) % articles.length,
+                    )
+                  }
                   aria-label={t("news.prev")}
                   className="carousel-prev h-8 w-8 rounded-full border border-border flex items-center justify-center text-foreground/60 hover:text-accent hover:border-accent transition-colors"
                 >
                   <ChevronLeft className="h-3.5 w-3.5" />
                 </button>
                 <button
-                  onClick={() => goTo(isArabic ? (i - 1 + articles.length) % articles.length : (i + 1) % articles.length)}
+                  onClick={() =>
+                    goTo(
+                      isArabic
+                        ? (i - 1 + articles.length) % articles.length
+                        : (i + 1) % articles.length,
+                    )
+                  }
                   aria-label={t("news.next")}
                   className="carousel-next h-8 w-8 rounded-full border border-border flex items-center justify-center text-foreground/60 hover:text-accent hover:border-accent transition-colors"
                 >
@@ -187,7 +253,6 @@ function NewsCarousel() {
   );
 }
 
-
 function AnnouncementsSection() {
   const { t, lang, isArabic } = useLanguage();
 
@@ -213,12 +278,18 @@ function AnnouncementsSection() {
               {isArabic ? "الإعلانات" : "Announcements"}
             </h2>
           </div>
-          <Link to="/media/announcements" className="text-xs font-medium text-muted-foreground hover:text-accent transition-colors tracking-wide">
+          <Link
+            to="/media/announcements"
+            className="text-xs font-medium text-muted-foreground hover:text-accent transition-colors tracking-wide"
+          >
             {t("news.viewAll")}
           </Link>
         </div>
 
-        <div className="announcements-grid grid gap-4 sm:grid-cols-3" dir={isArabic ? "rtl" : "ltr"}>
+        <div
+          className="announcements-grid grid gap-4 sm:grid-cols-3"
+          dir={isArabic ? "rtl" : "ltr"}
+        >
           {items.map((item: PayloadAnnouncement) => (
             <Link
               key={item.id}
@@ -227,13 +298,20 @@ function AnnouncementsSection() {
             >
               <div className="h-1 w-full" style={{ background: "var(--brand-magenta)" }} />
               <div className={`p-6 ${isArabic ? "text-right" : ""}`}>
-                <div className={`font-semibold mb-2 text-muted-foreground ${isArabic ? "text-sm" : "text-[11px] uppercase tracking-widest"}`}>
+                <div
+                  className={`font-semibold mb-2 text-muted-foreground ${isArabic ? "text-sm" : "text-[11px] uppercase tracking-widest"}`}
+                >
                   {isArabic ? "إعلان" : "Announcement"}
                 </div>
-                <p className={`font-medium text-primary leading-snug group-hover:text-accent transition-colors mb-4 ${isArabic ? "text-base" : "text-sm"}`}>
+                <p
+                  className={`font-medium text-primary leading-snug group-hover:text-accent transition-colors mb-4 ${isArabic ? "text-base" : "text-sm"}`}
+                >
                   {lang === "ar" ? (item.titleAr ?? item.title) : item.title}
                 </p>
-                <div className={`font-medium tracking-wide ${isArabic ? "text-sm" : "text-[12px]"}`} style={{ color: "var(--brand-magenta)" }}>
+                <div
+                  className={`font-medium tracking-wide ${isArabic ? "text-sm" : "text-[12px]"}`}
+                  style={{ color: "var(--brand-magenta)" }}
+                >
                   {formatDate(item.date, lang === "ar" ? "ar" : "en")}
                 </div>
               </div>
@@ -246,7 +324,12 @@ function AnnouncementsSection() {
 }
 
 // ── Team member modal ─────────────────────────────────────────────────────
-function TeamModal({ person, onClose, isArabic, lang }: {
+function TeamModal({
+  person,
+  onClose,
+  isArabic,
+  lang,
+}: {
   person: TeamPerson;
   onClose: () => void;
   isArabic: boolean;
@@ -266,7 +349,12 @@ function TeamModal({ person, onClose, isArabic, lang }: {
             {person.photo ? (
               <img src={person.photo} alt={person.name} className="w-full h-full object-cover" />
             ) : (
-              <svg viewBox="0 0 24 24" fill="none" className="h-20 w-20 text-muted-foreground/25" aria-hidden>
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                className="h-20 w-20 text-muted-foreground/25"
+                aria-hidden
+              >
                 <circle cx="12" cy="8" r="4.5" fill="currentColor" />
                 <path d="M3 20c0-4.4 4-8 9-8s9 3.6 9 8" fill="currentColor" />
               </svg>
@@ -274,7 +362,12 @@ function TeamModal({ person, onClose, isArabic, lang }: {
           </div>
         </div>
         {/* Card */}
-        <div className={"relative bg-card border border-border rounded-lg shadow-2xl overflow-y-auto max-h-[80vh]" + (isArabic ? " text-right" : "")}>
+        <div
+          className={
+            "relative bg-card border border-border rounded-lg shadow-2xl overflow-y-auto max-h-[80vh]" +
+            (isArabic ? " text-right" : "")
+          }
+        >
           <button
             onClick={onClose}
             className="absolute top-4 right-4 p-1.5 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors z-10"
@@ -324,9 +417,7 @@ function TeamSection() {
   });
 
   const members: TeamPerson[] = (
-    payloadParticipants.length > 0
-      ? payloadParticipants.map(mapPayloadToTeamPerson)
-      : TEAM_FALLBACK
+    payloadParticipants.length > 0 ? payloadParticipants.map(mapPayloadToTeamPerson) : TEAM_FALLBACK
   ).slice(0, 3);
 
   return (
@@ -357,9 +448,18 @@ function TeamSection() {
                 >
                   <div className="shrink-0 h-[52px] w-[52px] rounded-full overflow-hidden border border-border bg-secondary flex items-center justify-center">
                     {person.photo ? (
-                      <img src={person.photo} alt={person.name} className="w-full h-full object-cover" />
+                      <img
+                        src={person.photo}
+                        alt={person.name}
+                        className="w-full h-full object-cover"
+                      />
                     ) : (
-                      <svg viewBox="0 0 24 24" fill="none" className="h-6 w-6 text-muted-foreground/40" aria-hidden>
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        className="h-6 w-6 text-muted-foreground/40"
+                        aria-hidden
+                      >
                         <circle cx="12" cy="8" r="4" fill="currentColor" />
                         <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" fill="currentColor" />
                       </svg>
@@ -401,8 +501,14 @@ function Home() {
     <PageLayout>
       {/* Hero */}
       <section className="border-b border-border relative overflow-hidden">
-        <div className="absolute -top-24 -right-24 h-72 w-72 rounded-full opacity-20 blur-3xl pointer-events-none" style={{ background: "var(--brand-cyan)" }} />
-        <div className="absolute -bottom-24 -left-24 h-64 w-64 rounded-full opacity-15 blur-3xl pointer-events-none" style={{ background: "var(--brand-magenta)" }} />
+        <div
+          className="absolute -top-24 -right-24 h-72 w-72 rounded-full opacity-20 blur-3xl pointer-events-none"
+          style={{ background: "var(--brand-cyan)" }}
+        />
+        <div
+          className="absolute -bottom-24 -left-24 h-64 w-64 rounded-full opacity-15 blur-3xl pointer-events-none"
+          style={{ background: "var(--brand-magenta)" }}
+        />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-14 grid gap-10 lg:grid-cols-2 items-center">
           <div>
             <div className="text-[12px] uppercase tracking-[0.22em] text-[color:var(--brand-magenta)] font-semibold mb-4">
@@ -415,10 +521,16 @@ function Home() {
               {t("hero.desc")}
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
-              <Link to="/about" className="inline-flex items-center px-5 py-2.5 bg-primary text-primary-foreground text-sm font-medium rounded-sm hover:bg-primary/90 transition-colors">
+              <Link
+                to="/about"
+                className="inline-flex items-center px-5 py-2.5 bg-primary text-primary-foreground text-sm font-medium rounded-sm hover:bg-primary/90 transition-colors"
+              >
                 {t("hero.btn.about")}
               </Link>
-              <Link to="/projects/research" className="inline-flex items-center px-5 py-2.5 border border-border text-foreground text-sm font-medium rounded-sm hover:bg-secondary transition-colors">
+              <Link
+                to="/projects/research"
+                className="inline-flex items-center px-5 py-2.5 border border-border text-foreground text-sm font-medium rounded-sm hover:bg-secondary transition-colors"
+              >
                 {t("hero.btn.research")}
               </Link>
             </div>
@@ -446,10 +558,15 @@ function Home() {
                 <div className="text-[12px] uppercase tracking-[0.22em] text-[color:var(--brand-cyan)] font-semibold mb-1">
                   {t("news.eyebrow")}
                 </div>
-                <h2 className="font-serif text-3xl lg:text-[2.5rem] text-primary">{t("news.title")}</h2>
+                <h2 className="font-serif text-3xl lg:text-[2.5rem] text-primary">
+                  {t("news.title")}
+                </h2>
               </div>
             </div>
-            <Link to="/media/news" className="text-xs font-medium text-muted-foreground hover:text-accent transition-colors tracking-wide">
+            <Link
+              to="/media/news"
+              className="text-xs font-medium text-muted-foreground hover:text-accent transition-colors tracking-wide"
+            >
               {t("news.viewAll")}
             </Link>
           </div>

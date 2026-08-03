@@ -12,14 +12,56 @@ export const Route = createFileRoute("/search")({
 });
 
 // ── Searchable content pool — will be replaced by Payload CMS API calls ──
-type Result = { type: string; title: string; titleAr: string; excerpt: string; excerptAr: string; to: string };
+type Result = {
+  type: string;
+  title: string;
+  titleAr: string;
+  excerpt: string;
+  excerptAr: string;
+  to: string;
+};
 
 const ALL_CONTENT: Result[] = [
-  { type: "News", title: "Dignity Initiative receives new research grant", titleAr: "مبادرة الكرامة تحصل على منحة بحثية جديدة", excerpt: "The initiative has secured funding for a three-year research programme.", excerptAr: "حصلت المبادرة على تمويل لبرنامج بحثي لمدة ثلاث سنوات.", to: "/media/news" },
-  { type: "Activity", title: "Seminar: Decolonising Knowledge Production", titleAr: "ندوة: نزع الاستعمار من إنتاج المعرفة", excerpt: "An interdisciplinary seminar exploring colonial legacies in academic research.", excerptAr: "ندوة متعددة التخصصات تستكشف الإرث الاستعماري في البحث الأكاديمي.", to: "/activities/seminars" },
-  { type: "Activity", title: "Windsor-Birzeit Annual Meeting", titleAr: "الاجتماع السنوي لمبادرة وندسور-بيرزيت", excerpt: "Annual gathering of the Windsor-Birzeit Dignity Initiative partners.", excerptAr: "التجمع السنوي لشركاء مبادرة وندسور-بيرزيت للكرامة.", to: "/activities/windsor-birzeit" },
-  { type: "Fellow", title: "Dr. Raef Zreik", titleAr: "د. رائف زريق", excerpt: "Senior Researcher — Dignity Initiative", excerptAr: "باحث أول — مبادرة الكرامة", to: "/about/participants" },
-  { type: "Fellow", title: "Dr. Sarah Al-Amin", titleAr: "د. سارة الأمين", excerpt: "Associate Professor — Faculty", excerptAr: "أستاذة مشاركة — عضو هيئة التدريس", to: "/about/participants" },
+  {
+    type: "News",
+    title: "Dignity Initiative receives new research grant",
+    titleAr: "مبادرة الكرامة تحصل على منحة بحثية جديدة",
+    excerpt: "The initiative has secured funding for a three-year research programme.",
+    excerptAr: "حصلت المبادرة على تمويل لبرنامج بحثي لمدة ثلاث سنوات.",
+    to: "/media/news",
+  },
+  {
+    type: "Activity",
+    title: "Seminar: Decolonising Knowledge Production",
+    titleAr: "ندوة: نزع الاستعمار من إنتاج المعرفة",
+    excerpt: "An interdisciplinary seminar exploring colonial legacies in academic research.",
+    excerptAr: "ندوة متعددة التخصصات تستكشف الإرث الاستعماري في البحث الأكاديمي.",
+    to: "/activities/seminars",
+  },
+  {
+    type: "Activity",
+    title: "Windsor-Birzeit Annual Meeting",
+    titleAr: "الاجتماع السنوي لمبادرة وندسور-بيرزيت",
+    excerpt: "Annual gathering of the Windsor-Birzeit Dignity Initiative partners.",
+    excerptAr: "التجمع السنوي لشركاء مبادرة وندسور-بيرزيت للكرامة.",
+    to: "/activities/windsor-birzeit",
+  },
+  {
+    type: "Fellow",
+    title: "Dr. Raef Zreik",
+    titleAr: "د. رائف زريق",
+    excerpt: "Senior Researcher — Dignity Initiative",
+    excerptAr: "باحث أول — مبادرة الكرامة",
+    to: "/about/participants",
+  },
+  {
+    type: "Fellow",
+    title: "Dr. Sarah Al-Amin",
+    titleAr: "د. سارة الأمين",
+    excerpt: "Associate Professor — Faculty",
+    excerptAr: "أستاذة مشاركة — عضو هيئة التدريس",
+    to: "/about/participants",
+  },
 ];
 
 function SearchPage() {
@@ -46,8 +88,8 @@ function SearchPage() {
               ? `${results.length} نتيجة`
               : `${results.length} result${results.length === 1 ? "" : "s"}`
             : isArabic
-            ? "لا توجد نتائج"
-            : "No results found"
+              ? "لا توجد نتائج"
+              : "No results found"
         }
       />
 

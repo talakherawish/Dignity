@@ -85,20 +85,22 @@ export function PublicationsPage({
         {isLoading ? (
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
             {[1, 2, 3, 4].map((n) => (
-              <div key={n} className="border border-border rounded-sm h-96 bg-secondary/30 animate-pulse" />
+              <div
+                key={n}
+                className="border border-border rounded-sm h-96 bg-secondary/30 animate-pulse"
+              />
             ))}
           </div>
         ) : items.length === 0 ? (
-          <p className="text-sm text-muted-foreground py-12 text-center">{t("publications.empty")}</p>
+          <p className="text-sm text-muted-foreground py-12 text-center">
+            {t("publications.empty")}
+          </p>
         ) : (
           // flex-wrap rather than grid so a partly-filled last row centres
           // instead of hugging the leading edge — a section with two entries
           // would otherwise sit alone in the first two of four columns. Card
           // widths reproduce the 2 / 4 column steps, less their share of the gap.
-          <div
-            className="flex flex-wrap justify-center gap-6"
-            dir={isArabic ? "rtl" : "ltr"}
-          >
+          <div className="flex flex-wrap justify-center gap-6" dir={isArabic ? "rtl" : "ltr"}>
             {items.map((item) => {
               const fileUrl = item.fileUrl;
               return (
@@ -157,7 +159,10 @@ export function PublicationsPage({
                     >
                       {formatDate(item.date, lang === "ar" ? "ar" : "en")}
                       {(item.author || item.authorAr) && (
-                        <span> · {lang === "ar" ? (item.authorAr ?? item.author) : item.author}</span>
+                        <span>
+                          {" "}
+                          · {lang === "ar" ? (item.authorAr ?? item.author) : item.author}
+                        </span>
                       )}
                     </div>
                     <div
@@ -167,7 +172,9 @@ export function PublicationsPage({
                       }
                     >
                       <h3 className="font-serif text-sm text-primary leading-snug">
-                        {withItalicQuotes(lang === "ar" ? (item.titleAr ?? item.title) : item.title)}
+                        {withItalicQuotes(
+                          lang === "ar" ? (item.titleAr ?? item.title) : item.title,
+                        )}
                       </h3>
                       {item.linkUrl ? (
                         <a

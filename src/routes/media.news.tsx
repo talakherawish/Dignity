@@ -20,21 +20,34 @@ function ArticleCard({ article }: { article: Article }) {
 
   return (
     <article className="border border-border rounded-sm overflow-hidden bg-card hover:shadow-md transition-shadow duration-200">
-            <div className={article.image ? "grid md:grid-cols-[2fr_3fr]" : ""}>
-              {article.image && (
-                <div style={{ aspectRatio: "4/3" }} className="overflow-hidden">
-                            <img src={article.image} alt={getField(article, "title", l)} className="w-full h-full object-cover" />
-                </div>
-                    )}
-                    <div className="p-7 lg:p-9 flex flex-col">
+      <div className={article.image ? "grid md:grid-cols-[2fr_3fr]" : ""}>
+        {article.image && (
+          <div style={{ aspectRatio: "4/3" }} className="overflow-hidden">
+            <img
+              src={article.image}
+              alt={getField(article, "title", l)}
+              className="w-full h-full object-cover"
+            />
+          </div>
+        )}
+        <div className="p-7 lg:p-9 flex flex-col">
           <div className="mb-auto">
             <p className="text-[12px] uppercase tracking-[0.22em] text-[color:var(--brand-magenta)] font-semibold mb-3">
               {getField(article, "date", l)}
             </p>
-            <h2 className={"font-serif text-xl lg:text-2xl text-primary mb-3 leading-snug" + (isArabic ? " text-right" : "")}>
+            <h2
+              className={
+                "font-serif text-xl lg:text-2xl text-primary mb-3 leading-snug" +
+                (isArabic ? " text-right" : "")
+              }
+            >
               {withItalicQuotes(getField(article, "title", l))}
             </h2>
-            <p className={"text-sm text-muted-foreground leading-relaxed" + (isArabic ? " text-right" : "")}>
+            <p
+              className={
+                "text-sm text-muted-foreground leading-relaxed" + (isArabic ? " text-right" : "")
+              }
+            >
               {getField(article, "excerpt", l)}
             </p>
           </div>
@@ -57,10 +70,15 @@ function ArticleCard({ article }: { article: Article }) {
           transition: expanded ? "max-height 0.6s ease-in" : "max-height 0.4s ease-out",
         }}
       >
-        <div className="px-7 lg:px-9 pb-9 pt-6 border-t border-border" dir={isArabic ? "rtl" : "ltr"}>
+        <div
+          className="px-7 lg:px-9 pb-9 pt-6 border-t border-border"
+          dir={isArabic ? "rtl" : "ltr"}
+        >
           <div className={"space-y-4 max-w-3xl" + (isArabic ? " mr-0 ml-auto text-right" : "")}>
             {getBody(article, l).map((para, idx) => (
-              <p key={idx} className="text-sm text-foreground/85 leading-loose">{para}</p>
+              <p key={idx} className="text-sm text-foreground/85 leading-loose">
+                {para}
+              </p>
             ))}
           </div>
         </div>
@@ -91,7 +109,10 @@ function NewsPage() {
           {isLoading ? (
             <div className="space-y-6">
               {[1, 2, 3].map((n) => (
-                <div key={n} className="border border-border rounded-sm h-48 bg-secondary/30 animate-pulse" />
+                <div
+                  key={n}
+                  className="border border-border rounded-sm h-48 bg-secondary/30 animate-pulse"
+                />
               ))}
             </div>
           ) : (

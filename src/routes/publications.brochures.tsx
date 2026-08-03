@@ -3,7 +3,5 @@ import { PublicationsPage } from "@/components/PublicationsPage";
 
 export const Route = createFileRoute("/publications/brochures")({
   head: () => ({ meta: [{ title: "Brochures — Dignity" }] }),
-  component: () => (
-    <PublicationsPage type="brochures" titleKey="publications.brochures" />
-  ),
+  component: () => <PublicationsPage type="brochures" titleKey="publications.brochures" />,
 });

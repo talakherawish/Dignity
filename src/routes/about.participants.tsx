@@ -25,18 +25,152 @@ type Fellow = {
 };
 
 const FELLOWS: Fellow[] = [
-  { id: 1, name: "Mudar Kassis", nameAr: "مضر قسيس", title: "", titleAr: "", category: "faculty", email: "m.kassis@birzeit.edu", bio: "", bioAr: "", photo: undefined },
-  { id: 2, name: "Eman Al-Assa", nameAr: "إيمان العصا", title: "", titleAr: "", category: "faculty", email: "e.alassa@birzeit.edu", bio: "", bioAr: "", photo: undefined },
-  { id: 3, name: "Aseel Hussein", nameAr: "أسيل حسين", title: "", titleAr: "", category: "researcher", email: "a.hussein@birzeit.edu", bio: "", bioAr: "", photo: undefined },
-  { id: 4, name: "Rahaf Salahat", nameAr: "رهف صلاحات", title: "", titleAr: "", category: "researcher", email: "r.salahat@birzeit.edu", bio: "", bioAr: "", photo: undefined },
-  { id: 5, name: "Tala Kherawish", nameAr: "تالا خريوش", title: "Web Developer", titleAr: "مطورة ويب", category: "student", email: "talakherawish@gmail.com", bio: "Tala is a university student studying Computer Science. She joined the Dignity Initiative in 2026 and helped develop the website you are seeing today.", bioAr: "طالبة جامعية تدرس علم الحاسوب. انضمت إلى مبادرة الكرامة عام 2026 وساهمت في تطوير الموقع الذي تراه اليوم.", photo: talaPhoto },
-  { id: 6, name: "Dr. Sarah Al-Amin", nameAr: "د. سارة الأمين", title: "Associate Professor", titleAr: "أستاذة مشاركة", category: "faculty", email: "s.alamin@birzeit.edu", bio: "Dr. Al-Amin is an associate professor specializing in political philosophy and human rights theory. She has been a core member of the Dignity Initiative since its founding.", bioAr: "أستاذة مشاركة متخصصة في الفلسفة السياسية ونظرية حقوق الإنسان، وهي عضو أساسي في مبادرة الكرامة منذ تأسيسها.", photo: undefined },
-  { id: 7, name: "Dr. Raef Zreik", nameAr: "د. رائف زريق", title: "Senior Researcher", titleAr: "باحث أول", category: "researcher", email: "r.zreik@birzeit.edu", bio: "Dr. Zreik is a senior researcher whose work focuses on the philosophy of law, colonialism, and dignity.", bioAr: "باحث أول يتمحور عمله حول فلسفة القانون والاستعمار والكرامة.", photo: undefined },
-  { id: 8, name: "Lina Mansour", nameAr: "لينا منصور", title: "Research Fellow", titleAr: "زميلة بحثية", category: "researcher", email: "l.mansour@birzeit.edu", bio: "Lina Mansour is a research fellow focusing on feminist theory and dignity discourse in the Arab world.", bioAr: "زميلة بحثية تتركز اهتماماتها على النظرية النسوية وخطاب الكرامة في العالم العربي.", photo: undefined },
-  { id: 9, name: "Omar Khalil", nameAr: "عمر خليل", title: "PhD Researcher", titleAr: "باحث دكتوراه", category: "researcher", email: "o.khalil@birzeit.edu", bio: "Omar Khalil is a doctoral researcher examining the intersection of artificial intelligence and human dignity in legal frameworks.", bioAr: "باحث دكتوراه يدرس العلاقة بين الذكاء الاصطناعي والكرامة الإنسانية في الأطر القانونية.", photo: undefined },
-  { id: 10, name: "Ahmad Suleiman", nameAr: "أحمد سليمان", title: "Graduate Student", titleAr: "طالب دراسات عليا", category: "student", email: "a.suleiman@birzeit.edu", bio: "Ahmad is a graduate student in philosophy, with a focus on decolonial thought and Arab intellectual history.", bioAr: "طالب دراسات عليا في الفلسفة، يركز على الفكر ما بعد الاستعماري والتاريخ الفكري العربي.", photo: undefined },
-  { id: 11, name: "Maya Barakat", nameAr: "مايا بركات", title: "Visiting Scholar", titleAr: "باحثة زائرة", category: "visitor", email: "m.barakat@external.edu", bio: "Maya Barakat is a visiting scholar from the University of Windsor, contributing to the Windsor-Birzeit Dignity Initiative.", bioAr: "باحثة زائرة من جامعة وندسور، تساهم في مبادرة وندسور-بيرزيت للكرامة.", photo: undefined },
-  { id: 12, name: "Nour Haddad", nameAr: "نور حداد", title: "Research Intern", titleAr: "متدربة بحثية", category: "intern", email: "n.haddad@birzeit.edu", bio: "Nour is a research intern supporting ongoing projects related to dignity and children's rights.", bioAr: "متدربة بحثية تدعم المشاريع الجارية المتعلقة بالكرامة وحقوق الأطفال.", photo: undefined },
+  {
+    id: 1,
+    name: "Mudar Kassis",
+    nameAr: "مضر قسيس",
+    title: "",
+    titleAr: "",
+    category: "faculty",
+    email: "m.kassis@birzeit.edu",
+    bio: "",
+    bioAr: "",
+    photo: undefined,
+  },
+  {
+    id: 2,
+    name: "Eman Al-Assa",
+    nameAr: "إيمان العصا",
+    title: "",
+    titleAr: "",
+    category: "faculty",
+    email: "e.alassa@birzeit.edu",
+    bio: "",
+    bioAr: "",
+    photo: undefined,
+  },
+  {
+    id: 3,
+    name: "Aseel Hussein",
+    nameAr: "أسيل حسين",
+    title: "",
+    titleAr: "",
+    category: "researcher",
+    email: "a.hussein@birzeit.edu",
+    bio: "",
+    bioAr: "",
+    photo: undefined,
+  },
+  {
+    id: 4,
+    name: "Rahaf Salahat",
+    nameAr: "رهف صلاحات",
+    title: "",
+    titleAr: "",
+    category: "researcher",
+    email: "r.salahat@birzeit.edu",
+    bio: "",
+    bioAr: "",
+    photo: undefined,
+  },
+  {
+    id: 5,
+    name: "Tala Kherawish",
+    nameAr: "تالا خريوش",
+    title: "Web Developer",
+    titleAr: "مطورة ويب",
+    category: "student",
+    email: "talakherawish@gmail.com",
+    bio: "Tala is a university student studying Computer Science. She joined the Dignity Initiative in 2026 and helped develop the website you are seeing today.",
+    bioAr:
+      "طالبة جامعية تدرس علم الحاسوب. انضمت إلى مبادرة الكرامة عام 2026 وساهمت في تطوير الموقع الذي تراه اليوم.",
+    photo: talaPhoto,
+  },
+  {
+    id: 6,
+    name: "Dr. Sarah Al-Amin",
+    nameAr: "د. سارة الأمين",
+    title: "Associate Professor",
+    titleAr: "أستاذة مشاركة",
+    category: "faculty",
+    email: "s.alamin@birzeit.edu",
+    bio: "Dr. Al-Amin is an associate professor specializing in political philosophy and human rights theory. She has been a core member of the Dignity Initiative since its founding.",
+    bioAr:
+      "أستاذة مشاركة متخصصة في الفلسفة السياسية ونظرية حقوق الإنسان، وهي عضو أساسي في مبادرة الكرامة منذ تأسيسها.",
+    photo: undefined,
+  },
+  {
+    id: 7,
+    name: "Dr. Raef Zreik",
+    nameAr: "د. رائف زريق",
+    title: "Senior Researcher",
+    titleAr: "باحث أول",
+    category: "researcher",
+    email: "r.zreik@birzeit.edu",
+    bio: "Dr. Zreik is a senior researcher whose work focuses on the philosophy of law, colonialism, and dignity.",
+    bioAr: "باحث أول يتمحور عمله حول فلسفة القانون والاستعمار والكرامة.",
+    photo: undefined,
+  },
+  {
+    id: 8,
+    name: "Lina Mansour",
+    nameAr: "لينا منصور",
+    title: "Research Fellow",
+    titleAr: "زميلة بحثية",
+    category: "researcher",
+    email: "l.mansour@birzeit.edu",
+    bio: "Lina Mansour is a research fellow focusing on feminist theory and dignity discourse in the Arab world.",
+    bioAr: "زميلة بحثية تتركز اهتماماتها على النظرية النسوية وخطاب الكرامة في العالم العربي.",
+    photo: undefined,
+  },
+  {
+    id: 9,
+    name: "Omar Khalil",
+    nameAr: "عمر خليل",
+    title: "PhD Researcher",
+    titleAr: "باحث دكتوراه",
+    category: "researcher",
+    email: "o.khalil@birzeit.edu",
+    bio: "Omar Khalil is a doctoral researcher examining the intersection of artificial intelligence and human dignity in legal frameworks.",
+    bioAr: "باحث دكتوراه يدرس العلاقة بين الذكاء الاصطناعي والكرامة الإنسانية في الأطر القانونية.",
+    photo: undefined,
+  },
+  {
+    id: 10,
+    name: "Ahmad Suleiman",
+    nameAr: "أحمد سليمان",
+    title: "Graduate Student",
+    titleAr: "طالب دراسات عليا",
+    category: "student",
+    email: "a.suleiman@birzeit.edu",
+    bio: "Ahmad is a graduate student in philosophy, with a focus on decolonial thought and Arab intellectual history.",
+    bioAr: "طالب دراسات عليا في الفلسفة، يركز على الفكر ما بعد الاستعماري والتاريخ الفكري العربي.",
+    photo: undefined,
+  },
+  {
+    id: 11,
+    name: "Maya Barakat",
+    nameAr: "مايا بركات",
+    title: "Visiting Scholar",
+    titleAr: "باحثة زائرة",
+    category: "visitor",
+    email: "m.barakat@external.edu",
+    bio: "Maya Barakat is a visiting scholar from the University of Windsor, contributing to the Windsor-Birzeit Dignity Initiative.",
+    bioAr: "باحثة زائرة من جامعة وندسور، تساهم في مبادرة وندسور-بيرزيت للكرامة.",
+    photo: undefined,
+  },
+  {
+    id: 12,
+    name: "Nour Haddad",
+    nameAr: "نور حداد",
+    title: "Research Intern",
+    titleAr: "متدربة بحثية",
+    category: "intern",
+    email: "n.haddad@birzeit.edu",
+    bio: "Nour is a research intern supporting ongoing projects related to dignity and children's rights.",
+    bioAr: "متدربة بحثية تدعم المشاريع الجارية المتعلقة بالكرامة وحقوق الأطفال.",
+    photo: undefined,
+  },
 ];
 
 const CATEGORIES = [
@@ -68,14 +202,24 @@ function Avatar({ photo, name }: { photo?: string; name: string }) {
     return <img src={photo} alt={name} className="w-full h-full object-cover" />;
   }
   return (
-    <svg viewBox="0 0 24 24" fill="none" className="h-1/2 w-1/2 text-muted-foreground/25" aria-hidden>
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      className="h-1/2 w-1/2 text-muted-foreground/25"
+      aria-hidden
+    >
       <circle cx="12" cy="8" r="4.5" fill="currentColor" />
       <path d="M3 20c0-4.4 4-8 9-8s9 3.6 9 8" fill="currentColor" />
     </svg>
   );
 }
 
-function FellowModal({ fellow, onClose, isArabic, lang }: {
+function FellowModal({
+  fellow,
+  onClose,
+  isArabic,
+  lang,
+}: {
   fellow: Fellow;
   onClose: () => void;
   isArabic: boolean;
@@ -96,7 +240,12 @@ function FellowModal({ fellow, onClose, isArabic, lang }: {
             <Avatar photo={fellow.photo} name={fellow.name} />
           </div>
         </div>
-        <div className={"relative bg-card border border-border rounded-lg shadow-2xl overflow-y-auto max-h-[80vh]" + (isArabic ? " text-right" : "")}>
+        <div
+          className={
+            "relative bg-card border border-border rounded-lg shadow-2xl overflow-y-auto max-h-[80vh]" +
+            (isArabic ? " text-right" : "")
+          }
+        >
           <button
             onClick={onClose}
             className="absolute top-4 right-4 p-1.5 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors z-10"
@@ -134,7 +283,11 @@ function FellowModal({ fellow, onClose, isArabic, lang }: {
   );
 }
 
-function FellowCard({ fellow, onClick, lang }: {
+function FellowCard({
+  fellow,
+  onClick,
+  lang,
+}: {
   fellow: Fellow;
   onClick: () => void;
   lang: string;
@@ -145,11 +298,23 @@ function FellowCard({ fellow, onClick, lang }: {
       onClick={onClick}
       className="group text-center border border-border rounded-md overflow-hidden bg-card hover:border-accent/40 hover:shadow-md transition-all duration-200 cursor-pointer w-full flex flex-col"
     >
-      <div className="w-full bg-secondary/20 flex items-center justify-center overflow-hidden" style={{ aspectRatio: "3/4" }}>
+      <div
+        className="w-full bg-secondary/20 flex items-center justify-center overflow-hidden"
+        style={{ aspectRatio: "3/4" }}
+      >
         {fellow.photo ? (
-          <img src={fellow.photo} alt={fellow.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+          <img
+            src={fellow.photo}
+            alt={fellow.name}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          />
         ) : (
-          <svg viewBox="0 0 24 24" fill="none" className="h-16 w-16 text-muted-foreground/20" aria-hidden>
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            className="h-16 w-16 text-muted-foreground/20"
+            aria-hidden
+          >
             <circle cx="12" cy="8" r="4.5" fill="currentColor" />
             <path d="M3 20c0-4.4 4-8 9-8s9 3.6 9 8" fill="currentColor" />
           </svg>
@@ -182,9 +347,7 @@ function FellowsPage() {
   });
 
   const fellows: Fellow[] =
-    payloadParticipants.length > 0
-      ? payloadParticipants.map(mapPayloadParticipant)
-      : FELLOWS;
+    payloadParticipants.length > 0 ? payloadParticipants.map(mapPayloadParticipant) : FELLOWS;
 
   const q = search.toLowerCase();
   const filtered = fellows.filter((f) => {
@@ -206,7 +369,11 @@ function FellowsPage() {
       />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <div className={"flex flex-col sm:flex-row gap-4 mb-10" + (isArabic ? " sm:flex-row-reverse" : "")}>
+        <div
+          className={
+            "flex flex-col sm:flex-row gap-4 mb-10" + (isArabic ? " sm:flex-row-reverse" : "")
+          }
+        >
           <div className="flex flex-wrap gap-2">
             {CATEGORIES.map((cat) => (
               <button

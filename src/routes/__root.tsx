@@ -74,7 +74,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Dignity Academic Initiative" },
-      { name: "description", content: "An academic initiative dedicated to research, dialogue, and human dignity." },
+      {
+        name: "description",
+        content: "An academic initiative dedicated to research, dialogue, and human dignity.",
+      },
       { property: "og:title", content: "Dignity Academic Initiative" },
       { property: "og:type", content: "website" },
     ],

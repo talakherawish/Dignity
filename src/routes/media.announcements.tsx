@@ -19,12 +19,18 @@ function AnnouncementsPage() {
 
   return (
     <PageLayout>
-            <PageHero eyebrow={`${t("media")} — ${t("media.announcements")}`} title={t("media.announcements")} />
+      <PageHero
+        eyebrow={`${t("media")} — ${t("media.announcements")}`}
+        title={t("media.announcements")}
+      />
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {isLoading ? (
           <div className="grid gap-4 sm:grid-cols-3">
             {[1, 2, 3].map((n) => (
-              <div key={n} className="border border-border rounded-lg h-36 bg-secondary/30 animate-pulse" />
+              <div
+                key={n}
+                className="border border-border rounded-lg h-36 bg-secondary/30 animate-pulse"
+              />
             ))}
           </div>
         ) : items.length === 0 ? (
@@ -34,16 +40,34 @@ function AnnouncementsPage() {
         ) : (
           <div className="grid gap-4 sm:grid-cols-3" dir={isArabic ? "rtl" : "ltr"}>
             {items.map((item: PayloadAnnouncement) => (
-              <div key={item.id} className="bg-card border border-border rounded-lg overflow-hidden">
+              <div
+                key={item.id}
+                className="bg-card border border-border rounded-lg overflow-hidden"
+              >
                 <div className="h-1 w-full" style={{ background: "var(--brand-magenta)" }} />
                 <div className={"p-6" + (isArabic ? " text-right" : "")}>
-                  <div className={"font-semibold mb-2 text-muted-foreground" + (isArabic ? " text-sm" : " text-[11px] uppercase tracking-widest")}>
+                  <div
+                    className={
+                      "font-semibold mb-2 text-muted-foreground" +
+                      (isArabic ? " text-sm" : " text-[11px] uppercase tracking-widest")
+                    }
+                  >
                     {isArabic ? "إعلان" : "Announcement"}
                   </div>
-                  <p className={"font-medium text-primary leading-snug mb-4" + (isArabic ? " text-lg md:text-xl" : " text-base md:text-lg")}>
+                  <p
+                    className={
+                      "font-medium text-primary leading-snug mb-4" +
+                      (isArabic ? " text-lg md:text-xl" : " text-base md:text-lg")
+                    }
+                  >
                     {lang === "ar" ? (item.titleAr ?? item.title) : item.title}
                   </p>
-                  <div className={"font-medium tracking-wide" + (isArabic ? " text-sm" : " text-[12px]")} style={{ color: "var(--brand-magenta)" }}>
+                  <div
+                    className={
+                      "font-medium tracking-wide" + (isArabic ? " text-sm" : " text-[12px]")
+                    }
+                    style={{ color: "var(--brand-magenta)" }}
+                  >
                     {formatDate(item.date, lang === "ar" ? "ar" : "en")}
                   </div>
                 </div>

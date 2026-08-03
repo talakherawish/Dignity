@@ -3,12 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { ArrowRight } from "lucide-react";
 import { PageLayout, PageHero } from "@/components/PageLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
-import {
-  fetchResearch,
-  extractText,
-  mediaUrl,
-  type PayloadResearchActivity,
-} from "@/lib/payload";
+import { fetchResearch, extractText, mediaUrl, type PayloadResearchActivity } from "@/lib/payload";
 export const Route = createFileRoute("/projects/research/")({
   head: () => ({ meta: [{ title: "Research — Dignity" }] }),
   component: ResearchPage,
@@ -56,7 +51,10 @@ function ResearchPage() {
         {isLoading ? (
           <div className="grid gap-5 sm:grid-cols-2">
             {[1, 2, 3, 4].map((n) => (
-              <div key={n} className="border border-border rounded-lg h-40 bg-secondary/30 animate-pulse" />
+              <div
+                key={n}
+                className="border border-border rounded-lg h-40 bg-secondary/30 animate-pulse"
+              />
             ))}
           </div>
         ) : items.length === 0 ? (
@@ -85,7 +83,10 @@ function ResearchPage() {
                   }
                 >
                   {image && (
-                    <div className="w-full overflow-hidden bg-secondary/20" style={{ aspectRatio: "16/9" }}>
+                    <div
+                      className="w-full overflow-hidden bg-secondary/20"
+                      style={{ aspectRatio: "16/9" }}
+                    >
                       <img
                         src={image}
                         alt={title}
@@ -98,7 +99,9 @@ function ResearchPage() {
                       {title}
                     </h2>
                     {desc && (
-                      <p className="text-sm text-muted-foreground leading-relaxed mt-2 flex-1">{desc}</p>
+                      <p className="text-sm text-muted-foreground leading-relaxed mt-2 flex-1">
+                        {desc}
+                      </p>
                     )}
                     <div
                       className={

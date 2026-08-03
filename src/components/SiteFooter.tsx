@@ -91,7 +91,10 @@ export function SiteFooter() {
             {t("footer.subscribe")}
           </h4>
           <form
-            onSubmit={(e) => { e.preventDefault(); setEmail(""); }}
+            onSubmit={(e) => {
+              e.preventDefault();
+              setEmail("");
+            }}
             className="flex items-center gap-2 max-w-xs"
           >
             <input
@@ -113,14 +116,20 @@ export function SiteFooter() {
             {[
               { Icon: Facebook, label: "Facebook", href: "#" },
               { Icon: Twitter, label: "Twitter / X", href: "#" },
-              { Icon: Youtube, label: "YouTube", href: "https://www.youtube.com/@bzu-dignityinitiative6199" },
+              {
+                Icon: Youtube,
+                label: "YouTube",
+                href: "https://www.youtube.com/@bzu-dignityinitiative6199",
+              },
               { Icon: Mail, label: "Contact", href: "mailto:Dignity@birzeit.edu" },
             ].map(({ Icon, label, href }) => (
               <a
                 key={label}
                 href={href}
                 aria-label={label}
-                {...(href.startsWith("http") ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                {...(href.startsWith("http")
+                  ? { target: "_blank", rel: "noopener noreferrer" }
+                  : {})}
                 className="flex h-8 w-8 items-center justify-center rounded-full border border-white/15 text-white/45 hover:text-white hover:border-white/35 transition-all"
               >
                 <Icon className="h-3.5 w-3.5" />

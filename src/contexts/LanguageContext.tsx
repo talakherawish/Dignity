@@ -52,27 +52,33 @@ const translations = {
     "publications.theses": "Theses",
     "publications.audiovisual": "Audiovisual",
     "publications.posters": "Posters",
-    "publications.page.desc": "Books, papers, reports, and other publications produced by the Dignity initiative.",
+    "publications.page.desc":
+      "Books, papers, reports, and other publications produced by the Dignity initiative.",
     "publications.empty": "No publications available yet.",
     "publications.download": "Download",
     information: "Information",
     "information.readings": "Readings and Documents",
     "information.databases": "Databases",
-    "information.page.desc": "Readings, documents, and databases relevant to the Dignity initiative's research.",
+    "information.page.desc":
+      "Readings, documents, and databases relevant to the Dignity initiative's research.",
     "information.empty": "No items available yet.",
     "information.visit": "Visit",
     // HOME
     "hero.eyebrow": "Academic Initiative",
     "hero.title": "Advancing scholarship in service of human dignity.",
-    "hero.desc": "Dignity brings together faculty, researchers, students, and partners to pursue rigorous inquiry, foster dialogue, and produce work of lasting public value.",
+    "hero.desc":
+      "Dignity brings together faculty, researchers, students, and partners to pursue rigorous inquiry, foster dialogue, and produce work of lasting public value.",
     "hero.btn.about": "About the Initiative",
     "hero.btn.research": "Our Research",
     "pillar.research": "Research",
-    "pillar.research.desc": "Original inquiry across disciplines, from foundational scholarship to applied work.",
+    "pillar.research.desc":
+      "Original inquiry across disciplines, from foundational scholarship to applied work.",
     "pillar.dialogue": "Dialogue",
-    "pillar.dialogue.desc": "Seminars, conferences, and meetings that convene scholars and practitioners.",
+    "pillar.dialogue.desc":
+      "Seminars, conferences, and meetings that convene scholars and practitioners.",
     "pillar.partnership": "Partnership",
-    "pillar.partnership.desc": "Collaboration with institutions worldwide, including The Windsor Birzeit Dignity Initiative.",
+    "pillar.partnership.desc":
+      "Collaboration with institutions worldwide, including The Windsor Birzeit Dignity Initiative.",
     "news.eyebrow": "Latest News",
     "news.title": "Latest News & Updates",
     "news.viewAll": "View all →",
@@ -82,24 +88,35 @@ const translations = {
     "news.collapse": "Collapse",
     "news.item1.date": "DEC 14 - JAN 2023",
     "news.item1.title": "Discussion of Raef Zreik's book / \"Kant's Struggle for Independence\"",
-    "news.item1.excerpt": "The Karama Research Initiative at Birzeit University hosted Raef Zreik to present and discuss his latest book, published in mid-January by Lexington Publishing House.",
+    "news.item1.excerpt":
+      "The Karama Research Initiative at Birzeit University hosted Raef Zreik to present and discuss his latest book, published in mid-January by Lexington Publishing House.",
     "news.item2.date": "Placeholder date",
     "news.item2.title": "Article headline placeholder two",
-    "news.item2.excerpt": "Brief summary of the second article will appear here once content is added.",
+    "news.item2.excerpt":
+      "Brief summary of the second article will appear here once content is added.",
     "news.item3.date": "Placeholder date",
     "news.item3.title": "Article headline placeholder three",
-    "news.item3.excerpt": "Brief summary of the third article will appear here once content is added.",
+    "news.item3.excerpt":
+      "Brief summary of the third article will appear here once content is added.",
     // PAGE DESCRIPTIONS
-    "page.placeholder": "This section is a placeholder. Replace this text with the official content for this page.",
-    "page.placeholder2": "You can add multiple paragraphs, lists, images, and other elements here as the content becomes available.",
-    "about.page.desc": "An overview of the Dignity initiative, its origins, and its scholarly purpose.",
-    "participants.page.desc": "The scholars, researchers, students, and visitors who form the Dignity community.",
-    "partners.page.desc": "Institutions and organizations that collaborate with the Dignity initiative.",
-    "projects.page.desc": "Active and recent research projects undertaken by members of the Dignity initiative.",
+    "page.placeholder":
+      "This section is a placeholder. Replace this text with the official content for this page.",
+    "page.placeholder2":
+      "You can add multiple paragraphs, lists, images, and other elements here as the content becomes available.",
+    "about.page.desc":
+      "An overview of the Dignity initiative, its origins, and its scholarly purpose.",
+    "participants.page.desc":
+      "The scholars, researchers, students, and visitors who form the Dignity community.",
+    "partners.page.desc":
+      "Institutions and organizations that collaborate with the Dignity initiative.",
+    "projects.page.desc":
+      "Active and recent research projects undertaken by members of the Dignity initiative.",
     "seminars.page.desc": "Information about Seminars organized through the Dignity initiative.",
-    "conferences.page.desc": "Information about Conferences organized through the Dignity initiative.",
+    "conferences.page.desc":
+      "Information about Conferences organized through the Dignity initiative.",
     "meetings.page.desc": "Information about Meetings organized through the Dignity initiative.",
-    "windsor.page.desc": "Information about The Windsor Birzeit Dignity Initiative organized through the Dignity initiative.",
+    "windsor.page.desc":
+      "Information about The Windsor Birzeit Dignity Initiative organized through the Dignity initiative.",
     "news.page.desc": "Latest news from the Dignity initiative.",
     "announcements.page.desc": "Latest announcements from the Dignity initiative.",
     "photos.page.desc": "Latest photos from the Dignity initiative.",
@@ -108,25 +125,32 @@ const translations = {
     "participants.select": "Select a category above to view participants.",
     "participants.name": "Name Placeholder",
     "participants.role": "Title / Role",
-    "participants.bio": "Short biography placeholder. Add a brief description of this participant's background and contributions.",
-    "participants.intro.faculty": "Placeholder introduction describing the faculty who participate in the Dignity initiative.",
-    "participants.intro.researchers": "Placeholder introduction describing the researchers who participate in the Dignity initiative.",
-    "participants.intro.interns": "Placeholder introduction describing the interns who participate in the Dignity initiative.",
-    "participants.intro.students": "Placeholder introduction describing the students who participate in the Dignity initiative.",
-    "participants.intro.visitors": "Placeholder introduction describing the visitors who participate in the Dignity initiative.",
+    "participants.bio":
+      "Short biography placeholder. Add a brief description of this participant's background and contributions.",
+    "participants.intro.faculty":
+      "Placeholder introduction describing the faculty who participate in the Dignity initiative.",
+    "participants.intro.researchers":
+      "Placeholder introduction describing the researchers who participate in the Dignity initiative.",
+    "participants.intro.interns":
+      "Placeholder introduction describing the interns who participate in the Dignity initiative.",
+    "participants.intro.students":
+      "Placeholder introduction describing the students who participate in the Dignity initiative.",
+    "participants.intro.visitors":
+      "Placeholder introduction describing the visitors who participate in the Dignity initiative.",
     // PROJECTS
     "projects.area": "Research Area",
     "projects.placeholder.title": "Project Title Placeholder",
-    "projects.placeholder.desc": "A short description of the project, its objectives, methodology, and expected outcomes will be added here.",
+    "projects.placeholder.desc":
+      "A short description of the project, its objectives, methodology, and expected outcomes will be added here.",
     // FOOTER
     "footer.about": "An academic initiative dedicated to research, dialogue, and human dignity.",
     "footer.contact": "Contact",
     "footer.university": "Birzeit University",
-        "footer.pobox": "Room 5, Graduate Studies Building",
-        "footer.zip": "P. O. Box 14, Birzeit, Palestine",
-        "footer.phone": "Phone: +972 (2) 2982169",
-        "footer.fax": "Fax: +972 (2) 2982168",
-        "footer.email": "Email: Dignity@birzeit.edu",
+    "footer.pobox": "Room 5, Graduate Studies Building",
+    "footer.zip": "P. O. Box 14, Birzeit, Palestine",
+    "footer.phone": "Phone: +972 (2) 2982169",
+    "footer.fax": "Fax: +972 (2) 2982168",
+    "footer.email": "Email: Dignity@birzeit.edu",
     "footer.subscribe": "Subscribe to mailing list",
     "footer.subscribe.placeholder": "Your email address",
     "footer.subscribe.btn": "Subscribe",
@@ -194,7 +218,8 @@ const translations = {
     "publications.theses": "رسائل",
     "publications.audiovisual": "مرئي مسموع",
     "publications.posters": "ملصقات",
-    "publications.page.desc": "كتب وأوراق بحثية وتقارير وغيرها من المنشورات الصادرة عن مبادرة الكرامة.",
+    "publications.page.desc":
+      "كتب وأوراق بحثية وتقارير وغيرها من المنشورات الصادرة عن مبادرة الكرامة.",
     "publications.empty": "لا توجد منشورات متاحة حالياً.",
     "publications.download": "تحميل",
     information: "معلومات",
@@ -206,11 +231,13 @@ const translations = {
     // HOME
     "hero.eyebrow": "مبادرة أكاديمية",
     "hero.title": "تعزيز المعرفة في خدمة الكرامة الإنسانية.",
-    "hero.desc": "تجمع مبادرة الكرامة أعضاء هيئة التدريس والباحثين والطلاب والشركاء لمتابعة البحث الصارم وتعزيز الحوار وإنتاج أعمال ذات قيمة عامة دائمة.",
+    "hero.desc":
+      "تجمع مبادرة الكرامة أعضاء هيئة التدريس والباحثين والطلاب والشركاء لمتابعة البحث الصارم وتعزيز الحوار وإنتاج أعمال ذات قيمة عامة دائمة.",
     "hero.btn.about": "حول المبادرة",
     "hero.btn.research": "أبحاثنا",
     "pillar.research": "البحث",
-    "pillar.research.desc": "استفسار أصيل عبر التخصصات، من الدراسة الأكاديمية الأساسية إلى العمل التطبيقي.",
+    "pillar.research.desc":
+      "استفسار أصيل عبر التخصصات، من الدراسة الأكاديمية الأساسية إلى العمل التطبيقي.",
     "pillar.dialogue": "الحوار",
     "pillar.dialogue.desc": "ندوات ومؤتمرات واجتماعات تجمع العلماء والممارسين.",
     "pillar.partnership": "الشراكة",
@@ -232,7 +259,8 @@ const translations = {
     "news.item3.title": "عنوان المقال الثالث",
     "news.item3.excerpt": "سيظهر هنا ملخص مختصر للمقال الثالث بمجرد إضافة المحتوى.",
     // PAGE DESCRIPTIONS
-    "page.placeholder": "هذا القسم عبارة عن نص تجريبي. استبدل هذا النص بالمحتوى الرسمي لهذه الصفحة.",
+    "page.placeholder":
+      "هذا القسم عبارة عن نص تجريبي. استبدل هذا النص بالمحتوى الرسمي لهذه الصفحة.",
     "page.placeholder2": "يمكنك إضافة فقرات متعددة وقوائم وصور وعناصر أخرى هنا عند توفر المحتوى.",
     "about.page.desc": "نظرة عامة على مبادرة الكرامة وأصولها وغرضها الأكاديمي.",
     "participants.page.desc": "العلماء والباحثون والطلاب والزوار الذين يشكلون مجتمع الكرامة.",
@@ -264,11 +292,11 @@ const translations = {
     "footer.about": "مبادرة أكاديمية مكرسة للبحث والحوار والكرامة الإنسانية.",
     "footer.contact": "اتصل بنا",
     "footer.university": "جامعة بيرزيت",
-        "footer.pobox": "غرفة 5، مبنى الدراسات العليا",
-        "footer.zip": "ص.ب. 14، بيرزيت، فلسطين",
-        "footer.phone": "هاتف: +972 (2) 2982169",
-        "footer.fax": "فاكس: +972 (2) 2982168",
-        "footer.email": "البريد الإلكتروني: Dignity@birzeit.edu",
+    "footer.pobox": "غرفة 5، مبنى الدراسات العليا",
+    "footer.zip": "ص.ب. 14، بيرزيت، فلسطين",
+    "footer.phone": "هاتف: +972 (2) 2982169",
+    "footer.fax": "فاكس: +972 (2) 2982168",
+    "footer.email": "البريد الإلكتروني: Dignity@birzeit.edu",
     "footer.subscribe": "اشترك في القائمة البريدية",
     "footer.subscribe.placeholder": "عنوان بريدك الإلكتروني",
     "footer.subscribe.btn": "اشترك",
@@ -302,67 +330,67 @@ export type TranslationKey = keyof typeof translations.en;
 // the Arabic value lives at `${base}Ar`). Only keys editable via Payload appear here --
 // anything absent falls back to the hardcoded dictionary above untouched.
 const SITE_SETTINGS_KEY_MAP: Partial<Record<TranslationKey, string>> = {
-    home: "navHome",
-    about: "navAbout",
-    "about.initiative": "navAboutInitiative",
-    "about.fellows": "navAboutFellows",
-    "about.participants": "navAboutFellows",
-    "about.partners": "navAboutPartners",
-    projects: "navProjects",
-    "projects.research": "navProjectsResearch",
-    activities: "navActivities",
-    "activities.seminars": "navActivitiesSeminars",
-    "activities.conferences": "navActivitiesConferences",
-    "activities.meetings": "navActivitiesMeetings",
-    "activities.windsor": "navActivitiesWindsor",
-    media: "navMedia",
-    "media.news": "navMediaNews",
-    "media.announcements": "navMediaAnnouncements",
-    "media.photos": "navMediaPhotos",
-    "media.clippings": "navMediaClippings",
+  home: "navHome",
+  about: "navAbout",
+  "about.initiative": "navAboutInitiative",
+  "about.fellows": "navAboutFellows",
+  "about.participants": "navAboutFellows",
+  "about.partners": "navAboutPartners",
+  projects: "navProjects",
+  "projects.research": "navProjectsResearch",
+  activities: "navActivities",
+  "activities.seminars": "navActivitiesSeminars",
+  "activities.conferences": "navActivitiesConferences",
+  "activities.meetings": "navActivitiesMeetings",
+  "activities.windsor": "navActivitiesWindsor",
+  media: "navMedia",
+  "media.news": "navMediaNews",
+  "media.announcements": "navMediaAnnouncements",
+  "media.photos": "navMediaPhotos",
+  "media.clippings": "navMediaClippings",
 
-    "hero.eyebrow": "heroEyebrow",
-    "hero.title": "heroTitle",
-    "hero.desc": "heroDesc",
-    "hero.btn.about": "heroBtnAbout",
-    "hero.btn.research": "heroBtnResearch",
-    "pillar.research": "pillarResearch",
-    "pillar.research.desc": "pillarResearchDesc",
-    "pillar.dialogue": "pillarDialogue",
-    "pillar.dialogue.desc": "pillarDialogueDesc",
-    "pillar.partnership": "pillarPartnership",
-    "pillar.partnership.desc": "pillarPartnershipDesc",
-    "news.viewAll": "newsViewAll",
-    "news.prev": "newsPrev",
-    "news.next": "newsNext",
-    "news.readMore": "newsReadMore",
-    "news.collapse": "newsCollapse",
+  "hero.eyebrow": "heroEyebrow",
+  "hero.title": "heroTitle",
+  "hero.desc": "heroDesc",
+  "hero.btn.about": "heroBtnAbout",
+  "hero.btn.research": "heroBtnResearch",
+  "pillar.research": "pillarResearch",
+  "pillar.research.desc": "pillarResearchDesc",
+  "pillar.dialogue": "pillarDialogue",
+  "pillar.dialogue.desc": "pillarDialogueDesc",
+  "pillar.partnership": "pillarPartnership",
+  "pillar.partnership.desc": "pillarPartnershipDesc",
+  "news.viewAll": "newsViewAll",
+  "news.prev": "newsPrev",
+  "news.next": "newsNext",
+  "news.readMore": "newsReadMore",
+  "news.collapse": "newsCollapse",
 
-    "footer.about": "footerAbout",
-    "footer.contact": "footerContact",
-    "footer.university": "footerUniversity",
-    "footer.pobox": "footerPobox",
-    "footer.zip": "footerZip",
-    "footer.phone": "footerPhone",
-    "footer.fax": "footerFax",
-    "footer.email": "footerEmail",
-    "footer.subscribe": "footerSubscribe",
-    "footer.subscribe.placeholder": "footerSubscribePlaceholder",
-    "footer.subscribe.btn": "footerSubscribeBtn",
-    "footer.disclaimer": "footerDisclaimer",
-    "footer.privacy": "footerPrivacy",
-    "footer.sitemap": "footerSitemap",
-    "footer.copyright": "footerCopyright",
-    "footer.resources": "footerResources",
-    "footer.studying": "footerStudying",
-    "footer.library": "footerLibrary",
-    "footer.databases": "footerDatabases",
+  "footer.about": "footerAbout",
+  "footer.contact": "footerContact",
+  "footer.university": "footerUniversity",
+  "footer.pobox": "footerPobox",
+  "footer.zip": "footerZip",
+  "footer.phone": "footerPhone",
+  "footer.fax": "footerFax",
+  "footer.email": "footerEmail",
+  "footer.subscribe": "footerSubscribe",
+  "footer.subscribe.placeholder": "footerSubscribePlaceholder",
+  "footer.subscribe.btn": "footerSubscribeBtn",
+  "footer.disclaimer": "footerDisclaimer",
+  "footer.privacy": "footerPrivacy",
+  "footer.sitemap": "footerSitemap",
+  "footer.copyright": "footerCopyright",
+  "footer.resources": "footerResources",
+  "footer.studying": "footerStudying",
+  "footer.library": "footerLibrary",
+  "footer.databases": "footerDatabases",
 
-    "team.eyebrow": "teamEyebrow",
-    "team.title": "teamTitle",
-    "team.btn": "teamBtn",
+  "team.eyebrow": "teamEyebrow",
+  "team.title": "teamTitle",
+  "team.btn": "teamBtn",
 
-    "projects.area": "projectsArea",
+  "projects.area": "projectsArea",
 };
 
 const LanguageContext = createContext<LanguageContextValue>({} as LanguageContextValue);
@@ -371,7 +399,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [lang, setLang] = useState<Language>("ar");
   const dir = lang === "ar" ? "rtl" : "ltr";
   const isArabic = lang === "ar";
-    const [overrides, setOverrides] = useState<PayloadSiteSettings | null>(null);
+  const [overrides, setOverrides] = useState<PayloadSiteSettings | null>(null);
 
   useEffect(() => {
     document.documentElement.dir = dir;
@@ -383,15 +411,15 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     }
   }, [lang, dir, isArabic]);
 
-    useEffect(() => {
-          let cancelled = false;
-          fetchSiteSettings().then((data) => {
-                  if (!cancelled && data) setOverrides(data);
-          });
-          return () => {
-                  cancelled = true;
-          };
-    }, []);
+  useEffect(() => {
+    let cancelled = false;
+    fetchSiteSettings().then((data) => {
+      if (!cancelled && data) setOverrides(data);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   // Memoised together: every component below this provider consumes the
   // context, so a fresh `t` or a fresh value object on each render would

@@ -174,7 +174,9 @@ function NavItem({ item }: { item: Item }) {
         {label}
         <ChevronDown className="h-3 w-3 shrink-0" />
       </button>
-      <div className={`absolute ${isArabic ? "right-0" : "left-0"} top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 pointer-events-none group-hover:pointer-events-auto`}>
+      <div
+        className={`absolute ${isArabic ? "right-0" : "left-0"} top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 pointer-events-none group-hover:pointer-events-auto`}
+      >
         <div className="min-w-56 bg-card border border-border rounded-md shadow-lg py-2 pointer-events-auto">
           {item.children.map((c) => (
             <Link
@@ -213,7 +215,9 @@ function MobileNav({ open, onNavigate }: { open: boolean; onNavigate: () => void
             {item.children ? (
               <>
                 <button
-                  onClick={() => setExpanded((cur) => (cur === item.labelKey ? null : item.labelKey))}
+                  onClick={() =>
+                    setExpanded((cur) => (cur === item.labelKey ? null : item.labelKey))
+                  }
                   className={[
                     "w-full flex items-center justify-between py-3 font-medium text-foreground/80",
                     isArabic ? "font-arabic text-[18px]" : "text-[17px]",
@@ -222,7 +226,9 @@ function MobileNav({ open, onNavigate }: { open: boolean; onNavigate: () => void
                   {t(item.labelKey)}
                   <ChevronDown
                     className="h-4 w-4 shrink-0 transition-transform duration-200"
-                    style={{ transform: expanded === item.labelKey ? "rotate(180deg)" : "rotate(0deg)" }}
+                    style={{
+                      transform: expanded === item.labelKey ? "rotate(180deg)" : "rotate(0deg)",
+                    }}
                   />
                 </button>
                 <div
@@ -299,11 +305,20 @@ export function SiteHeader() {
           className="grid grid-cols-[minmax(0,_auto)_1fr_auto] items-stretch h-[60px] sm:h-[80px] lg:h-[101px]"
         >
           {/* Logo block fills header height and stays flush to the leading edge */}
-          <Link to="/" className="flex items-stretch shrink-0 min-w-0 h-[60px] sm:h-[80px] lg:h-[101px]">
+          <Link
+            to="/"
+            className="flex items-stretch shrink-0 min-w-0 h-[60px] sm:h-[80px] lg:h-[101px]"
+          >
             <img
               src={logo}
               alt="Dignity Initiative"
-              style={{ height: "100%", width: "auto", display: "block", maxHeight: "100%", objectFit: "contain" }}
+              style={{
+                height: "100%",
+                width: "auto",
+                display: "block",
+                maxHeight: "100%",
+                objectFit: "contain",
+              }}
               className="object-contain"
             />
           </Link>

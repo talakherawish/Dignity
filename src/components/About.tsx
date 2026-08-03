@@ -108,7 +108,9 @@ export function AboutPage({
                     {eyebrow}
                   </div>
                 )}
-                <h1 className="font-serif text-3xl md:text-4xl text-primary tracking-tight">{title}</h1>
+                <h1 className="font-serif text-3xl md:text-4xl text-primary tracking-tight">
+                  {title}
+                </h1>
                 {description && (
                   <p className="mt-3 max-w-2xl mx-auto text-[17px] text-muted-foreground leading-relaxed whitespace-pre-line">
                     {description}
@@ -120,7 +122,9 @@ export function AboutPage({
 
           {/* Intro prose */}
           <section className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
-            <div className={`space-y-5 text-[19px] leading-[1.85] text-foreground/90 ${isArabic ? "text-right" : ""}`}>
+            <div
+              className={`space-y-5 text-[19px] leading-[1.85] text-foreground/90 ${isArabic ? "text-right" : ""}`}
+            >
               {introParagraphs.map((p, i) => (
                 <Reveal key={i} delay={i * 90}>
                   <p
@@ -160,14 +164,24 @@ export function AboutPage({
               <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
                 {leadIn && (
                   <Reveal className="mb-10">
-                    <div className={`flex items-center gap-3 ${isArabic ? "flex-row-reverse text-right" : ""}`}>
-                      <div className="h-5 w-1 rounded-full shrink-0" style={{ background: "var(--brand-cyan)" }} />
-                      <h2 className="font-serif text-xl md:text-2xl text-primary leading-snug">{leadIn}</h2>
+                    <div
+                      className={`flex items-center gap-3 ${isArabic ? "flex-row-reverse text-right" : ""}`}
+                    >
+                      <div
+                        className="h-5 w-1 rounded-full shrink-0"
+                        style={{ background: "var(--brand-cyan)" }}
+                      />
+                      <h2 className="font-serif text-xl md:text-2xl text-primary leading-snug">
+                        {leadIn}
+                      </h2>
                     </div>
                   </Reveal>
                 )}
 
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4" dir={isArabic ? "rtl" : "ltr"}>
+                <div
+                  className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
+                  dir={isArabic ? "rtl" : "ltr"}
+                >
                   {resolvedItems.map((item, i) => (
                     <Reveal key={i} delay={i * 70}>
                       <div className="group h-full rounded-lg border border-border bg-card p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md hover:border-accent/30">
@@ -176,7 +190,9 @@ export function AboutPage({
                             {String(i + 1).padStart(2, "0")}
                           </span>
                         </div>
-                        <p className={`text-[17px] leading-relaxed text-foreground/85 ${isArabic ? "text-right" : ""}`}>
+                        <p
+                          className={`text-[17px] leading-relaxed text-foreground/85 ${isArabic ? "text-right" : ""}`}
+                        >
                           {item}
                         </p>
                       </div>
@@ -186,7 +202,6 @@ export function AboutPage({
               </div>
             </section>
           )}
-
         </div>
       </div>
     </PageLayout>

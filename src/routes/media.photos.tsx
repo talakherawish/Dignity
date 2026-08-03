@@ -19,12 +19,15 @@ function PhotosPage() {
 
   return (
     <PageLayout>
-            <PageHero eyebrow={`${t("media")} — ${t("media.photos")}`} title={t("media.photos")} />
+      <PageHero eyebrow={`${t("media")} — ${t("media.photos")}`} title={t("media.photos")} />
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {isLoading ? (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {[1, 2, 3, 4, 5, 6].map((n) => (
-              <div key={n} className="border border-border rounded-md aspect-video bg-secondary/30 animate-pulse" />
+              <div
+                key={n}
+                className="border border-border rounded-md aspect-video bg-secondary/30 animate-pulse"
+              />
             ))}
           </div>
         ) : items.length === 0 ? (
@@ -36,9 +39,16 @@ function PhotosPage() {
             {items.map((item: PayloadPhoto) => {
               const url = mediaUrl(item.image);
               return (
-                <div key={item.id} className="border border-border rounded-md overflow-hidden bg-card group">
+                <div
+                  key={item.id}
+                  className="border border-border rounded-md overflow-hidden bg-card group"
+                >
                   {url ? (
-                    <img src={url} alt={lang === "ar" ? (item.titleAr ?? item.title) : item.title} className="w-full aspect-video object-cover group-hover:scale-105 transition-transform duration-300" />
+                    <img
+                      src={url}
+                      alt={lang === "ar" ? (item.titleAr ?? item.title) : item.title}
+                      className="w-full aspect-video object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
                   ) : (
                     <div className="w-full aspect-video bg-secondary/40 flex items-center justify-center text-xs text-muted-foreground">
                       {isArabic ? "لا توجد صورة" : "No image"}

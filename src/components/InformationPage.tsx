@@ -2,11 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Download, ExternalLink } from "lucide-react";
 import { PageLayout, PageHero } from "@/components/PageLayout";
 import { useLanguage, type TranslationKey } from "@/contexts/LanguageContext";
-import {
-  fetchInformationByType,
-  mediaUrl,
-  type PayloadInformationItem,
-} from "@/lib/payload";
+import { fetchInformationByType, mediaUrl, type PayloadInformationItem } from "@/lib/payload";
 
 export function InformationPage({
   type,
@@ -34,11 +30,16 @@ export function InformationPage({
         {isLoading ? (
           <div className="space-y-4">
             {[1, 2, 3].map((n) => (
-              <div key={n} className="border border-border rounded-sm h-24 bg-secondary/30 animate-pulse" />
+              <div
+                key={n}
+                className="border border-border rounded-sm h-24 bg-secondary/30 animate-pulse"
+              />
             ))}
           </div>
         ) : items.length === 0 ? (
-          <p className="text-sm text-muted-foreground py-12 text-center">{t("information.empty")}</p>
+          <p className="text-sm text-muted-foreground py-12 text-center">
+            {t("information.empty")}
+          </p>
         ) : (
           <div className="space-y-4" dir={isArabic ? "rtl" : "ltr"}>
             {items.map((item: PayloadInformationItem) => {
@@ -51,7 +52,8 @@ export function InformationPage({
                   <div className="flex-1">
                     <h3
                       className={
-                        "font-serif text-sm text-primary leading-snug mb-2" + (isArabic ? " text-right" : "")
+                        "font-serif text-sm text-primary leading-snug mb-2" +
+                        (isArabic ? " text-right" : "")
                       }
                     >
                       {lang === "ar" ? (item.titleAr ?? item.title) : item.title}
