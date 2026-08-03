@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { fetchSiteSettings, type PayloadSiteSettings } from "@/lib/payload";
 
 export type Language = "en" | "ar";
@@ -152,122 +152,6 @@ const translations = {
     "team.role3b": "Researcher",
     // kept for compatibility
     "team.desc": "Researchers, faculty, and fellows whose work shapes the Dignity initiative.",
-  },
-
-  fr: {
-    // NAV
-    home: "Accueil",
-    about: "À propos",
-    "about.initiative": "À propos de l'initiative",
-    "about.participants": "Participants",
-    "about.faculty": "Corps enseignant",
-    "about.researchers": "Chercheurs",
-    "about.interns": "Stagiaires",
-    "about.students": "Étudiants",
-    "about.visitors": "Visiteurs",
-    "about.partners": "Partenaires",
-    projects: "Projets",
-    "projects.research": "Projets de recherche",
-    activities: "Activités",
-    "activities.seminars": "Séminaires",
-    "activities.conferences": "Conférences",
-    "activities.meetings": "Réunions",
-    "activities.windsor": "Initiative Windsor-Birzeit",
-    media: "Médias & mises à jour",
-    "media.news": "Actualités",
-    "media.announcements": "Annonces",
-    "media.photos": "Photos",
-    "media.clippings": "Revue de presse",
-    // HOME
-    "hero.eyebrow": "Initiative académique",
-    "hero.title": "Faire avancer le savoir au service de la dignité humaine.",
-    "hero.desc": "Dignity réunit des professeurs, chercheurs, étudiants et partenaires pour mener des recherches rigoureuses, favoriser le dialogue et produire des travaux de valeur publique durable.",
-    "hero.btn.about": "À propos de l'initiative",
-    "hero.btn.research": "Nos recherches",
-    "pillar.research": "Recherche",
-    "pillar.research.desc": "Enquête originale à travers les disciplines, de la recherche fondamentale au travail appliqué.",
-    "pillar.dialogue": "Dialogue",
-    "pillar.dialogue.desc": "Séminaires, conférences et réunions qui rassemblent chercheurs et praticiens.",
-    "pillar.partnership": "Partenariat",
-    "pillar.partnership.desc": "Collaboration avec des institutions du monde entier, notamment l'initiative Windsor-Birzeit.",
-    "news.eyebrow": "Dernières nouvelles",
-    "news.title": "Dernières nouvelles et mises à jour",
-    "news.viewAll": "Voir tout →",
-    "news.prev": "Précédent",
-    "news.next": "Suivant",
-    "news.readMore": "Lire la suite",
-    "news.collapse": "Réduire",
-    "news.item1.date": "Date",
-    "news.item1.title": "Titre du premier article",
-    "news.item1.excerpt": "Un bref résumé du premier article apparaîtra ici une fois le contenu ajouté.",
-    "news.item2.date": "Date",
-    "news.item2.title": "Titre du deuxième article",
-    "news.item2.excerpt": "Un bref résumé du deuxième article apparaîtra ici une fois le contenu ajouté.",
-    "news.item3.date": "Date",
-    "news.item3.title": "Titre du troisième article",
-    "news.item3.excerpt": "Un bref résumé du troisième article apparaîtra ici une fois le contenu ajouté.",
-    // PAGE DESCRIPTIONS
-    "page.placeholder": "Cette section est un espace réservé. Remplacez ce texte par le contenu officiel de cette page.",
-    "page.placeholder2": "Vous pouvez ajouter plusieurs paragraphes, listes, images et autres éléments ici une fois le contenu disponible.",
-    "about.page.desc": "Un aperçu de l'initiative Dignity, ses origines et son objectif académique.",
-    "participants.page.desc": "Les chercheurs, étudiants et visiteurs qui forment la communauté Dignity.",
-    "partners.page.desc": "Institutions et organisations qui collaborent avec l'initiative Dignity.",
-    "projects.page.desc": "Projets de recherche actifs et récents menés par les membres de l'initiative Dignity.",
-    "seminars.page.desc": "Informations sur les séminaires organisés par l'initiative Dignity.",
-    "conferences.page.desc": "Informations sur les conférences organisées par l'initiative Dignity.",
-    "meetings.page.desc": "Informations sur les réunions organisées par l'initiative Dignity.",
-    "windsor.page.desc": "Informations sur l'initiative Windsor-Birzeit organisée par l'initiative Dignity.",
-    "news.page.desc": "Dernières nouvelles de l'initiative Dignity.",
-    "announcements.page.desc": "Dernières annonces de l'initiative Dignity.",
-    "photos.page.desc": "Dernières photos de l'initiative Dignity.",
-    "clippings.page.desc": "Dernière revue de presse de l'initiative Dignity.",
-    // PARTICIPANTS
-    "participants.select": "Sélectionnez une catégorie ci-dessus pour voir les participants.",
-    "participants.name": "Nom du participant",
-    "participants.role": "Titre / Rôle",
-    "participants.bio": "Courte biographie. Ajoutez une brève description de la formation et des contributions de ce participant.",
-    "participants.intro.faculty": "Introduction décrivant les membres du corps enseignant qui participent à l'initiative Dignity.",
-    "participants.intro.researchers": "Introduction décrivant les chercheurs qui participent à l'initiative Dignity.",
-    "participants.intro.interns": "Introduction décrivant les stagiaires qui participent à l'initiative Dignity.",
-    "participants.intro.students": "Introduction décrivant les étudiants qui participent à l'initiative Dignity.",
-    "participants.intro.visitors": "Introduction décrivant les visiteurs qui participent à l'initiative Dignity.",
-    // PROJECTS
-    "projects.area": "Domaine de recherche",
-    "projects.placeholder.title": "Titre du projet",
-    "projects.placeholder.desc": "Une courte description du projet, ses objectifs, sa méthodologie et les résultats attendus seront ajoutés ici.",
-    // FOOTER
-    "footer.about": "Une initiative académique dédiée à la recherche, au dialogue et à la dignité humaine.",
-    "footer.contact": "Contact",
-    "footer.university": "Université Birzeit",
-        "footer.pobox": "Salle 5, Bâtiment des études supérieures",
-        "footer.zip": "B.P. 14, Birzeit, Palestine",
-        "footer.phone": "Tél. : +972 (2) 2982169",
-        "footer.fax": "Fax : +972 (2) 2982168",
-        "footer.email": "E-mail : Dignity@birzeit.edu",
-    "footer.subscribe": "S'inscrire à la liste de diffusion",
-    "footer.subscribe.placeholder": "Votre adresse e-mail",
-    "footer.subscribe.btn": "S'inscrire",
-    "footer.disclaimer": "Avertissement",
-    "footer.privacy": "Politique de confidentialité",
-    "footer.sitemap": "Plan du site",
-    "footer.copyright": "Copyright © Institut Muwatin pour la Démocratie et les Droits de l'Homme, 2019–2026.",
-    "footer.resources": "Ressources",
-    "footer.studying": "Matériaux d'étude",
-    "footer.library": "Bibliothèque",
-    "footer.databases": "Bases de données",
-    // TEAM SECTION
-    "team.eyebrow": "L'équipe",
-    "team.title": "Les personnes qui guident notre mission",
-    "team.btn": "Voir tous les participants",
-    "team.viewProfile": "Voir le profil",
-    "team.name": "Dr. Nom ici",
-    "team.role1": "Professeur associé",
-    "team.role1b": "Responsable de recherche",
-    "team.role2": "Maître de conférences",
-    "team.role2b": "Coordinateur de projet",
-    "team.role3": "Maître de conférences",
-    "team.role3b": "Chercheur",
-    "team.desc": "Chercheurs, professeurs et associés dont le travail façonne l'initiative Dignity.",
   },
 
   ar: {
@@ -509,20 +393,28 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
           };
     }, []);
 
-const t = (key: TranslationKey) => {
+  // Memoised together: every component below this provider consumes the
+  // context, so a fresh `t` or a fresh value object on each render would
+  // re-render the entire tree. Both only actually change when the language
+  // switches or the Payload overrides land.
+  const t = useCallback(
+    (key: TranslationKey) => {
       const base = SITE_SETTINGS_KEY_MAP[key];
       if (base && overrides) {
-              const value = overrides[isArabic ? `${base}Ar` : base];
-              if (value) return value;
+        const value = overrides[isArabic ? `${base}Ar` : base];
+        if (value) return value;
       }
       return translations[lang][key];
-};
-
-  return (
-    <LanguageContext.Provider value={{ lang, setLang, t, dir, isArabic }}>
-      {children}
-    </LanguageContext.Provider>
+    },
+    [lang, isArabic, overrides],
   );
+
+  const value = useMemo<LanguageContextValue>(
+    () => ({ lang, setLang, t, dir, isArabic }),
+    [lang, t, dir, isArabic],
+  );
+
+  return <LanguageContext.Provider value={value}>{children}</LanguageContext.Provider>;
 }
 
 export const useLanguage = () => useContext(LanguageContext);

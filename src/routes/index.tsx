@@ -5,7 +5,7 @@ import { ChevronLeft, ChevronRight, X, Mail } from "lucide-react";
 import { PageLayout } from "@/components/PageLayout";
 import officeImg from "@/assets/dignity-office.jpg";
 import { useLanguage, type TranslationKey } from "@/contexts/LanguageContext";
-import { ARTICLES, getField, type Article, type ArticleLang } from "@/data/articles";
+import { ARTICLES, getField, mapPayloadNews } from "@/data/articles";
 import { withItalicQuotes } from "@/lib/text";
 import {
   fetchNews,
@@ -13,8 +13,6 @@ import {
   fetchParticipants,
   formatDate,
   mediaUrl,
-  extractText,
-  type PayloadNews,
   type PayloadAnnouncement,
   type PayloadParticipant,
 } from "@/lib/payload";
@@ -28,23 +26,6 @@ export const Route = createFileRoute("/")({
   }),
   component: Home,
 });
-
-
-// ── Map Payload news item → local Article shape ─────────────────────────────
-function mapPayloadNews(pa: PayloadNews): Article {
-  return {
-    id: pa.id,
-    image: mediaUrl(pa.image) || "",
-    date: { en: formatDate(pa.date, "en"), ar: formatDate(pa.date, "ar"), fr: formatDate(pa.date, "en") },
-    title: { en: pa.title, ar: pa.titleAr ?? pa.title, fr: pa.title },
-    excerpt: { en: pa.excerpt ?? "", ar: pa.excerptAr ?? pa.excerpt ?? "", fr: pa.excerpt ?? "" },
-    body: {
-      en: extractText(pa.content),
-      ar: extractText(pa.contentAr).length ? extractText(pa.contentAr) : extractText(pa.content),
-      fr: extractText(pa.content),
-    },
-  };
-}
 
 type PillarItem = { titleKey: TranslationKey; descKey: TranslationKey; to: string; color: string };
 const PILLARS: PillarItem[] = [
@@ -112,7 +93,7 @@ function NewsCarousel() {
   }, [i, paused, goTo]);
 
   const article = articles[Math.min(i, articles.length - 1)];
-  const l = lang as ArticleLang;
+  const l = lang;
   const fade = {
     opacity: visible ? 1 : 0,
     transition: "opacity 0.24s ease",

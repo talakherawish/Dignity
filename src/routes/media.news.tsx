@@ -4,24 +4,9 @@ import { useQuery } from "@tanstack/react-query";
 import { ChevronDown } from "lucide-react";
 import { PageLayout } from "@/components/PageLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { ARTICLES, getField, getBody, type Article, type ArticleLang } from "@/data/articles";
-import { fetchNews, formatDate, mediaUrl, extractText, type PayloadNews } from "@/lib/payload";
+import { ARTICLES, getField, getBody, mapPayloadNews, type Article } from "@/data/articles";
+import { fetchNews } from "@/lib/payload";
 import { withItalicQuotes } from "@/lib/text";
-
-function mapPayloadNews(pa: PayloadNews): Article {
-  return {
-    id: pa.id,
-    image: mediaUrl(pa.image) || "",
-    date: { en: formatDate(pa.date, "en"), ar: formatDate(pa.date, "ar"), fr: formatDate(pa.date, "en") },
-    title: { en: pa.title, ar: pa.titleAr ?? pa.title, fr: pa.title },
-    excerpt: { en: pa.excerpt ?? "", ar: pa.excerptAr ?? pa.excerpt ?? "", fr: pa.excerpt ?? "" },
-    body: {
-      en: extractText(pa.content),
-      ar: extractText(pa.contentAr).length ? extractText(pa.contentAr) : extractText(pa.content),
-      fr: extractText(pa.content),
-    },
-  };
-}
 
 export const Route = createFileRoute("/media/news")({
   head: () => ({ meta: [{ title: "News — Dignity" }] }),
@@ -31,7 +16,7 @@ export const Route = createFileRoute("/media/news")({
 function ArticleCard({ article }: { article: Article }) {
   const { t, lang, isArabic } = useLanguage();
   const [expanded, setExpanded] = useState(false);
-  const l = lang as ArticleLang;
+  const l = lang;
 
   return (
     <article className="border border-border rounded-sm overflow-hidden bg-card hover:shadow-md transition-shadow duration-200">

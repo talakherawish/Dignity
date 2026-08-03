@@ -14,13 +14,27 @@ export const Route = createFileRoute("/projects/research/")({
   component: ResearchPage,
 });
 
-/** Count of outputs attached to a research area, for the card's footer. */
+/**
+ * Count of outputs attached to a research area, for the card's footer.
+ *
+ * Publications arrive split across one field per type (there is no combined
+ * `relatedPublications` on the collection), so every type has to be summed —
+ * counting only clippings and photos undercounts every area that has any
+ * publication attached.
+ */
 function outputCount(item: PayloadResearchActivity): number {
-  return (
-    (item.relatedPublications?.length ?? 0) +
-    (item.relatedClippings?.length ?? 0) +
-    (item.relatedPhotos?.length ?? 0)
-  );
+  const groups = [
+    item.relatedBooks,
+    item.relatedPapers,
+    item.relatedReports,
+    item.relatedBrochures,
+    item.relatedTheses,
+    item.relatedAudiovisual,
+    item.relatedPosters,
+    item.relatedClippings,
+    item.relatedPhotos,
+  ];
+  return groups.reduce((total, group) => total + (group?.length ?? 0), 0);
 }
 
 function ResearchPage() {

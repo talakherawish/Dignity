@@ -1,1 +1,0 @@
-// This file is deprecated and no longer used. Customizable page text has been removed.

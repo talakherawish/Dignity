@@ -2,6 +2,9 @@ node_modules
 dist
 .output
 .vinxi
+.tanstack
+# Separate Payload/Next project with its own tooling — format it from there.
+dignity-backend
 pnpm-lock.yaml
 package-lock.json
 bun.lock

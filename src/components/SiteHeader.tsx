@@ -4,7 +4,9 @@ import { useState, useRef } from "react";
 import logo from "@/assets/dignity-logo.png";
 import { type Language, type TranslationKey, useLanguage } from "@/contexts/LanguageContext";
 
-type Item = { labelKey: TranslationKey; to?: string; hash?: string; children?: Item[] };
+/** A top-level nav entry, either a direct link or a single dropdown of links. */
+type Item = { labelKey: TranslationKey; to?: string; children?: Leaf[] };
+type Leaf = { labelKey: TranslationKey; to: string };
 
 const NAV: Item[] = [
   {
@@ -174,49 +176,18 @@ function NavItem({ item }: { item: Item }) {
       </button>
       <div className={`absolute ${isArabic ? "right-0" : "left-0"} top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 pointer-events-none group-hover:pointer-events-auto`}>
         <div className="min-w-56 bg-card border border-border rounded-md shadow-lg py-2 pointer-events-auto">
-          {item.children.map((c) =>
-            c.children ? (
-              <div key={c.labelKey} className="relative group/sub">
-                <button
-                  className={[
-                    "w-full text-left px-4 py-2 text-sm text-foreground/80 hover:bg-secondary hover:text-accent flex items-center justify-between",
-                    isArabic ? "font-arabic text-right flex-row-reverse" : "",
-                  ].join(" ")}
-                >
-                  {t(c.labelKey)}
-                  <ChevronDown className="h-3 w-3 -rotate-90 shrink-0" />
-                </button>
-                <div className={`absolute ${isArabic ? "right-full -mr-1" : "left-full pl-1"} top-0 opacity-0 invisible group-hover/sub:opacity-100 group-hover/sub:visible transition-all z-[60] pointer-events-none group-hover/sub:pointer-events-auto`}>
-                  <div className="min-w-48 bg-card border border-border rounded-md shadow-lg py-2 pointer-events-auto">
-                    {c.children.map((s) => (
-                      <Link
-                        key={s.labelKey}
-                        to={s.to!}
-                        className={[
-                          "block px-4 py-2 text-sm text-foreground/80 hover:bg-secondary hover:text-accent",
-                          isArabic ? "font-arabic text-right" : "",
-                        ].join(" ")}
-                      >
-                        {t(s.labelKey)}
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <Link
-                key={c.labelKey}
-                to={c.to!}
-                hash={c.hash}
-                className={[
-                  "block px-4 py-2 text-sm text-foreground/80 hover:bg-secondary hover:text-accent",
-                  isArabic ? "font-arabic text-right" : "",
-                ].join(" ")}
-              >
-                {t(c.labelKey)}
-              </Link>
-            ),
-          )}
+          {item.children.map((c) => (
+            <Link
+              key={c.labelKey}
+              to={c.to}
+              className={[
+                "block px-4 py-2 text-sm text-foreground/80 hover:bg-secondary hover:text-accent",
+                isArabic ? "font-arabic text-right" : "",
+              ].join(" ")}
+            >
+              {t(c.labelKey)}
+            </Link>
+          ))}
         </div>
       </div>
     </div>
@@ -262,37 +233,16 @@ function MobileNav({ open, onNavigate }: { open: boolean; onNavigate: () => void
                   }}
                 >
                   <div className={`pb-2 flex flex-col gap-0.5 ${isArabic ? "pr-3" : "pl-3"}`}>
-                    {item.children.map((c) =>
-                      c.children ? (
-                        <div key={c.labelKey} className="py-1">
-                          <div className="text-xs uppercase tracking-wide text-muted-foreground/70 py-1">
-                            {t(c.labelKey)}
-                          </div>
-                          <div className={isArabic ? "pr-3" : "pl-3"}>
-                            {c.children.map((s) => (
-                              <Link
-                                key={s.labelKey}
-                                to={s.to!}
-                                onClick={onNavigate}
-                                className="block py-2 text-sm text-foreground/75 hover:text-accent"
-                              >
-                                {t(s.labelKey)}
-                              </Link>
-                            ))}
-                          </div>
-                        </div>
-                      ) : (
-                        <Link
-                          key={c.labelKey}
-                          to={c.to!}
-                          hash={c.hash}
-                          onClick={onNavigate}
-                          className="block py-2 text-sm text-foreground/75 hover:text-accent"
-                        >
-                          {t(c.labelKey)}
-                        </Link>
-                      ),
-                    )}
+                    {item.children.map((c) => (
+                      <Link
+                        key={c.labelKey}
+                        to={c.to}
+                        onClick={onNavigate}
+                        className="block py-2 text-sm text-foreground/75 hover:text-accent"
+                      >
+                        {t(c.labelKey)}
+                      </Link>
+                    ))}
                   </div>
                 </div>
               </>

@@ -6,7 +6,10 @@ import reactRefresh from "eslint-plugin-react-refresh";
 import tseslint from "typescript-eslint";
 
 export default tseslint.config(
-  { ignores: ["dist", ".output", ".vinxi"] },
+  // dignity-backend is a separate Payload/Next project with its own eslint
+  // config — without it here, `npm run lint` walks the whole backend tree and
+  // takes minutes instead of seconds. Lint it from inside that directory.
+  { ignores: ["dist", ".output", ".vinxi", ".tanstack", "dignity-backend"] },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ["**/*.{ts,tsx}"],
@@ -33,7 +36,17 @@ export default tseslint.config(
         },
       ],
       "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
-      "@typescript-eslint/no-unused-vars": "off",
+      // On, so dead imports/locals surface in `npm run lint` instead of
+      // accumulating. Leading underscore is the opt-out for deliberate
+      // placeholders (unused catch bindings, positional callback args).
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+          caughtErrorsIgnorePattern: "^_",
+        },
+      ],
     },
   },
   eslintPluginPrettier,

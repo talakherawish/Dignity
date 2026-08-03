@@ -2,15 +2,19 @@ import kantImg from "@/assets/kant.jpg";
 import relpImg from "@/assets/relp.jpg";
 import article3Img from "@/assets/article3.jpg";
 
-export type ArticleLang = "en" | "ar" | "fr";
+import type { Language } from "@/contexts/LanguageContext";
+import { extractText, formatDate, mediaUrl, type PayloadNews } from "@/lib/payload";
+
+/** The languages an article carries. Mirrors the site's active language set. */
+export type ArticleLang = Language;
 
 export type Article = {
   id: string;
   image: string;
-  date: { en: string; ar: string; fr: string };
-  title: { en: string; ar: string; fr: string };
-  excerpt: { en: string; ar: string; fr: string };
-  body: { en: string[]; ar: string[]; fr: string[] };
+  date: Record<ArticleLang, string>;
+  title: Record<ArticleLang, string>;
+  excerpt: Record<ArticleLang, string>;
+  body: Record<ArticleLang, string[]>;
 };
 
 export const ARTICLES: Article[] = [
@@ -20,17 +24,14 @@ export const ARTICLES: Article[] = [
     date: {
       en: "January 14, 2023",
       ar: "١٤ كانون الثاني/يناير ٢٠٢٣",
-      fr: "14 janvier 2023",
     },
     title: {
       en: 'Discussion of Raef Zreik\'s Book — "Kant\'s Struggle for Independence"',
       ar: 'نقاش كتاب رائف زريق / "كفاح كانط من أجل الاستقلالية"',
-      fr: 'Discussion du livre de Raef Zreik — "La lutte de Kant pour l\'indépendance"',
     },
     excerpt: {
       en: "The Karama Research Initiative at Birzeit University hosted philosopher Raef Zreik to present and discuss his latest book, published by Lexington Publishing House.",
       ar: "استضافت مبادرة كرامة البحثية في جامعة بيرزيت رائف زريق لعرض ومناقشة كتابه الأخير الصادر عن دار نشر لكسنجتون.",
-      fr: "L'Initiative Karama à l'Université Birzeit a accueilli le philosophe Raef Zreik pour présenter et discuter son dernier livre, publié par Lexington Publishing House.",
     },
     body: {
       en: [
@@ -55,14 +56,6 @@ export const ARTICLES: Article[] = [
         "لخص زريق النقاش بالقول إنه بالإمكان تشبيك العوالم الأربعة التي تحدث عنها في كتابه، وذلك من خلال استيعابها بشكل كامل، فالظاهرة توجد ككل، ولا وجود لهذه التقسيمات في المعرفة أو الحياة، فنحن نراها في الجامعة فقط!",
         "رائف زريق مختص في فلسفة الحق والفلسفة السياسية ويحمل درجة الدكتوراه في القانون من جامعة هارفارد.",
       ],
-      fr: [
-        "L'Initiative Karama à l'Université Birzeit a accueilli le philosophe Raef Zreik le samedi 14 janvier 2023, pour présenter et discuter son dernier livre — publié à mi-janvier par Lexington Publishing House — intitulé La lutte de Kant pour l'indépendance.",
-        "La séance a été ouverte par le directeur de l'Initiative Karama, Mudhar Qassas, qui a accueilli l'auteur et souligné l'importance du travail de Zreik, non seulement en raison du statut de Kant, mais parce que les questions de droit, de justice, d'éthique et de légitimité abordées dans le livre sont toutes cruciales dans l'ère de transition époquale que traverse le monde aujourd'hui.",
-        "Zreik a commencé par une présentation générale du livre, expliquant qu'il est le résultat d'une lecture soutenue et intensive des textes kantiens à différentes périodes de la vie de Kant, dans une tentative de comprendre les quatre mondes qui occupent ses écrits: le bonheur, la vertu (l'éthique), la loi et la justice.",
-        "La thèse de Zreik est que le fait que Kant confère l'autonomie à chacun de ces concepts — les traitant comme des mondes séparés — découle de la centralité de l'autonomie dans la méthodologie générale de Kant. L'autonomie kantienne est ce qui unit et sépare simultanément le subjectif de l'objectif, la liberté de la nécessité.",
-        "Pour Zreik, le souverain bien chez Kant est lorsque la vertu rencontre le bonheur — lorsque notre degré de bonheur est proportionnel au bien que nous accomplissons dans nos vies. L'éthique a la priorité sur le bonheur chez Kant, transformant la question en: \"Est-ce que vivre dans une société éthique signifie vivre dans une société juste?\"",
-        "Raef Zreik est spécialiste de la philosophie du droit et de la philosophie politique, titulaire d'un doctorat en droit de l'Université Harvard.",
-      ],
     },
   },
 
@@ -72,17 +65,14 @@ export const ARTICLES: Article[] = [
     date: {
       en: "November 21, 2022",
       ar: "٢١ تشرين الثاني/نوفمبر ٢٠٢٢",
-      fr: "21 novembre 2022",
     },
     title: {
       en: "Launch of the Exploratory Version of the Research Ethics Learning Portal",
       ar: "إطلاق النسخة الاستكشافية من بوابة تعلّم أخلاق البحث العلمي",
-      fr: "Lancement de la version exploratoire du portail d'apprentissage de l'éthique de la recherche",
     },
     excerpt: {
       en: "The Karama Initiative has launched an interactive Arabic-language learning portal dedicated to research ethics — the first of its kind in the Arab world. We invite colleagues and friends to explore the platform.",
       ar: "أطلقت مبادرة كرامة بوابة تعلّم تفاعلية باللغة العربية مخصصة لأخلاق البحث العلمي، وهي الأولى من نوعها في العالم العربي.",
-      fr: "L'Initiative Karama a lancé un portail d'apprentissage interactif en langue arabe dédié à l'éthique de la recherche — le premier du genre dans le monde arabe.",
     },
     body: {
       en: [
@@ -101,13 +91,6 @@ export const ARTICLES: Article[] = [
         "تقدّم البوابة مساقا تفاعليا حول المبادئ الأخلاقية الناظمة للبحث العلمي، وتحتوي على سبعة وحدات تعلّمية تعالج قضايا متنوعة، مثل عرض المبادئ الأخلاقية الناظمة للبحث العلمي، وآليات ضمان العدالة والمساواة في العملية البحثية، وقضايا السرية والخصوصية، وآليات مقترحة لتقييم جدوى البحث العلمي. توظّف البوابة في الوحدات السبعة مجموعة من الحالات التعلّمية من حقول معرفية متعددة: العلوم الاجتماعية والإنسانية، والهندسة والتكنولوجيا، والعلوم الطبية والطبيعية.",
         "البوابة متاحة حاليا باللغة العربية، وستتم إضافة الترجمة الإنجليزية إليها في المستقبل القريب.",
       ],
-      fr: [
-        "Chers collègues et amis,",
-        "Nous vous invitons à explorer la version exploratoire du portail d'apprentissage de l'éthique de la recherche récemment lancé par l'Initiative Karama. Nous avons besoin de vos retours et suggestions, et nous espérons que vous trouverez le temps de vivre l'expérience d'apprentissage interactif qu'il offre.",
-        "La version exploratoire contient inévitablement quelques erreurs. Une fenêtre de retour a été placée en bas à droite du site pour les commentaires sur le contenu, le design et les aspects techniques.",
-        "Le portail propose un cours interactif sur les principes éthiques régissant la recherche scientifique, contenant sept modules d'apprentissage qui abordent: les principes éthiques régissant la recherche, les mécanismes d'équité, les questions de confidentialité et de vie privée, et les mécanismes d'évaluation de la faisabilité de la recherche.",
-        "Le portail est actuellement disponible en arabe; une traduction en anglais sera ajoutée prochainement.",
-      ],
     },
   },
 
@@ -117,17 +100,14 @@ export const ARTICLES: Article[] = [
     date: {
       en: "March 12, 2022",
       ar: "١٢ آذار/مارس ٢٠٢٢",
-      fr: "12 mars 2022",
     },
     title: {
       en: 'A Dialogue on the Future of Revolutionary Heritage After "The Atrocity"',
       ar: 'حوارية حول مستقبل التراث الثوري بعد "الفظاعة"',
-      fr: 'Un dialogue sur l\'avenir du patrimoine révolutionnaire après "L\'Atrocité"',
     },
     excerpt: {
       en: "The Karama Initiative at Birzeit University organized a dialogue with Syrian writer Yassin al-Haj Saleh on the future of revolutionary heritage and the Arab world's experience of atrocity and resilience.",
       ar: "نظمت مبادرة كرامة في جامعة بيرزيت حوارية مع الكاتب السوري ياسين الحاج صالح حول مستقبل التراث الثوري في مواجهة الفظاعة.",
-      fr: "L'Initiative Karama à l'Université Birzeit a organisé un dialogue avec l'écrivain syrien Yassin al-Haj Saleh sur l'avenir du patrimoine révolutionnaire face à l'atrocité.",
     },
     body: {
       en: [
@@ -148,24 +128,37 @@ export const ARTICLES: Article[] = [
         "جمعت الحوارية حضورا عربيا مهتما بالعدالة والتحرر والكرامة والأمل والمقاومة والأسر، وفرض السجن نفسه بقوة في النقاش باعتباره موضوع وحقيقة، وتجربة مريرة، واشترك فيها الفلسطينيون والسوريون. وعقب ياسين نهاية اللقاء: \"نحنا ما بتجمعنا قضية العدالة والتحرر فقط، نحنا زملاء سجن، وبالتعبير السوري 'خريجين حبوس'!\"",
         "يشار إلى أن \"كرامة\" هي مبادرة بحثية في جامعة بيرزيت تهدف إلى تعزيز إنتاج المعرفة حول الكرامة الإنسانية وما يسهم في صونها، مستخدمة نهج فلسفة الممارسة.",
       ],
-      fr: [
-        "L'Initiative Karama à l'Université Birzeit a organisé un dialogue intitulé \"L'avenir du patrimoine révolutionnaire après l'ère de l'atrocité\" avec l'écrivain syrien Yassin al-Haj Saleh, le soir du samedi 12 mars 2022, via l'espace numérique.",
-        "Le dialogue a été ouvert par le directeur de l'Initiative Karama, Dr. Mudhar Qassas, qui a noté qu'il se tient à une époque où les guerres, la mort et la répression se multiplient. Il a soutenu que combattre le sentiment d'impuissance et la perte d'espoir nécessite de retrouver des modèles qui rendent l'espoir soutenu par une vision claire, constituant un fondement pour résister à la ruine et à l'humiliation.",
-        "En parlant de l'ère de l'atrocité, Yassin al-Haj Saleh a évoqué son dernier livre, dans lequel il aborde les répercussions des atrocités dans les prisons et au-delà — l'humiliation, l'impuissance et la dégradation de la dignité.",
-        "Dans la deuxième partie du dialogue, une discussion s'est développée avec les participants autour des horizons de l'action révolutionnaire et émancipatrice, et des politiques de solidarité qui pourraient restaurer l'éclat des mouvements révolutionnaires à l'échelle universelle.",
-        "Le dialogue a réuni un public arabe intéressé par la justice, la libération, la dignité et la résistance. La prison s'est imposée avec force dans la discussion comme réalité amère partagée par les Palestiniens et les Syriens.",
-      ],
     },
   },
 ];
 
-/** Pick the localized field; falls back to English for unsupported languages. */
+/**
+ * Adapt a Payload news entry to the local Article shape, so the homepage
+ * carousel and the news listing can render CMS entries and the built-in
+ * ARTICLES fallback through exactly the same components.
+ */
+export function mapPayloadNews(pa: PayloadNews): Article {
+  const arabicBody = extractText(pa.contentAr);
+  return {
+    id: pa.id,
+    image: mediaUrl(pa.image) || "",
+    date: { en: formatDate(pa.date, "en"), ar: formatDate(pa.date, "ar") },
+    title: { en: pa.title, ar: pa.titleAr ?? pa.title },
+    excerpt: { en: pa.excerpt ?? "", ar: pa.excerptAr ?? pa.excerpt ?? "" },
+    body: {
+      en: extractText(pa.content),
+      ar: arabicBody.length ? arabicBody : extractText(pa.content),
+    },
+  };
+}
+
+/** Pick the localized field; falls back to English if the translation is blank. */
 export function getField(
   article: Article,
   field: "date" | "title" | "excerpt",
   lang: ArticleLang,
 ): string {
-  return article[field][lang] ?? article[field].en;
+  return article[field][lang] || article[field].en;
 }
 
 export function getBody(article: Article, lang: ArticleLang): string[] {
