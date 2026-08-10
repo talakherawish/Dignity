@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { ChevronDown, Menu, Search, X } from "lucide-react";
-import { useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import logo from "@/assets/dignity-logo.png";
 import { type Language, type TranslationKey, useLanguage } from "@/contexts/LanguageContext";
 
@@ -57,62 +57,74 @@ const LANG_OPTIONS: { code: Language; label: string; ariaLabel: string }[] = [
   { code: "ar", label: "ع", ariaLabel: "العربية" },
 ];
 
-function SearchBar() {
+/** The icon in the actions cluster. Owns no state — the panel below does. */
+function SearchToggle({ open, onToggle }: { open: boolean; onToggle: () => void }) {
+  return (
+    <button
+      onClick={onToggle}
+      aria-label={open ? "Close search" : "Open search"}
+      aria-expanded={open}
+      aria-controls="site-search-panel"
+      className="p-2 text-muted-foreground hover:text-accent transition-colors"
+    >
+      {open ? <X className="h-4 w-4" /> : <Search className="h-4 w-4" />}
+    </button>
+  );
+}
+
+/**
+ * The search field, in its own strip beneath the header row.
+ *
+ * It used to be absolutely positioned next to the icon with "zero layout
+ * impact", which is precisely why it kept covering things: out of flow and
+ * anchored to the actions edge, a 192px box lands on whatever occupies that
+ * strip. That was the tail of the centred nav on desktop — "Information" was
+ * fully hidden at 1024px in English, "معلومات" in Arabic — and the logo on
+ * mobile. Tuning the offsets only moved the collision to a different width.
+ *
+ * Giving the field its own full-width row means there is nothing beside it to
+ * cover, at any viewport and in either direction.
+ */
+function SearchPanel({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { isArabic } = useLanguage();
-  const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
 
-  const handleOpen = () => {
-    setOpen(true);
-    setTimeout(() => inputRef.current?.focus(), 50);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-    setQuery("");
-  };
+  useEffect(() => {
+    if (open) inputRef.current?.focus();
+    else setQuery("");
+  }, [open]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!query.trim()) return;
     navigate({ to: "/search", search: { q: query.trim() } });
-    handleClose();
+    onClose();
   };
 
-  return (
-    <div className="relative flex items-center">
-      {/* Search icon — always in layout, never moves */}
-      <button
-        onClick={open ? handleClose : handleOpen}
-        aria-label={open ? "Close search" : "Open search"}
-        className="p-2 text-muted-foreground hover:text-accent transition-colors"
-      >
-        {open ? <X className="h-4 w-4" /> : <Search className="h-4 w-4" />}
-      </button>
+  if (!open) return null;
 
-      {/* Input overlays absolutely — zero layout impact.
-          Anchored to the side that has open header space to grow into:
-          in Arabic the search icon sits on the header's left edge, so the
-          input expands rightward; in English it sits on the right edge, so
-          it expands leftward. */}
-      {open && (
-        <form
-          onSubmit={handleSubmit}
-          className={`absolute ${isArabic ? "left-6 sm:left-8" : "right-6 sm:right-8"} top-1/2 -translate-y-1/2 z-50`}
-        >
-          <input
-            ref={inputRef}
-            type="text"
-            dir={isArabic ? "rtl" : "ltr"}
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder={isArabic ? "ابحث..." : "Search..."}
-            className={`w-28 sm:w-40 lg:w-48 px-3 sm:px-3.5 py-1.5 sm:py-2 border border-border rounded-full bg-background shadow-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-accent transition-all text-xs sm:text-sm ${isArabic ? "font-arabic text-[15px] sm:text-[17px] text-right" : ""}`}
-          />
-        </form>
-      )}
+  return (
+    <div id="site-search-panel" className="border-t border-border bg-background">
+      <form
+        onSubmit={handleSubmit}
+        dir={isArabic ? "rtl" : "ltr"}
+        className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-3"
+      >
+        <input
+          ref={inputRef}
+          type="text"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          onKeyDown={(e) => e.key === "Escape" && onClose()}
+          placeholder={isArabic ? "ابحث..." : "Search..."}
+          aria-label={isArabic ? "ابحث" : "Search"}
+          className={`w-full px-4 py-2 border border-border rounded-full bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-accent transition-colors text-sm ${
+            isArabic ? "font-arabic text-[15px] sm:text-[17px] text-right" : ""
+          }`}
+        />
+      </form>
     </div>
   );
 }
@@ -274,6 +286,7 @@ function MobileNav({ open, onNavigate }: { open: boolean; onNavigate: () => void
 export function SiteHeader() {
   const { isArabic } = useLanguage();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
 
   return (
     <header className="sticky top-0 z-40 bg-background border-b border-border">
@@ -332,7 +345,7 @@ export function SiteHeader() {
 
           {/* Search + Language switcher + mobile menu toggle — vertically centered */}
           <div className="self-center pe-2 sm:pe-4 lg:pe-8 flex items-center gap-1 sm:gap-2 lg:gap-3 shrink-0">
-            <SearchBar />
+            <SearchToggle open={searchOpen} onToggle={() => setSearchOpen((o) => !o)} />
             <LanguageSwitcher />
             <button
               onClick={() => setMobileOpen((o) => !o)}
@@ -345,6 +358,11 @@ export function SiteHeader() {
           </div>
         </div>
       </div>
+
+      {/* Outside the row wrapper above: that wrapper is overflow-hidden below
+          lg to stop the wide logo forcing horizontal scroll, and the panel
+          must not be clipped by it. */}
+      <SearchPanel open={searchOpen} onClose={() => setSearchOpen(false)} />
 
       <MobileNav open={mobileOpen} onNavigate={() => setMobileOpen(false)} />
     </header>

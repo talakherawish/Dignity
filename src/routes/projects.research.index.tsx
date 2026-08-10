@@ -3,7 +3,13 @@ import { useQuery } from "@tanstack/react-query";
 import { ArrowRight } from "lucide-react";
 import { PageLayout, PageHero } from "@/components/PageLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { fetchResearch, extractText, mediaUrl, type PayloadResearchActivity } from "@/lib/payload";
+import {
+  fetchResearch,
+  extractText,
+  mediaUrl,
+  populated,
+  type PayloadResearchActivity,
+} from "@/lib/payload";
 export const Route = createFileRoute("/projects/research/")({
   head: () => ({ meta: [{ title: "Research — Dignity" }] }),
   component: ResearchPage,
@@ -29,7 +35,9 @@ function outputCount(item: PayloadResearchActivity): number {
     item.relatedClippings,
     item.relatedPhotos,
   ];
-  return groups.reduce((total, group) => total + (group?.length ?? 0), 0);
+  // `populated` drops references whose document has been deleted; counting the
+  // raw array instead promised outputs the detail page cannot render.
+  return groups.reduce((total, group) => total + populated(group).length, 0);
 }
 
 function ResearchPage() {

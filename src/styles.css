@@ -28,6 +28,16 @@
  * without inflating the layout around it.
  */
 @theme {
+  /*
+   * One typeface site-wide, Arabic and English alike. Times New Roman ships
+   * with an Arabic range on Windows and macOS, so the same stack covers both
+   * scripts; the fallbacks are the classic Arabic serifs for machines whose
+   * Times build is Latin-only. font-sans and font-serif both resolve here on
+   * purpose — the existing markup uses both classes and they must not diverge.
+   */
+  --font-sans: 'Times New Roman', 'Traditional Arabic', 'Simplified Arabic', Times, serif;
+  --font-serif: 'Times New Roman', 'Traditional Arabic', 'Simplified Arabic', Times, serif;
+
   --text-xs: 0.8125rem;          /* 13px */
   --text-xs--line-height: 1.15rem;
   --text-sm: 1rem;               /* 16px */
@@ -178,6 +188,7 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+    font-family: var(--font-sans);
   }
 }
 
@@ -196,26 +207,20 @@
 }
 
 /* ── Arabic typography ─────────────────────────────────────────────────────
-   Fall back to system fonts for Arabic text. No custom font import to avoid
-   slow loading. Uses system-native Arabic fonts which are faster.
+   Arabic runs in the same Times New Roman stack as English — see --font-sans
+   above. Only the metrics differ: Arabic headings need a little more leading
+   than the Latin ones to keep descenders and diacritics clear.
    ────────────────────────────────────────────────────────────────────────── */
-
-html.lang-ar body,
-html.lang-ar *:not(.font-serif):not([class*="font-serif"]) {
-  font-family: 'Noto Sans Arabic', 'Segoe UI', system-ui, sans-serif;
-}
 
 html.lang-ar h1,
 html.lang-ar h2,
 html.lang-ar h3,
 html.lang-ar h4 {
-  font-family: 'Noto Sans Arabic', 'Segoe UI', system-ui, sans-serif;
-  font-weight: 500;
   line-height: 1.35;
 }
 
 .font-arabic {
-  font-family: 'Noto Sans Arabic', 'Segoe UI', system-ui, sans-serif;
+  font-family: var(--font-sans);
 }
 
 /* ── Arabic-mode fixes ────────────────────────────────────────────── */
@@ -230,10 +235,9 @@ html.lang-ar .announcements-grid {
   direction: rtl;
 }
 
-/* Flip carousel chevrons in Arabic */
-html.lang-ar .carousel-prev svg {
-  transform: scaleX(-1);
-}
-html.lang-ar .carousel-next svg {
-  transform: scaleX(-1);
-}
+/* The news carousel's chevrons used to be mirrored here in Arabic, to undo the
+   fact that the RTL flex row had already put the previous button on the right.
+   The component now holds that control strip in LTR order (see NewsCarousel),
+   so ChevronLeft sits on the left and points left with nothing to correct —
+   and the two cancelling flips that made the arrows disagree with the slide
+   dots are both gone. */

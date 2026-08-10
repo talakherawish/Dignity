@@ -13,7 +13,6 @@ export const Research: CollectionConfig = {
   slug: 'research',
   admin: {
     group: 'Activities',
-    position: 1,
     useAsTitle: 'title',
     defaultColumns: ['title', 'slug', 'status', 'updatedAt'],
     description:
@@ -101,76 +100,54 @@ export const Research: CollectionConfig = {
     {
       name: 'relatedBooks',
       type: 'relationship',
-      relationTo: 'publications-items',
+      relationTo: 'books',
       hasMany: true,
       label: 'Books from this research',
       admin: {
         description: 'Select existing books or add new ones.',
-        condition: (data) => true,
-      },
-      filterOptions: {
-        type: { equals: 'books' },
       },
     },
     {
       name: 'relatedPapers',
       type: 'relationship',
-      relationTo: 'publications-items',
+      relationTo: 'papers',
       hasMany: true,
       label: 'Papers from this research',
-      filterOptions: {
-        type: { equals: 'papers' },
-      },
     },
     {
       name: 'relatedReports',
       type: 'relationship',
-      relationTo: 'publications-items',
+      relationTo: 'reports',
       hasMany: true,
       label: 'Reports from this research',
-      filterOptions: {
-        type: { equals: 'reports' },
-      },
     },
     {
       name: 'relatedBrochures',
       type: 'relationship',
-      relationTo: 'publications-items',
+      relationTo: 'brochures',
       hasMany: true,
       label: 'Brochures from this research',
-      filterOptions: {
-        type: { equals: 'brochures' },
-      },
     },
     {
       name: 'relatedTheses',
       type: 'relationship',
-      relationTo: 'publications-items',
+      relationTo: 'theses',
       hasMany: true,
       label: 'Theses from this research',
-      filterOptions: {
-        type: { equals: 'theses' },
-      },
     },
     {
       name: 'relatedAudiovisual',
       type: 'relationship',
-      relationTo: 'publications-items',
+      relationTo: 'audiovisual',
       hasMany: true,
       label: 'Audiovisual from this research',
-      filterOptions: {
-        type: { equals: 'audiovisual' },
-      },
     },
     {
       name: 'relatedPosters',
       type: 'relationship',
-      relationTo: 'publications-items',
+      relationTo: 'posters',
       hasMany: true,
       label: 'Posters from this research',
-      filterOptions: {
-        type: { equals: 'posters' },
-      },
     },
     {
       name: 'relatedClippings',

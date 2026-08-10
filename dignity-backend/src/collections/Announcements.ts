@@ -4,7 +4,6 @@ export const Announcements: CollectionConfig = {
   slug: 'announcements',
   admin: {
     group: 'About the Dignity Initiative',
-    position: 4,
     useAsTitle: 'title',
     defaultColumns: ['title', 'date', 'status'],
     description: 'Shows on the website under About the Dignity Initiative → Announcements. Add a new entry here for each announcement.',

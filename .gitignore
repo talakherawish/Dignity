@@ -33,3 +33,18 @@ dist-ssr
 
 # Private progress log
 PROGRESS.md
+
+# Secrets — never commit these
+dignity_key
+dignity_key.pub
+*.pem
+*.key
+.env
+.env.*
+!.env.example
+
+# Build artifacts / deploy bundles (frontend.zip is ~158MB, over GitHub's limit)
+frontend.zip
+frontend.tar.gz
+*.zip
+*.tar.gz

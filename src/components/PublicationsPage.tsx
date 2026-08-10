@@ -3,11 +3,12 @@ import { Download, FileText, Play } from "lucide-react";
 import { PageLayout, PageHero } from "@/components/PageLayout";
 import { useLanguage, type TranslationKey } from "@/contexts/LanguageContext";
 import {
-  fetchPublicationsByType,
+  fetchPublications,
   formatDate,
   mediaUrl,
   youtubeThumbnail,
   youtubeThumbnailFallback,
+  type PublicationCollection,
   type PayloadPublication,
 } from "@/lib/payload";
 import { withItalicQuotes } from "@/lib/text";
@@ -60,14 +61,14 @@ export function PublicationsPage({
   titleKey,
   breadcrumb,
 }: {
-  type: PayloadPublication["type"];
+  type: PublicationCollection;
   titleKey: TranslationKey;
   breadcrumb?: string;
 }) {
   const { t, lang, isArabic } = useLanguage();
   const { data: payloadItems = [], isLoading } = useQuery({
     queryKey: ["publications", type],
-    queryFn: () => fetchPublicationsByType(type),
+    queryFn: () => fetchPublications(type),
     staleTime: 5 * 60 * 1000,
   });
 

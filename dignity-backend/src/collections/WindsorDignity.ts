@@ -2,9 +2,14 @@ import type { CollectionConfig } from 'payload'
 
 export const WindsorDignity: CollectionConfig = {
   slug: 'windsor-dignity',
+  // Without these Payload titles the sidebar entry from the slug — "Windsor
+  // Dignities" — where the website's menu says the initiative's full name.
+  labels: {
+    singular: 'The Windsor Birzeit Dignity Initiative',
+    plural: 'The Windsor Birzeit Dignity Initiative',
+  },
   admin: {
     group: 'Activities',
-    position: 5,
     useAsTitle: 'title',
     defaultColumns: ['title', 'status', 'updatedAt'],
     description: 'Windsor Birzeit Dignity Initiative events, activities, and information.',

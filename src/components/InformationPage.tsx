@@ -2,21 +2,26 @@ import { useQuery } from "@tanstack/react-query";
 import { Download, ExternalLink } from "lucide-react";
 import { PageLayout, PageHero } from "@/components/PageLayout";
 import { useLanguage, type TranslationKey } from "@/contexts/LanguageContext";
-import { fetchInformationByType, mediaUrl, type PayloadInformationItem } from "@/lib/payload";
+import {
+  fetchInformation,
+  mediaUrl,
+  type InformationCollection,
+  type PayloadInformationItem,
+} from "@/lib/payload";
 
 export function InformationPage({
   type,
   titleKey,
   breadcrumb,
 }: {
-  type: PayloadInformationItem["type"];
+  type: InformationCollection;
   titleKey: TranslationKey;
   breadcrumb?: string;
 }) {
   const { t, lang, isArabic } = useLanguage();
   const { data: items = [], isLoading } = useQuery({
     queryKey: ["information", type],
-    queryFn: () => fetchInformationByType(type),
+    queryFn: () => fetchInformation(type),
     staleTime: 5 * 60 * 1000,
   });
 

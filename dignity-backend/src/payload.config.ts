@@ -18,21 +18,27 @@ const storage = resolveGithubStorageConfig()
 
 import { Users } from './collections/Users'
 import { Media } from './collections/Media'
+import { DignityResearchInitiative, Partners } from './collections/AboutPages'
+import { Participants } from './collections/Participants'
 import { News } from './collections/News'
-import { Activities } from './collections/Activities'
 import { Announcements } from './collections/Announcements'
 import { Photos } from './collections/Photos'
 import { Clippings } from './collections/Clippings'
-import { Participants } from './collections/Participants'
-import { Publications } from './collections/Publications'
-import { Information } from './collections/Information'
-import { Pages } from './collections/Pages'
 import { Research } from './collections/Research'
-import { WindsorDignity } from './collections/WindsorDignity'
-import { PublicationsCollection } from './collections/PublicationsCollection'
 import { Seminars } from './collections/Seminars'
 import { Conferences } from './collections/Conferences'
 import { Meetings } from './collections/Meetings'
+import { WindsorDignity } from './collections/WindsorDignity'
+import {
+  Books,
+  Papers,
+  Reports,
+  Brochures,
+  Theses,
+  Audiovisual,
+  Posters,
+} from './collections/Publications'
+import { ReadingsAndDocuments, Databases } from './collections/Information'
 import { SiteSettings } from './globals/SiteSettings'
 
 const filename = fileURLToPath(import.meta.url)
@@ -45,11 +51,52 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
+  // The order below is the order of the admin sidebar, and it deliberately
+  // mirrors the website's own header: a group appears where its first
+  // collection appears, and collections appear within a group in this order.
+  // (Payload has no per-collection ordering setting — an `admin.position` key
+  // is silently ignored — so this array is the single place the sidebar is
+  // arranged, and it should be kept in step with src/components/SiteHeader.tsx
+  // in the frontend.)
+  //
   // Every collection is wrapped in enforceBilingual() so that any English /
   // Arabic field pair (title/titleAr, body/bodyAr, …) must be filled in both
   // languages before a document can be published — see src/lib/bilingual.ts.
   // Wrapping centrally means new collections are covered automatically.
-  collections: [Users, Participants, Activities, Seminars, Conferences, Meetings, WindsorDignity, PublicationsCollection, Publications, Information, News, Announcements, Photos, Clippings, Research, Media, Pages].map(enforceBilingual),
+  collections: [
+    // Admin
+    Users,
+    Media,
+
+    // About the Dignity Initiative
+    DignityResearchInitiative,
+    Participants,
+    News,
+    Announcements,
+    Photos,
+    Clippings,
+    Partners,
+
+    // Activities
+    Research,
+    Seminars,
+    Conferences,
+    Meetings,
+    WindsorDignity,
+
+    // Publications
+    Books,
+    Papers,
+    Reports,
+    Brochures,
+    Theses,
+    Audiovisual,
+    Posters,
+
+    // Information
+    ReadingsAndDocuments,
+    Databases,
+  ].map(enforceBilingual),
   globals: [SiteSettings].map(enforceBilingualGlobal),
   editor: lexicalEditor(),
   cors: process.env.CORS_ORIGINS

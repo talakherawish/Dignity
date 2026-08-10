@@ -51,7 +51,7 @@ export async function GET() {
 
     for (const poster of POSTERS) {
       const existing = await payload.find({
-        collection: 'publications-items',
+        collection: 'posters',
         where: { title: { equals: poster.title } },
         limit: 1,
       })
@@ -85,9 +85,8 @@ export async function GET() {
       }
 
       await payload.create({
-        collection: 'publications-items',
+        collection: 'posters',
         data: {
-          type: 'posters',
           title: poster.title,
           titleAr: poster.titleAr,
           author: AUTHOR,

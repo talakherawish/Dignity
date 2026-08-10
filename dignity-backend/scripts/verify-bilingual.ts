@@ -9,9 +9,9 @@
 import type { CollectionConfig, Field } from 'payload'
 import { enforceBilingual } from '../src/lib/bilingual'
 import { News } from '../src/collections/News'
-import { Pages } from '../src/collections/Pages'
+import { DignityResearchInitiative } from '../src/collections/AboutPages'
 import { Participants } from '../src/collections/Participants'
-import { PublicationsCollection } from '../src/collections/PublicationsCollection'
+import { Books } from '../src/collections/Publications'
 import { Seminars } from '../src/collections/Seminars'
 
 let failures = 0
@@ -68,22 +68,22 @@ async function main() {
   await expectReject('News.titleAr empty w/ title set', News, 'titleAr', '', { title: 'Hello' })
   await expectReject('Seminars.descriptionAr empty w/ description set', Seminars, 'descriptionAr', lexEmpty(), { description: lex('Some text') })
   await expectReject('Participants.nameAr empty w/ name set', Participants, 'nameAr', undefined, { name: 'Jane Doe' })
-  await expectReject('Publications.authorAr empty w/ author set', PublicationsCollection, 'authorAr', '   ', { author: 'A. Author' })
-  await expectReject('Pages.bodyAr empty w/ body set', Pages, 'bodyAr', lexEmpty(), { body: lex('Body copy') })
+  await expectReject('Books.authorAr empty w/ author set', Books, 'authorAr', '   ', { author: 'A. Author' })
+  await expectReject('DignityResearchInitiative.bodyAr empty w/ body set', DignityResearchInitiative, 'bodyAr', lexEmpty(), { body: lex('Body copy') })
 
   console.log('\n— Arabic filled, English empty (must also be REJECTED) —')
   await expectReject('News.title empty w/ titleAr set', News, 'title', '', { titleAr: 'مرحبا' })
-  await expectReject('Pages.description empty w/ descriptionAr set', Pages, 'description', '', { descriptionAr: 'وصف' })
+  await expectReject('DignityResearchInitiative.description empty w/ descriptionAr set', DignityResearchInitiative, 'description', '', { descriptionAr: 'وصف' })
   await expectReject('Seminars.content empty w/ contentAr set', Seminars, 'content', lexEmpty(), { contentAr: lex('محتوى') })
 
   console.log('\n— Both languages present (must be ACCEPTED) —')
   await expectAccept('News.titleAr filled w/ title', News, 'titleAr', 'مرحبا', { title: 'Hello' })
   await expectAccept('Seminars.descriptionAr filled', Seminars, 'descriptionAr', lex('وصف'), { description: lex('desc') })
-  await expectAccept('Pages.bodyAr filled', Pages, 'bodyAr', lex('نص'), { body: lex('text') })
+  await expectAccept('DignityResearchInitiative.bodyAr filled', DignityResearchInitiative, 'bodyAr', lex('نص'), { body: lex('text') })
 
   console.log('\n— Both empty on an OPTIONAL pair (must be ACCEPTED: optional stays optional) —')
-  await expectAccept('Publications.authorAr both empty', PublicationsCollection, 'authorAr', '', { author: '' })
-  await expectAccept('Pages.descriptionAr both empty', Pages, 'descriptionAr', undefined, {})
+  await expectAccept('Books.authorAr both empty', Books, 'authorAr', '', { author: '' })
+  await expectAccept('DignityResearchInitiative.descriptionAr both empty', DignityResearchInitiative, 'descriptionAr', undefined, {})
 
   console.log('\n— Draft exemption (half-translated DRAFT may be saved) —')
   await expectAccept('News.titleAr empty on draft', News, 'titleAr', '', { title: 'Hello' }, 'draft')
@@ -91,7 +91,7 @@ async function main() {
   console.log('\n— required mirrored EN -> AR —')
   for (const [c, en, ar] of [
     [News, 'title', 'titleAr'], [Seminars, 'title', 'titleAr'],
-    [Participants, 'name', 'nameAr'], [PublicationsCollection, 'title', 'titleAr'],
+    [Participants, 'name', 'nameAr'], [Books, 'title', 'titleAr'],
   ] as [CollectionConfig, string, string][]) {
     const patched = enforceBilingual(c)
     const enF = findField(patched.fields, en) as { required?: boolean }

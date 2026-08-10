@@ -68,22 +68,28 @@ export interface Config {
   blocks: {};
   collections: {
     users: User;
+    media: Media;
+    'about-initiative': AboutInitiative;
     participants: Participant;
-    activities: Activity;
-    seminars: Seminar;
-    conferences: Conference;
-    meetings: Meeting;
-    'windsor-dignity': WindsorDignity;
-    'publications-items': PublicationsItem;
-    publications: Publication;
-    information: Information;
     news: News;
     announcements: Announcement;
     photos: Photo;
     clippings: Clipping;
+    partners: Partner;
     research: Research;
-    media: Media;
-    pages: Page;
+    seminars: Seminar;
+    conferences: Conference;
+    meetings: Meeting;
+    'windsor-dignity': WindsorDignity;
+    books: Book;
+    papers: Paper;
+    reports: Report;
+    brochures: Brochure;
+    theses: Thesis;
+    audiovisual: Audiovisual;
+    posters: Poster;
+    'readings-documents': ReadingsDocument;
+    databases: Database;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -92,22 +98,28 @@ export interface Config {
   collectionsJoins: {};
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
+    media: MediaSelect<false> | MediaSelect<true>;
+    'about-initiative': AboutInitiativeSelect<false> | AboutInitiativeSelect<true>;
     participants: ParticipantsSelect<false> | ParticipantsSelect<true>;
-    activities: ActivitiesSelect<false> | ActivitiesSelect<true>;
-    seminars: SeminarsSelect<false> | SeminarsSelect<true>;
-    conferences: ConferencesSelect<false> | ConferencesSelect<true>;
-    meetings: MeetingsSelect<false> | MeetingsSelect<true>;
-    'windsor-dignity': WindsorDignitySelect<false> | WindsorDignitySelect<true>;
-    'publications-items': PublicationsItemsSelect<false> | PublicationsItemsSelect<true>;
-    publications: PublicationsSelect<false> | PublicationsSelect<true>;
-    information: InformationSelect<false> | InformationSelect<true>;
     news: NewsSelect<false> | NewsSelect<true>;
     announcements: AnnouncementsSelect<false> | AnnouncementsSelect<true>;
     photos: PhotosSelect<false> | PhotosSelect<true>;
     clippings: ClippingsSelect<false> | ClippingsSelect<true>;
+    partners: PartnersSelect<false> | PartnersSelect<true>;
     research: ResearchSelect<false> | ResearchSelect<true>;
-    media: MediaSelect<false> | MediaSelect<true>;
-    pages: PagesSelect<false> | PagesSelect<true>;
+    seminars: SeminarsSelect<false> | SeminarsSelect<true>;
+    conferences: ConferencesSelect<false> | ConferencesSelect<true>;
+    meetings: MeetingsSelect<false> | MeetingsSelect<true>;
+    'windsor-dignity': WindsorDignitySelect<false> | WindsorDignitySelect<true>;
+    books: BooksSelect<false> | BooksSelect<true>;
+    papers: PapersSelect<false> | PapersSelect<true>;
+    reports: ReportsSelect<false> | ReportsSelect<true>;
+    brochures: BrochuresSelect<false> | BrochuresSelect<true>;
+    theses: ThesesSelect<false> | ThesesSelect<true>;
+    audiovisual: AudiovisualSelect<false> | AudiovisualSelect<true>;
+    posters: PostersSelect<false> | PostersSelect<true>;
+    'readings-documents': ReadingsDocumentsSelect<false> | ReadingsDocumentsSelect<true>;
+    databases: DatabasesSelect<false> | DatabasesSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -182,27 +194,6 @@ export interface User {
   collection: 'users';
 }
 /**
- * Shows on the website under About the Dignity Initiative → Participants. Add a new entry here for each person.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "participants".
- */
-export interface Participant {
-  id: string;
-  name: string;
-  nameAr: string;
-  category: 'faculty' | 'researcher' | 'intern' | 'student' | 'visitor';
-  title?: string | null;
-  titleAr?: string | null;
-  email?: string | null;
-  bio?: string | null;
-  bioAr?: string | null;
-  photo?: (string | null) | Media;
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
-}
-/**
  * All uploaded images and files across the whole site live here. You usually don't need to open this directly — upload from the "Image" or "File" field on the entry you're editing instead.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -228,18 +219,86 @@ export interface Media {
   focalY?: number | null;
 }
 /**
- * Superseded — add activities to Seminars, Conferences, Meetings, Research or The Windsor Birzeit Dignity Initiative instead.
+ * The heading, intro and full text of the website's "The Dignity Research Initiative" page. Open the entry below to edit it.
  *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "activities".
+ * via the `definition` "about-initiative".
  */
-export interface Activity {
+export interface AboutInitiative {
+  id: string;
+  title?: string | null;
+  titleAr?: string | null;
+  description?: string | null;
+  descriptionAr?: string | null;
+  body?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  bodyAr?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Shows on the website under About the Dignity Initiative → Participants. Add a new entry here for each person.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "participants".
+ */
+export interface Participant {
+  id: string;
+  name: string;
+  nameAr: string;
+  category: 'faculty' | 'researcher' | 'intern' | 'student' | 'visitor';
+  title?: string | null;
+  titleAr?: string | null;
+  email?: string | null;
+  bio?: string | null;
+  bioAr?: string | null;
+  photo?: (string | null) | Media;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Add a new entry here for each news post.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "news".
+ */
+export interface News {
   id: string;
   title: string;
   titleAr: string;
-  type: 'seminar' | 'conference' | 'meeting' | 'windsor-birzeit';
   date: string;
-  description?: {
+  excerpt?: string | null;
+  excerptAr?: string | null;
+  content?: {
     root: {
       type: string;
       children: {
@@ -254,7 +313,7 @@ export interface Activity {
     };
     [k: string]: unknown;
   } | null;
-  descriptionAr?: {
+  contentAr?: {
     root: {
       type: string;
       children: {
@@ -269,6 +328,374 @@ export interface Activity {
     };
     [k: string]: unknown;
   } | null;
+  image?: (string | null) | Media;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Shows on the website under About the Dignity Initiative → Announcements. Add a new entry here for each announcement.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "announcements".
+ */
+export interface Announcement {
+  id: string;
+  title: string;
+  titleAr: string;
+  date: string;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  contentAr?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  image?: (string | null) | Media;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Shows on the website under About the Dignity Initiative → Photos. Upload one photo per entry (click the Image field below to upload).
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "photos".
+ */
+export interface Photo {
+  id: string;
+  /**
+   * A short caption for this photo, e.g. "Seminar on Dignity and Praxis, March 2026".
+   */
+  title: string;
+  titleAr: string;
+  date: string;
+  image: string | Media;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Shows on the website under About the Dignity Initiative → Clippings (press mentions, newspaper scans, etc). Upload a scanned image of the clipping in the Image field.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "clippings".
+ */
+export interface Clipping {
+  id: string;
+  /**
+   * The headline or name of the publication this clipping is from.
+   */
+  title: string;
+  titleAr: string;
+  date: string;
+  image?: (string | null) | Media;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * The heading, intro and full text of the website's Partners page. Open the entry below to edit it.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "partners".
+ */
+export interface Partner {
+  id: string;
+  title?: string | null;
+  titleAr?: string | null;
+  description?: string | null;
+  descriptionAr?: string | null;
+  body?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  bodyAr?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Shows on the website under Activities → Research. Each entry gets its own page, where the publications, clippings and photos selected below appear alongside it.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "research".
+ */
+export interface Research {
+  id: string;
+  title: string;
+  titleAr: string;
+  description?: string | null;
+  descriptionAr?: string | null;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  contentAr?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  image?: (string | null) | Media;
+  /**
+   * Filled in automatically from the English title. It is the end of this entry's web address, so changing it after the page has been shared will break the old link.
+   */
+  slug?: string | null;
+  /**
+   * Select existing books or add new ones.
+   */
+  relatedBooks?: (string | Book)[] | null;
+  relatedPapers?: (string | Paper)[] | null;
+  relatedReports?: (string | Report)[] | null;
+  relatedBrochures?: (string | Brochure)[] | null;
+  relatedTheses?: (string | Thesis)[] | null;
+  relatedAudiovisual?: (string | Audiovisual)[] | null;
+  relatedPosters?: (string | Poster)[] | null;
+  relatedClippings?: (string | Clipping)[] | null;
+  relatedPhotos?: (string | Photo)[] | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Shows on the website under Publications → Books.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "books".
+ */
+export interface Book {
+  id: string;
+  title: string;
+  titleAr: string;
+  author?: string | null;
+  authorAr?: string | null;
+  date?: string | null;
+  description?: string | null;
+  descriptionAr?: string | null;
+  file?: (string | null) | Media;
+  /**
+   * Use for items that live elsewhere rather than as an uploaded file — a YouTube video, for example. Leave empty when a file is attached above.
+   */
+  link?: string | null;
+  image?: (string | null) | Media;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Shows on the website under Publications → Papers.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "papers".
+ */
+export interface Paper {
+  id: string;
+  title: string;
+  titleAr: string;
+  author?: string | null;
+  authorAr?: string | null;
+  date?: string | null;
+  description?: string | null;
+  descriptionAr?: string | null;
+  file?: (string | null) | Media;
+  /**
+   * Use for items that live elsewhere rather than as an uploaded file — a YouTube video, for example. Leave empty when a file is attached above.
+   */
+  link?: string | null;
+  image?: (string | null) | Media;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Shows on the website under Publications → Reports.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "reports".
+ */
+export interface Report {
+  id: string;
+  title: string;
+  titleAr: string;
+  author?: string | null;
+  authorAr?: string | null;
+  date?: string | null;
+  description?: string | null;
+  descriptionAr?: string | null;
+  file?: (string | null) | Media;
+  /**
+   * Use for items that live elsewhere rather than as an uploaded file — a YouTube video, for example. Leave empty when a file is attached above.
+   */
+  link?: string | null;
+  image?: (string | null) | Media;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Shows on the website under Publications → Brochures.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "brochures".
+ */
+export interface Brochure {
+  id: string;
+  title: string;
+  titleAr: string;
+  author?: string | null;
+  authorAr?: string | null;
+  date?: string | null;
+  description?: string | null;
+  descriptionAr?: string | null;
+  file?: (string | null) | Media;
+  /**
+   * Use for items that live elsewhere rather than as an uploaded file — a YouTube video, for example. Leave empty when a file is attached above.
+   */
+  link?: string | null;
+  image?: (string | null) | Media;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Shows on the website under Publications → Theses.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "theses".
+ */
+export interface Thesis {
+  id: string;
+  title: string;
+  titleAr: string;
+  author?: string | null;
+  authorAr?: string | null;
+  date?: string | null;
+  description?: string | null;
+  descriptionAr?: string | null;
+  file?: (string | null) | Media;
+  /**
+   * Use for items that live elsewhere rather than as an uploaded file — a YouTube video, for example. Leave empty when a file is attached above.
+   */
+  link?: string | null;
+  image?: (string | null) | Media;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Shows on the website under Publications → Audiovisual. Videos are usually a link rather than an upload.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "audiovisual".
+ */
+export interface Audiovisual {
+  id: string;
+  title: string;
+  titleAr: string;
+  author?: string | null;
+  authorAr?: string | null;
+  date?: string | null;
+  description?: string | null;
+  descriptionAr?: string | null;
+  file?: (string | null) | Media;
+  /**
+   * Use for items that live elsewhere rather than as an uploaded file — a YouTube video, for example. Leave empty when a file is attached above.
+   */
+  link?: string | null;
+  image?: (string | null) | Media;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Shows on the website under Publications → Posters.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "posters".
+ */
+export interface Poster {
+  id: string;
+  title: string;
+  titleAr: string;
+  author?: string | null;
+  authorAr?: string | null;
+  date?: string | null;
+  description?: string | null;
+  descriptionAr?: string | null;
+  file?: (string | null) | Media;
+  /**
+   * Use for items that live elsewhere rather than as an uploaded file — a YouTube video, for example. Leave empty when a file is attached above.
+   */
+  link?: string | null;
   image?: (string | null) | Media;
   updatedAt: string;
   createdAt: string;
@@ -467,92 +894,15 @@ export interface WindsorDignity {
   _status?: ('draft' | 'published') | null;
 }
 /**
- * Books, papers, reports, brochures, theses, audiovisual, and posters produced by the Dignity initiative.
+ * Shows on the website under Information → Readings and Documents.
  *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "publications-items".
+ * via the `definition` "readings-documents".
  */
-export interface PublicationsItem {
-  id: string;
-  type: 'books' | 'papers' | 'reports' | 'brochures' | 'theses' | 'audiovisual' | 'posters';
-  title: string;
-  titleAr: string;
-  author?: string | null;
-  authorAr?: string | null;
-  date?: string | null;
-  description?: string | null;
-  descriptionAr?: string | null;
-  file?: (string | null) | Media;
-  /**
-   * Use for items that live elsewhere rather than as an uploaded file — a YouTube video, for example. Leave empty when a file is attached above.
-   */
-  link?: string | null;
-  image?: (string | null) | Media;
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
-}
-/**
- * Superseded — publications are now edited under Publications → Publications (the publications-items collection). Nothing here reaches the website.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "publications".
- */
-export interface Publication {
+export interface ReadingsDocument {
   id: string;
   title: string;
   titleAr: string;
-  type: 'books' | 'papers' | 'reports' | 'brochures' | 'theses' | 'audiovisual' | 'posters';
-  author?: string | null;
-  authorAr?: string | null;
-  date: string;
-  description?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  descriptionAr?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  file?: (string | null) | Media;
-  image?: (string | null) | Media;
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
-}
-/**
- * Readings and Documents, and Databases live here — use the Type column/filter to switch between them.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "information".
- */
-export interface Information {
-  id: string;
-  title: string;
-  titleAr: string;
-  type: 'readings-documents' | 'databases';
   description?: {
     root: {
       type: string;
@@ -590,19 +940,16 @@ export interface Information {
   _status?: ('draft' | 'published') | null;
 }
 /**
- * Add a new entry here for each news post.
+ * Shows on the website under Information → Databases.
  *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "news".
+ * via the `definition` "databases".
  */
-export interface News {
+export interface Database {
   id: string;
   title: string;
   titleAr: string;
-  date: string;
-  excerpt?: string | null;
-  excerptAr?: string | null;
-  content?: {
+  description?: {
     root: {
       type: string;
       children: {
@@ -617,7 +964,7 @@ export interface News {
     };
     [k: string]: unknown;
   } | null;
-  contentAr?: {
+  descriptionAr?: {
     root: {
       type: string;
       children: {
@@ -632,204 +979,8 @@ export interface News {
     };
     [k: string]: unknown;
   } | null;
-  image?: (string | null) | Media;
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
-}
-/**
- * Shows on the website under About the Dignity Initiative → Announcements. Add a new entry here for each announcement.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "announcements".
- */
-export interface Announcement {
-  id: string;
-  title: string;
-  titleAr: string;
-  date: string;
-  content?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  contentAr?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  image?: (string | null) | Media;
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
-}
-/**
- * Shows on the website under About the Dignity Initiative → Photos. Upload one photo per entry (click the Image field below to upload).
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "photos".
- */
-export interface Photo {
-  id: string;
-  /**
-   * A short caption for this photo, e.g. "Seminar on Dignity and Praxis, March 2026".
-   */
-  title: string;
-  titleAr: string;
-  date: string;
-  image: string | Media;
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
-}
-/**
- * Shows on the website under About the Dignity Initiative → Clippings (press mentions, newspaper scans, etc). Upload a scanned image of the clipping in the Image field.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "clippings".
- */
-export interface Clipping {
-  id: string;
-  /**
-   * The headline or name of the publication this clipping is from.
-   */
-  title: string;
-  titleAr: string;
-  date: string;
-  image?: (string | null) | Media;
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
-}
-/**
- * Shows on the website under Activities → Research. Each entry gets its own page, where the publications, clippings and photos selected below appear alongside it.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "research".
- */
-export interface Research {
-  id: string;
-  title: string;
-  titleAr: string;
-  description?: string | null;
-  descriptionAr?: string | null;
-  content?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  contentAr?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  image?: (string | null) | Media;
-  /**
-   * Filled in automatically from the English title. It is the end of this entry's web address, so changing it after the page has been shared will break the old link.
-   */
-  slug?: string | null;
-  /**
-   * Select existing books or add new ones.
-   */
-  relatedBooks?: (string | PublicationsItem)[] | null;
-  relatedPapers?: (string | PublicationsItem)[] | null;
-  relatedReports?: (string | PublicationsItem)[] | null;
-  relatedBrochures?: (string | PublicationsItem)[] | null;
-  relatedTheses?: (string | PublicationsItem)[] | null;
-  relatedAudiovisual?: (string | PublicationsItem)[] | null;
-  relatedPosters?: (string | PublicationsItem)[] | null;
-  relatedClippings?: (string | Clipping)[] | null;
-  relatedPhotos?: (string | Photo)[] | null;
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
-}
-/**
- * Superseded — each page is now edited directly in the sidebar group it belongs to (About the Initiative, Partners, and so on).
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "pages".
- */
-export interface Page {
-  id: string;
-  /**
-   * Matches a fixed page on the site, e.g. about, partners, news. Do not edit unless you know what this connects to.
-   */
-  slug: string;
-  title?: string | null;
-  titleAr?: string | null;
-  description?: string | null;
-  descriptionAr?: string | null;
-  body?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  bodyAr?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
+  link?: string | null;
+  file?: (string | null) | Media;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -863,40 +1014,16 @@ export interface PayloadLockedDocument {
         value: string | User;
       } | null)
     | ({
+        relationTo: 'media';
+        value: string | Media;
+      } | null)
+    | ({
+        relationTo: 'about-initiative';
+        value: string | AboutInitiative;
+      } | null)
+    | ({
         relationTo: 'participants';
         value: string | Participant;
-      } | null)
-    | ({
-        relationTo: 'activities';
-        value: string | Activity;
-      } | null)
-    | ({
-        relationTo: 'seminars';
-        value: string | Seminar;
-      } | null)
-    | ({
-        relationTo: 'conferences';
-        value: string | Conference;
-      } | null)
-    | ({
-        relationTo: 'meetings';
-        value: string | Meeting;
-      } | null)
-    | ({
-        relationTo: 'windsor-dignity';
-        value: string | WindsorDignity;
-      } | null)
-    | ({
-        relationTo: 'publications-items';
-        value: string | PublicationsItem;
-      } | null)
-    | ({
-        relationTo: 'publications';
-        value: string | Publication;
-      } | null)
-    | ({
-        relationTo: 'information';
-        value: string | Information;
       } | null)
     | ({
         relationTo: 'news';
@@ -915,16 +1042,64 @@ export interface PayloadLockedDocument {
         value: string | Clipping;
       } | null)
     | ({
+        relationTo: 'partners';
+        value: string | Partner;
+      } | null)
+    | ({
         relationTo: 'research';
         value: string | Research;
       } | null)
     | ({
-        relationTo: 'media';
-        value: string | Media;
+        relationTo: 'seminars';
+        value: string | Seminar;
       } | null)
     | ({
-        relationTo: 'pages';
-        value: string | Page;
+        relationTo: 'conferences';
+        value: string | Conference;
+      } | null)
+    | ({
+        relationTo: 'meetings';
+        value: string | Meeting;
+      } | null)
+    | ({
+        relationTo: 'windsor-dignity';
+        value: string | WindsorDignity;
+      } | null)
+    | ({
+        relationTo: 'books';
+        value: string | Book;
+      } | null)
+    | ({
+        relationTo: 'papers';
+        value: string | Paper;
+      } | null)
+    | ({
+        relationTo: 'reports';
+        value: string | Report;
+      } | null)
+    | ({
+        relationTo: 'brochures';
+        value: string | Brochure;
+      } | null)
+    | ({
+        relationTo: 'theses';
+        value: string | Thesis;
+      } | null)
+    | ({
+        relationTo: 'audiovisual';
+        value: string | Audiovisual;
+      } | null)
+    | ({
+        relationTo: 'posters';
+        value: string | Poster;
+      } | null)
+    | ({
+        relationTo: 'readings-documents';
+        value: string | ReadingsDocument;
+      } | null)
+    | ({
+        relationTo: 'databases';
+        value: string | Database;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -994,6 +1169,40 @@ export interface UsersSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media_select".
+ */
+export interface MediaSelect<T extends boolean = true> {
+  alt?: T;
+  thumbnail?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "about-initiative_select".
+ */
+export interface AboutInitiativeSelect<T extends boolean = true> {
+  title?: T;
+  titleAr?: T;
+  description?: T;
+  descriptionAr?: T;
+  body?: T;
+  bodyAr?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "participants_select".
  */
 export interface ParticipantsSelect<T extends boolean = true> {
@@ -1012,16 +1221,99 @@ export interface ParticipantsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "activities_select".
+ * via the `definition` "news_select".
  */
-export interface ActivitiesSelect<T extends boolean = true> {
+export interface NewsSelect<T extends boolean = true> {
   title?: T;
   titleAr?: T;
-  type?: T;
   date?: T;
+  excerpt?: T;
+  excerptAr?: T;
+  content?: T;
+  contentAr?: T;
+  image?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "announcements_select".
+ */
+export interface AnnouncementsSelect<T extends boolean = true> {
+  title?: T;
+  titleAr?: T;
+  date?: T;
+  content?: T;
+  contentAr?: T;
+  image?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "photos_select".
+ */
+export interface PhotosSelect<T extends boolean = true> {
+  title?: T;
+  titleAr?: T;
+  date?: T;
+  image?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "clippings_select".
+ */
+export interface ClippingsSelect<T extends boolean = true> {
+  title?: T;
+  titleAr?: T;
+  date?: T;
+  image?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "partners_select".
+ */
+export interface PartnersSelect<T extends boolean = true> {
+  title?: T;
+  titleAr?: T;
   description?: T;
   descriptionAr?: T;
+  body?: T;
+  bodyAr?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "research_select".
+ */
+export interface ResearchSelect<T extends boolean = true> {
+  title?: T;
+  titleAr?: T;
+  description?: T;
+  descriptionAr?: T;
+  content?: T;
+  contentAr?: T;
   image?: T;
+  slug?: T;
+  relatedBooks?: T;
+  relatedPapers?: T;
+  relatedReports?: T;
+  relatedBrochures?: T;
+  relatedTheses?: T;
+  relatedAudiovisual?: T;
+  relatedPosters?: T;
+  relatedClippings?: T;
+  relatedPhotos?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -1096,10 +1388,9 @@ export interface WindsorDignitySelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "publications-items_select".
+ * via the `definition` "books_select".
  */
-export interface PublicationsItemsSelect<T extends boolean = true> {
-  type?: T;
+export interface BooksSelect<T extends boolean = true> {
   title?: T;
   titleAr?: T;
   author?: T;
@@ -1116,18 +1407,18 @@ export interface PublicationsItemsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "publications_select".
+ * via the `definition` "papers_select".
  */
-export interface PublicationsSelect<T extends boolean = true> {
+export interface PapersSelect<T extends boolean = true> {
   title?: T;
   titleAr?: T;
-  type?: T;
   author?: T;
   authorAr?: T;
   date?: T;
   description?: T;
   descriptionAr?: T;
   file?: T;
+  link?: T;
   image?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1135,12 +1426,106 @@ export interface PublicationsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "information_select".
+ * via the `definition` "reports_select".
  */
-export interface InformationSelect<T extends boolean = true> {
+export interface ReportsSelect<T extends boolean = true> {
   title?: T;
   titleAr?: T;
-  type?: T;
+  author?: T;
+  authorAr?: T;
+  date?: T;
+  description?: T;
+  descriptionAr?: T;
+  file?: T;
+  link?: T;
+  image?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "brochures_select".
+ */
+export interface BrochuresSelect<T extends boolean = true> {
+  title?: T;
+  titleAr?: T;
+  author?: T;
+  authorAr?: T;
+  date?: T;
+  description?: T;
+  descriptionAr?: T;
+  file?: T;
+  link?: T;
+  image?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "theses_select".
+ */
+export interface ThesesSelect<T extends boolean = true> {
+  title?: T;
+  titleAr?: T;
+  author?: T;
+  authorAr?: T;
+  date?: T;
+  description?: T;
+  descriptionAr?: T;
+  file?: T;
+  link?: T;
+  image?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "audiovisual_select".
+ */
+export interface AudiovisualSelect<T extends boolean = true> {
+  title?: T;
+  titleAr?: T;
+  author?: T;
+  authorAr?: T;
+  date?: T;
+  description?: T;
+  descriptionAr?: T;
+  file?: T;
+  link?: T;
+  image?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "posters_select".
+ */
+export interface PostersSelect<T extends boolean = true> {
+  title?: T;
+  titleAr?: T;
+  author?: T;
+  authorAr?: T;
+  date?: T;
+  description?: T;
+  descriptionAr?: T;
+  file?: T;
+  link?: T;
+  image?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "readings-documents_select".
+ */
+export interface ReadingsDocumentsSelect<T extends boolean = true> {
+  title?: T;
+  titleAr?: T;
   description?: T;
   descriptionAr?: T;
   link?: T;
@@ -1151,119 +1536,15 @@ export interface InformationSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "news_select".
+ * via the `definition` "databases_select".
  */
-export interface NewsSelect<T extends boolean = true> {
-  title?: T;
-  titleAr?: T;
-  date?: T;
-  excerpt?: T;
-  excerptAr?: T;
-  content?: T;
-  contentAr?: T;
-  image?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  _status?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "announcements_select".
- */
-export interface AnnouncementsSelect<T extends boolean = true> {
-  title?: T;
-  titleAr?: T;
-  date?: T;
-  content?: T;
-  contentAr?: T;
-  image?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  _status?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "photos_select".
- */
-export interface PhotosSelect<T extends boolean = true> {
-  title?: T;
-  titleAr?: T;
-  date?: T;
-  image?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  _status?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "clippings_select".
- */
-export interface ClippingsSelect<T extends boolean = true> {
-  title?: T;
-  titleAr?: T;
-  date?: T;
-  image?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  _status?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "research_select".
- */
-export interface ResearchSelect<T extends boolean = true> {
+export interface DatabasesSelect<T extends boolean = true> {
   title?: T;
   titleAr?: T;
   description?: T;
   descriptionAr?: T;
-  content?: T;
-  contentAr?: T;
-  image?: T;
-  slug?: T;
-  relatedBooks?: T;
-  relatedPapers?: T;
-  relatedReports?: T;
-  relatedBrochures?: T;
-  relatedTheses?: T;
-  relatedAudiovisual?: T;
-  relatedPosters?: T;
-  relatedClippings?: T;
-  relatedPhotos?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  _status?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media_select".
- */
-export interface MediaSelect<T extends boolean = true> {
-  alt?: T;
-  thumbnail?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  url?: T;
-  thumbnailURL?: T;
-  filename?: T;
-  mimeType?: T;
-  filesize?: T;
-  width?: T;
-  height?: T;
-  focalX?: T;
-  focalY?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "pages_select".
- */
-export interface PagesSelect<T extends boolean = true> {
-  slug?: T;
-  title?: T;
-  titleAr?: T;
-  description?: T;
-  descriptionAr?: T;
-  body?: T;
-  bodyAr?: T;
+  link?: T;
+  file?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;

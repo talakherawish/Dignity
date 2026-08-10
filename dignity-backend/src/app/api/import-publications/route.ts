@@ -29,6 +29,7 @@ export const maxDuration = 300
 const SOURCE = 'https://dignity.birzeit.edu'
 
 type ImportItem = {
+  /** Which publications collection the item belongs in. */
   type: 'brochures' | 'reports' | 'audiovisual'
   title: string
   titleAr: string
@@ -186,7 +187,7 @@ export async function GET(request: Request) {
   for (const item of ITEMS) {
     try {
       const existing = await payload.find({
-        collection: 'publications-items',
+        collection: item.type,
         where: { title: { equals: item.title } },
         limit: 1,
       })
@@ -199,7 +200,7 @@ export async function GET(request: Request) {
         if (doc._status !== 'published') {
           if (!dryRun) {
             await payload.update({
-              collection: 'publications-items',
+              collection: item.type,
               id: doc.id,
               data: { _status: 'published' },
             })
@@ -244,9 +245,8 @@ export async function GET(request: Request) {
       }
 
       await payload.create({
-        collection: 'publications-items',
+        collection: item.type,
         data: {
-          type: item.type,
           title: item.title,
           titleAr: item.titleAr,
           description: item.description,

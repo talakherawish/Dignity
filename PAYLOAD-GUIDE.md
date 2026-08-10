@@ -38,20 +38,27 @@ As an **Editor**, your drafts go to the Content Manager for review and publishin
 
 ## Collections (What You Can Edit)
 
-Depending on your assigned section, you'll see one or more of these:
+The sidebar mirrors the website's own menu, in the same order, so whatever you
+want to change is under the heading you'd click to reach it on the site:
 
-| Collection | What it holds |
+| Sidebar group | Collections |
 |---|---|
-| **Articles** | News articles and press coverage |
-| **Activities** | Seminars, conferences, meetings, Windsor-Birzeit events |
-| **Media Updates** | Announcements, news items, photos, clippings |
-| **Participants** | Fellows, faculty, researchers, students, visitors |
+| **Admin** | Users, Media |
+| **About the Dignity Initiative** | The Dignity Research Initiative, Participants, News, Announcements, Photos, Clippings, Partners |
+| **Activities** | Research, Seminars, Conferences, Meetings, The Windsor Birzeit Dignity Initiative |
+| **Publications** | Books, Papers, Reports, Brochures, Theses, Audiovisual, Posters |
+| **Information** | Readings and Documents, Databases |
+| **Site** | Site Settings |
+
+Each entry holds exactly what the page of that name shows — a brochure goes in
+**Brochures**, a seminar in **Seminars**. Headings and intro text for the list
+pages live in **Site Settings**; see `PAGES_MANAGEMENT.md`.
 
 ---
 
 ## Creating New Content
 
-1. Click the collection name in the left sidebar (e.g. **Articles**)
+1. Click the collection name in the left sidebar (e.g. **News**)
 2. Click **Create New** (top right)
 3. Fill in the fields — titles, body text, dates, images, etc.
 4. When done, click **Save Draft** at the bottom
@@ -78,7 +85,7 @@ The Content Manager will review and publish your changes.
 3. Add an `Alt Text` description
 4. Click **Save**
 
-Then, when editing an Article or Activity, use the image picker field to attach your uploaded media.
+Then, when editing an entry, use the image picker field to attach your uploaded media. You can also upload straight from that field, which is usually quicker.
 
 ---
 

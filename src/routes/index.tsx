@@ -193,28 +193,36 @@ function NewsCarousel() {
           <div className="mt-6 flex items-center justify-between">
             {/* Controls + dots */}
             <div className="flex items-center gap-3">
-              <div className="flex gap-1">
+              {/*
+                dir="ltr" on the control strip, in both languages.
+
+                The slides cross-fade rather than slide, so the dots are the
+                only thing that visibly moves — and in an RTL row they ran the
+                other way, putting slide 1 on the right and marching the
+                highlight left as the arrow pointing right was clicked. Left to
+                the page direction, the buttons flipped too: `carousel-prev`
+                being the first child landed on the right, which earlier fixes
+                papered over by mirroring both glyphs in CSS and swapping both
+                click handlers — two corrections that cancelled, leaving the
+                arrows disagreeing with the dots and the aria-labels describing
+                the opposite of what each button did.
+
+                Pinning the strip to LTR removes the need for either hack:
+                previous is on the left pointing left, next is on the right
+                pointing right, and slide 1 is the leftmost dot, so a click on
+                "next" moves the highlight the same way the arrow points. The
+                strip keeps its place in the RTL row above, so nothing moves.
+              */}
+              <div className="flex gap-1" dir="ltr">
                 <button
-                  onClick={() =>
-                    goTo(
-                      isArabic
-                        ? (i + 1) % articles.length
-                        : (i - 1 + articles.length) % articles.length,
-                    )
-                  }
+                  onClick={() => goTo((i - 1 + articles.length) % articles.length)}
                   aria-label={t("news.prev")}
                   className="carousel-prev h-8 w-8 rounded-full border border-border flex items-center justify-center text-foreground/60 hover:text-accent hover:border-accent transition-colors"
                 >
                   <ChevronLeft className="h-3.5 w-3.5" />
                 </button>
                 <button
-                  onClick={() =>
-                    goTo(
-                      isArabic
-                        ? (i - 1 + articles.length) % articles.length
-                        : (i + 1) % articles.length,
-                    )
-                  }
+                  onClick={() => goTo((i + 1) % articles.length)}
                   aria-label={t("news.next")}
                   className="carousel-next h-8 w-8 rounded-full border border-border flex items-center justify-center text-foreground/60 hover:text-accent hover:border-accent transition-colors"
                 >
@@ -223,7 +231,7 @@ function NewsCarousel() {
               </div>
 
               {/* Minimal slide dots */}
-              <div className="flex items-center gap-1" role="tablist">
+              <div className="flex items-center gap-1" role="tablist" dir="ltr">
                 {articles.map((_, idx) => (
                   <button
                     key={idx}

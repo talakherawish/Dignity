@@ -81,11 +81,19 @@ export type PayloadParticipant = {
   photo?: PayloadMedia;
 };
 
+/**
+ * The seven publication collections, one per entry under Publications in the
+ * site's menu. Each is its own Payload collection — they were a single
+ * collection with a `type` field until the CMS was rearranged to mirror the
+ * navigation — so the value doubles as the API endpoint to read from.
+ */
+export type PublicationCollection =
+  "books" | "papers" | "reports" | "brochures" | "theses" | "audiovisual" | "posters";
+
 export type PayloadPublication = {
   id: string;
   title: string;
   titleAr?: string;
-  type: "books" | "papers" | "reports" | "brochures" | "theses" | "audiovisual" | "posters";
   author?: string;
   authorAr?: string;
   date: string;
@@ -129,11 +137,13 @@ export function youtubeThumbnailFallback(url: string | undefined): string {
   return id ? `https://img.youtube.com/vi/${id}/mqdefault.jpg` : "";
 }
 
+/** Same again for the Information menu: one collection per page. */
+export type InformationCollection = "readings-documents" | "databases";
+
 export type PayloadInformationItem = {
   id: string;
   title: string;
   titleAr?: string;
-  type: "readings-documents" | "databases";
   description?: unknown;
   descriptionAr?: unknown;
   link?: string;
@@ -151,16 +161,50 @@ export type PayloadResearchActivity = {
   content?: unknown;
   contentAr?: unknown;
   image?: PayloadMedia;
-  /** Outputs attached to this research area in the admin - organized by type. */
-  relatedBooks?: PayloadPublication[];
-  relatedPapers?: PayloadPublication[];
-  relatedReports?: PayloadPublication[];
-  relatedBrochures?: PayloadPublication[];
-  relatedTheses?: PayloadPublication[];
-  relatedAudiovisual?: PayloadPublication[];
-  relatedPosters?: PayloadPublication[];
-  relatedClippings?: PayloadClipping[];
-  relatedPhotos?: PayloadPhoto[];
+  /**
+   * Outputs attached to this research area in the admin - organized by type.
+   *
+   * Payload returns a relationship as the whole document when it can resolve
+   * it and as a bare id string when it cannot — which happens when the target
+   * was deleted while still selected here. The `| string` is not theoretical:
+   * "Protecting Workers Dignity" currently holds one brochure id whose
+   * document no longer exists. Read these through `populated()` rather than
+   * indexing into them directly.
+   */
+  relatedBooks?: (PayloadPublication | string)[];
+  relatedPapers?: (PayloadPublication | string)[];
+  relatedReports?: (PayloadPublication | string)[];
+  relatedBrochures?: (PayloadPublication | string)[];
+  relatedTheses?: (PayloadPublication | string)[];
+  relatedAudiovisual?: (PayloadPublication | string)[];
+  relatedPosters?: (PayloadPublication | string)[];
+  relatedClippings?: (PayloadClipping | string)[];
+  relatedPhotos?: (PayloadPhoto | string)[];
+};
+
+/**
+ * The documents in a relationship field, with unresolved ids dropped.
+ *
+ * Payload leaves a relationship as a bare id string when the document behind
+ * it is gone, so a caller that trusts the array shape renders an empty card
+ * (or throws) for every dangling reference. Everything reading a `related*`
+ * field goes through here, which also keeps the counts on the research index
+ * honest — they used to include ids that the detail page could not display.
+ */
+export function populated<T>(items: (T | string)[] | undefined): T[] {
+  if (!items) return [];
+  return items.filter((item): item is T => typeof item === "object" && item !== null);
+}
+
+/** A standalone page — its heading, its intro line, and its prose. */
+export type PayloadPage = {
+  id: string;
+  title?: string;
+  titleAr?: string;
+  description?: string;
+  descriptionAr?: string;
+  body?: unknown;
+  bodyAr?: unknown;
 };
 
 /** All fields on the Site Settings global -- every EN key has a matching key+Ar. */
@@ -212,6 +256,58 @@ export function extractText(lexical: unknown): string[] {
   if (children) children.forEach(walk);
 
   return paragraphs;
+}
+
+/**
+ * True when a prose field holds something worth rendering.
+ *
+ * Callers fall back from a full write-up to a short description, so they need
+ * to know whether the first one is empty before choosing. Handles both shapes
+ * the CMS produces — Lexical richText and a plain textarea string — for the
+ * same reason `extractText` does.
+ */
+export function hasProse(value: unknown): boolean {
+  if (typeof value === "string") return value.trim().length > 0;
+  if (!value || typeof value !== "object") return false;
+  const root = (value as Record<string, unknown>).root as Record<string, unknown> | undefined;
+  const children = root?.children;
+  if (!Array.isArray(children) || children.length === 0) return false;
+  return JSON.stringify(children).includes('"text"');
+}
+
+/**
+ * The bullet points in a Lexical field, as plain strings.
+ *
+ * `extractText` above deliberately returns paragraphs only, so a list — the
+ * "avenues" the initiative works through, on the About page — comes back
+ * empty from it. Pages that render a list separately from their prose read it
+ * through here.
+ */
+export function extractListItems(lexical: unknown): string[] {
+  if (!lexical || typeof lexical !== "object") return [];
+  const root = (lexical as Record<string, unknown>).root as Record<string, unknown> | undefined;
+  if (!root) return [];
+
+  const items: string[] = [];
+
+  function textOf(node: Record<string, unknown>): string {
+    if (node.type === "text") return (node.text as string) ?? "";
+    const children = node.children as Record<string, unknown>[] | undefined;
+    return children ? children.map(textOf).join("") : "";
+  }
+
+  function walk(node: Record<string, unknown>): void {
+    if (node.type === "listitem") {
+      const text = textOf(node).trim();
+      if (text) items.push(text);
+      return;
+    }
+    const children = node.children as Record<string, unknown>[] | undefined;
+    if (children) children.forEach(walk);
+  }
+
+  walk(root);
+  return items;
 }
 
 /** Format an ISO date string for display. */
@@ -277,11 +373,16 @@ export const fetchMeetings = () => fetchCollection<PayloadActivity>("meetings", 
 /**
  * Research areas, shown under Activities → Research.
  *
- * depth: 2 so the attached publications, clippings and photos arrive as whole
- * documents (with their own uploads resolved) rather than bare ids.
+ * depth: 3 is what it takes to reach a preview image. The chain is research →
+ * relatedBrochures (1) → file (2) → thumbnail (3), and Payload stops resolving
+ * exactly at the depth it is given: at 2 the thumbnail came back as a bare id,
+ * so `mediaUrl` had nothing to read and every PDF-backed output fell through
+ * to the generic file placeholder.
  */
+const RESEARCH_DEPTH = "3";
+
 export const fetchResearch = () =>
-  fetchCollection<PayloadResearchActivity>("research", { depth: "2" });
+  fetchCollection<PayloadResearchActivity>("research", { depth: RESEARCH_DEPTH });
 
 /** One research area by its slug, for its own page. Undefined if no match. */
 export async function fetchResearchBySlug(
@@ -289,7 +390,7 @@ export async function fetchResearchBySlug(
 ): Promise<PayloadResearchActivity | undefined> {
   const docs = await fetchCollection<PayloadResearchActivity>("research", {
     "where[slug][equals]": slug,
-    depth: "2",
+    depth: RESEARCH_DEPTH,
     limit: "1",
   });
   return docs[0];
@@ -311,27 +412,29 @@ export const fetchClippings = () =>
 // Participants carry no date — Payload's own ordering is what the admin sees.
 export const fetchParticipants = () => fetchCollection<PayloadParticipant>("participants");
 
-// Publications — fetch from unified publications-items collection
-export const fetchPublicationsByType = (type: PayloadPublication["type"]) =>
+/** Everything in one of the publication collections, newest first. */
+export const fetchPublications = (collection: PublicationCollection) =>
   // depth: 2 so item.image.thumbnail (the auto-generated PDF preview) resolves
   // to a full Media object, not just an id string.
-  fetchCollection<PayloadPublication>("publications-items", {
-    "where[type][equals]": type,
-    depth: "2",
-    ...NEWEST_FIRST,
-  });
+  fetchCollection<PayloadPublication>(collection, { depth: "2", ...NEWEST_FIRST });
 
-// Convenience functions for each publication type
-export const fetchBooks = () => fetchPublicationsByType("books");
-export const fetchPapers = () => fetchPublicationsByType("papers");
-export const fetchReports = () => fetchPublicationsByType("reports");
-export const fetchBrochures = () => fetchPublicationsByType("brochures");
-export const fetchTheses = () => fetchPublicationsByType("theses");
-export const fetchAudiovisual = () => fetchPublicationsByType("audiovisual");
-export const fetchPosters = () => fetchPublicationsByType("posters");
+export const fetchInformation = (collection: InformationCollection) =>
+  fetchCollection<PayloadInformationItem>(collection);
 
-export const fetchInformationByType = (type: PayloadInformationItem["type"]) =>
-  fetchCollection<PayloadInformationItem>("information", { "where[type][equals]": type });
+/**
+ * The two standalone pages under About — the initiative's own page and
+ * Partners. Each is a collection holding a single document, so the first one
+ * is the page. Undefined if the backend is unreachable or nothing is published,
+ * which leaves the calling page on its built-in copy.
+ */
+async function fetchSinglePage(collection: string): Promise<PayloadPage | undefined> {
+  const docs = await fetchCollection<PayloadPage>(collection, { limit: "1", depth: "0" });
+  return docs[0];
+}
+
+export const fetchAboutInitiative = () => fetchSinglePage("about-initiative");
+
+export const fetchPartners = () => fetchSinglePage("partners");
 
 /** Fetch the Site Settings global (nav labels, hero, footer, small UI labels). Returns null if unreachable. */
 export async function fetchSiteSettings(): Promise<PayloadSiteSettings | null> {
