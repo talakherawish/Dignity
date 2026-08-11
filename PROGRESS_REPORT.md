@@ -8,11 +8,77 @@
 
 **The site is fully deployed and self-maintaining.** Frontend and backend both run on one Oracle Cloud instance behind a single certificate at **https://84-13-77-162.sslip.io** — public site at `/`, Payload admin at `/admin`. Content comes from MongoDB Atlas.
 
-Infrastructure work is finished. HTTPS renews itself, backups run nightly and have been verified by restoring one, GitHub and the server hold identical code, and deployment is a single tested command.
+Infrastructure work is finished. HTTPS renews itself, backups run nightly and have been verified by restoring one, GitHub and the server hold identical code, and **pushing to `main` deploys the site by itself** (see *Website work — 2026-08-11*, below).
 
 **Oracle is the permanent home.** The university has no hosting capacity; they will only map a domain to this IP. Backups, uptime and deployment are therefore ours to own.
 
 What remains is content entry, not engineering.
+
+---
+
+## Website work — 2026-08-11 (second session)
+
+The site itself rather than the machine it runs on. Everything below is deployed.
+
+### Deployment is now automatic
+
+`.github/workflows/deploy.yml` runs the box's own `/usr/local/bin/deploy` over SSH on every push to `main`, so the build still happens on the server with the server's environment — only the trigger moved. Runs are serialised by a concurrency group, because the script swaps the frontend directory in place and two runs would collide.
+
+Setup notes, for whoever repeats this:
+- The deploy key is **RSA, not ed25519** — Oracle Cloud Shell runs in FIPS mode and refuses to generate ed25519 keys.
+- Public half in `opc`'s `authorized_keys`, private half in the repo secret `DEPLOY_SSH_KEY`.
+- The key in the project root (`dignity_key`) is **not** authorised on the box. The working key lives in Cloud Shell at `~/.ssh/dignity`.
+
+**Consequence worth knowing:** Payload commits its media uploads to the repo, so **every upload made in the admin now triggers a deploy**. Harmless — the site rebuilds and comes back — but it explains Actions runs nobody started, and it means `git pull --rebase` before pushing is now the habit. Three pushes today were rejected for exactly this reason.
+
+### The CMS silently overrides the code
+
+Asked to change "الاجتماعات" to "لقاءات", the word turned out not to exist anywhere in the repository. Site Settings values win over the built-in dictionary — `LanguageContext.tsx` reads the Payload value first and only falls back to the hardcoded string — so the label was a database value and no code change could have touched it.
+
+**Rule of thumb:** any key listed in `SITE_SETTINGS_KEY_MAP` is CMS-first. Check the admin before editing the dictionary. A field left blank in Site Settings falls back to the code, which is the intended behaviour, not a bug.
+
+### Site Settings did not match the site
+
+The header was restructured at some point — Research moved under Activities, the media links moved under About — but the Navigation Menu tab kept the old field names. The result: three fields that edited nothing (`navHome`, `navProjects`, `navProjectsResearch`, the last wired to a key nothing renders), and **twelve nav labels with no field at all** — the whole Publications and Information menus were editable only in code.
+
+Now fixed: dead fields removed, the Research link rewired (the field is still called `navProjectsResearch` so the wording already saved in Mongo survives), both menus added, `navMedia` moved to Small UI Labels since it is a page eyebrow rather than a menu heading, and every field labelled with the menu it belongs to.
+
+Nothing errors when a key is missing from the map — it silently falls back — which is why this went unnoticed.
+
+### Activities pages rebuilt
+
+Meetings and seminars were the same card list: an 11px grey date over a 14px title, one paragraph of description, and the write-up, image and everything else fetched and then never rendered. Clicking an entry did nothing.
+
+Both now use `ActivityLedger`: the day leads at up to 42px, each year opens with its own numeral and rule, and pressing a row expands it in place to show the description, the full content and any images. Rows with nothing behind them render as plain rows rather than as buttons that would do nothing.
+
+- **Conferences and Windsor-Birzeit still use the old cards.** They are the same shape and would be a line each.
+- Meetings gained a `gallery` array — more than one image, captioned in either language, shown only inside the entry. Fetched at `depth: 2`, since uploads nested in an array need a level more than the featured image.
+- Meetings gained an optional `kind`: **Round Table** or **Discussion**, blank for an ordinary meeting, labelled above the title when set. Both words are editable in Site Settings.
+
+### Half-translated entries say so
+
+Every page did `contentAr ?? content`, so an Arabic reader opening a meeting, a news article or a research area could be handed English prose with no explanation — and "not translated yet" looked identical to "nothing written here".
+
+Bodies are now read from the visitor's own language only, with a notice in place of the missing text. Titles, dates and excerpts still fall back, since every entry has a title and a blank row is worse than a borrowed one. No collection changed: bodies were already optional, titles already required.
+
+### News
+
+The panel animated `max-height: 0 → 4000px`, so a short article opened in the first fraction of the transition and then sat still, and closing did nothing visible until it slammed shut. It now animates a real `0fr → 1fr` grid row. The card also went to one column — the image is a banner across the top rather than a panel beside the text, which also stops cards with images and cards without them from being different shapes.
+
+`text-center` had been sitting on the whole column rather than the page heading, so English headlines, excerpts and body paragraphs were all centred. Arabic was unaffected, having overridden it with its own `text-right`.
+
+### Open: local development cannot read live content
+
+Running the frontend locally against the live API returns nothing, and the page shows empty lists with no error — `fetchCollection` catches the failure and returns `[]`.
+
+The cause is CORS. `CORS_ORIGINS` on the box lists the live origin only, so a request from `http://localhost:8080` comes back without an `access-control-allow-origin` header and the browser discards it. On the deployed site the same fetch is same-origin and sails through.
+
+Fix, when wanted: append `http://localhost:8080` to `CORS_ORIGINS` in the backend's `.env` and restart Payload. The config reads it at boot, so no rebuild. Note the same variable feeds both `cors` and `csrf`.
+
+### Also
+
+- Deleted `dignity-backend/src/lib/pagesContent.ts` — 314 lines seeding a `pages` collection that `AboutPages.ts` replaced. Nothing imported it.
+- `README.md` pointed at the dead Vercel deployment; it now points at the Oracle URL.
 
 ---
 
@@ -69,9 +135,11 @@ They had diverged both ways. Now aligned at commit `415847b`.
 - **Security fix:** the server was running `auth: { cookies: { secure: false } }`, left over from HTTP debugging. Pulling restored `auth: true`, so the admin login cookie is properly Secure again.
 - Research content confirmed present and rendering — it was missing only because the server was running older code
 
-**How deployment actually works — there is no CI.** Pushing to GitHub deploys nothing.
+**How deployment worked at the time — no CI.** Pushing to GitHub deployed nothing.
 - Backend: git clone at `/home/opc/app`, run by **pm2** as `dignity-backend`. Update = `git pull` → `npm install` → `npm run build` → `pm2 restart`
 - Frontend: built on the laptop, zipped, uploaded via Cloud Shell, `scp`'d, `systemctl restart dignity-frontend`
+
+*Superseded twice since: first by the one-command deploy below, then on 2026-08-11 by GitHub Actions. Pushing to `main` now deploys.*
 
 ## Backups — DONE and restore-tested (2026-08-10)
 
@@ -119,6 +187,8 @@ Considered moving MongoDB onto the Oracle instance for single-vendor tidiness. *
 3. Change Tala's temporary password (`Dignity2026!`).
 4. Google Drive workspace as an independent, browsable copy of the documents — upload all 64 files from `public/uploads`, **including the `-thumb.png` files**, since those are the PDF cover previews the site displays. Verified 2026-08-11 that the local folder exactly matches the server: 64 files, 155MB, 30 PDFs.
 5. Optional: copy a backup archive off the server after big content sessions — all 14 copies currently live on the same machine.
+6. Conferences and Windsor-Birzeit still use the old card layout; the ledger is a component now, so each is a small change.
+7. Optional: allow `http://localhost:8080` in `CORS_ORIGINS` so local development can read live content.
 
 ---
 
