@@ -1,0 +1,41 @@
+# Deploys the site when main moves.
+#
+# There is no build step here on purpose: `/usr/local/bin/deploy` on the Oracle
+# box pulls from GitHub and builds both halves there, so the frontend picks up
+# VITE_PAYLOAD_URL from the server's own .env rather than from whatever machine
+# happened to run the build. Duplicating the build here would prove nothing the
+# server does not prove a minute later.
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  # So a deploy can be re-run from the Actions tab without an empty commit.
+  workflow_dispatch:
+
+# One deploy at a time. The server builds in place and swaps the frontend
+# directory at the end; two runs overlapping would fight over it. Queued rather
+# than cancelled, so the last push always ends up being the one that ships.
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Run the server's deploy script over SSH
+        env:
+          DEPLOY_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          # The box's public IP. If the university ever maps a domain to it,
+          # this is the one line to change.
+          DEPLOY_HOST: 84.13.77.162
+        run: |
+          set -euo pipefail
+          mkdir -p ~/.ssh
+          printf '%s\n' "$DEPLOY_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H "$DEPLOY_HOST" >> ~/.ssh/known_hosts 2>/dev/null
+          ssh -i ~/.ssh/deploy_key -o BatchMode=yes -o IdentitiesOnly=yes \
+            "opc@$DEPLOY_HOST" '/usr/local/bin/deploy'
