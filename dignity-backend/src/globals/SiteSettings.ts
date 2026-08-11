@@ -24,24 +24,40 @@ export const SiteSettings: GlobalConfig = {
       tabs: [
         {
           label: 'Navigation Menu',
+          description:
+            'Every label in the site header, listed in the order the menus appear. Leave a field blank to fall back to the wording built into the site.',
           fields: [
-            ...pair('navHome', 'Home'),
-            ...pair('navAbout', 'About (menu heading)'),
-            ...pair('navAboutInitiative', 'About the Initiative'),
-            ...pair('navAboutFellows', 'Participants'),
-            ...pair('navAboutPartners', 'Partners'),
-            ...pair('navProjects', 'Projects (menu heading)'),
-            ...pair('navProjectsResearch', 'Research Projects'),
-            ...pair('navActivities', 'Activities (menu heading)'),
-            ...pair('navActivitiesSeminars', 'Seminars'),
-            ...pair('navActivitiesConferences', 'Conferences'),
-            ...pair('navActivitiesMeetings', 'Meetings'),
-            ...pair('navActivitiesWindsor', 'The Windsor Birzeit Dignity Initiative'),
-            ...pair('navMedia', 'Media and Updates (menu heading)'),
-            ...pair('navMediaNews', 'News'),
-            ...pair('navMediaAnnouncements', 'Announcements'),
-            ...pair('navMediaPhotos', 'Photos'),
-            ...pair('navMediaClippings', 'Clippings'),
+            ...pair('navAbout', 'About — menu heading'),
+            ...pair('navAboutInitiative', 'About: About the Initiative'),
+            ...pair('navAboutFellows', 'About: Participants'),
+            ...pair('navMediaNews', 'About: News'),
+            ...pair('navMediaAnnouncements', 'About: Announcements'),
+            ...pair('navMediaPhotos', 'About: Photos'),
+            ...pair('navMediaClippings', 'About: Clippings'),
+            ...pair('navAboutPartners', 'About: Partners'),
+
+            ...pair('navActivities', 'Activities — menu heading'),
+            // Field name kept from when this link sat under a 'Projects' menu, so
+            // the wording already saved in the database survives. It is the
+            // Research link inside Activities.
+            ...pair('navProjectsResearch', 'Activities: Research'),
+            ...pair('navActivitiesSeminars', 'Activities: Seminars'),
+            ...pair('navActivitiesConferences', 'Activities: Conferences'),
+            ...pair('navActivitiesMeetings', 'Activities: Meetings'),
+            ...pair('navActivitiesWindsor', 'Activities: The Windsor Birzeit Dignity Initiative'),
+
+            ...pair('navPublications', 'Publications — menu heading'),
+            ...pair('navPublicationsBooks', 'Publications: Books'),
+            ...pair('navPublicationsPapers', 'Publications: Papers'),
+            ...pair('navPublicationsReports', 'Publications: Reports'),
+            ...pair('navPublicationsBrochures', 'Publications: Brochures'),
+            ...pair('navPublicationsTheses', 'Publications: Theses'),
+            ...pair('navPublicationsAudiovisual', 'Publications: Audiovisual'),
+            ...pair('navPublicationsPosters', 'Publications: Posters'),
+
+            ...pair('navInformation', 'Information — menu heading'),
+            ...pair('navInformationReadings', 'Information: Readings and Documents'),
+            ...pair('navInformationDatabases', 'Information: Databases'),
             ],
         },
         {
@@ -98,6 +114,7 @@ export const SiteSettings: GlobalConfig = {
             ...pair('newsReadMore', 'Read More Label'),
             ...pair('newsCollapse', 'Collapse Label'),
             ...pair('projectsArea', 'Research Area Label'),
+            ...pair('navMedia', 'Media Pages: Section Eyebrow'),
             ],
         },
         ],

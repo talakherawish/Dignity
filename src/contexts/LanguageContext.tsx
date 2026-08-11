@@ -330,24 +330,44 @@ export type TranslationKey = keyof typeof translations.en;
 // the Arabic value lives at `${base}Ar`). Only keys editable via Payload appear here --
 // anything absent falls back to the hardcoded dictionary above untouched.
 const SITE_SETTINGS_KEY_MAP: Partial<Record<TranslationKey, string>> = {
-  home: "navHome",
+  // Listed in the order the menus appear in SiteHeader's NAV, so a field in the
+  // admin can be traced to a place on the site. Every nav label belongs here --
+  // a key that is missing is one an editor cannot reach.
   about: "navAbout",
   "about.initiative": "navAboutInitiative",
   "about.fellows": "navAboutFellows",
   "about.participants": "navAboutFellows",
-  "about.partners": "navAboutPartners",
-  projects: "navProjects",
-  "projects.research": "navProjectsResearch",
-  activities: "navActivities",
-  "activities.seminars": "navActivitiesSeminars",
-  "activities.conferences": "navActivitiesConferences",
-  "activities.meetings": "navActivitiesMeetings",
-  "activities.windsor": "navActivitiesWindsor",
-  media: "navMedia",
   "media.news": "navMediaNews",
   "media.announcements": "navMediaAnnouncements",
   "media.photos": "navMediaPhotos",
   "media.clippings": "navMediaClippings",
+  "about.partners": "navAboutPartners",
+
+  activities: "navActivities",
+  // Still called navProjectsResearch in Payload, from when this link lived under
+  // a "Projects" menu -- renaming the field would strand the saved wording.
+  "activities.research": "navProjectsResearch",
+  "activities.seminars": "navActivitiesSeminars",
+  "activities.conferences": "navActivitiesConferences",
+  "activities.meetings": "navActivitiesMeetings",
+  "activities.windsor": "navActivitiesWindsor",
+
+  publications: "navPublications",
+  "publications.books": "navPublicationsBooks",
+  "publications.papers": "navPublicationsPapers",
+  "publications.reports": "navPublicationsReports",
+  "publications.brochures": "navPublicationsBrochures",
+  "publications.theses": "navPublicationsTheses",
+  "publications.audiovisual": "navPublicationsAudiovisual",
+  "publications.posters": "navPublicationsPosters",
+
+  information: "navInformation",
+  "information.readings": "navInformationReadings",
+  "information.databases": "navInformationDatabases",
+
+  // Not a menu label: the eyebrow above the news, announcements, photos and
+  // clippings pages.
+  media: "navMedia",
 
   "hero.eyebrow": "heroEyebrow",
   "hero.title": "heroTitle",
