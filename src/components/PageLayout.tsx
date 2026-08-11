@@ -29,7 +29,11 @@ export function PageHero({
             {eyebrow}
           </p>
         )}
-        <h1 className="font-serif text-3xl md:text-4xl text-primary tracking-tight">{title}</h1>
+        {/* Matches the description below it: a line break typed into the CMS
+            is a line break here. */}
+        <h1 className="font-serif text-3xl md:text-4xl text-primary tracking-tight whitespace-pre-line">
+          {title}
+        </h1>
         {description && (
           <p className="mt-3 max-w-xl mx-auto text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
             {description}

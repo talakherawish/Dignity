@@ -548,10 +548,17 @@ function Home() {
             <div className="text-[12px] uppercase tracking-[0.22em] text-[color:var(--brand-magenta)] font-semibold mb-4">
               {t("hero.eyebrow")}
             </div>
-            <h1 className="font-serif text-4xl md:text-5xl lg:text-[3.6rem] text-primary tracking-tight leading-[1.07]">
+            {/*
+             * whitespace-pre-line so a line break typed into the Hero Title or
+             * Hero Description in Site Settings is the line break shown here.
+             * Both are textarea fields, so the newline was always stored -- it
+             * was HTML that collapsed it into a space, which made pressing
+             * Enter in the admin look like it did nothing.
+             */}
+            <h1 className="font-serif text-4xl md:text-5xl lg:text-[3.6rem] text-primary tracking-tight leading-[1.07] whitespace-pre-line">
               {t("hero.title")}
             </h1>
-            <p className="mt-5 text-base text-muted-foreground leading-relaxed max-w-lg">
+            <p className="mt-5 text-base text-muted-foreground leading-relaxed max-w-lg whitespace-pre-line">
               {t("hero.desc")}
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
