@@ -186,11 +186,23 @@ function LatestNews() {
             brings its own ground rather than putting white text on white. */}
         <div className={"relative " + FEATURE_HEIGHT + (article.image ? "" : " bg-primary")}>
           {article.image && (
+            /*
+             * Both transitions are declared here together on purpose. The
+             * inline `transition` for the cross-fade overrode Tailwind's
+             * transition-transform outright -- inline styles win -- so the
+             * hover had no transition at all and the picture jumped to its
+             * zoomed size. will-change gives it its own compositor layer,
+             * which keeps a photograph this large from stuttering as it moves.
+             */
             <img
               src={article.image}
               alt={getField(article, "title", lang)}
-              style={fade}
-              className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02] motion-reduce:transition-none"
+              style={{
+                opacity: visible ? 1 : 0,
+                transition: "opacity 0.24s ease, transform 0.9s cubic-bezier(0.22, 1, 0.36, 1)",
+                willChange: "transform, opacity",
+              }}
+              className="absolute inset-0 h-full w-full object-cover group-hover:scale-[1.03] motion-reduce:transform-none"
             />
           )}
           <div

@@ -13,6 +13,8 @@ export { PAYLOAD_URL };
 
 export type PayloadMedia = {
   url: string;
+  /** Used to bust the CDN cache when a file is re-cropped -- see mediaUrl. */
+  updatedAt?: string;
   alt?: string;
   mimeType?: string;
   filename?: string;
@@ -337,10 +339,22 @@ export function formatDate(iso: string, locale: "en" | "ar"): string {
 }
 
 /** Resolve a media URL to an absolute URL. */
+/**
+ * The public URL for an upload, with the record's own timestamp on the end.
+ *
+ * Uploads are served from raw.githubusercontent.com, which sends
+ * Cache-Control: max-age=300 -- and cropping an image in the admin rewrites
+ * the file under the same name. Same URL, cached bytes: the crop appeared to
+ * do nothing. The timestamp changes whenever the record does, so a cropped or
+ * replaced file arrives as a URL nothing has cached yet.
+ */
 export function mediaUrl(media: PayloadMedia | undefined): string {
   if (!media?.url) return "";
-  if (media.url.startsWith("http")) return media.url;
-  return `${PAYLOAD_URL}${media.url}`;
+  const base = media.url.startsWith("http") ? media.url : `${PAYLOAD_URL}${media.url}`;
+  if (!media.updatedAt) return base;
+  const version = Date.parse(media.updatedAt);
+  if (Number.isNaN(version)) return base;
+  return `${base}${base.includes("?") ? "&" : "?"}v=${version}`;
 }
 
 // ── Core fetch ─────────────────────────────────────────────────────────────

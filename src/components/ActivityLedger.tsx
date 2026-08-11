@@ -204,7 +204,10 @@ function ActivityEntry({
   );
 
   return (
-    <li className="group relative border-b border-border">
+    /* No rule under each entry: the year rules alone divide the page, and a
+       line under every row turned a short list into a stack of boxes. The
+       vertical rhythm does the separating instead. */
+    <li className="group relative">
       {expandable ? (
         <button
           type="button"
@@ -289,7 +292,7 @@ function LedgerSkeleton() {
   return (
     <div className="space-y-0">
       {[1, 2, 3, 4].map((n) => (
-        <div key={n} className="flex gap-4 border-b border-border py-9 md:gap-8">
+        <div key={n} className="flex gap-4 py-9 md:gap-8">
           <div className="h-10 w-12 shrink-0 animate-pulse rounded-sm bg-secondary/50 md:w-20" />
           <div className="flex-1 space-y-3">
             <div className="h-5 w-3/4 animate-pulse rounded-sm bg-secondary/50" />
