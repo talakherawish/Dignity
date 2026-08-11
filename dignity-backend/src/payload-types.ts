@@ -808,6 +808,10 @@ export interface Meeting {
   title: string;
   titleAr: string;
   date: string;
+  /**
+   * Leave blank for an ordinary meeting. A round table or a discussion is labelled as such above its title on the website.
+   */
+  kind?: ('roundtable' | 'discussion') | null;
   description?: string | null;
   descriptionAr?: string | null;
   content?: {
@@ -1371,6 +1375,7 @@ export interface MeetingsSelect<T extends boolean = true> {
   title?: T;
   titleAr?: T;
   date?: T;
+  kind?: T;
   description?: T;
   descriptionAr?: T;
   content?: T;
@@ -1748,6 +1753,10 @@ export interface SiteSetting {
   newsCollapseAr?: string | null;
   contentUntranslated?: string | null;
   contentUntranslatedAr?: string | null;
+  kindRoundtable?: string | null;
+  kindRoundtableAr?: string | null;
+  kindDiscussion?: string | null;
+  kindDiscussionAr?: string | null;
   projectsArea?: string | null;
   projectsAreaAr?: string | null;
   navMedia?: string | null;
@@ -1892,6 +1901,10 @@ export interface SiteSettingsSelect<T extends boolean = true> {
   newsCollapseAr?: T;
   contentUntranslated?: T;
   contentUntranslatedAr?: T;
+  kindRoundtable?: T;
+  kindRoundtableAr?: T;
+  kindDiscussion?: T;
+  kindDiscussionAr?: T;
   projectsArea?: T;
   projectsAreaAr?: T;
   navMedia?: T;

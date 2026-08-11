@@ -114,6 +114,8 @@ export const SiteSettings: GlobalConfig = {
             ...pair('newsReadMore', 'Read More Label'),
             ...pair('newsCollapse', 'Collapse Label'),
             ...pair('contentUntranslated', 'Notice: Body Not Translated Yet'),
+            ...pair('kindRoundtable', 'Meeting Kind: Round Table'),
+            ...pair('kindDiscussion', 'Meeting Kind: Discussion'),
             ...pair('projectsArea', 'Research Area Label'),
             ...pair('navMedia', 'Media Pages: Section Eyebrow'),
             ],

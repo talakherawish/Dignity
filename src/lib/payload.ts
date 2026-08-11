@@ -44,6 +44,8 @@ export type PayloadActivity = {
   titleAr?: string;
   type: "seminar" | "conference" | "meeting" | "windsor-birzeit";
   date: string;
+  /** Meetings only, and optional even there: a round table or a discussion. */
+  kind?: "roundtable" | "discussion";
   description?: unknown;
   descriptionAr?: unknown;
   content?: unknown;

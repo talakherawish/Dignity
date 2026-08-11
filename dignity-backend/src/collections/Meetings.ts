@@ -38,6 +38,24 @@ export const Meetings: CollectionConfig = {
       type: 'date',
       required: true,
     },
+    /**
+     * Some meetings are run as a round table or as a discussion; most are just
+     * meetings. Left blank the website says nothing, so an ordinary meeting is
+     * not labelled as anything.
+     */
+    {
+      name: 'kind',
+      type: 'select',
+      label: 'Kind of Meeting (optional)',
+      options: [
+        { label: 'Round Table', value: 'roundtable' },
+        { label: 'Discussion', value: 'discussion' },
+      ],
+      admin: {
+        description:
+          'Leave blank for an ordinary meeting. A round table or a discussion is labelled as such above its title on the website.',
+      },
+    },
     {
       name: 'description',
       type: 'textarea',
