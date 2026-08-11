@@ -28,9 +28,16 @@ function ArticleCard({ article }: { article: Article }) {
 
   return (
     <article className="border border-border rounded-sm overflow-hidden bg-card hover:shadow-md transition-shadow duration-200">
-      <div className={article.image ? "grid md:grid-cols-[2fr_3fr]" : ""}>
+      {/*
+       * One column, not an image beside a text panel. The split made every
+       * card two things read at once, and since the image is optional the
+       * cards did not even agree on which shape they were -- some in two
+       * columns, some in one. A banner across the top is the same card either
+       * way, and the headline always starts in the same place.
+       */}
+      <div>
         {article.image && (
-          <div style={{ aspectRatio: "4/3" }} className="overflow-hidden">
+          <div className="overflow-hidden" style={{ aspectRatio: "21/9" }}>
             <img
               src={article.image}
               alt={getField(article, "title", l)}
@@ -135,7 +142,12 @@ function NewsPage() {
          * affected -- date, headline, excerpt and whole paragraphs of body
          * copy, all centred.
          */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {/*
+         * A reading column, not the site's full 7xl width. With the image no
+         * longer taking half the card, body copy across 1280px would run to
+         * well over a hundred characters a line.
+         */}
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="mb-8 text-center">
             <p className="text-[12px] uppercase tracking-[0.22em] text-[color:var(--brand-magenta)] font-semibold mb-1.5">
               {t("media")}
