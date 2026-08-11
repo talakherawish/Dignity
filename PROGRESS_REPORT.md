@@ -305,5 +305,8 @@ echo "✓ Frontend deployed!"
 ## Time Logged
 - **2026-08-08:** 8 hours (Oracle deployment + HTTPS login fix)
 - **2026-08-09:** 0 hours so far (starting fresh)
+- **2026-08-10:** not logged (HTTPS auto-renewal, backups, frontend deployment, server/GitHub reconciled — all recorded above)
+- **2026-08-11, daytime:** not logged (one-command deploy, Google Drive file audit)
+- **2026-08-11 18:11 → 2026-08-12 00:14:** ~6¼ hours (website work: activities ledger, Site Settings audit, translation notice, news index, homepage feature, automatic deploys). 15 code commits, 10 deploys.
 
-**Total project time to date:** ~72 hours (accumulated since start of Dignity project).
+**Total project time to date:** ~78 hours (accumulated since start of Dignity project). The two unlogged days above are not counted, so the real figure is higher.
