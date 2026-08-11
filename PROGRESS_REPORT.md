@@ -1,11 +1,18 @@
 # Dignity Initiative — Progress Report
-**Updated:** 2026-08-09  
-**Reporting period:** 2026-08-08 to 2026-08-09
+**Updated:** 2026-08-11  
+**Reporting period:** 2026-08-08 to 2026-08-11
 
 ---
 
 ## Summary
-Backend deployment to Oracle Cloud is **complete and functional**. Admin panel login works end-to-end. Changed from Vercel serverless to a real persistent Oracle ARM instance for reliability. One admin account (ahousin@birzeit.edu) needs password reset, then both accounts will be live.
+
+**The site is fully deployed and self-maintaining.** Frontend and backend both run on one Oracle Cloud instance behind a single certificate at **https://84-13-77-162.sslip.io** — public site at `/`, Payload admin at `/admin`. Content comes from MongoDB Atlas.
+
+Infrastructure work is finished. HTTPS renews itself, backups run nightly and have been verified by restoring one, GitHub and the server hold identical code, and deployment is a single tested command.
+
+**Oracle is the permanent home.** The university has no hosting capacity; they will only map a domain to this IP. Backups, uptime and deployment are therefore ours to own.
+
+What remains is content entry, not engineering.
 
 ---
 
@@ -14,9 +21,9 @@ Backend deployment to Oracle Cloud is **complete and functional**. Admin panel l
 ### Oracle Cloud Backend Deployment (8 hrs, 2026-08-08)
 - **What:** Migrated Payload backend from dead Vercel deployment to Oracle Cloud Always Free tier.
 - **Instance:** ARM A1 Compute (2 OCPU / 12GB RAM / 200GB storage), IP `84.13.77.162`, hostname `dignity-prod`.
-- **Deployment method:** Manual SSH + Docker + systemd (no Coolify; kept it simple for one-shot setup).
+- **Deployment method:** git clone at `/home/opc/app`, Payload run under pm2 (no Docker).
 - **Database:** Still on MongoDB Atlas (no migration needed; worked through Vercel, works now).
-- **Storage:** Local disk (/srv/payload-uploads) — files persist across restarts.
+- **Storage:** Local disk at `/home/opc/app/public/uploads` — files persist across restarts.
 - **HTTPS:** Auto-issued via sslip.io (`84-13-77-162.sslip.io`); valid for 90 days.
 
 ### Login Fixed (critical debug, same 8 hrs)
@@ -52,10 +59,66 @@ Backend deployment to Oracle Cloud is **complete and functional**. Admin panel l
 - Verified with a dry run: *"all simulated renewals succeeded"*, nginx active afterwards, site 200
 - `--no-random-sleep-on-renew` and `TimeoutStartSec=600` are both required. certbot otherwise sleeps up to 8 minutes and systemd kills it at 90 seconds — the renewal would fail silently every time.
 
-**Loose ends:**
-1. Set password for ahousin@birzeit.edu (2 min).
-2. Change Tala's temporary password (`Dignity2026!`).
-3. Commit `admin.position` fix to GitHub (patched on server, not in origin/main — will return on fresh clone).
+## Server / GitHub reconciled — DONE (2026-08-10)
+
+They had diverged both ways. Now aligned at commit `415847b`.
+
+- All local work committed and pushed (collection restructure, frontend updates, removal of the ignored `admin.position` keys)
+- `.gitignore` now excludes `dignity_key` (an SSH **private key** sitting in the project root) and `frontend.zip` (~158MB, over GitHub's 100MB limit). Both would have been committed by a plain `git add .`
+- Server pulled, dependencies installed, Payload rebuilt, restarted under pm2
+- **Security fix:** the server was running `auth: { cookies: { secure: false } }`, left over from HTTP debugging. Pulling restored `auth: true`, so the admin login cookie is properly Secure again.
+- Research content confirmed present and rendering — it was missing only because the server was running older code
+
+**How deployment actually works — there is no CI.** Pushing to GitHub deploys nothing.
+- Backend: git clone at `/home/opc/app`, run by **pm2** as `dignity-backend`. Update = `git pull` → `npm install` → `npm run build` → `pm2 restart`
+- Frontend: built on the laptop, zipped, uploaded via Cloud Shell, `scp`'d, `systemctl restart dignity-frontend`
+
+## Backups — DONE and restore-tested (2026-08-10)
+
+- `/usr/local/bin/dignity-backup.sh` via `dignity-backup.timer`, nightly 02:00, **14 days retained**
+- One archive holds both the database dump and all uploads: first run was **151MB, 65 upload files**
+- Stored at `/home/opc/backups`, mode 600
+- **Verified by restoring into a scratch database**, not just by checking a file exists
+
+**Gap worth closing:** all copies live on the same instance. They protect against mistakes, not against losing the machine. Off-server copy is manual — `scp` the newest archive to Cloud Shell, then Menu → Download. Worth doing after big content sessions.
+
+## One-command deploy — DONE and tested (2026-08-11)
+
+```
+ssh -i ~/.ssh/dignity opc@84.13.77.162 '/usr/local/bin/deploy'
+```
+
+Pulls from GitHub, builds both halves **on the server**, swaps the frontend into place, restarts both services, then checks `/`, `/admin` and the API and prints the status codes.
+
+- **Builds run before anything restarts** — a failed build leaves the live site untouched
+- Previous frontend kept at `/srv/dignity-frontend.old` for rollback
+- `git reset --hard origin/main`, so the server exactly mirrors GitHub. **Anything edited directly on the server is wiped** — all changes go through GitHub now. That is the permanent fix for the drift found on 2026-08-10.
+- Frontend builds on the server so `VITE_PAYLOAD_URL` comes from one known place, rather than depending on a laptop's `.env`
+
+**A bug the test caught:** the first run passed, the second failed — removing `/srv/dignity-frontend.old` needs `sudo`, because deleting a directory requires write permission on its parent and `/srv` is root-owned. Every run after the first would have failed. Fixed and re-verified on a repeat run. Worth remembering: running a new script **twice** is the test that matters.
+
+Known warning, harmless for now: server Node is v20, TanStack Start wants ≥22, so installs print `EBADENGINE`. Builds succeed. Watch it if that changes.
+
+---
+
+## Database decision — staying on MongoDB Atlas
+
+Considered moving MongoDB onto the Oracle instance for single-vendor tidiness. **Decided against it.**
+
+- Payload has no Oracle Autonomous Database adapter, so "move to Oracle's database" was never actually available — only self-hosting MongoDB on the instance.
+- Atlas replicates across three nodes; a single instance has one disk. Self-hosting would trade real resilience for neatness, and make uptime and backups ours.
+- Atlas free tier caps at 512MB; the database is ~100KB compressed. PDFs live on the server, not in the database, so the cap is not a constraint.
+- The nightly backup already dumps Atlas onto the Oracle box, so there is an independent copy regardless.
+
+---
+
+## Remaining work
+
+1. **Populate the site** — the main task now, and safe to do; backups are running.
+2. Set password for `ahousin@birzeit.edu` (2 min).
+3. Change Tala's temporary password (`Dignity2026!`).
+4. Google Drive workspace as an independent, browsable copy of the documents — upload all 64 files from `public/uploads`, **including the `-thumb.png` files**, since those are the PDF cover previews the site displays. Verified 2026-08-11 that the local folder exactly matches the server: 64 files, 155MB, 30 PDFs.
+5. Optional: copy a backup archive off the server after big content sessions — all 14 copies currently live on the same machine.
 
 ---
 
