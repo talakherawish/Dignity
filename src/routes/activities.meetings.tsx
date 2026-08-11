@@ -194,15 +194,6 @@ function MeetingEntry({
 
   return (
     <li className="group relative border-b border-border">
-      {/* Grows from the leading edge on hover — the only ornament on the row. */}
-      <span
-        aria-hidden="true"
-        className={
-          "absolute inset-y-0 start-0 w-px origin-top bg-[color:var(--brand-magenta)] transition-transform duration-500 ease-out motion-reduce:transition-none " +
-          (open ? "scale-y-100" : "scale-y-0 group-hover:scale-y-100")
-        }
-      />
-
       {expandable ? (
         <button
           type="button"
