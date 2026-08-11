@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { ChevronLeft, ChevronRight, X, Mail } from "lucide-react";
+import { X, Mail } from "lucide-react";
 import { PageLayout } from "@/components/PageLayout";
 import officeImg from "@/assets/dignity-office.jpg";
 import { useLanguage, type TranslationKey } from "@/contexts/LanguageContext";
@@ -110,8 +110,29 @@ function mapPayloadToTeamPerson(p: PayloadParticipant): TeamPerson {
   };
 }
 
-// ── News carousel with 5-second autoplay and fade transition ──────────────
-function NewsCarousel() {
+// ── Latest news: one story large, the rest as a numbered index ────────────
+/**
+ * The feature rotates every five seconds and the index marks whichever story
+ * is showing, so the two halves always agree. Picking a heading jumps to it.
+ *
+ * This replaced a slide carousel whose only navigation was three arrow
+ * buttons and a row of dots -- controls that said nothing about what they
+ * would show. The headings are the navigation now, which is why the arrows
+ * and dots are gone.
+ */
+
+/**
+ * Capped in viewport units rather than by aspect ratio alone: an aspect ratio
+ * grows with the column, and a picture taller than the window cannot be seen
+ * at all. The headline sits over the foot of this one, so it has to stay on
+ * screen.
+ */
+const FEATURE_HEIGHT = "h-[clamp(16rem,50vh,28rem)]";
+
+/** Enough to fill the index beside the picture without it sprawling. */
+const FEATURED_COUNT = 4;
+
+function LatestNews() {
   const { t, lang, isArabic } = useLanguage();
   const [i, setI] = useState(0);
   const [visible, setVisible] = useState(true);
@@ -122,7 +143,10 @@ function NewsCarousel() {
     queryFn: fetchNews,
     staleTime: 5 * 60 * 1000,
   });
-  const articles = payloadNews.length > 0 ? payloadNews.map(mapPayloadNews) : ARTICLES;
+  const articles = (payloadNews.length > 0 ? payloadNews.map(mapPayloadNews) : ARTICLES).slice(
+    0,
+    FEATURED_COUNT,
+  );
 
   const goTo = useCallback((next: number) => {
     setVisible(false);
@@ -137,125 +161,110 @@ function NewsCarousel() {
   // so an interval left over from the old length would wrap at the wrong point.
   const slideCount = articles.length;
   useEffect(() => {
-    if (paused) return;
+    if (paused || slideCount < 2) return;
     const id = setInterval(() => goTo((i + 1) % slideCount), 5000);
     return () => clearInterval(id);
   }, [i, paused, goTo, slideCount]);
 
-  const article = articles[Math.min(i, articles.length - 1)];
-  const l = lang;
-  const fade = {
-    opacity: visible ? 1 : 0,
-    transition: "opacity 0.24s ease",
-  } as const;
+  if (slideCount === 0) return null;
+
+  const article = articles[Math.min(i, slideCount - 1)];
+  const fade = { opacity: visible ? 1 : 0, transition: "opacity 0.24s ease" } as const;
 
   return (
     <div
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
-      className="border border-border rounded-sm overflow-hidden bg-background"
+      className="grid gap-8 lg:grid-cols-[minmax(0,7fr)_minmax(0,3fr)] lg:gap-12"
     >
-      <div className="grid md:grid-cols-[2fr_3fr]">
-        {/* Article image — fades with slide */}
-        <div style={{ ...fade, aspectRatio: "4/3", overflow: "hidden" }}>
-          <img
-            src={article.image}
-            alt={getField(article, "title", l)}
-            className="w-full h-full object-cover"
+      <Link
+        to="/media/news"
+        aria-label={getField(article, "title", lang)}
+        className="group block overflow-hidden rounded-sm border border-border"
+      >
+        {/* Without a picture the gradient has nothing to darken, so the panel
+            brings its own ground rather than putting white text on white. */}
+        <div className={"relative " + FEATURE_HEIGHT + (article.image ? "" : " bg-primary")}>
+          {article.image && (
+            <img
+              src={article.image}
+              alt={getField(article, "title", lang)}
+              style={fade}
+              className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02] motion-reduce:transition-none"
+            />
+          )}
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/45 to-black/10"
           />
-        </div>
-
-        {/* Text panel */}
-        <div
-          className="p-7 lg:p-9 flex flex-col justify-between"
-          style={{
-            opacity: visible ? 1 : 0,
-            transform: visible ? "translateY(0)" : "translateY(5px)",
-            transition: "opacity 0.24s ease, transform 0.24s ease",
-          }}
-        >
-          <div>
-            <div className="text-[12px] uppercase tracking-[0.22em] text-[color:var(--brand-magenta)] font-semibold mb-3">
-              {getField(article, "date", l)}
-            </div>
-            <h3
-              className={`font-serif text-xl lg:text-2xl text-primary mb-3 leading-snug ${isArabic ? "text-right" : ""}`}
-            >
-              {withItalicQuotes(getField(article, "title", l))}
-            </h3>
-            <p
-              className={`text-sm text-muted-foreground leading-relaxed ${isArabic ? "text-right" : ""}`}
-            >
-              {getField(article, "excerpt", l)}
+          <div className="absolute inset-x-0 bottom-0 p-6 md:p-9" style={fade}>
+            <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-[color:var(--brand-magenta)]">
+              {t("news.eyebrow")}
             </p>
-          </div>
-
-          <div className="mt-6 flex items-center justify-between">
-            {/* Controls + dots */}
-            <div className="flex items-center gap-3">
-              {/*
-                dir="ltr" on the control strip, in both languages.
-
-                The slides cross-fade rather than slide, so the dots are the
-                only thing that visibly moves — and in an RTL row they ran the
-                other way, putting slide 1 on the right and marching the
-                highlight left as the arrow pointing right was clicked. Left to
-                the page direction, the buttons flipped too: `carousel-prev`
-                being the first child landed on the right, which earlier fixes
-                papered over by mirroring both glyphs in CSS and swapping both
-                click handlers — two corrections that cancelled, leaving the
-                arrows disagreeing with the dots and the aria-labels describing
-                the opposite of what each button did.
-
-                Pinning the strip to LTR removes the need for either hack:
-                previous is on the left pointing left, next is on the right
-                pointing right, and slide 1 is the leftmost dot, so a click on
-                "next" moves the highlight the same way the arrow points. The
-                strip keeps its place in the RTL row above, so nothing moves.
-              */}
-              <div className="flex gap-1" dir="ltr">
-                <button
-                  onClick={() => goTo((i - 1 + articles.length) % articles.length)}
-                  aria-label={t("news.prev")}
-                  className="carousel-prev h-8 w-8 rounded-full border border-border flex items-center justify-center text-foreground/60 hover:text-accent hover:border-accent transition-colors"
-                >
-                  <ChevronLeft className="h-3.5 w-3.5" />
-                </button>
-                <button
-                  onClick={() => goTo((i + 1) % articles.length)}
-                  aria-label={t("news.next")}
-                  className="carousel-next h-8 w-8 rounded-full border border-border flex items-center justify-center text-foreground/60 hover:text-accent hover:border-accent transition-colors"
-                >
-                  <ChevronRight className="h-3.5 w-3.5" />
-                </button>
-              </div>
-
-              {/* Minimal slide dots */}
-              <div className="flex items-center gap-1" role="tablist" dir="ltr">
-                {articles.map((_, idx) => (
-                  <button
-                    key={idx}
-                    role="tab"
-                    aria-selected={idx === i}
-                    aria-label={`Slide ${idx + 1}`}
-                    onClick={() => goTo(idx)}
-                    className={[
-                      "h-1 rounded-full transition-all duration-300",
-                      idx === i ? "w-5 bg-accent" : "w-1.5 bg-border hover:bg-muted-foreground/50",
-                    ].join(" ")}
-                  />
-                ))}
-              </div>
+            <h3 className="max-w-3xl font-serif text-2xl leading-tight text-white md:text-[2rem]">
+              {withItalicQuotes(getField(article, "title", lang))}
+            </h3>
+            <p className="mt-3 line-clamp-2 max-w-2xl text-sm leading-relaxed text-white/75">
+              {getField(article, "excerpt", lang)}
+            </p>
+            <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
+              <span className="text-[11px] uppercase tracking-[0.2em] text-white/60">
+                {getField(article, "date", lang)}
+              </span>
+              <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-white group-hover:underline">
+                {t("news.readMore")}
+              </span>
             </div>
-
-            <Link
-              to="/media/news"
-              className="text-xs font-medium text-accent hover:underline tracking-wide"
-            >
-              {t("news.viewAll")}
-            </Link>
           </div>
         </div>
+      </Link>
+
+      <div>
+        <p className="mb-4 text-[11px] uppercase tracking-[0.22em] text-muted-foreground">
+          {isArabic ? "أحدث الأخبار" : "Latest stories"}
+        </p>
+        <ul className="border-t border-border">
+          {articles.map((entry, index) => {
+            const active = index === i;
+            // Arabic-Indic numerals beside Arabic dates, Latin beside English.
+            const number = (index + 1).toLocaleString(isArabic ? "ar-EG" : "en-US", {
+              minimumIntegerDigits: 2,
+            });
+
+            return (
+              <li key={entry.id} className="border-b border-border">
+                <button
+                  type="button"
+                  onClick={() => goTo(index)}
+                  aria-current={active ? "true" : undefined}
+                  className={
+                    "group flex w-full gap-4 border-s-2 py-5 ps-4 text-start transition-colors duration-300 " +
+                    (active ? "border-[color:var(--brand-magenta)]" : "border-transparent")
+                  }
+                >
+                  <span className="font-serif text-sm tabular-nums text-muted-foreground/70">
+                    {number}
+                  </span>
+                  <span className="min-w-0">
+                    <span
+                      className={
+                        "block font-serif text-[15px] leading-snug transition-colors duration-300 " +
+                        (active
+                          ? "text-[color:var(--brand-magenta)]"
+                          : "text-primary group-hover:text-[color:var(--brand-magenta)]")
+                      }
+                    >
+                      {withItalicQuotes(getField(entry, "title", lang))}
+                    </span>
+                    <span className="mt-1.5 block text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
+                      {getField(entry, "date", lang)}
+                    </span>
+                  </span>
+                </button>
+              </li>
+            );
+          })}
+        </ul>
       </div>
     </div>
   );
@@ -578,7 +587,7 @@ function Home() {
               {t("news.viewAll")}
             </Link>
           </div>
-          <NewsCarousel />
+          <LatestNews />
         </div>
       </section>
 
