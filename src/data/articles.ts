@@ -138,16 +138,18 @@ export const ARTICLES: Article[] = [
  * ARTICLES fallback through exactly the same components.
  */
 export function mapPayloadNews(pa: PayloadNews): Article {
-  const arabicBody = extractText(pa.contentAr);
   return {
     id: pa.id,
     image: mediaUrl(pa.image) || "",
     date: { en: formatDate(pa.date, "en"), ar: formatDate(pa.date, "ar") },
     title: { en: pa.title, ar: pa.titleAr ?? pa.title },
     excerpt: { en: pa.excerpt ?? "", ar: pa.excerptAr ?? pa.excerpt ?? "" },
+    // Each language carries its own body, with no cross-language fallback:
+    // an article written up in one language only is announced as untranslated
+    // by the card rather than being served in the other language.
     body: {
       en: extractText(pa.content),
-      ar: arabicBody.length ? arabicBody : extractText(pa.content),
+      ar: extractText(pa.contentAr),
     },
   };
 }
@@ -161,6 +163,7 @@ export function getField(
   return article[field][lang] || article[field].en;
 }
 
+/** The body in this language. Empty when it has not been translated yet. */
 export function getBody(article: Article, lang: ArticleLang): string[] {
-  return article.body[lang] ?? article.body.en;
+  return article.body[lang] ?? [];
 }

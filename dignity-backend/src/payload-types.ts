@@ -1746,6 +1746,8 @@ export interface SiteSetting {
   newsReadMoreAr?: string | null;
   newsCollapse?: string | null;
   newsCollapseAr?: string | null;
+  contentUntranslated?: string | null;
+  contentUntranslatedAr?: string | null;
   projectsArea?: string | null;
   projectsAreaAr?: string | null;
   navMedia?: string | null;
@@ -1888,6 +1890,8 @@ export interface SiteSettingsSelect<T extends boolean = true> {
   newsReadMoreAr?: T;
   newsCollapse?: T;
   newsCollapseAr?: T;
+  contentUntranslated?: T;
+  contentUntranslatedAr?: T;
   projectsArea?: T;
   projectsAreaAr?: T;
   navMedia?: T;

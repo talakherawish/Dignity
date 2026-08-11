@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { ChevronDown } from "lucide-react";
 import { PageLayout } from "@/components/PageLayout";
+import { TranslationNotice } from "@/components/TranslationNotice";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { ARTICLES, getField, getBody, mapPayloadNews, type Article } from "@/data/articles";
 import { fetchNews } from "@/lib/payload";
@@ -17,6 +18,11 @@ function ArticleCard({ article }: { article: Article }) {
   const { t, lang, isArabic } = useLanguage();
   const [expanded, setExpanded] = useState(false);
   const l = lang;
+  const paragraphs = getBody(article, l);
+  // Written up in the other language only. The card still opens -- there is
+  // something here, it just is not in this language yet.
+  const untranslated =
+    paragraphs.length === 0 && getBody(article, isArabic ? "en" : "ar").length > 0;
 
   return (
     <article className="border border-border rounded-sm overflow-hidden bg-card hover:shadow-md transition-shadow duration-200">
@@ -75,11 +81,15 @@ function ArticleCard({ article }: { article: Article }) {
           dir={isArabic ? "rtl" : "ltr"}
         >
           <div className={"space-y-4 max-w-3xl" + (isArabic ? " mr-0 ml-auto text-right" : "")}>
-            {getBody(article, l).map((para, idx) => (
-              <p key={idx} className="text-sm text-foreground/85 leading-loose">
-                {para}
-              </p>
-            ))}
+            {untranslated ? (
+              <TranslationNotice />
+            ) : (
+              paragraphs.map((para, idx) => (
+                <p key={idx} className="text-sm text-foreground/85 leading-loose">
+                  {para}
+                </p>
+              ))
+            )}
           </div>
         </div>
       </div>

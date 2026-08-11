@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, ChevronDown, Download, FileText } from "lucide-react";
 import { PageLayout } from "@/components/PageLayout";
 import { RichText } from "@/components/RichText";
+import { TranslationNotice } from "@/components/TranslationNotice";
 import { useLanguage, type Language } from "@/contexts/LanguageContext";
 import {
   fetchResearchBySlug,
@@ -188,11 +189,16 @@ function ResearchDetailPage() {
   const research: PayloadResearchActivity = item;
   const title = lang === "ar" ? (research.titleAr ?? research.title) : research.title;
   const image = mediaUrl(research.image);
-  // Full write-up if there is one, otherwise the short description.
-  const fullContent = lang === "ar" ? (research.contentAr ?? research.content) : research.content;
-  const shortDescription =
-    lang === "ar" ? (research.descriptionAr ?? research.description) : research.description;
+  // Full write-up if there is one, otherwise the short description -- in the
+  // visitor's own language only, so an area written up in one language is
+  // announced as untranslated rather than silently served in the other.
+  const fullContent = lang === "ar" ? research.contentAr : research.content;
+  const shortDescription = lang === "ar" ? research.descriptionAr : research.description;
   const body = hasProse(fullContent) ? fullContent : shortDescription;
+  const untranslated =
+    !hasProse(body) &&
+    (hasProse(lang === "ar" ? research.content : research.contentAr) ||
+      hasProse(lang === "ar" ? research.description : research.descriptionAr));
 
   // Outputs come from this entry's own selections in the admin — the
   // `related*` relationship fields — so the page shows what an editor attached
@@ -288,6 +294,8 @@ function ResearchDetailPage() {
             value={body}
             className="mt-8 space-y-5 text-base leading-[1.85] text-foreground/90 opacity-0 animate-[fadeIn_0.8s_ease-in-out_0.3s_forwards]"
           />
+        ) : untranslated ? (
+          <TranslationNotice className="mt-8" />
         ) : (
           <p className="mt-8 text-sm text-muted-foreground">
             {isArabic ? "المحتوى قادم قريباً." : "Content coming soon."}

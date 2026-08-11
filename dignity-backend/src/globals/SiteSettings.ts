@@ -113,6 +113,7 @@ export const SiteSettings: GlobalConfig = {
             ...pair('newsNext', 'Carousel: Next'),
             ...pair('newsReadMore', 'Read More Label'),
             ...pair('newsCollapse', 'Collapse Label'),
+            ...pair('contentUntranslated', 'Notice: Body Not Translated Yet'),
             ...pair('projectsArea', 'Research Area Label'),
             ...pair('navMedia', 'Media Pages: Section Eyebrow'),
             ],

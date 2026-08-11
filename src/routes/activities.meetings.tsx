@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { PageLayout, PageHero } from "@/components/PageLayout";
 import { RichText } from "@/components/RichText";
+import { TranslationNotice } from "@/components/TranslationNotice";
 import { useLanguage } from "@/contexts/LanguageContext";
 import {
   fetchMeetings,
@@ -119,14 +120,26 @@ function MeetingEntry({
 }) {
   const isArabic = lang === "ar";
   const title = isArabic ? (item.titleAr ?? item.title) : item.title;
-  const lead = isArabic ? (item.descriptionAr ?? item.description) : item.description;
-  const body = isArabic ? (item.contentAr ?? item.content) : item.content;
+
+  // Prose is read from the visitor's own language only. A title still falls
+  // back, because every entry has one and a row cannot be blank -- but handing
+  // an Arabic reader a paragraph of English, unannounced, is worse than
+  // telling them the translation is coming.
+  const lead = isArabic ? item.descriptionAr : item.description;
+  const body = isArabic ? item.contentAr : item.content;
   const figures = figuresOf(item, lang);
   const parts = dateParts(item.date, lang);
 
+  const prose = hasProse(lead) || hasProse(body);
+  const untranslated =
+    !prose &&
+    (hasProse(isArabic ? item.description : item.descriptionAr) ||
+      hasProse(isArabic ? item.content : item.contentAr));
+
   // An entry with nothing behind it is a line of text, not a control: no
-  // toggle, no pointer, nothing to press that would then do nothing.
-  const expandable = hasProse(lead) || hasProse(body) || figures.length > 0;
+  // toggle, no pointer, nothing to press that would then do nothing. An entry
+  // written up in the other language still opens, to say so.
+  const expandable = prose || untranslated || figures.length > 0;
   const panelId = `meeting-panel-${item.id}`;
   const titleId = `meeting-title-${item.id}`;
 
@@ -229,6 +242,7 @@ function MeetingEntry({
                   className="mt-5 space-y-4 text-sm leading-7 text-foreground/70 md:text-[15px]"
                 />
               )}
+              {untranslated && <TranslationNotice />}
               {figures.length > 0 && (
                 <div
                   className={
