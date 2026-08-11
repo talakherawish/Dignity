@@ -23,6 +23,8 @@ function ArticleCard({ article }: { article: Article }) {
   // something here, it just is not in this language yet.
   const untranslated =
     paragraphs.length === 0 && getBody(article, isArabic ? "en" : "ar").length > 0;
+  const panelId = `news-panel-${article.id}`;
+  const titleId = `news-title-${article.id}`;
 
   return (
     <article className="border border-border rounded-sm overflow-hidden bg-card hover:shadow-md transition-shadow duration-200">
@@ -42,6 +44,7 @@ function ArticleCard({ article }: { article: Article }) {
               {getField(article, "date", l)}
             </p>
             <h2
+              id={titleId}
               className={
                 "font-serif text-xl lg:text-2xl text-primary mb-3 leading-snug" +
                 (isArabic ? " text-right" : "")
@@ -58,7 +61,10 @@ function ArticleCard({ article }: { article: Article }) {
             </p>
           </div>
           <button
+            type="button"
             onClick={() => setExpanded((e) => !e)}
+            aria-expanded={expanded}
+            aria-controls={panelId}
             className="mt-6 self-start flex items-center gap-1.5 text-xs font-medium text-accent hover:underline"
           >
             {expanded ? t("news.collapse") : t("news.readMore")}
@@ -69,27 +75,40 @@ function ArticleCard({ article }: { article: Article }) {
           </button>
         </div>
       </div>
+      {/*
+       * The panel animates its own height rather than a max-height guess.
+       * It used to run 0 -> 4000px: a short article finished opening in the
+       * first fraction of the transition and then sat still for the rest of
+       * it, and on the way back nothing moved until the last moment, when the
+       * card slammed shut. A 0fr -> 1fr grid row is the content's real height,
+       * so both directions take the time they appear to take.
+       */}
       <div
-        className="overflow-hidden"
-        style={{
-          maxHeight: expanded ? "4000px" : "0px",
-          transition: expanded ? "max-height 0.6s ease-in" : "max-height 0.4s ease-out",
-        }}
+        id={panelId}
+        role="region"
+        aria-labelledby={titleId}
+        inert={!expanded}
+        className={
+          "grid transition-[grid-template-rows] duration-500 ease-out motion-reduce:transition-none " +
+          (expanded ? "grid-rows-[1fr]" : "grid-rows-[0fr]")
+        }
       >
-        <div
-          className="px-7 lg:px-9 pb-9 pt-6 border-t border-border"
-          dir={isArabic ? "rtl" : "ltr"}
-        >
-          <div className={"space-y-4 max-w-3xl" + (isArabic ? " mr-0 ml-auto text-right" : "")}>
-            {untranslated ? (
-              <TranslationNotice />
-            ) : (
-              paragraphs.map((para, idx) => (
-                <p key={idx} className="text-sm text-foreground/85 leading-loose">
-                  {para}
-                </p>
-              ))
-            )}
+        <div className="overflow-hidden">
+          <div
+            className="px-7 lg:px-9 pb-9 pt-6 border-t border-border"
+            dir={isArabic ? "rtl" : "ltr"}
+          >
+            <div className={"space-y-4 max-w-3xl" + (isArabic ? " mr-0 ml-auto text-right" : "")}>
+              {untranslated ? (
+                <TranslationNotice />
+              ) : (
+                paragraphs.map((para, idx) => (
+                  <p key={idx} className="text-sm text-foreground/85 leading-loose">
+                    {para}
+                  </p>
+                ))
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -109,8 +128,15 @@ function NewsPage() {
   return (
     <PageLayout>
       <section className="border-b border-border">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center">
-          <div className="mb-8">
+        {/*
+         * text-center belongs to the page heading, not to the whole column.
+         * On the column it was inherited by every card: the Arabic side put it
+         * right again with its own text-right, so only the English cards were
+         * affected -- date, headline, excerpt and whole paragraphs of body
+         * copy, all centred.
+         */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="mb-8 text-center">
             <p className="text-[12px] uppercase tracking-[0.22em] text-[color:var(--brand-magenta)] font-semibold mb-1.5">
               {t("media")}
             </p>
