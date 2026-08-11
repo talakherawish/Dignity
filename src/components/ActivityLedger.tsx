@@ -259,9 +259,12 @@ function ActivityEntry({
                           src={figure.url}
                           alt={figure.alt}
                           loading="lazy"
+                          // A lone image runs the full width of the column, so
+                          // it is also capped in viewport units: a picture
+                          // taller than the window cannot be seen at all.
                           className={
                             "w-full object-cover transition-transform duration-700 ease-out group-hover/figure:scale-[1.03] motion-reduce:transition-none " +
-                            (figures.length === 1 ? "aspect-[16/9]" : "aspect-[4/3]")
+                            (figures.length === 1 ? "aspect-[16/9] max-h-[70vh]" : "aspect-[4/3]")
                           }
                         />
                       </div>
