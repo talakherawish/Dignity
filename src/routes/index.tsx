@@ -187,22 +187,27 @@ function LatestNews() {
         <div className={"relative " + FEATURE_HEIGHT + (article.image ? "" : " bg-primary")}>
           {article.image && (
             /*
-             * Both transitions are declared here together on purpose. The
-             * inline `transition` for the cross-fade overrode Tailwind's
-             * transition-transform outright -- inline styles win -- so the
-             * hover had no transition at all and the picture jumped to its
-             * zoomed size. will-change gives it its own compositor layer,
-             * which keeps a photograph this large from stuttering as it moves.
+             * The cross-fade and the hover zoom share one inline `transition`,
+             * because an inline style overrides Tailwind's transition utility
+             * outright and the fade has to be declared here -- it depends on
+             * component state.
+             *
+             * It names `scale`, not `transform`: Tailwind v4 compiles
+             * scale-[1.03] to the standalone `scale` property (confirmed in
+             * the built CSS), so a transition covering `transform` leaves the
+             * zoom untransitioned and the picture snaps. Tailwind's own
+             * transition-transform covers transform, translate, scale and
+             * rotate together, which is why it never had this problem.
              */
             <img
               src={article.image}
               alt={getField(article, "title", lang)}
               style={{
                 opacity: visible ? 1 : 0,
-                transition: "opacity 0.24s ease, transform 0.9s cubic-bezier(0.22, 1, 0.36, 1)",
-                willChange: "transform, opacity",
+                transition: "opacity 0.24s ease, scale 0.9s cubic-bezier(0.22, 1, 0.36, 1)",
+                willChange: "scale, opacity",
               }}
-              className="absolute inset-0 h-full w-full object-cover group-hover:scale-[1.03] motion-reduce:transform-none"
+              className="absolute inset-0 h-full w-full object-cover group-hover:scale-[1.03] motion-reduce:scale-100"
             />
           )}
           <div
