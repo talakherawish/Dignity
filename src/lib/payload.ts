@@ -31,6 +31,13 @@ export type PayloadNews = {
   image?: PayloadMedia;
 };
 
+export type PayloadGalleryItem = {
+  id?: string;
+  image?: PayloadMedia;
+  caption?: string;
+  captionAr?: string;
+};
+
 export type PayloadActivity = {
   id: string;
   title: string;
@@ -39,7 +46,10 @@ export type PayloadActivity = {
   date: string;
   description?: unknown;
   descriptionAr?: unknown;
+  content?: unknown;
+  contentAr?: unknown;
   image?: PayloadMedia;
+  gallery?: PayloadGalleryItem[];
 };
 
 export type PayloadAnnouncement = {
@@ -368,7 +378,16 @@ export const fetchSeminars = () => fetchCollection<PayloadActivity>("seminars", 
 
 export const fetchConferences = () => fetchCollection<PayloadActivity>("conferences", NEWEST_FIRST);
 
-export const fetchMeetings = () => fetchCollection<PayloadActivity>("meetings", NEWEST_FIRST);
+/**
+ * Meetings, newest first.
+ *
+ * depth 2 rather than the shared default of 1: a meeting's extra images are
+ * uploads nested inside the `gallery` array, a hop further in than the
+ * featured image, so they need the extra level to arrive as media objects
+ * with a url rather than as bare ids.
+ */
+export const fetchMeetings = () =>
+  fetchCollection<PayloadActivity>("meetings", { ...NEWEST_FIRST, depth: "2" });
 
 /**
  * Research areas, shown under Activities → Research.

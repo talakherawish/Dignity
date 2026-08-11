@@ -63,7 +63,42 @@ export const Meetings: CollectionConfig = {
       name: 'image',
       type: 'upload',
       relationTo: 'media',
-      label: 'Featured Image',
+      label: 'Featured Image (optional)',
+    },
+    /**
+     * Extra images, beyond the featured one. Optional and often empty, which is
+     * why the website shows the whole set only once a visitor opens the meeting
+     * -- the list of meetings stays an even list of dates and titles whether an
+     * entry carries photographs or not.
+     */
+    {
+      name: 'gallery',
+      type: 'array',
+      label: 'More Images (optional)',
+      labels: { singular: 'Image', plural: 'Images' },
+      admin: {
+        description:
+          'Additional photographs for this meeting. They appear only inside the meeting, after a visitor opens it.',
+      },
+      fields: [
+        {
+          name: 'image',
+          type: 'upload',
+          relationTo: 'media',
+          required: true,
+        },
+        {
+          name: 'caption',
+          type: 'text',
+          label: 'Caption (English)',
+        },
+        {
+          name: 'captionAr',
+          type: 'text',
+          label: 'Caption (Arabic / التسمية بالعربية)',
+          admin: { rtl: true },
+        },
+      ],
     },
   ],
 }

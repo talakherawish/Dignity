@@ -841,6 +841,17 @@ export interface Meeting {
     [k: string]: unknown;
   } | null;
   image?: (string | null) | Media;
+  /**
+   * Additional photographs for this meeting. They appear only inside the meeting, after a visitor opens it.
+   */
+  gallery?:
+    | {
+        image: string | Media;
+        caption?: string | null;
+        captionAr?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -1365,6 +1376,14 @@ export interface MeetingsSelect<T extends boolean = true> {
   content?: T;
   contentAr?: T;
   image?: T;
+  gallery?:
+    | T
+    | {
+        image?: T;
+        caption?: T;
+        captionAr?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
