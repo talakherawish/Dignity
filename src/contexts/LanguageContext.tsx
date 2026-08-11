@@ -196,7 +196,7 @@ const translations = {
     activities: "الأنشطة",
     "activities.seminars": "ندوات",
     "activities.conferences": "المؤتمرات",
-    "activities.meetings": "لقاء",
+    "activities.meetings": "لقاءات",
     "activities.windsor": "مبادرة وندسور بيرزيت للكرامة",
     media: "الإعلام والتحديثات",
     "media.news": "أخبار",
