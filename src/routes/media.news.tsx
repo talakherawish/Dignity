@@ -1,8 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { ChevronDown } from "lucide-react";
-import { PageLayout } from "@/components/PageLayout";
+import { PageLayout, PageHero } from "@/components/PageLayout";
 import { TranslationNotice } from "@/components/TranslationNotice";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { ARTICLES, getField, getBody, mapPayloadNews, type Article } from "@/data/articles";
@@ -14,103 +13,106 @@ export const Route = createFileRoute("/media/news")({
   component: NewsPage,
 });
 
-function ArticleCard({ article }: { article: Article }) {
+/**
+ * The news archive, as an index rather than a stack of full-bleed cards.
+ *
+ * Each entry used to carry a banner image and its whole excerpt, so a single
+ * story ran past the height of the screen and the page could only ever show
+ * one thing at a time -- no sense of how much there was or what order it came
+ * in. A row is now a date, a headline and a line of the excerpt; the picture
+ * and the full text appear when the row is opened, which is where they are
+ * actually being read.
+ */
+
+/** Capped in viewport units: a picture taller than the window cannot be seen. */
+const ARTICLE_IMAGE = "max-h-[60vh] w-full object-cover aspect-[21/9]";
+
+function ArticleRow({
+  article,
+  open,
+  onToggle,
+}: {
+  article: Article;
+  open: boolean;
+  onToggle: () => void;
+}) {
   const { t, lang, isArabic } = useLanguage();
-  const [expanded, setExpanded] = useState(false);
-  const l = lang;
-  const paragraphs = getBody(article, l);
-  // Written up in the other language only. The card still opens -- there is
-  // something here, it just is not in this language yet.
+  const paragraphs = getBody(article, lang);
+  // Written up in the other language only. The row still opens, to say so.
   const untranslated =
     paragraphs.length === 0 && getBody(article, isArabic ? "en" : "ar").length > 0;
   const panelId = `news-panel-${article.id}`;
   const titleId = `news-title-${article.id}`;
+  const excerpt = getField(article, "excerpt", lang);
 
   return (
-    <article className="border border-border rounded-sm overflow-hidden bg-card hover:shadow-md transition-shadow duration-200">
-      {/*
-       * One column, not an image beside a text panel. The split made every
-       * card two things read at once, and since the image is optional the
-       * cards did not even agree on which shape they were -- some in two
-       * columns, some in one. A banner across the top is the same card either
-       * way, and the headline always starts in the same place.
-       */}
-      <div>
-        {article.image && (
-          <div className="overflow-hidden" style={{ aspectRatio: "21/9" }}>
-            <img
-              src={article.image}
-              alt={getField(article, "title", l)}
-              className="w-full h-full object-cover"
-            />
-          </div>
+    <li className="border-b border-border">
+      <button
+        type="button"
+        onClick={onToggle}
+        aria-expanded={open}
+        aria-controls={panelId}
+        className="group w-full cursor-pointer py-6 text-start focus:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--brand-magenta)] focus-visible:ring-offset-2"
+      >
+        <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[color:var(--brand-magenta)]">
+          {getField(article, "date", lang)}
+        </p>
+        <h2
+          id={titleId}
+          className="mt-2 font-serif text-lg leading-snug text-primary transition-colors duration-300 group-hover:text-[color:var(--brand-magenta)] md:text-xl"
+        >
+          {withItalicQuotes(getField(article, "title", lang))}
+        </h2>
+        {excerpt && (
+          <p className="mt-1.5 line-clamp-1 text-sm leading-relaxed text-muted-foreground">
+            {excerpt}
+          </p>
         )}
-        <div className="p-7 lg:p-9 flex flex-col">
-          <div className="mb-auto">
-            <p className="text-[12px] uppercase tracking-[0.22em] text-[color:var(--brand-magenta)] font-semibold mb-3">
-              {getField(article, "date", l)}
-            </p>
-            <h2
-              id={titleId}
-              className={
-                "font-serif text-xl lg:text-2xl text-primary mb-3 leading-snug" +
-                (isArabic ? " text-right" : "")
-              }
-            >
-              {withItalicQuotes(getField(article, "title", l))}
-            </h2>
-            <p
-              className={
-                "text-sm text-muted-foreground leading-relaxed" + (isArabic ? " text-right" : "")
-              }
-            >
-              {getField(article, "excerpt", l)}
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={() => setExpanded((e) => !e)}
-            aria-expanded={expanded}
-            aria-controls={panelId}
-            className="mt-6 self-start flex items-center gap-1.5 text-xs font-medium text-accent hover:underline"
-          >
-            {expanded ? t("news.collapse") : t("news.readMore")}
-            <ChevronDown
-              className="h-3.5 w-3.5 transition-transform duration-300"
-              style={{ transform: expanded ? "rotate(180deg)" : "rotate(0deg)" }}
-            />
-          </button>
-        </div>
-      </div>
-      {/*
-       * The panel animates its own height rather than a max-height guess.
-       * It used to run 0 -> 4000px: a short article finished opening in the
-       * first fraction of the transition and then sat still for the rest of
-       * it, and on the way back nothing moved until the last moment, when the
-       * card slammed shut. A 0fr -> 1fr grid row is the content's real height,
-       * so both directions take the time they appear to take.
-       */}
+        <span
+          className={
+            "mt-3 inline-block text-[10px] uppercase tracking-[0.2em] transition-colors duration-300 " +
+            (open
+              ? "text-[color:var(--brand-magenta)]"
+              : "text-muted-foreground group-hover:text-[color:var(--brand-magenta)]")
+          }
+        >
+          {open ? t("news.collapse") : t("news.readMore")}
+        </span>
+      </button>
+
       <div
         id={panelId}
         role="region"
         aria-labelledby={titleId}
-        inert={!expanded}
+        inert={!open}
         className={
           "grid transition-[grid-template-rows] duration-500 ease-out motion-reduce:transition-none " +
-          (expanded ? "grid-rows-[1fr]" : "grid-rows-[0fr]")
+          (open ? "grid-rows-[1fr]" : "grid-rows-[0fr]")
         }
       >
         <div className="overflow-hidden">
-          <div
-            className="px-7 lg:px-9 pb-9 pt-6 border-t border-border"
-            dir={isArabic ? "rtl" : "ltr"}
-          >
-            <div className={"space-y-4 max-w-3xl" + (isArabic ? " mr-0 ml-auto text-right" : "")}>
+          <div className="pb-9">
+            {article.image && (
+              <div className="mb-6 overflow-hidden rounded-sm border border-border">
+                <img
+                  src={article.image}
+                  alt={getField(article, "title", lang)}
+                  loading="lazy"
+                  className={ARTICLE_IMAGE}
+                />
+              </div>
+            )}
+            {excerpt && (
+              <p className="mb-4 font-serif text-[15px] leading-relaxed text-foreground/80 md:text-base">
+                {excerpt}
+              </p>
+            )}
+            <div className="max-w-3xl space-y-4">
               {untranslated ? (
                 <TranslationNotice />
               ) : (
-                paragraphs.map((para, idx) => (
-                  <p key={idx} className="text-sm text-foreground/85 leading-loose">
+                paragraphs.map((para, index) => (
+                  <p key={index} className="text-sm leading-loose text-foreground/85">
                     {para}
                   </p>
                 ))
@@ -119,12 +121,28 @@ function ArticleCard({ article }: { article: Article }) {
           </div>
         </div>
       </div>
-    </article>
+    </li>
+  );
+}
+
+function NewsSkeleton() {
+  return (
+    <ul className="border-t border-border">
+      {[1, 2, 3, 4, 5].map((n) => (
+        <li key={n} className="space-y-2 border-b border-border py-6">
+          <div className="h-2.5 w-24 animate-pulse rounded-sm bg-secondary/40" />
+          <div className="h-5 w-3/4 animate-pulse rounded-sm bg-secondary/50" />
+          <div className="h-3 w-1/2 animate-pulse rounded-sm bg-secondary/40" />
+        </li>
+      ))}
+    </ul>
   );
 }
 
 function NewsPage() {
-  const { t } = useLanguage();
+  const { t, isArabic } = useLanguage();
+  const [openId, setOpenId] = useState<string | null>(null);
+
   const { data: payloadNews = [], isLoading } = useQuery({
     queryKey: ["news"],
     queryFn: fetchNews,
@@ -134,43 +152,28 @@ function NewsPage() {
 
   return (
     <PageLayout>
-      <section className="border-b border-border">
-        {/*
-         * text-center belongs to the page heading, not to the whole column.
-         * On the column it was inherited by every card: the Arabic side put it
-         * right again with its own text-right, so only the English cards were
-         * affected -- date, headline, excerpt and whole paragraphs of body
-         * copy, all centred.
-         */}
-        {/*
-         * A reading column, not the site's full 7xl width. With the image no
-         * longer taking half the card, body copy across 1280px would run to
-         * well over a hundred characters a line.
-         */}
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="mb-8 text-center">
-            <p className="text-[12px] uppercase tracking-[0.22em] text-[color:var(--brand-magenta)] font-semibold mb-1.5">
-              {t("media")}
-            </p>
-            <h1 className="font-serif text-3xl md:text-4xl text-primary">{t("media.news")}</h1>
-          </div>
-          {isLoading ? (
-            <div className="space-y-6">
-              {[1, 2, 3].map((n) => (
-                <div
-                  key={n}
-                  className="border border-border rounded-sm h-48 bg-secondary/30 animate-pulse"
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="space-y-6">
-              {articles.map((article) => (
-                <ArticleCard key={article.id} article={article} />
-              ))}
-            </div>
-          )}
-        </div>
+      <PageHero eyebrow={t("media")} title={t("media.news")} />
+      <section className="mx-auto max-w-4xl px-4 py-8 sm:px-6 md:py-12 lg:px-8">
+        {isLoading ? (
+          <NewsSkeleton />
+        ) : articles.length === 0 ? (
+          <p className="border-t border-border py-16 text-center text-sm text-muted-foreground">
+            {isArabic ? "لا توجد أخبار منشورة حالياً." : "No news published yet."}
+          </p>
+        ) : (
+          <ul className="border-t border-border" dir={isArabic ? "rtl" : "ltr"}>
+            {articles.map((article) => (
+              <ArticleRow
+                key={article.id}
+                article={article}
+                open={openId === article.id}
+                onToggle={() =>
+                  setOpenId((current) => (current === article.id ? null : article.id))
+                }
+              />
+            ))}
+          </ul>
+        )}
       </section>
     </PageLayout>
   );
