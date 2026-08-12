@@ -24,7 +24,11 @@ export const Route = createFileRoute("/projects/research/")({
  * publication attached.
  */
 function outputCount(item: PayloadResearchActivity): number {
-  const groups = [
+  // Typed as loosely as the work requires: these nine collections no longer
+  // share a shape, and inference across the union picked one member and
+  // rejected the rest. Counting needs no more than "is this a real document",
+  // which is exactly what `populated` narrows to.
+  const groups: ((string | object)[] | undefined)[] = [
     item.relatedBooks,
     item.relatedPapers,
     item.relatedReports,
@@ -37,7 +41,7 @@ function outputCount(item: PayloadResearchActivity): number {
   ];
   // `populated` drops references whose document has been deleted; counting the
   // raw array instead promised outputs the detail page cannot render.
-  return groups.reduce((total, group) => total + populated(group).length, 0);
+  return groups.reduce((total, group) => total + populated<object>(group).length, 0);
 }
 
 function ResearchPage() {

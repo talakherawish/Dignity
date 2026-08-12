@@ -18,6 +18,13 @@ export type PayloadMedia = {
   alt?: string;
   mimeType?: string;
   filename?: string;
+  /**
+   * Pixel dimensions Payload records for every image upload. The photo gallery
+   * lays rows out from these, so it knows each picture's proportions before it
+   * has loaded and never has to guess at a box to crop into.
+   */
+  width?: number;
+  height?: number;
   thumbnail?: PayloadMedia;
 };
 
@@ -68,9 +75,10 @@ export type PayloadAnnouncement = {
 
 export type PayloadPhoto = {
   id: string;
-  title: string;
+  /** Both optional: a photo that speaks for itself needs no caption or date. */
+  title?: string;
   titleAr?: string;
-  date: string;
+  date?: string;
   image: PayloadMedia;
 };
 
