@@ -8,6 +8,7 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 import { LanguageProvider } from "@/contexts/LanguageContext";
+import { resolveInitialLanguage } from "@/lib/language-preference";
 
 import appCss from "../styles.css?url";
 
@@ -86,6 +87,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "stylesheet", href: appCss },
     ],
   }),
+  // Resolved here rather than inside the provider so the value is decided once
+  // on the server and shipped to the client with the rest of the loader data.
+  // Resolving it independently on each side risks the two disagreeing, which
+  // would hydrate the page in a different language than it was rendered in.
+  loader: () => ({ initialLanguage: resolveInitialLanguage() }),
   shellComponent: RootShell,
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
@@ -108,10 +114,11 @@ function RootShell({ children }: { children: React.ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const { initialLanguage } = Route.useLoaderData();
 
   return (
     <QueryClientProvider client={queryClient}>
-      <LanguageProvider>
+      <LanguageProvider initialLanguage={initialLanguage}>
         <Outlet />
       </LanguageProvider>
     </QueryClientProvider>

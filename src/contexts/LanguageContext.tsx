@@ -1,4 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { persistLanguage } from "@/lib/language-preference";
 import { fetchSiteSettings, type PayloadSiteSettings } from "@/lib/payload";
 
 export type Language = "en" | "ar";
@@ -425,11 +426,29 @@ const SITE_SETTINGS_KEY_MAP: Partial<Record<TranslationKey, string>> = {
 
 const LanguageContext = createContext<LanguageContextValue>({} as LanguageContextValue);
 
-export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [lang, setLang] = useState<Language>("ar");
+export function LanguageProvider({
+  children,
+  initialLanguage,
+}: {
+  children: React.ReactNode;
+  /**
+   * Resolved once in the root route's loader — from the reader's saved choice,
+   * or their browser's preference on a first visit. It arrives already decided
+   * so the server and the hydrating client agree on it; see
+   * `lib/language-preference`.
+   */
+  initialLanguage: Language;
+}) {
+  const [lang, setLangState] = useState<Language>(initialLanguage);
   const dir = lang === "ar" ? "rtl" : "ltr";
   const isArabic = lang === "ar";
   const [overrides, setOverrides] = useState<PayloadSiteSettings | null>(null);
+
+  // Every switch is remembered, so a reload keeps the reader where they were.
+  const setLang = useCallback((next: Language) => {
+    setLangState(next);
+    persistLanguage(next);
+  }, []);
 
   useEffect(() => {
     document.documentElement.dir = dir;
@@ -469,7 +488,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 
   const value = useMemo<LanguageContextValue>(
     () => ({ lang, setLang, t, dir, isArabic }),
-    [lang, t, dir, isArabic],
+    [lang, setLang, t, dir, isArabic],
   );
 
   return <LanguageContext.Provider value={value}>{children}</LanguageContext.Provider>;
