@@ -3,6 +3,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, ChevronDown } from "lucide-react";
 import { PageLayout } from "@/components/PageLayout";
+import { PhotoGallery, type GalleryPhoto } from "@/components/PhotoGallery";
 import { PublicationCard, PublicationCardGrid } from "@/components/PublicationCard";
 import { RichText } from "@/components/RichText";
 import { TranslationNotice } from "@/components/TranslationNotice";
@@ -86,6 +87,10 @@ function PublicationGrid({
             ""
           }
           fileUrl={showDownload && p.file ? mediaUrl(p.file) : ""}
+          // Audiovisual entries are a link rather than an upload. Without this
+          // they rendered as a bare thumbnail: no play button, nothing
+          // clickable, no way to reach the video the entry exists to point at.
+          linkUrl={p.link ?? ""}
         />
       ))}
     </PublicationCardGrid>
@@ -312,23 +317,21 @@ function ResearchDetailPage() {
 
               {photos.length > 0 && (
                 <OutputSection title={isArabic ? "صور" : "Photos"} count={photos.length}>
-                  <div
-                    className="flex flex-wrap justify-center gap-6"
-                    dir={isArabic ? "rtl" : "ltr"}
-                  >
-                    {photos.map((p: PayloadPhoto) => {
-                      const src = mediaUrl(p.image);
-                      return src ? (
-                        <img
-                          key={p.id}
-                          src={src}
-                          alt={lang === "ar" ? (p.titleAr ?? p.title) : p.title}
-                          className="w-[calc(50%-0.75rem)] lg:w-[calc(25%-1.125rem)] rounded-sm object-cover hover:shadow-sm transition-shadow"
-                          style={{ aspectRatio: "1/1" }}
-                        />
-                      ) : null;
-                    })}
-                  </div>
+                  <PhotoGallery
+                    photos={photos
+                      .map((p: PayloadPhoto): GalleryPhoto => {
+                        const caption = lang === "ar" ? (p.titleAr ?? p.title) : p.title;
+                        return {
+                          id: p.id,
+                          url: mediaUrl(p.image),
+                          caption: caption || undefined,
+                          date: p.date,
+                          width: p.image?.width,
+                          height: p.image?.height,
+                        };
+                      })
+                      .filter((photo) => photo.url)}
+                  />
                 </OutputSection>
               )}
             </div>
