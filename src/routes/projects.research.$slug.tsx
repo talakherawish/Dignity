@@ -1,16 +1,16 @@
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, ChevronDown, Download, FileText } from "lucide-react";
+import { ArrowLeft, ChevronDown } from "lucide-react";
 import { PageLayout } from "@/components/PageLayout";
+import { PublicationCard, PublicationCardGrid } from "@/components/PublicationCard";
 import { RichText } from "@/components/RichText";
 import { TranslationNotice } from "@/components/TranslationNotice";
-import { useLanguage, type Language } from "@/contexts/LanguageContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import {
   fetchResearchBySlug,
   hasProse,
   mediaUrl,
-  formatDate,
   populated,
   youtubeThumbnail,
   type PayloadResearchActivity,
@@ -62,71 +62,33 @@ function OutputSection({
 /** The card grid shared by all seven publication collections. */
 function PublicationGrid({
   items,
-  lang,
-  isArabic,
   showDownload,
 }: {
   items: PayloadPublication[];
-  lang: Language;
-  isArabic: boolean;
   showDownload?: boolean;
 }) {
   return (
-    <div className="flex flex-wrap justify-center gap-6" dir={isArabic ? "rtl" : "ltr"}>
-      {items.map((p) => {
-        const fileUrl = p.file ? mediaUrl(p.file) : "";
-        const previewUrl =
-          mediaUrl(p.image?.thumbnail) ||
-          mediaUrl(p.image) ||
-          mediaUrl(p.file?.thumbnail) ||
-          youtubeThumbnail(p.link) ||
-          "";
-        return (
-          <div
-            key={p.id}
-            className="w-[calc(50%-0.75rem)] lg:w-[calc(25%-1.125rem)] border border-border rounded-sm bg-card overflow-hidden hover:shadow-sm transition-shadow flex flex-col"
-          >
-            <div className="aspect-[1/1.41] bg-secondary/20 flex items-center justify-center">
-              {previewUrl ? (
-                <img src={previewUrl} alt="" className="w-full h-full object-cover" />
-              ) : (
-                <FileText className="h-10 w-10 text-muted-foreground/50" />
-              )}
-            </div>
-            <div className="p-5 flex flex-col flex-1">
-              <div className="text-[11px] uppercase tracking-widest text-muted-foreground font-semibold mb-1.5">
-                {formatDate(p.date, lang === "ar" ? "ar" : "en")}
-                {(p.author || p.authorAr) && (
-                  <span> · {lang === "ar" ? (p.authorAr ?? p.author) : p.author}</span>
-                )}
-              </div>
-              <div
-                className={
-                  "flex items-start justify-between gap-3 mt-auto" +
-                  (isArabic ? " flex-row-reverse text-right" : "")
-                }
-              >
-                <h4 className="font-serif text-sm text-primary leading-snug">
-                  {lang === "ar" ? (p.titleAr ?? p.title) : p.title}
-                </h4>
-                {showDownload && fileUrl && (
-                  <a
-                    href={fileUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={isArabic ? "تحميل" : "Download"}
-                    title={isArabic ? "تحميل" : "Download"}
-                    className="shrink-0 inline-flex items-center justify-center h-8 w-8 rounded-full border border-border text-foreground/70 hover:text-accent hover:border-accent/40 transition-colors"
-                  >
-                    <Download className="h-3.5 w-3.5" />
-                  </a>
-                )}
-              </div>
-            </div>
-          </div>
-        );
-      })}
-    </div>
+    <PublicationCardGrid>
+      {items.map((p) => (
+        <PublicationCard
+          key={p.id}
+          as="h4"
+          title={p.title}
+          titleAr={p.titleAr}
+          author={p.author}
+          authorAr={p.authorAr}
+          date={p.date}
+          previewUrl={
+            mediaUrl(p.image?.thumbnail) ||
+            mediaUrl(p.image) ||
+            mediaUrl(p.file?.thumbnail) ||
+            youtubeThumbnail(p.link) ||
+            ""
+          }
+          fileUrl={showDownload && p.file ? mediaUrl(p.file) : ""}
+        />
+      ))}
+    </PublicationCardGrid>
   );
 }
 
@@ -317,12 +279,7 @@ function ResearchDetailPage() {
                       title={section.label}
                       count={section.items.length}
                     >
-                      <PublicationGrid
-                        items={section.items}
-                        lang={lang}
-                        isArabic={isArabic}
-                        showDownload={section.showDownload}
-                      />
+                      <PublicationGrid items={section.items} showDownload={section.showDownload} />
                     </OutputSection>
                   ),
               )}
@@ -332,45 +289,24 @@ function ResearchDetailPage() {
                   title={isArabic ? "قصاصات صحفية" : "Press Clippings"}
                   count={clippings.length}
                 >
-                  <div
-                    className="flex flex-wrap justify-center gap-6"
-                    dir={isArabic ? "rtl" : "ltr"}
-                  >
+                  <PublicationCardGrid>
                     {clippings.map((c: PayloadClipping) => {
                       const url = mediaUrl(c.image);
                       const isImage = c.image?.mimeType?.startsWith("image/") ?? false;
                       const thumbnailUrl = c.image?.thumbnail ? mediaUrl(c.image.thumbnail) : "";
-                      const previewUrl = isImage ? url : thumbnailUrl;
                       return (
-                        <div
+                        <PublicationCard
                           key={c.id}
-                          className="w-[calc(50%-0.75rem)] lg:w-[calc(25%-1.125rem)] border border-border rounded-sm bg-card overflow-hidden hover:shadow-sm transition-shadow flex flex-col"
-                        >
-                          {url && (
-                            <div className="aspect-[3/4] bg-secondary/20 flex items-center justify-center">
-                              {previewUrl ? (
-                                <img
-                                  src={previewUrl}
-                                  alt=""
-                                  className="w-full h-full object-cover"
-                                />
-                              ) : (
-                                <FileText className="h-10 w-10 text-muted-foreground/50" />
-                              )}
-                            </div>
-                          )}
-                          <div className="p-4 flex flex-col flex-1">
-                            <div className="text-[11px] uppercase tracking-widest text-muted-foreground font-semibold mb-1.5">
-                              {formatDate(c.date, lang === "ar" ? "ar" : "en")}
-                            </div>
-                            <h4 className="font-serif text-sm text-primary leading-snug">
-                              {lang === "ar" ? (c.titleAr ?? c.title) : c.title}
-                            </h4>
-                          </div>
-                        </div>
+                          as="h4"
+                          title={c.title}
+                          titleAr={c.titleAr}
+                          date={c.date}
+                          previewUrl={isImage ? url : thumbnailUrl}
+                          preview={url ? "clipping" : "none"}
+                        />
                       );
                     })}
-                  </div>
+                  </PublicationCardGrid>
                 </OutputSection>
               )}
 
