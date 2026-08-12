@@ -24,10 +24,10 @@ export const Photos: CollectionConfig = {
     {
       name: 'title',
       type: 'text',
-      required: true,
       label: 'Title (English)',
       admin: {
-        description: 'A short caption for this photo, e.g. "Seminar on Dignity and Praxis, March 2026".',
+        description:
+          'Optional caption, e.g. "Seminar on Dignity and Praxis, March 2026". A photo that speaks for itself can be left untitled — the gallery just shows the picture.',
       },
     },
     {
@@ -39,7 +39,9 @@ export const Photos: CollectionConfig = {
     {
       name: 'date',
       type: 'date',
-      required: true,
+      admin: {
+        description: 'Optional. Shown under the caption when set.',
+      },
     },
     {
       name: 'image',

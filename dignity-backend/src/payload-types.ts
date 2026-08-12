@@ -388,11 +388,14 @@ export interface Announcement {
 export interface Photo {
   id: string;
   /**
-   * A short caption for this photo, e.g. "Seminar on Dignity and Praxis, March 2026".
+   * Optional caption, e.g. "Seminar on Dignity and Praxis, March 2026". A photo that speaks for itself can be left untitled — the gallery just shows the picture.
    */
-  title: string;
-  titleAr: string;
-  date: string;
+  title?: string | null;
+  titleAr?: string | null;
+  /**
+   * Optional. Shown under the caption when set.
+   */
+  date?: string | null;
   image: string | Media;
   updatedAt: string;
   createdAt: string;
