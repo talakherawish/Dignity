@@ -44,17 +44,18 @@ function ClippingsPage() {
             {items.map((item: PayloadClipping) => {
               const url = mediaUrl(item.image);
               const isImage = item.image?.mimeType?.startsWith("image/") ?? false;
-              const thumbnailUrl = item.image?.thumbnail ? mediaUrl(item.image.thumbnail) : "";
+              const previewSource = isImage ? item.image : item.image?.thumbnail;
               return (
                 <PublicationCard
                   key={item.id}
                   title={item.title}
                   titleAr={item.titleAr}
                   date={item.date}
-                  previewUrl={isImage ? url : thumbnailUrl}
+                  previewUrl={mediaUrl(previewSource)}
+                  previewWidth={previewSource?.width}
+                  previewHeight={previewSource?.height}
                   preview={url ? "clipping" : "none"}
                   fileUrl={url}
-                  fileMimeType={item.image?.mimeType}
                 />
               );
             })}

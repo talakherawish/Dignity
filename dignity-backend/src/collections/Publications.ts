@@ -91,7 +91,7 @@ function publicationCollection(
     admin: {
       group: 'Publications',
       useAsTitle: 'title',
-      defaultColumns: ['title', 'author', 'date', 'updatedAt'],
+      defaultColumns: ['title', 'date', 'author', 'updatedAt'],
       description,
     },
     versions: {

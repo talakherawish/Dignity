@@ -23,8 +23,9 @@ type DisplayPublication = {
   authorAr?: string;
   date: string;
   fileUrl: string;
-  fileMimeType?: string;
   previewUrl: string;
+  previewWidth?: number;
+  previewHeight?: number;
   /** External destination (YouTube) for items that aren't uploads. */
   linkUrl: string;
 };
@@ -35,12 +36,11 @@ function fromPayload(item: PayloadPublication): DisplayPublication {
   // the auto-generated PDF page-1 thumbnail attached to whichever media doc
   // (cover image or the file itself) has one, and finally — for link-only
   // items such as videos, which have no file to rasterise — the poster frame
-  // published alongside the video itself.
-  const previewUrl = imageIsPhoto
-    ? mediaUrl(item.image)
-    : mediaUrl(item.image?.thumbnail) ||
-      mediaUrl(item.file?.thumbnail) ||
-      youtubeThumbnail(item.link);
+  // published alongside the video itself. Its own dimensions travel with it,
+  // when known, so the card can show it at its own proportions rather than
+  // cropping it into a fixed box.
+  const previewSource = imageIsPhoto ? item.image : (item.image?.thumbnail ?? item.file?.thumbnail);
+  const previewUrl = previewSource ? mediaUrl(previewSource) : youtubeThumbnail(item.link);
   return {
     linkUrl: item.link ?? "",
     id: item.id,
@@ -50,8 +50,9 @@ function fromPayload(item: PayloadPublication): DisplayPublication {
     authorAr: item.authorAr,
     date: item.date,
     fileUrl: mediaUrl(item.file),
-    fileMimeType: item.file?.mimeType,
     previewUrl,
+    previewWidth: previewSource?.width,
+    previewHeight: previewSource?.height,
   };
 }
 
@@ -106,8 +107,9 @@ export function PublicationsPage({
                 authorAr={item.authorAr}
                 date={item.date}
                 previewUrl={item.previewUrl}
+                previewWidth={item.previewWidth}
+                previewHeight={item.previewHeight}
                 fileUrl={item.fileUrl}
-                fileMimeType={item.fileMimeType}
                 linkUrl={item.linkUrl}
               />
             ))}

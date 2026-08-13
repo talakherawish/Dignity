@@ -171,6 +171,55 @@ export async function generateThumbnailForPdf(
   return { thumbnailId: thumbnailDoc.id }
 }
 
+/**
+ * The seven Publications collections (see collections/Publications.ts) each
+ * carry both a `file` (the PDF) and an optional `image` ("Cover Image or
+ * Thumbnail") pointing at Media. The frontend already falls back to the
+ * file's own auto-generated thumbnail when `image` is empty, so leaving it
+ * blank is enough — but the admin form gives no visible sign that happened,
+ * since `image` just sits empty. Editors uploading a thesis PDF had no way to
+ * tell the auto-thumbnail had worked, so they went and set `image` by hand
+ * every time. Filling it in here — once the thumbnail exists, only when the
+ * editor hasn't already chosen a cover — makes the automatic result visible
+ * on the document instead of an invisible fallback they have to trust blind.
+ */
+const PUBLICATION_COLLECTIONS = [
+  'books',
+  'papers',
+  'reports',
+  'brochures',
+  'theses',
+  'audiovisual',
+  'posters',
+] as const
+
+export async function attachThumbnailAsCoverImage(
+  payload: BasePayload,
+  args: { fileId: string | number; thumbnailId: string | number },
+): Promise<void> {
+  const { fileId, thumbnailId } = args
+
+  for (const collection of PUBLICATION_COLLECTIONS) {
+    const { docs } = await payload.find({
+      collection,
+      where: {
+        file: { equals: fileId },
+        image: { exists: false },
+      },
+      depth: 0,
+      limit: 100,
+    })
+
+    for (const pubDoc of docs) {
+      await payload.update({
+        collection,
+        id: pubDoc.id,
+        data: { image: String(thumbnailId) },
+      })
+    }
+  }
+}
+
 export const generatePdfThumbnail: CollectionAfterChangeHook = async ({ doc, req, operation, previousDoc }) => {
   if (doc.mimeType !== 'application/pdf') return doc
 
@@ -229,11 +278,13 @@ export const generatePdfThumbnail: CollectionAfterChangeHook = async ({ doc, req
       if (!sourceFileBuffer) {
         throw new Error('req.file.data was not available when the afterChange hook ran — cannot generate thumbnail without it.')
       }
-      await generateThumbnailForPdf(req.payload, {
+      const { thumbnailId } = await generateThumbnailForPdf(req.payload, {
         id: docId,
         filename: docFilename,
         sourceBuffer: sourceFileBuffer,
       })
+
+      await attachThumbnailAsCoverImage(req.payload, { fileId: docId, thumbnailId })
 
       // Only once the replacement exists — deleting first would leave the
       // document with no preview at all if rasterising then failed.

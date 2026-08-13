@@ -25,12 +25,12 @@ function PhotosPage() {
         {isLoading ? (
           // Mixed widths at one height, so the placeholder rows read like the
           // justified rows that replace them.
-          <div className="flex flex-wrap gap-2 [--row-height:9rem] sm:[--row-height:12rem] lg:[--row-height:15rem]">
+          <div className="flex flex-wrap [--row-height:9rem] sm:[--row-height:12rem] lg:[--row-height:15rem]">
             {[1.5, 0.75, 1.3, 1.8, 1, 1.4].map((ratio, n) => (
               <div
                 key={n}
                 style={{ flexGrow: ratio, flexBasis: `calc(var(--row-height) * ${ratio})` }}
-                className="h-[var(--row-height)] rounded-sm bg-secondary/30 animate-pulse"
+                className="h-[var(--row-height)] bg-secondary/30 animate-pulse"
               />
             ))}
             <span aria-hidden className="grow-[999] basis-0 h-0" />

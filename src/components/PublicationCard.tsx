@@ -1,6 +1,5 @@
-import { Download, Expand, FileText, Play } from "lucide-react";
-import { useState, type ReactNode } from "react";
-import { FilePreviewModal, isPreviewableFile } from "@/components/FilePreviewModal";
+import { Download, ExternalLink, FileText, Play } from "lucide-react";
+import type { ReactNode } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { formatDate, youtubeThumbnailFallback } from "@/lib/payload";
 import { withItalicQuotes } from "@/lib/text";
@@ -36,12 +35,15 @@ export const PUBLICATION_GRID_SKELETON = "grid grid-cols-1 sm:grid-cols-2 lg:gri
 /**
  * flex-wrap rather than grid so a partly-filled last row centres instead of
  * hugging the leading edge — a section with two entries would otherwise sit
- * alone in the first two of four columns.
+ * alone in the first two of four columns. items-start rather than the
+ * default stretch: a card whose preview carries its own aspect ratio can be a
+ * different height than its row-mates, and stretch would pad the shorter
+ * ones with blank space to match.
  */
 export function PublicationCardGrid({ children }: { children: ReactNode }) {
   const { isArabic } = useLanguage();
   return (
-    <div className="flex flex-wrap justify-center gap-6" dir={isArabic ? "rtl" : "ltr"}>
+    <div className="flex flex-wrap items-start justify-center gap-6" dir={isArabic ? "rtl" : "ltr"}>
       {children}
     </div>
   );
@@ -56,17 +58,23 @@ export type PublicationCardProps = {
   /** Thumbnail to show in the preview well; a file icon stands in when absent. */
   previewUrl?: string;
   /**
-   * Shape of the preview well. Documents are A4-proportioned, clippings are
-   * squarer, and `none` drops the well for items carrying no media at all.
+   * Pixel dimensions of `previewUrl`, when known. The well is sized to this
+   * ratio so the image shows in full rather than being cropped into a shape
+   * chosen for it. Falls back to a fixed document/clipping ratio when either
+   * is missing — an upload made before Payload recorded dimensions.
+   */
+  previewWidth?: number;
+  previewHeight?: number;
+  /**
+   * Shape of the preview well when its ratio isn't known. Documents fall back
+   * to A4 proportions, clippings to something squarer, and `none` drops the
+   * well for items carrying no media at all.
    */
   preview?: "document" | "clipping" | "none";
-  /** Attached file — rendered as a preview (PDF or image) or a download action. */
+  /** Attached file — opened in a new tab, with a separate download action. */
   fileUrl?: string;
-  /** Needed to tell a PDF or image (previewable in place) from anything else
-   * (a plain download is the only option). */
-  fileMimeType?: string;
   /** External destination (YouTube), which makes the thumbnail clickable and
-   * swaps the download action for a play button. */
+   * swaps the file actions for a play button. */
   linkUrl?: string;
   /** Headings inside a section that already has its own h3 pass "h4". */
   as?: "h3" | "h4";
@@ -79,9 +87,10 @@ export function PublicationCard({
   authorAr,
   date,
   previewUrl,
+  previewWidth,
+  previewHeight,
   preview = "document",
   fileUrl,
-  fileMimeType,
   linkUrl,
   as: Heading = "h3",
 }: PublicationCardProps) {
@@ -90,17 +99,16 @@ export function PublicationCard({
   const displayTitle = isAr ? (titleAr ?? title) : title;
   const displayAuthor = isAr ? (authorAr ?? author) : author;
   const watchLabel = isArabic ? "مشاهدة الفيديو" : "Watch video";
-  const [previewOpen, setPreviewOpen] = useState(false);
-  const previewable = Boolean(fileUrl) && isPreviewableFile(fileMimeType);
+  const knownRatio = previewWidth && previewHeight ? previewWidth / previewHeight : undefined;
 
   const thumbnail = previewUrl ? (
     <img
       src={previewUrl}
       alt=""
-      // object-top rather than centred: the well is capped in height so a
-      // full-width phone card isn't one screen of PDF, and a document's
-      // identifying half is its top.
-      className="w-full h-full object-cover object-top"
+      // Cover only stands in for a ratio we don't actually know; once the well
+      // is sized to the image's own ratio there is nothing left to crop, and
+      // contain guards the rare case where max-h below still clamps it.
+      className={"w-full h-full " + (knownRatio ? "object-contain" : "object-cover object-top")}
       onError={(e) => {
         // maxresdefault does not exist for every video — drop to the
         // always-present, equally unpadded mq still rather than showing a
@@ -115,8 +123,12 @@ export function PublicationCard({
   );
 
   const wellClass =
-    (preview === "clipping" ? "aspect-[3/4]" : "aspect-[1/1.41]") +
-    " max-h-[26rem] bg-secondary/20 overflow-hidden flex items-center justify-center";
+    (knownRatio ? "" : preview === "clipping" ? "aspect-[3/4] " : "aspect-[1/1.41] ") +
+    "max-h-[26rem] bg-secondary/20 overflow-hidden flex items-center justify-center";
+  const wellStyle = knownRatio ? { aspectRatio: String(knownRatio) } : undefined;
+
+  const actionButtonClass =
+    "shrink-0 inline-flex items-center justify-center h-8 w-8 rounded-full border border-border text-foreground/70 hover:text-accent hover:border-accent/40 transition-colors";
 
   const action = linkUrl ? (
     <a
@@ -125,31 +137,32 @@ export function PublicationCard({
       rel="noopener noreferrer"
       aria-label={watchLabel}
       title={watchLabel}
-      className="shrink-0 inline-flex items-center justify-center h-8 w-8 rounded-full border border-border text-foreground/70 hover:text-accent hover:border-accent/40 transition-colors"
+      className={actionButtonClass}
     >
       <Play className="h-3.5 w-3.5 translate-x-[1px]" fill="currentColor" />
     </a>
-  ) : fileUrl && previewable ? (
-    <button
-      type="button"
-      onClick={() => setPreviewOpen(true)}
-      aria-label={t("publications.view")}
-      title={t("publications.view")}
-      className="shrink-0 inline-flex items-center justify-center h-8 w-8 rounded-full border border-border text-foreground/70 hover:text-accent hover:border-accent/40 transition-colors"
-    >
-      <Expand className="h-3.5 w-3.5" />
-    </button>
   ) : fileUrl ? (
-    <a
-      href={fileUrl}
-      target="_blank"
-      rel="noopener noreferrer"
-      aria-label={t("publications.download")}
-      title={t("publications.download")}
-      className="shrink-0 inline-flex items-center justify-center h-8 w-8 rounded-full border border-border text-foreground/70 hover:text-accent hover:border-accent/40 transition-colors"
-    >
-      <Download className="h-3.5 w-3.5" />
-    </a>
+    <div className="flex items-center gap-1.5">
+      <a
+        href={fileUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={t("publications.view")}
+        title={t("publications.view")}
+        className={actionButtonClass}
+      >
+        <ExternalLink className="h-3.5 w-3.5" />
+      </a>
+      <a
+        href={fileUrl}
+        download
+        aria-label={t("publications.download")}
+        title={t("publications.download")}
+        className={actionButtonClass}
+      >
+        <Download className="h-3.5 w-3.5" />
+      </a>
+    </div>
   ) : null;
 
   return (
@@ -159,9 +172,9 @@ export function PublicationCard({
         " border border-border rounded-sm bg-card overflow-hidden hover:shadow-sm transition-shadow flex flex-col"
       }
     >
-      {/* Video items open on YouTube; a previewable file opens in place, the
-          same well its action button opens; anything else stays a plain
-          well, since it carries no click of its own. */}
+      {/* Video items open on YouTube; a file opens in a new tab from the same
+          well its action button opens; anything else stays a plain well,
+          since it carries no click of its own. */}
       {preview !== "none" &&
         (linkUrl ? (
           <a
@@ -170,24 +183,29 @@ export function PublicationCard({
             rel="noopener noreferrer"
             aria-label={watchLabel}
             className={"group block " + wellClass}
+            style={wellStyle}
           >
             <div className="w-full h-full transition-transform duration-300 group-hover:scale-[1.03]">
               {thumbnail}
             </div>
           </a>
-        ) : previewable ? (
-          <button
-            type="button"
-            onClick={() => setPreviewOpen(true)}
+        ) : fileUrl ? (
+          <a
+            href={fileUrl}
+            target="_blank"
+            rel="noopener noreferrer"
             aria-label={t("publications.view")}
-            className={"group block w-full cursor-zoom-in " + wellClass}
+            className={"group block " + wellClass}
+            style={wellStyle}
           >
             <div className="w-full h-full transition-transform duration-300 group-hover:scale-[1.03]">
               {thumbnail}
             </div>
-          </button>
+          </a>
         ) : (
-          <div className={wellClass}>{thumbnail}</div>
+          <div className={wellClass} style={wellStyle}>
+            {thumbnail}
+          </div>
         ))}
 
       <div className="p-5 flex flex-col flex-1 text-start">
@@ -213,13 +231,6 @@ export function PublicationCard({
 
         {action && <div className="mt-auto pt-4 flex justify-end">{action}</div>}
       </div>
-
-      {previewOpen && fileUrl && (
-        <FilePreviewModal
-          file={{ url: fileUrl, mimeType: fileMimeType, title: displayTitle }}
-          onClose={() => setPreviewOpen(false)}
-        />
-      )}
     </div>
   );
 }

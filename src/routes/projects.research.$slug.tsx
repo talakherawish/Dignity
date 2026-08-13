@@ -70,30 +70,33 @@ function PublicationGrid({
 }) {
   return (
     <PublicationCardGrid>
-      {items.map((p) => (
-        <PublicationCard
-          key={p.id}
-          as="h4"
-          title={p.title}
-          titleAr={p.titleAr}
-          author={p.author}
-          authorAr={p.authorAr}
-          date={p.date}
-          previewUrl={
-            mediaUrl(p.image?.thumbnail) ||
-            mediaUrl(p.image) ||
-            mediaUrl(p.file?.thumbnail) ||
-            youtubeThumbnail(p.link) ||
-            ""
-          }
-          fileUrl={showDownload && p.file ? mediaUrl(p.file) : ""}
-          fileMimeType={showDownload ? p.file?.mimeType : undefined}
-          // Audiovisual entries are a link rather than an upload. Without this
-          // they rendered as a bare thumbnail: no play button, nothing
-          // clickable, no way to reach the video the entry exists to point at.
-          linkUrl={p.link ?? ""}
-        />
-      ))}
+      {items.map((p) => {
+        // A manually-set cover image wins; otherwise the auto-generated PDF
+        // page-1 thumbnail, wherever it's attached. Its own dimensions travel
+        // with it so the card shows it at its own proportions rather than
+        // cropping it into a fixed box.
+        const previewSource = p.image?.thumbnail ?? p.image ?? p.file?.thumbnail;
+        const previewUrl = previewSource ? mediaUrl(previewSource) : youtubeThumbnail(p.link);
+        return (
+          <PublicationCard
+            key={p.id}
+            as="h4"
+            title={p.title}
+            titleAr={p.titleAr}
+            author={p.author}
+            authorAr={p.authorAr}
+            date={p.date}
+            previewUrl={previewUrl}
+            previewWidth={previewSource?.width}
+            previewHeight={previewSource?.height}
+            fileUrl={showDownload && p.file ? mediaUrl(p.file) : ""}
+            // Audiovisual entries are a link rather than an upload. Without this
+            // they rendered as a bare thumbnail: no play button, nothing
+            // clickable, no way to reach the video the entry exists to point at.
+            linkUrl={p.link ?? ""}
+          />
+        );
+      })}
     </PublicationCardGrid>
   );
 }
@@ -299,7 +302,7 @@ function ResearchDetailPage() {
                     {clippings.map((c: PayloadClipping) => {
                       const url = mediaUrl(c.image);
                       const isImage = c.image?.mimeType?.startsWith("image/") ?? false;
-                      const thumbnailUrl = c.image?.thumbnail ? mediaUrl(c.image.thumbnail) : "";
+                      const previewSource = isImage ? c.image : c.image?.thumbnail;
                       return (
                         <PublicationCard
                           key={c.id}
@@ -307,7 +310,9 @@ function ResearchDetailPage() {
                           title={c.title}
                           titleAr={c.titleAr}
                           date={c.date}
-                          previewUrl={isImage ? url : thumbnailUrl}
+                          previewUrl={mediaUrl(previewSource)}
+                          previewWidth={previewSource?.width}
+                          previewHeight={previewSource?.height}
                           preview={url ? "clipping" : "none"}
                         />
                       );

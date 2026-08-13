@@ -42,7 +42,7 @@ export type GalleryPhoto = {
 /** Landscape-ish, used when an upload predates Payload recording dimensions. */
 const FALLBACK_RATIO = 1.5;
 
-const GAP = 8;
+const GAP = 0;
 
 function aspectRatio(photo: GalleryPhoto): number {
   if (!photo.width || !photo.height) return FALLBACK_RATIO;
@@ -206,7 +206,7 @@ export function PhotoGallery({ photos }: { photos: GalleryPhoto[] }) {
                         // short rather than stretching to fill.
                         { width: row.height * ratio, height: row.height, flex: "none" }
                   }
-                  className="group relative block overflow-hidden rounded-sm bg-secondary/20 cursor-zoom-in"
+                  className="group relative block overflow-hidden bg-secondary/20 cursor-zoom-in"
                 >
                   <img
                     src={photo.url}

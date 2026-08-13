@@ -1,7 +1,7 @@
 import { getPayload } from 'payload'
 import config from '@payload-config'
 
-import { generateThumbnailForPdf, MAX_SOURCE_BYTES } from '@/lib/pdfThumbnail'
+import { attachThumbnailAsCoverImage, generateThumbnailForPdf, MAX_SOURCE_BYTES } from '@/lib/pdfThumbnail'
 
 // This whole file is a one-time maintenance tool, not a regular part of the
 // site. It exists to backfill thumbnails for PDF Media documents that were
@@ -104,6 +104,7 @@ export async function GET(request: Request) {
         filename,
         sourceBuffer,
       })
+      await attachThumbnailAsCoverImage(payload, { fileId: doc.id, thumbnailId })
 
       results.push({ id: doc.id, filename, status: 'ok', thumbnailId })
     } catch (error) {
