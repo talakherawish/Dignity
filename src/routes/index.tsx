@@ -244,9 +244,11 @@ function LatestNews() {
         <ul className="border-t border-border">
           {articles.map((entry, index) => {
             const active = index === i;
-            // Arabic-Indic numerals beside Arabic dates, Latin beside English.
+            // Western digits (1234) even beside Arabic text -- the client
+            // asked not to use ar-EG's default Arabic-Indic numerals (١٢٣٤).
             const number = (index + 1).toLocaleString(isArabic ? "ar-EG" : "en-US", {
               minimumIntegerDigits: 2,
+              numberingSystem: "latn",
             });
 
             return (

@@ -33,17 +33,18 @@ type Lang = "en" | "ar";
  *
  * `formatDate` returns one finished string, which suits a card but not this
  * page — the day is set several times the size of the month beside it, so the
- * two have to arrive separately. Arabic keeps its own numerals, matching the
- * ar-EG locale `formatDate` uses elsewhere.
+ * two have to arrive separately. `numberingSystem: "latn"` matches
+ * `formatDate`: the client asked for Western digits (1234) even in the
+ * Arabic month name's own locale, not ar-EG's default Arabic-Indic (١٢٣٤).
  */
 function dateParts(iso: string, lang: Lang) {
   const locale = lang === "ar" ? "ar-EG" : "en-US";
   const date = new Date(iso);
   if (!iso || Number.isNaN(date.getTime())) return null;
   return {
-    day: date.toLocaleDateString(locale, { day: "numeric" }),
+    day: date.toLocaleDateString(locale, { day: "numeric", numberingSystem: "latn" }),
     month: date.toLocaleDateString(locale, { month: "long" }),
-    year: date.toLocaleDateString(locale, { year: "numeric" }),
+    year: date.toLocaleDateString(locale, { year: "numeric", numberingSystem: "latn" }),
     yearKey: date.getFullYear(),
   };
 }

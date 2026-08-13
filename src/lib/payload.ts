@@ -332,13 +332,25 @@ export function extractListItems(lexical: unknown): string[] {
   return items;
 }
 
-/** Format an ISO date string for display. */
+/**
+ * Format an ISO date string for display.
+ *
+ * `numberingSystem: "latn"` on the Arabic branch: ar-EG's default digit
+ * shapes are Arabic-Indic (١٢٣٤), which the client asked to have replaced
+ * with the Western digits (1234) already used everywhere else on the site.
+ * The Arabic month name is untouched — only the numeral shapes change.
+ */
 export function formatDate(iso: string, locale: "en" | "ar"): string {
   if (!iso) return "";
   try {
     const date = new Date(iso);
     if (locale === "ar") {
-      return date.toLocaleDateString("ar-EG", { day: "numeric", month: "long", year: "numeric" });
+      return date.toLocaleDateString("ar-EG", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+        numberingSystem: "latn",
+      });
     }
     return date.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
   } catch {
