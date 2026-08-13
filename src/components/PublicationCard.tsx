@@ -211,13 +211,8 @@ export function PublicationCard({
       <div className="p-5 flex flex-col flex-1 text-start">
         {(date || displayAuthor) && (
           <div className="text-[11px] uppercase tracking-widest text-muted-foreground font-semibold mb-1.5">
-            {date && formatDate(date, isAr ? "ar" : "en")}
-            {displayAuthor && (
-              <span>
-                {date ? " · " : ""}
-                {displayAuthor}
-              </span>
-            )}
+            {date && <div>{formatDate(date, isAr ? "ar" : "en")}</div>}
+            {displayAuthor && <div>{displayAuthor}</div>}
           </div>
         )}
 
