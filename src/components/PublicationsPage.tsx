@@ -23,6 +23,7 @@ type DisplayPublication = {
   authorAr?: string;
   date: string;
   fileUrl: string;
+  fileMimeType?: string;
   previewUrl: string;
   /** External destination (YouTube) for items that aren't uploads. */
   linkUrl: string;
@@ -49,6 +50,7 @@ function fromPayload(item: PayloadPublication): DisplayPublication {
     authorAr: item.authorAr,
     date: item.date,
     fileUrl: mediaUrl(item.file),
+    fileMimeType: item.file?.mimeType,
     previewUrl,
   };
 }
@@ -105,6 +107,7 @@ export function PublicationsPage({
                 date={item.date}
                 previewUrl={item.previewUrl}
                 fileUrl={item.fileUrl}
+                fileMimeType={item.fileMimeType}
                 linkUrl={item.linkUrl}
               />
             ))}

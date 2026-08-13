@@ -1,21 +1,37 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { PageLayout, PageHero } from "@/components/PageLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { fetchAnnouncements, formatDate, type PayloadAnnouncement } from "@/lib/payload";
 
+type AnnouncementsSearch = { id?: string };
+
 export const Route = createFileRoute("/media/announcements")({
   head: () => ({ meta: [{ title: "Announcements — Dignity" }] }),
+  validateSearch: (search: Record<string, unknown>): AnnouncementsSearch => ({
+    id: typeof search.id === "string" ? search.id : undefined,
+  }),
   component: AnnouncementsPage,
 });
 
 function AnnouncementsPage() {
   const { t, lang, isArabic } = useLanguage();
+  const { id: linkedId } = Route.useSearch();
   const { data: items = [], isLoading } = useQuery({
     queryKey: ["announcements"],
     queryFn: fetchAnnouncements,
     staleTime: 5 * 60 * 1000,
   });
+
+  // Cards show everything up front, so there's no panel to open here -- just
+  // scroll the linked one into view once the list has loaded.
+  useEffect(() => {
+    if (!linkedId || isLoading) return;
+    document
+      .getElementById(`announcement-${linkedId}`)
+      ?.scrollIntoView({ block: "center" });
+  }, [linkedId, isLoading]);
 
   return (
     <PageLayout>
@@ -42,7 +58,11 @@ function AnnouncementsPage() {
             {items.map((item: PayloadAnnouncement) => (
               <div
                 key={item.id}
-                className="bg-card border border-border rounded-lg overflow-hidden"
+                id={`announcement-${item.id}`}
+                className={
+                  "scroll-mt-24 bg-card border rounded-lg overflow-hidden transition-colors" +
+                  (item.id === linkedId ? " border-[color:var(--brand-magenta)]" : " border-border")
+                }
               >
                 <div className="h-1 w-full" style={{ background: "var(--brand-magenta)" }} />
                 <div className={"p-6" + (isArabic ? " text-right" : "")}>

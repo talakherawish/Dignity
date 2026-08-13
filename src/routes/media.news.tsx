@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { PageLayout, PageHero } from "@/components/PageLayout";
 import { TranslationNotice } from "@/components/TranslationNotice";
@@ -8,8 +8,13 @@ import { ARTICLES, getField, getBody, mapPayloadNews, type Article } from "@/dat
 import { fetchNews } from "@/lib/payload";
 import { withItalicQuotes } from "@/lib/text";
 
+type NewsSearch = { id?: string };
+
 export const Route = createFileRoute("/media/news")({
   head: () => ({ meta: [{ title: "News — Dignity" }] }),
+  validateSearch: (search: Record<string, unknown>): NewsSearch => ({
+    id: typeof search.id === "string" ? search.id : undefined,
+  }),
   component: NewsPage,
 });
 
@@ -46,7 +51,7 @@ function ArticleRow({
   const excerpt = getField(article, "excerpt", lang);
 
   return (
-    <li className="border-b border-border">
+    <li id={`news-article-${article.id}`} className="scroll-mt-24 border-b border-border">
       <button
         type="button"
         onClick={onToggle}
@@ -141,7 +146,8 @@ function NewsSkeleton() {
 
 function NewsPage() {
   const { t, isArabic } = useLanguage();
-  const [openId, setOpenId] = useState<string | null>(null);
+  const { id: linkedId } = Route.useSearch();
+  const [openIds, setOpenIds] = useState<Set<string>>(() => new Set(linkedId ? [linkedId] : []));
 
   const { data: payloadNews = [], isLoading } = useQuery({
     queryKey: ["news"],
@@ -149,6 +155,13 @@ function NewsPage() {
     staleTime: 5 * 60 * 1000,
   });
   const articles = payloadNews.length > 0 ? payloadNews.map(mapPayloadNews) : ARTICLES;
+
+  // The linked article only exists once the feed has loaded, so the jump has
+  // to wait for that render rather than firing once on mount.
+  useEffect(() => {
+    if (!linkedId || isLoading) return;
+    document.getElementById(`news-article-${linkedId}`)?.scrollIntoView({ block: "start" });
+  }, [linkedId, isLoading]);
 
   return (
     <PageLayout>
@@ -166,9 +179,17 @@ function NewsPage() {
               <ArticleRow
                 key={article.id}
                 article={article}
-                open={openId === article.id}
+                open={openIds.has(article.id)}
                 onToggle={() =>
-                  setOpenId((current) => (current === article.id ? null : article.id))
+                  setOpenIds((current) => {
+                    const next = new Set(current);
+                    if (next.has(article.id)) {
+                      next.delete(article.id);
+                    } else {
+                      next.add(article.id);
+                    }
+                    return next;
+                  })
                 }
               />
             ))}

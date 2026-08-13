@@ -1,5 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
-import { Download, ExternalLink } from "lucide-react";
+import { Download, Expand, ExternalLink } from "lucide-react";
+import { useState } from "react";
+import { FilePreviewModal, isPreviewableFile } from "@/components/FilePreviewModal";
 import { PageLayout, PageHero } from "@/components/PageLayout";
 import { useLanguage, type TranslationKey } from "@/contexts/LanguageContext";
 import {
@@ -24,6 +26,13 @@ export function InformationPage({
     queryFn: () => fetchInformation(type),
     staleTime: 5 * 60 * 1000,
   });
+  const [previewItem, setPreviewItem] = useState<PayloadInformationItem | null>(null);
+  const previewUrl = previewItem ? mediaUrl(previewItem.file) : "";
+  const previewTitle = previewItem
+    ? lang === "ar"
+      ? (previewItem.titleAr ?? previewItem.title)
+      : previewItem.title
+    : "";
 
   return (
     <PageLayout>
@@ -49,6 +58,7 @@ export function InformationPage({
           <div className="space-y-4" dir={isArabic ? "rtl" : "ltr"}>
             {items.map((item: PayloadInformationItem) => {
               const fileUrl = mediaUrl(item.file);
+              const previewable = Boolean(fileUrl) && isPreviewableFile(item.file?.mimeType);
               return (
                 <div
                   key={item.id}
@@ -76,16 +86,27 @@ export function InformationPage({
                         {t("information.visit")}
                       </a>
                     )}
-                    {fileUrl && (
-                      <a
-                        href={fileUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
+                    {fileUrl && previewable ? (
+                      <button
+                        type="button"
+                        onClick={() => setPreviewItem(item)}
                         className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-border text-sm text-foreground/80 hover:text-accent hover:border-accent/40 transition-colors"
                       >
-                        <Download className="h-3.5 w-3.5" />
-                        {t("publications.download")}
-                      </a>
+                        <Expand className="h-3.5 w-3.5" />
+                        {t("publications.view")}
+                      </button>
+                    ) : (
+                      fileUrl && (
+                        <a
+                          href={fileUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-border text-sm text-foreground/80 hover:text-accent hover:border-accent/40 transition-colors"
+                        >
+                          <Download className="h-3.5 w-3.5" />
+                          {t("publications.download")}
+                        </a>
+                      )
                     )}
                   </div>
                 </div>
@@ -94,6 +115,13 @@ export function InformationPage({
           </div>
         )}
       </section>
+
+      {previewItem && (
+        <FilePreviewModal
+          file={{ url: previewUrl, mimeType: previewItem.file?.mimeType, title: previewTitle }}
+          onClose={() => setPreviewItem(null)}
+        />
+      )}
     </PageLayout>
   );
 }

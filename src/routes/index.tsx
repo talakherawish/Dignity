@@ -179,6 +179,7 @@ function LatestNews() {
     >
       <Link
         to="/media/news"
+        search={{ id: article.id }}
         aria-label={getField(article, "title", lang)}
         className="group block overflow-hidden rounded-sm border border-border"
       >
@@ -328,6 +329,7 @@ function AnnouncementsSection() {
             <Link
               key={item.id}
               to="/media/announcements"
+              search={{ id: item.id }}
               className="group block bg-card border border-border rounded-lg overflow-hidden hover:shadow-md transition-all duration-200"
             >
               <div className="h-1 w-full" style={{ background: "var(--brand-magenta)" }} />

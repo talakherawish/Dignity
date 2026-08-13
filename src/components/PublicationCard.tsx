@@ -1,5 +1,6 @@
-import { Download, FileText, Play } from "lucide-react";
-import type { ReactNode } from "react";
+import { Download, Expand, FileText, Play } from "lucide-react";
+import { useState, type ReactNode } from "react";
+import { FilePreviewModal, isPreviewableFile } from "@/components/FilePreviewModal";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { formatDate, youtubeThumbnailFallback } from "@/lib/payload";
 import { withItalicQuotes } from "@/lib/text";
@@ -59,8 +60,11 @@ export type PublicationCardProps = {
    * squarer, and `none` drops the well for items carrying no media at all.
    */
   preview?: "document" | "clipping" | "none";
-  /** Attached file — rendered as the download action. */
+  /** Attached file — rendered as a preview (PDF or image) or a download action. */
   fileUrl?: string;
+  /** Needed to tell a PDF or image (previewable in place) from anything else
+   * (a plain download is the only option). */
+  fileMimeType?: string;
   /** External destination (YouTube), which makes the thumbnail clickable and
    * swaps the download action for a play button. */
   linkUrl?: string;
@@ -77,6 +81,7 @@ export function PublicationCard({
   previewUrl,
   preview = "document",
   fileUrl,
+  fileMimeType,
   linkUrl,
   as: Heading = "h3",
 }: PublicationCardProps) {
@@ -85,6 +90,8 @@ export function PublicationCard({
   const displayTitle = isAr ? (titleAr ?? title) : title;
   const displayAuthor = isAr ? (authorAr ?? author) : author;
   const watchLabel = isArabic ? "مشاهدة الفيديو" : "Watch video";
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const previewable = Boolean(fileUrl) && isPreviewableFile(fileMimeType);
 
   const thumbnail = previewUrl ? (
     <img
@@ -122,6 +129,16 @@ export function PublicationCard({
     >
       <Play className="h-3.5 w-3.5 translate-x-[1px]" fill="currentColor" />
     </a>
+  ) : fileUrl && previewable ? (
+    <button
+      type="button"
+      onClick={() => setPreviewOpen(true)}
+      aria-label={t("publications.view")}
+      title={t("publications.view")}
+      className="shrink-0 inline-flex items-center justify-center h-8 w-8 rounded-full border border-border text-foreground/70 hover:text-accent hover:border-accent/40 transition-colors"
+    >
+      <Expand className="h-3.5 w-3.5" />
+    </button>
   ) : fileUrl ? (
     <a
       href={fileUrl}
@@ -142,8 +159,9 @@ export function PublicationCard({
         " border border-border rounded-sm bg-card overflow-hidden hover:shadow-sm transition-shadow flex flex-col"
       }
     >
-      {/* Video items open on YouTube; document items keep the plain preview,
-          since their action lives in the button below. */}
+      {/* Video items open on YouTube; a previewable file opens in place, the
+          same well its action button opens; anything else stays a plain
+          well, since it carries no click of its own. */}
       {preview !== "none" &&
         (linkUrl ? (
           <a
@@ -157,6 +175,17 @@ export function PublicationCard({
               {thumbnail}
             </div>
           </a>
+        ) : previewable ? (
+          <button
+            type="button"
+            onClick={() => setPreviewOpen(true)}
+            aria-label={t("publications.view")}
+            className={"group block w-full cursor-zoom-in " + wellClass}
+          >
+            <div className="w-full h-full transition-transform duration-300 group-hover:scale-[1.03]">
+              {thumbnail}
+            </div>
+          </button>
         ) : (
           <div className={wellClass}>{thumbnail}</div>
         ))}
@@ -184,6 +213,13 @@ export function PublicationCard({
 
         {action && <div className="mt-auto pt-4 flex justify-end">{action}</div>}
       </div>
+
+      {previewOpen && fileUrl && (
+        <FilePreviewModal
+          file={{ url: fileUrl, mimeType: fileMimeType, title: displayTitle }}
+          onClose={() => setPreviewOpen(false)}
+        />
+      )}
     </div>
   );
 }

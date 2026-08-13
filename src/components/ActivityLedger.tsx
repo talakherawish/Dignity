@@ -316,7 +316,7 @@ export function ActivityLedger({
 }) {
   const { lang, isArabic } = useLanguage();
   const language: Lang = lang === "ar" ? "ar" : "en";
-  const [openId, setOpenId] = useState<string | null>(null);
+  const [openIds, setOpenIds] = useState<Set<string>>(new Set());
 
   const groups = groupByYear(items, language);
 
@@ -344,8 +344,18 @@ export function ActivityLedger({
                     key={item.id}
                     item={item}
                     lang={language}
-                    open={openId === item.id}
-                    onToggle={() => setOpenId((current) => (current === item.id ? null : item.id))}
+                    open={openIds.has(item.id)}
+                    onToggle={() =>
+                      setOpenIds((current) => {
+                        const next = new Set(current);
+                        if (next.has(item.id)) {
+                          next.delete(item.id);
+                        } else {
+                          next.add(item.id);
+                        }
+                        return next;
+                      })
+                    }
                   />
                 ))}
               </ul>
