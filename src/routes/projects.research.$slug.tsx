@@ -90,6 +90,7 @@ function PublicationGrid({
             previewWidth={previewSource?.width}
             previewHeight={previewSource?.height}
             fileUrl={showDownload && p.file ? mediaUrl(p.file) : ""}
+            fileMimeType={showDownload ? p.file?.mimeType : undefined}
             // Audiovisual entries are a link rather than an upload. Without this
             // they rendered as a bare thumbnail: no play button, nothing
             // clickable, no way to reach the video the entry exists to point at.

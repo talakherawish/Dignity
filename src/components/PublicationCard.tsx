@@ -1,7 +1,7 @@
 import { Download, ExternalLink, FileText, Play } from "lucide-react";
 import type { ReactNode } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { formatDate, youtubeThumbnailFallback } from "@/lib/payload";
+import { formatDate, openFileInNewTab, youtubeThumbnailFallback } from "@/lib/payload";
 import { withItalicQuotes } from "@/lib/text";
 
 /**
@@ -73,6 +73,9 @@ export type PublicationCardProps = {
   preview?: "document" | "clipping" | "none";
   /** Attached file — opened in a new tab, with a separate download action. */
   fileUrl?: string;
+  /** The file's real type, so it can be made to preview in place — see
+   * openFileInNewTab. */
+  fileMimeType?: string;
   /** External destination (YouTube), which makes the thumbnail clickable and
    * swaps the file actions for a play button. */
   linkUrl?: string;
@@ -91,6 +94,7 @@ export function PublicationCard({
   previewHeight,
   preview = "document",
   fileUrl,
+  fileMimeType,
   linkUrl,
   as: Heading = "h3",
 }: PublicationCardProps) {
@@ -143,16 +147,15 @@ export function PublicationCard({
     </a>
   ) : fileUrl ? (
     <div className="flex items-center gap-1.5">
-      <a
-        href={fileUrl}
-        target="_blank"
-        rel="noopener noreferrer"
+      <button
+        type="button"
+        onClick={() => openFileInNewTab(fileUrl, fileMimeType)}
         aria-label={t("publications.view")}
         title={t("publications.view")}
         className={actionButtonClass}
       >
         <ExternalLink className="h-3.5 w-3.5" />
-      </a>
+      </button>
       <a
         href={fileUrl}
         download
@@ -190,18 +193,17 @@ export function PublicationCard({
             </div>
           </a>
         ) : fileUrl ? (
-          <a
-            href={fileUrl}
-            target="_blank"
-            rel="noopener noreferrer"
+          <button
+            type="button"
+            onClick={() => openFileInNewTab(fileUrl, fileMimeType)}
             aria-label={t("publications.view")}
-            className={"group block " + wellClass}
+            className={"group block w-full " + wellClass}
             style={wellStyle}
           >
             <div className="w-full h-full transition-transform duration-300 group-hover:scale-[1.03]">
               {thumbnail}
             </div>
-          </a>
+          </button>
         ) : (
           <div className={wellClass} style={wellStyle}>
             {thumbnail}

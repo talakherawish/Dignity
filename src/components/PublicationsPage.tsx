@@ -23,6 +23,7 @@ type DisplayPublication = {
   authorAr?: string;
   date: string;
   fileUrl: string;
+  fileMimeType?: string;
   previewUrl: string;
   previewWidth?: number;
   previewHeight?: number;
@@ -50,6 +51,7 @@ function fromPayload(item: PayloadPublication): DisplayPublication {
     authorAr: item.authorAr,
     date: item.date,
     fileUrl: mediaUrl(item.file),
+    fileMimeType: item.file?.mimeType,
     previewUrl,
     previewWidth: previewSource?.width,
     previewHeight: previewSource?.height,
@@ -110,6 +112,7 @@ export function PublicationsPage({
                 previewWidth={item.previewWidth}
                 previewHeight={item.previewHeight}
                 fileUrl={item.fileUrl}
+                fileMimeType={item.fileMimeType}
                 linkUrl={item.linkUrl}
               />
             ))}

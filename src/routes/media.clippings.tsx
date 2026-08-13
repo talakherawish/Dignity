@@ -56,6 +56,7 @@ function ClippingsPage() {
                   previewHeight={previewSource?.height}
                   preview={url ? "clipping" : "none"}
                   fileUrl={url}
+                  fileMimeType={item.image?.mimeType}
                 />
               );
             })}

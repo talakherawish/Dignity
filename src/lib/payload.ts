@@ -365,6 +365,46 @@ export function mediaUrl(media: PayloadMedia | undefined): string {
   return `${base}${base.includes("?") ? "&" : "?"}v=${version}`;
 }
 
+/**
+ * Opens an uploaded file in a new tab so it previews instead of downloading.
+ *
+ * Uploads are served straight from raw.githubusercontent.com (see mediaUrl
+ * above), which is a GitHub security measure this project's own server has
+ * no control over: it answers PDF requests with `Content-Type:
+ * application/octet-stream` plus `X-Content-Type-Options: nosniff` no matter
+ * what the file actually is, which forces a download no matter how the link
+ * to it is written. Fetching the bytes ourselves and re-wrapping them in a
+ * Blob carrying the *real* mime type (already known from what Payload
+ * recorded at upload time) gives the browser what it needs to render the
+ * file inline instead.
+ *
+ * The tab has to be opened synchronously, before the fetch, or popup
+ * blockers treat it as an unrequested popup; its location is filled in once
+ * the blob is ready. `tab.opener` is cleared for the same reason a manual
+ * `rel="noopener"` would be: the new tab still shows attacker-uploadable
+ * content, so it shouldn't keep a handle back to this page.
+ */
+export function openFileInNewTab(url: string, mimeType?: string): void {
+  if (!url) return;
+  const tab = window.open("", "_blank");
+  if (tab) tab.opener = null;
+
+  fetch(url)
+    .then((res) => {
+      if (!res.ok) throw new Error(`Fetching file returned ${res.status}`);
+      return res.blob();
+    })
+    .then((rawBlob) => {
+      const blob = mimeType ? new Blob([rawBlob], { type: mimeType }) : rawBlob;
+      if (tab) tab.location.href = URL.createObjectURL(blob);
+    })
+    .catch(() => {
+      // Falls back to the raw (possibly downloading) URL rather than leaving
+      // the visitor staring at a blank tab.
+      if (tab) tab.location.href = url;
+    });
+}
+
 // ── Core fetch ─────────────────────────────────────────────────────────────
 
 async function fetchCollection<T>(slug: string, extra: Record<string, string> = {}): Promise<T[]> {

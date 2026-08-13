@@ -5,6 +5,7 @@ import { useLanguage, type TranslationKey } from "@/contexts/LanguageContext";
 import {
   fetchInformation,
   mediaUrl,
+  openFileInNewTab,
   type InformationCollection,
   type PayloadInformationItem,
 } from "@/lib/payload";
@@ -78,15 +79,14 @@ export function InformationPage({
                     )}
                     {fileUrl && (
                       <>
-                        <a
-                          href={fileUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
+                        <button
+                          type="button"
+                          onClick={() => openFileInNewTab(fileUrl, item.file?.mimeType)}
                           className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-border text-sm text-foreground/80 hover:text-accent hover:border-accent/40 transition-colors"
                         >
                           <ExternalLink className="h-3.5 w-3.5" />
                           {t("publications.view")}
-                        </a>
+                        </button>
                         <a
                           href={fileUrl}
                           download
