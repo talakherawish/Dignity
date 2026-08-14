@@ -1,5 +1,6 @@
 import { Fragment, type ReactNode } from "react";
 import { hasProse } from "@/lib/payload";
+import { containsArabic } from "@/lib/text";
 
 /**
  * Renderer for Payload's Lexical richText fields.
@@ -29,6 +30,12 @@ type LexicalNode = Record<string, unknown>;
 
 const childrenOf = (node: LexicalNode): LexicalNode[] =>
   Array.isArray(node.children) ? (node.children as LexicalNode[]) : [];
+
+/** Whether any text node under here is Arabic — see containsArabic. */
+function subtreeContainsArabic(node: LexicalNode): boolean {
+  if (node.type === "text") return containsArabic((node.text as string) ?? "");
+  return childrenOf(node).some(subtreeContainsArabic);
+}
 
 /**
  * Node alignment, when the editor set one explicitly.
@@ -65,7 +72,9 @@ function renderText(node: LexicalNode, key: number): ReactNode {
     );
   }
   if (format & FORMAT_BOLD) element = <strong>{element}</strong>;
-  if (format & FORMAT_ITALIC) element = <em>{element}</em>;
+  // Arabic has no true italic form -- see containsArabic -- so an editor's
+  // italic formatting is honoured for Latin text but skipped for Arabic.
+  if (format & FORMAT_ITALIC && !containsArabic(text)) element = <em>{element}</em>;
   if (format & FORMAT_UNDERLINE) element = <u>{element}</u>;
   if (format & FORMAT_STRIKETHROUGH) element = <s>{element}</s>;
   if (format & FORMAT_SUBSCRIPT) element = <sub>{element}</sub>;
@@ -145,7 +154,9 @@ function renderNode(node: LexicalNode, key: number): ReactNode {
         <blockquote
           key={key}
           className={
-            "border-s-2 border-accent/40 ps-4 italic text-foreground/80" + alignmentClass(node)
+            "border-s-2 border-accent/40 ps-4 text-foreground/80" +
+            (subtreeContainsArabic(node) ? "" : " italic") +
+            alignmentClass(node)
           }
         >
           {renderNodes(childrenOf(node))}

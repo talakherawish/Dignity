@@ -14,12 +14,15 @@ import { useLanguage } from "@/contexts/LanguageContext";
  * softened without a deploy.
  */
 export function TranslationNotice({ className = "" }: { className?: string }) {
-  const { t } = useLanguage();
+  const { t, isArabic } = useLanguage();
 
   return (
     <p
       className={
-        "rounded-e-sm border-s-2 border-[color:var(--brand-magenta)]/40 bg-secondary/30 px-4 py-3 font-serif text-sm italic leading-relaxed text-muted-foreground " +
+        "rounded-e-sm border-s-2 border-[color:var(--brand-magenta)]/40 bg-secondary/30 px-4 py-3 font-serif text-sm leading-relaxed text-muted-foreground " +
+        // Arabic has no true italic form -- see containsArabic in lib/text --
+        // and this notice itself renders in Arabic for an Arabic reader.
+        (isArabic ? "" : "italic ") +
         className
       }
     >
