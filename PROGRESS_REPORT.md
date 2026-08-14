@@ -1,6 +1,6 @@
 # Dignity Initiative — Progress Report
-**Updated:** 2026-08-11  
-**Reporting period:** 2026-08-08 to 2026-08-11
+**Updated:** 2026-08-14  
+**Reporting period:** 2026-08-08 to 2026-08-14
 
 ---
 
@@ -13,6 +13,43 @@ Infrastructure work is finished. HTTPS renews itself, backups run nightly and ha
 **Oracle is the permanent home.** The university has no hosting capacity; they will only map a domain to this IP. Backups, uptime and deployment are therefore ours to own.
 
 What remains is content entry, not engineering.
+
+---
+
+## Website work — 2026-08-12 to 2026-08-14
+
+Three more content-and-fixes sessions, plus a longer evening session on the 14th spent on search, terminology, and access control rather than the page layer. Grouped by day; each day's commits are real timestamps, so the hour figures below are the same span-between-first-and-last-commit method already used further down in **Time Logged**, not an estimate pulled from nowhere.
+
+### 2026-08-12 (~1.5 hrs, 16:25–17:55)
+- Photos: dropped the required title/date so a photo that speaks for itself needs no caption, and now show at their own proportions instead of being cropped into a fixed box
+- Research page: videos are now openable (were inert before)
+- Card titles given more breathing room; language choice now persists instead of resetting
+- Several publication PDFs and images uploaded through the admin
+
+### 2026-08-13 (~2.75 hrs, 14:10–16:49)
+- Files now open in place and more than one entry can stay open at once; a story links straight through
+- Publication cover images now auto-fill from the PDF's own first-page thumbnail; admin list columns lead with date
+- A publication card's author moved to its own line under the date
+- Attached PDFs preview in the browser instead of forcing a download
+- Arabic dates/numbers now render in Western digits (1234), not Arabic-Indic (١٢٣٤) — matches the client's earlier request for the rest of the site
+- A large batch of publication PDFs uploaded (papers, reports, posters)
+
+### 2026-08-14 morning (~1 hr, 13:04–14:11)
+- Arabic text no longer gets italicized — it has no true italic form, so it was rendering as a distorted slant
+- Fixed the About page's misaligned "avenues" heading and two mistranslated Arabic labels
+- Enlarged the Activities ledger's tiny uppercase labels for Arabic legibility
+- An activity entry's photos now show before its write-up, not after, when expanded
+- Photo gallery rows enlarged, then the packing algorithm fixed so the taller rows actually take effect
+
+### 2026-08-14 evening (~1½ hrs, 22:20–23:45, this session)
+Not page layout this time — search, terminology, and who can do what.
+
+- **Audiovisual cards resized** to a real YouTube-thumbnail shape (16:9, two-up) instead of being squeezed into the same narrow column as document covers. Scoped to actual YouTube links only, so a Paper carrying a non-video external link isn't affected.
+- **Search actually searches now.** It was a hardcoded stub of 5 demo items left over from before the CMS existed — a real search for a real published meeting ("Solidarity: Palestinians and Tamils") returned nothing. Rebuilt to pull every collection (news, activities, research, participants, publications, information, About/Partners) and match against titles, full body text, and a few fields that inform a match without needing to be shown, in both languages.
+- **"Fellow" renamed to "Participant"** site-wide — the two terms had drifted into meaning the same thing (both translation keys already resolved to "Participants"), so this finished the job: page component names, the homepage's "Meet the Fellows" heading, and a placeholder bio, in both languages. A quoted line in `articles.ts` ("we are fellow prisoners") was deliberately left alone — that's a direct quote, not the site's Participant type.
+- **User account reset.** At your request, deleted the four non-owner accounts, then recreated three (Asil, Eman, and newly added Mudar Kassis) with a shared temporary password. **Worth doing soon: ask each of them to change it** — a shared password across three accounts means one leak exposes all three.
+- **Editor permissions widened.** Editors were locked out of the About/Partners pages, Site Settings, and updating any profile but their own — restrictions that no longer matched intent. Opened all of that up; the one thing still content-manager-only is creating or deleting accounts, which required a field-level lock on the `role` field itself so an editor can't just set their own role to content-manager and route around the restriction. Verified against the live API: profile edits and Site Settings edits succeed as editor, self-promotion is silently ignored, account creation is rejected with 403.
+- **Found, not caused:** your account and Mudar's now show swapped roles (you're `editor`, he's `content-manager`) from a change made directly in the admin panel, outside of anything done here. Left as-is pending confirmation — see the open item below.
 
 ---
 
@@ -183,12 +220,13 @@ Considered moving MongoDB onto the Oracle instance for single-vendor tidiness. *
 ## Remaining work
 
 1. **Populate the site** — the main task now, and safe to do; backups are running.
-2. Set password for `ahousin@birzeit.edu` (2 min).
-3. Change Tala's temporary password (`Dignity2026!`).
-4. Google Drive workspace as an independent, browsable copy of the documents — upload all 64 files from `public/uploads`, **including the `-thumb.png` files**, since those are the PDF cover previews the site displays. Verified 2026-08-11 that the local folder exactly matches the server: 64 files, 155MB, 30 PDFs.
-5. Optional: copy a backup archive off the server after big content sessions — all 14 copies currently live on the same machine.
-6. Conferences and Windsor-Birzeit still use the old card layout; the ledger is a component now, so each is a small change.
-7. Optional: allow `http://localhost:8080` in `CORS_ORIGINS` so local development can read live content.
+2. ~~Set password for `ahousin@birzeit.edu`~~ — done 2026-08-14, as part of the account reset below.
+3. Change Tala's temporary password (`Dignity2026!`), **and** have Asil, Eman, and Mudar change theirs — all three currently share one password (`DignityPass2026`) set during the 2026-08-14 account reset.
+4. **Confirm the content-manager/editor role swap.** As of 2026-08-14, `talakherawish@gmail.com` is `editor` and `mkassis@birzeit.edu` is `content-manager` — the reverse of every prior state in this document. The change was made directly in the admin panel, not through any script or deploy, so it wasn't reverted; needs a yes/no on whether that's the intended permanent arrangement.
+5. Google Drive workspace as an independent, browsable copy of the documents — upload all files from `public/uploads`, **including the `-thumb.png` files**, since those are the PDF cover previews the site displays. Verified 2026-08-11 that the local folder exactly matches the server: 64 files, 155MB, 30 PDFs at the time — grown since with the 2026-08-13/14 uploads.
+6. Optional: copy a backup archive off the server after big content sessions — all 14+ copies currently live on the same machine.
+7. Conferences and Windsor-Birzeit still use the old card layout; the ledger is a component now, so each is a small change.
+8. Optional: allow `http://localhost:8080` in `CORS_ORIGINS` so local development can read live content.
 
 ---
 
@@ -308,5 +346,9 @@ echo "✓ Frontend deployed!"
 - **2026-08-10:** not logged (HTTPS auto-renewal, backups, frontend deployment, server/GitHub reconciled — all recorded above)
 - **2026-08-11, daytime:** not logged (one-command deploy, Google Drive file audit)
 - **2026-08-11 18:11 → 2026-08-12 00:14:** ~6¼ hours (website work: activities ledger, Site Settings audit, translation notice, news index, homepage feature, automatic deploys). 15 code commits, 10 deploys.
+- **2026-08-12 16:25 → 17:55:** ~1½ hours (photo/video fixes, content upload)
+- **2026-08-13 14:10 → 16:49:** ~2¾ hours (file preview, PDF thumbnails, Arabic digits, content upload)
+- **2026-08-14 13:04 → 14:11:** ~1 hour (RTL/typography and gallery fixes)
+- **2026-08-14 22:20 → 23:45:** ~1½ hours (audiovisual layout, search rebuild, Fellow→Participant rename, user account reset, editor permissions)
 
-**Total project time to date:** ~78 hours (accumulated since start of Dignity project). The two unlogged days above are not counted, so the real figure is higher.
+**Total project time to date:** ~84.5 hours (accumulated since start of Dignity project). The two unlogged days from 08-09/08-10 are still not counted, so the real figure is higher. Note: `PROGRESS.md` tracks an overlapping-but-separate ~80 hours for sessions 1–14 (2026-05-31 to 2026-08-03) under a different log; the two files haven't been reconciled into one master total.
