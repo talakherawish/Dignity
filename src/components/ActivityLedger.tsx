@@ -249,23 +249,12 @@ function ActivityEntry({
         >
           <div className="overflow-hidden">
             <div className="pb-10 md:ps-[9rem] md:pb-12">
-              {hasProse(lead) && (
-                <RichText
-                  value={lead}
-                  className="font-serif text-[15px] leading-relaxed text-foreground/80 md:text-lg"
-                />
-              )}
-              {hasProse(body) && (
-                <RichText
-                  value={body}
-                  className="mt-5 space-y-4 text-sm leading-7 text-foreground/70 md:text-[15px]"
-                />
-              )}
-              {untranslated && <TranslationNotice />}
+              {/* Photos lead, text follows -- a reader opening an entry sees
+                  what happened before reading the write-up of it. */}
               {figures.length > 0 && (
                 <div
                   className={
-                    "mt-7 grid gap-3 " +
+                    "mb-7 grid gap-3 " +
                     (figures.length === 1 ? "grid-cols-1" : "grid-cols-2 md:grid-cols-3")
                   }
                 >
@@ -294,6 +283,19 @@ function ActivityEntry({
                   ))}
                 </div>
               )}
+              {hasProse(lead) && (
+                <RichText
+                  value={lead}
+                  className="font-serif text-[15px] leading-relaxed text-foreground/80 md:text-lg"
+                />
+              )}
+              {hasProse(body) && (
+                <RichText
+                  value={body}
+                  className="mt-5 space-y-4 text-sm leading-7 text-foreground/70 md:text-[15px]"
+                />
+              )}
+              {untranslated && <TranslationNotice />}
             </div>
           </div>
         </div>
