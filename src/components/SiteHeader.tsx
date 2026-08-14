@@ -13,7 +13,7 @@ const NAV: Item[] = [
     labelKey: "about",
     children: [
       { labelKey: "about.initiative", to: "/about" },
-      { labelKey: "about.fellows", to: "/about/participants" },
+      { labelKey: "about.participants", to: "/about/participants" },
       { labelKey: "media.news", to: "/media/news" },
       { labelKey: "media.announcements", to: "/media/announcements" },
       { labelKey: "media.photos", to: "/media/photos" },

@@ -1,7 +1,12 @@
 import { Download, ExternalLink, FileText, Play } from "lucide-react";
 import type { ReactNode } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { formatDate, isYoutubeLink, openFileInNewTab, youtubeThumbnailFallback } from "@/lib/payload";
+import {
+  formatDate,
+  isYoutubeLink,
+  openFileInNewTab,
+  youtubeThumbnailFallback,
+} from "@/lib/payload";
 import { withItalicQuotes } from "@/lib/text";
 
 /**

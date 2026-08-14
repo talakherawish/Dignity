@@ -18,7 +18,6 @@ const translations = {
     home: "Home",
     about: "About the Dignity Initiative",
     "about.initiative": "The Dignity Research Initiative",
-    "about.fellows": "Participants",
     "about.participants": "Participants",
     "about.faculty": "Faculty",
     "about.researchers": "Researchers",
@@ -169,9 +168,9 @@ const translations = {
     "footer.library": "Library",
     "footer.databases": "Databases",
     // TEAM SECTION
-    "team.eyebrow": "Meet the Fellows",
+    "team.eyebrow": "Meet the Participants",
     "team.title": "People driving our mission",
-    "team.btn": "View All Fellows",
+    "team.btn": "View All Participants",
     "team.viewProfile": "View Profile",
     "team.name": "Dr. Name Placeholder",
     "team.role1": "Associate Professor",
@@ -181,7 +180,7 @@ const translations = {
     "team.role3": "Assistant Professor",
     "team.role3b": "Researcher",
     // kept for compatibility
-    "team.desc": "Researchers, faculty, and fellows whose work shapes the Dignity initiative.",
+    "team.desc": "Researchers, faculty, and participants whose work shapes the Dignity initiative.",
   },
 
   ar: {
@@ -189,7 +188,6 @@ const translations = {
     home: "الرئيسية",
     about: "عن مبادرة كرامة",
     "about.initiative": "مبادرة كرامة البحثية",
-    "about.fellows": "المشاركون",
     "about.participants": "المشاركون",
     "about.faculty": "أعضاء هيئة التدريس",
     "about.researchers": "باحثون",
@@ -319,9 +317,9 @@ const translations = {
     "footer.library": "المكتبة",
     "footer.databases": "قواعد البيانات",
     // TEAM SECTION
-    "team.eyebrow": "تعرف على الزملاء",
+    "team.eyebrow": "تعرف على المشاركين",
     "team.title": "الأشخاص الذين يقودون مهمتنا",
-    "team.btn": "عرض جميع الزملاء",
+    "team.btn": "عرض جميع المشاركين",
     "team.viewProfile": "عرض الملف الشخصي",
     "team.name": "د. اسم المشارك",
     "team.role1": "أستاذ مشارك",
@@ -330,7 +328,7 @@ const translations = {
     "team.role2b": "منسق المشروع",
     "team.role3": "أستاذ مساعد",
     "team.role3b": "باحث",
-    "team.desc": "الباحثون وأعضاء هيئة التدريس والزملاء الذين يشكّلون مبادرة الكرامة.",
+    "team.desc": "الباحثون وأعضاء هيئة التدريس والمشاركون الذين يشكّلون مبادرة الكرامة.",
   },
 } as const;
 
@@ -345,7 +343,6 @@ const SITE_SETTINGS_KEY_MAP: Partial<Record<TranslationKey, string>> = {
   // a key that is missing is one an editor cannot reach.
   about: "navAbout",
   "about.initiative": "navAboutInitiative",
-  "about.fellows": "navAboutFellows",
   "about.participants": "navAboutFellows",
   "media.news": "navMediaNews",
   "media.announcements": "navMediaAnnouncements",

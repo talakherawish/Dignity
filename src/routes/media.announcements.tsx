@@ -28,9 +28,7 @@ function AnnouncementsPage() {
   // scroll the linked one into view once the list has loaded.
   useEffect(() => {
     if (!linkedId || isLoading) return;
-    document
-      .getElementById(`announcement-${linkedId}`)
-      ?.scrollIntoView({ block: "center" });
+    document.getElementById(`announcement-${linkedId}`)?.scrollIntoView({ block: "center" });
   }, [linkedId, isLoading]);
 
   return (

@@ -8,10 +8,10 @@ import { fetchParticipants, mediaUrl, type PayloadParticipant } from "@/lib/payl
 import talaPhoto from "@/assets/tala.jpg";
 
 export const Route = createFileRoute("/about/participants")({
-  component: FellowsPage,
+  component: ParticipantsPage,
 });
 
-type Fellow = {
+type Participant = {
   id: number;
   name: string;
   nameAr: string;
@@ -24,7 +24,7 @@ type Fellow = {
   photo?: string;
 };
 
-const FELLOWS: Fellow[] = [
+const PARTICIPANTS: Participant[] = [
   {
     id: 1,
     name: "Mudar Kassis",
@@ -115,12 +115,12 @@ const FELLOWS: Fellow[] = [
     id: 8,
     name: "Lina Mansour",
     nameAr: "لينا منصور",
-    title: "Research Fellow",
-    titleAr: "زميلة بحثية",
+    title: "Research Participant",
+    titleAr: "مشاركة بحثية",
     category: "researcher",
     email: "l.mansour@birzeit.edu",
-    bio: "Lina Mansour is a research fellow focusing on feminist theory and dignity discourse in the Arab world.",
-    bioAr: "زميلة بحثية تتركز اهتماماتها على النظرية النسوية وخطاب الكرامة في العالم العربي.",
+    bio: "Lina Mansour is a research participant focusing on feminist theory and dignity discourse in the Arab world.",
+    bioAr: "مشاركة بحثية تتركز اهتماماتها على النظرية النسوية وخطاب الكرامة في العالم العربي.",
     photo: undefined,
   },
   {
@@ -182,7 +182,7 @@ const CATEGORIES = [
   { value: "visitor", en: "Visitors", ar: "زائرون" },
 ];
 
-function mapPayloadParticipant(p: PayloadParticipant, idx: number): Fellow {
+function mapPayloadParticipant(p: PayloadParticipant, idx: number): Participant {
   return {
     id: idx + 1000,
     name: p.name,
@@ -214,13 +214,13 @@ function Avatar({ photo, name }: { photo?: string; name: string }) {
   );
 }
 
-function FellowModal({
-  fellow,
+function ParticipantModal({
+  participant,
   onClose,
   isArabic,
   lang,
 }: {
-  fellow: Fellow;
+  participant: Participant;
   onClose: () => void;
   isArabic: boolean;
   lang: string;
@@ -237,7 +237,7 @@ function FellowModal({
       <div className="relative w-full max-w-md" style={{ paddingTop: "112px" }}>
         <div className="absolute left-1/2 top-0 -translate-x-1/2 z-10">
           <div className="h-56 w-56 rounded-full overflow-hidden shadow-2xl bg-secondary flex items-center justify-center">
-            <Avatar photo={fellow.photo} name={fellow.name} />
+            <Avatar photo={participant.photo} name={participant.name} />
           </div>
         </div>
         <div
@@ -255,25 +255,25 @@ function FellowModal({
           </button>
           <div className="px-8 pb-8" style={{ paddingTop: "116px" }}>
             <h2 className="font-serif text-2xl text-primary text-center">
-              {lang === "ar" ? fellow.nameAr : fellow.name}
+              {lang === "ar" ? participant.nameAr : participant.name}
             </h2>
-            {(fellow.title || fellow.titleAr) && (
+            {(participant.title || participant.titleAr) && (
               <p className="text-muted-foreground text-sm text-center mt-1">
-                {lang === "ar" ? fellow.titleAr : fellow.title}
+                {lang === "ar" ? participant.titleAr : participant.title}
               </p>
             )}
-            {fellow.email && (
+            {participant.email && (
               <a
-                href={"mailto:" + fellow.email}
+                href={"mailto:" + participant.email}
                 className="mt-4 flex items-center justify-center gap-2 bg-secondary border border-border text-foreground/70 text-sm px-4 py-2.5 rounded-full hover:text-foreground hover:border-foreground/30 transition-colors w-fit mx-auto"
               >
                 <Mail className="h-3.5 w-3.5 shrink-0" />
-                {fellow.email}
+                {participant.email}
               </a>
             )}
-            {(fellow.bio || fellow.bioAr) && (
+            {(participant.bio || participant.bioAr) && (
               <p className="mt-6 text-sm text-muted-foreground leading-relaxed">
-                {lang === "ar" ? fellow.bioAr : fellow.bio}
+                {lang === "ar" ? participant.bioAr : participant.bio}
               </p>
             )}
           </div>
@@ -283,12 +283,12 @@ function FellowModal({
   );
 }
 
-function FellowCard({
-  fellow,
+function ParticipantCard({
+  participant,
   onClick,
   lang,
 }: {
-  fellow: Fellow;
+  participant: Participant;
   onClick: () => void;
   lang: string;
   isArabic: boolean;
@@ -302,10 +302,10 @@ function FellowCard({
         className="w-full bg-secondary/20 flex items-center justify-center overflow-hidden"
         style={{ aspectRatio: "3/4" }}
       >
-        {fellow.photo ? (
+        {participant.photo ? (
           <img
-            src={fellow.photo}
-            alt={fellow.name}
+            src={participant.photo}
+            alt={participant.name}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           />
         ) : (
@@ -322,11 +322,11 @@ function FellowCard({
       </div>
       <div className="px-4 py-4 flex-1">
         <div className="font-serif text-base text-primary leading-tight group-hover:text-accent transition-colors">
-          {lang === "ar" ? fellow.nameAr : fellow.name}
+          {lang === "ar" ? participant.nameAr : participant.name}
         </div>
-        {(fellow.title || fellow.titleAr) && (
+        {(participant.title || participant.titleAr) && (
           <div className="text-xs text-muted-foreground mt-1">
-            {lang === "ar" ? fellow.titleAr : fellow.title}
+            {lang === "ar" ? participant.titleAr : participant.title}
           </div>
         )}
       </div>
@@ -334,11 +334,11 @@ function FellowCard({
   );
 }
 
-function FellowsPage() {
+function ParticipantsPage() {
   const { lang, isArabic } = useLanguage();
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("all");
-  const [selected, setSelected] = useState<Fellow | null>(null);
+  const [selected, setSelected] = useState<Participant | null>(null);
 
   const { data: payloadParticipants = [] } = useQuery({
     queryKey: ["participants"],
@@ -346,11 +346,11 @@ function FellowsPage() {
     staleTime: 5 * 60 * 1000,
   });
 
-  const fellows: Fellow[] =
-    payloadParticipants.length > 0 ? payloadParticipants.map(mapPayloadParticipant) : FELLOWS;
+  const participants: Participant[] =
+    payloadParticipants.length > 0 ? payloadParticipants.map(mapPayloadParticipant) : PARTICIPANTS;
 
   const q = search.toLowerCase();
-  const filtered = fellows.filter((f) => {
+  const filtered = participants.filter((f) => {
     const matchesCategory = activeCategory === "all" || f.category === activeCategory;
     const matchesSearch = f.name.toLowerCase().includes(q) || f.nameAr.includes(search);
     return matchesCategory && matchesSearch;
@@ -405,11 +405,11 @@ function FellowsPage() {
 
         {filtered.length > 0 ? (
           <div className="grid gap-x-6 gap-y-10 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">
-            {filtered.map((fellow) => (
-              <FellowCard
-                key={fellow.id}
-                fellow={fellow}
-                onClick={() => setSelected(fellow)}
+            {filtered.map((participant) => (
+              <ParticipantCard
+                key={participant.id}
+                participant={participant}
+                onClick={() => setSelected(participant)}
                 lang={lang}
                 isArabic={isArabic}
               />
@@ -423,8 +423,8 @@ function FellowsPage() {
       </div>
 
       {selected && (
-        <FellowModal
-          fellow={selected}
+        <ParticipantModal
+          participant={selected}
           onClose={() => setSelected(null)}
           isArabic={isArabic}
           lang={lang}

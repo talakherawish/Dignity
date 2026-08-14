@@ -378,8 +378,8 @@ function TeamModal({
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      {/* Sized to match FellowModal on /about/participants — the two are the
-          same card and should stay in step. */}
+      {/* Sized to match ParticipantModal on /about/participants — the two are
+          the same card and should stay in step. */}
       <div className="relative w-full max-w-md" style={{ paddingTop: "112px" }}>
         {/* Floating avatar */}
         <div className="absolute left-1/2 top-0 -translate-x-1/2 z-10">
