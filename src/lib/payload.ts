@@ -159,6 +159,17 @@ export function youtubeThumbnailFallback(url: string | undefined): string {
   return id ? `https://img.youtube.com/vi/${id}/mqdefault.jpg` : "";
 }
 
+/**
+ * Whether a publication's external link is a YouTube video, as opposed to
+ * some other external destination (a journal page, a DOI) that a Paper or
+ * Report might also carry in the same `link` field. Cards use this to decide
+ * whether a landscape, thumbnail-shaped well makes sense — it wouldn't for a
+ * link that isn't a video.
+ */
+export function isYoutubeLink(url: string | undefined): boolean {
+  return youtubeId(url) !== undefined;
+}
+
 /** Same again for the Information menu: one collection per page. */
 export type InformationCollection = "readings-documents" | "databases";
 

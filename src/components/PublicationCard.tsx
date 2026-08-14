@@ -1,7 +1,7 @@
 import { Download, ExternalLink, FileText, Play } from "lucide-react";
 import type { ReactNode } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { formatDate, openFileInNewTab, youtubeThumbnailFallback } from "@/lib/payload";
+import { formatDate, isYoutubeLink, openFileInNewTab, youtubeThumbnailFallback } from "@/lib/payload";
 import { withItalicQuotes } from "@/lib/text";
 
 /**
@@ -28,6 +28,16 @@ import { withItalicQuotes } from "@/lib/text";
  * gap.
  */
 const CARD_WIDTH = "w-full sm:w-[calc(50%-0.75rem)] lg:w-[calc(25%-1.125rem)]";
+
+/**
+ * Width for a YouTube video card — a 16:9 thumbnail squeezed into the
+ * 25%-wide document column reads tiny and cropped. Staying two-up at every
+ * breakpoint from `sm` keeps the well close to a real YouTube thumbnail's
+ * size. `linkUrl` can also hold a non-video external link (a Paper's journal
+ * page, say), which stays at the narrower `CARD_WIDTH` — only a detected
+ * YouTube URL gets the wide treatment.
+ */
+const VIDEO_CARD_WIDTH = "w-full sm:w-[calc(50%-0.75rem)]";
 
 /** The same steps as `CARD_WIDTH`, for the loading skeletons. */
 export const PUBLICATION_GRID_SKELETON = "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6";
@@ -103,6 +113,7 @@ export function PublicationCard({
   const displayTitle = isAr ? (titleAr ?? title) : title;
   const displayAuthor = isAr ? (authorAr ?? author) : author;
   const watchLabel = isArabic ? "مشاهدة الفيديو" : "Watch video";
+  const isVideo = isYoutubeLink(linkUrl);
   const knownRatio = previewWidth && previewHeight ? previewWidth / previewHeight : undefined;
 
   const thumbnail = previewUrl ? (
@@ -127,7 +138,13 @@ export function PublicationCard({
   );
 
   const wellClass =
-    (knownRatio ? "" : preview === "clipping" ? "aspect-[3/4] " : "aspect-[1/1.41] ") +
+    (knownRatio
+      ? ""
+      : isVideo
+        ? "aspect-video "
+        : preview === "clipping"
+          ? "aspect-[3/4] "
+          : "aspect-[1/1.41] ") +
     "max-h-[26rem] bg-secondary/20 overflow-hidden flex items-center justify-center";
   const wellStyle = knownRatio ? { aspectRatio: String(knownRatio) } : undefined;
 
@@ -171,7 +188,7 @@ export function PublicationCard({
   return (
     <div
       className={
-        CARD_WIDTH +
+        (isVideo ? VIDEO_CARD_WIDTH : CARD_WIDTH) +
         " border border-border rounded-sm bg-card overflow-hidden hover:shadow-sm transition-shadow flex flex-col"
       }
     >
