@@ -164,9 +164,11 @@ export function AboutPage({
               <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
                 {leadIn && (
                   <Reveal className="mb-10">
-                    <div
-                      className={`flex items-center gap-3 ${isArabic ? "flex-row-reverse text-right" : ""}`}
-                    >
+                    {/* No flex-row-reverse here: <html dir="rtl"> already makes
+                        "row" lay the bar (first child) out at the right in
+                        Arabic, so reversing it pushed the bar to the wrong
+                        (left) side instead. */}
+                    <div className={`flex items-center gap-3 ${isArabic ? "text-right" : ""}`}>
                       <div
                         className="h-5 w-1 rounded-full shrink-0"
                         style={{ background: "var(--brand-cyan)" }}

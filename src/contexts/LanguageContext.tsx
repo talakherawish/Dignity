@@ -221,7 +221,7 @@ const translations = {
     "publications.papers": "أوراق بحثية",
     "publications.reports": "تقارير",
     "publications.brochures": "بروشورات",
-    "publications.theses": "رسائل",
+    "publications.theses": "رسائل الماجستير",
     "publications.audiovisual": "مرئي مسموع",
     "publications.posters": "ملصقات",
     "publications.page.desc":
@@ -257,7 +257,7 @@ const translations = {
     "news.readMore": "اقرأ المزيد",
     "news.collapse": "طيّ",
     "content.untranslated": "هذا النص غير متوفر بالعربية بعد، والترجمة قيد الإعداد.",
-    "activity.kind.roundtable": "مائدة مستديرة",
+    "activity.kind.roundtable": "طاولة مستديرة",
     "activity.kind.discussion": "نقاش",
     "news.item1.date": "تاريخ",
     "news.item1.title": "عنوان المقال الأول",
