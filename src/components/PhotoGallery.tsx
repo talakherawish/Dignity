@@ -75,9 +75,20 @@ type PackedRow = {
 };
 
 /**
- * Greedy row packing: keep adding photos to a row until scaling it to fill the
- * width would drop it to the target height, then commit the row at exactly the
- * height that fills the width.
+ * Row packing: add photos to a row until scaling it to fill the width would
+ * drop it to the target height, then commit whichever of "stop one photo
+ * earlier" or "include this one" lands closer to that target — rather than
+ * always taking the first point that crosses under it.
+ *
+ * That second part matters more than it looks: two photos wide enough on
+ * their own (a couple of panorama-ish shots, ratio 3 apiece) cross under
+ * *any* reasonable target the moment the second one joins the row, landing
+ * the row well below target regardless of how high the target is raised —
+ * committing after just the first of them, alone, would have overshot
+ * *above* target by less. A plain "stop as soon as we're under" rule can
+ * therefore end up producing the exact same row for a raised target as for
+ * the old one, which is what made an earlier version of this fix invisible
+ * on rows led by a wide photo.
  *
  * `height = (width - gaps) / sum(ratios)` is just the justification identity —
  * with every photo at height h, the row measures `h * sum(ratios) + gaps`, so
@@ -94,11 +105,24 @@ function packRows(
 
   for (const photo of photos) {
     const ratio = aspectRatio(photo);
+    const nextRatioSum = ratioSum + ratio;
+    const heightWithPhoto = (containerWidth - current.length * GAP) / nextRatioSum;
+
+    if (heightWithPhoto <= targetHeight && current.length > 0) {
+      const heightWithout = (containerWidth - (current.length - 1) * GAP) / ratioSum;
+      if (Math.abs(heightWithout - targetHeight) < Math.abs(heightWithPhoto - targetHeight)) {
+        // Closer without this photo: commit what's there, start fresh with it.
+        rows.push({ items: current, height: heightWithout, justified: true });
+        current = [{ photo, ratio }];
+        ratioSum = ratio;
+        continue;
+      }
+    }
+
     current.push({ photo, ratio });
-    ratioSum += ratio;
-    const height = (containerWidth - (current.length - 1) * GAP) / ratioSum;
-    if (height <= targetHeight) {
-      rows.push({ items: current, height, justified: true });
+    ratioSum = nextRatioSum;
+    if (heightWithPhoto <= targetHeight) {
+      rows.push({ items: current, height: heightWithPhoto, justified: true });
       current = [];
       ratioSum = 0;
     }
