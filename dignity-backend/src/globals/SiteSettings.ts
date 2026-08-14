@@ -16,7 +16,7 @@ export const SiteSettings: GlobalConfig = {
   },
   access: {
     read: () => true,
-    update: ({ req }) => req.user?.role === 'content-manager',
+    update: ({ req }) => !!req.user,
   },
   fields: [
     {

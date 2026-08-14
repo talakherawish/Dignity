@@ -171,7 +171,7 @@ export interface User {
   id: string;
   name: string;
   /**
-   * Content Managers can manage Users and Pages. Editors can create/edit/delete everything else.
+   * Only a Content Manager can change this. Editors can do everything else — including editing other users' profiles — except add or remove accounts.
    */
   role: 'content-manager' | 'editor';
   updatedAt: string;

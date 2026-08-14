@@ -78,9 +78,9 @@ function pageCollection(
         if (req.user) return true
         return { _status: { equals: 'published' } }
       },
-      create: ({ req }) => req.user?.role === 'content-manager',
-      update: ({ req }) => req.user?.role === 'content-manager',
-      delete: ({ req }) => req.user?.role === 'content-manager',
+      create: ({ req }) => !!req.user,
+      update: ({ req }) => !!req.user,
+      delete: ({ req }) => !!req.user,
     },
     fields: pageFields(),
   }
