@@ -52,11 +52,19 @@ function aspectRatio(photo: GalleryPhoto): number {
   return Math.min(Math.max(ratio, 0.5), 3);
 }
 
-/** Shorter rows on smaller screens, so a phone still fits a photo comfortably. */
+/**
+ * Shorter rows on smaller screens, so a phone still fits a photo comfortably.
+ *
+ * Every photo in a row shares this height, and its width is just height ×
+ * its own ratio -- so a square photo (ratio 1) is always the narrowest thing
+ * in any row next to wider ones, and reads as noticeably smaller. Raising
+ * the shared height is what makes it (and everything else) bigger without
+ * cropping or distorting anyone's proportions.
+ */
 function targetRowHeight(containerWidth: number): number {
-  if (containerWidth < 480) return 150;
-  if (containerWidth < 900) return 200;
-  return 240;
+  if (containerWidth < 480) return 190;
+  if (containerWidth < 900) return 260;
+  return 320;
 }
 
 type PackedRow = {
