@@ -158,7 +158,14 @@ function ActivityEntry({
             <span className="block font-serif text-3xl leading-none text-primary tabular-nums md:text-[2.6rem]">
               {parts.day}
             </span>
-            <span className="mt-2 block text-[10px] uppercase tracking-[0.16em] text-muted-foreground md:text-[11px]">
+            <span
+              className={
+                "mt-2 block uppercase tracking-[0.16em] text-muted-foreground " +
+                // Small uppercase Arabic reads as barely legible at the same
+                // size Latin text holds up fine at, so it gets a size step up.
+                (isArabic ? "text-xs md:text-[13px]" : "text-[10px] md:text-[11px]")
+              }
+            >
               {parts.month}
             </span>
           </>
@@ -169,7 +176,12 @@ function ActivityEntry({
 
       <div className="min-w-0">
         {kind && (
-          <span className="mb-1.5 block text-[10px] uppercase tracking-[0.2em] text-[color:var(--brand-magenta)]">
+          <span
+            className={
+              "mb-1.5 block uppercase tracking-[0.2em] text-[color:var(--brand-magenta)] " +
+              (isArabic ? "text-xs md:text-[13px]" : "text-[10px]")
+            }
+          >
             {kind}
           </span>
         )}
@@ -185,7 +197,8 @@ function ActivityEntry({
         {expandable && (
           <span
             className={
-              "mt-3 inline-block text-[10px] uppercase tracking-[0.2em] transition-colors duration-300 md:text-[11px] " +
+              "mt-3 inline-block uppercase tracking-[0.2em] transition-colors duration-300 " +
+              (isArabic ? "text-xs md:text-[13px] " : "text-[10px] md:text-[11px] ") +
               (open
                 ? "text-[color:var(--brand-magenta)]"
                 : "text-muted-foreground group-hover:text-[color:var(--brand-magenta)]")
