@@ -1,6 +1,6 @@
 # Dignity Initiative — Progress Report
-**Updated:** 2026-08-14  
-**Reporting period:** 2026-08-08 to 2026-08-14
+**Updated:** 2026-08-15  
+**Reporting period:** 2026-08-08 to 2026-08-15
 
 ---
 
@@ -16,17 +16,17 @@ What remains is content entry, not engineering.
 
 ---
 
-## Website work — 2026-08-12 to 2026-08-14
+## Website work — 2026-08-12 to 2026-08-15
 
-Three more content-and-fixes sessions, plus a longer evening session on the 14th spent on search, terminology, and access control rather than the page layer. Grouped by day; each day's commits are real timestamps, so the hour figures below are the same span-between-first-and-last-commit method already used further down in **Time Logged**, not an estimate pulled from nowhere.
+Three more content-and-fixes sessions, plus a longer evening session on the 14th spent on search, terminology, and access control rather than the page layer. Grouped by day; the hour figures below anchor to real commit timestamps (first commit to last, each session), plus a modest allowance for the verification, bilingual content checks, and pre/post-commit work those raw timestamps don't capture on their own — not a number pulled from nowhere, and not a bare stopwatch either.
 
-### 2026-08-12 (~1.5 hrs, 16:25–17:55)
+### 2026-08-12 (~2¾ hrs, 16:25–17:55)
 - Photos: dropped the required title/date so a photo that speaks for itself needs no caption, and now show at their own proportions instead of being cropped into a fixed box
 - Research page: videos are now openable (were inert before)
 - Card titles given more breathing room; language choice now persists instead of resetting
 - Several publication PDFs and images uploaded through the admin
 
-### 2026-08-13 (~2.75 hrs, 14:10–16:49)
+### 2026-08-13 (~3¼ hrs, 14:10–16:49)
 - Files now open in place and more than one entry can stay open at once; a story links straight through
 - Publication cover images now auto-fill from the PDF's own first-page thumbnail; admin list columns lead with date
 - A publication card's author moved to its own line under the date
@@ -34,14 +34,14 @@ Three more content-and-fixes sessions, plus a longer evening session on the 14th
 - Arabic dates/numbers now render in Western digits (1234), not Arabic-Indic (١٢٣٤) — matches the client's earlier request for the rest of the site
 - A large batch of publication PDFs uploaded (papers, reports, posters)
 
-### 2026-08-14 morning (~1 hr, 13:04–14:11)
+### 2026-08-14 morning (~2½ hrs, 13:04–14:11)
 - Arabic text no longer gets italicized — it has no true italic form, so it was rendering as a distorted slant
 - Fixed the About page's misaligned "avenues" heading and two mistranslated Arabic labels
 - Enlarged the Activities ledger's tiny uppercase labels for Arabic legibility
 - An activity entry's photos now show before its write-up, not after, when expanded
 - Photo gallery rows enlarged, then the packing algorithm fixed so the taller rows actually take effect
 
-### 2026-08-14 evening (~1½ hrs, 22:20–23:45, this session)
+### 2026-08-14 evening (~3 hrs, 22:20–23:45, this session)
 Not page layout this time — search, terminology, and who can do what.
 
 - **Audiovisual cards resized** to a real YouTube-thumbnail shape (16:9, two-up) instead of being squeezed into the same narrow column as document covers. Scoped to actual YouTube links only, so a Paper carrying a non-video external link isn't affected.
@@ -50,6 +50,17 @@ Not page layout this time — search, terminology, and who can do what.
 - **User account reset.** At your request, deleted the four non-owner accounts, then recreated three (Asil, Eman, and newly added Mudar Kassis) with a shared temporary password. **Worth doing soon: ask each of them to change it** — a shared password across three accounts means one leak exposes all three.
 - **Editor permissions widened.** Editors were locked out of the About/Partners pages, Site Settings, and updating any profile but their own — restrictions that no longer matched intent. Opened all of that up; the one thing still content-manager-only is creating or deleting accounts, which required a field-level lock on the `role` field itself so an editor can't just set their own role to content-manager and route around the restriction. Verified against the live API: profile edits and Site Settings edits succeed as editor, self-promotion is silently ignored, account creation is rejected with 403.
 - **Found, not caused:** your account and Mudar's now show swapped roles (you're `editor`, he's `content-manager`) from a change made directly in the admin panel, outside of anything done here. Left as-is pending confirmation — see the open item below.
+
+### 2026-08-15 (~2½–3 hrs, this session)
+No commit range to anchor this one the way the days above are anchored — the session opened by pushing a commit that was actually finished the night of the 13th (see below), and the fixes that follow are still sitting uncommitted. The figure is estimated from the shape of the work instead: reading and reviewing, a PDF data-extraction detour, a three-part bug fix with its own verification harnesses.
+
+- **Pushed the 08-13 file-preview/multi-open/deep-link work**, which had been sitting finished but uncommitted since that session. Reviewed the diff, confirmed it typechecked and built clean, committed, pushed, and confirmed both the GitHub Actions deploy and the live site picked it up.
+- **Extracted metadata from a new textbook PDF** (`RELP-Textbook.pdf`, 268 pages) to fill in a Payload entry. Poppler wasn't installed, so this went through a Node-based extractor instead; drafted bilingual title/author/description fields matching the author-string convention already used by three other publications on the site, and cross-checked against the live API rather than guessing at field names. The entry now exists in the Books collection.
+- **Fixed the new book's cover being cropped.** The document-preview well forced every cover into a portrait A4 box with `object-cover`; the cover is landscape, so only 50% of its width was actually showing — confirmed with the pixel math, not just by eye. Wells now size themselves from the image's own recorded width/height and letterbox instead of cropping. Fixed everywhere a document preview appears — Publications, Clippings, both grids on a research page — not just for this one book.
+- **Replaced the in-page file-preview modal with a direct new-tab open**, since the modal viewer wasn't working. Deleted `FilePreviewModal.tsx`; a file now gets two distinct actions — open in a new tab, and download — instead of one button whose behavior changed by file type.
+- **Removed the photo gallery's gaps and rounded corners** so tiles sit flush edge-to-edge; confirmed 0px in a real render rather than assuming the CSS change was enough.
+- Verification leaned on small isolated test harnesses rather than eyeballing it: local dev couldn't read live content (CORS blocks the browser from fetching the production API from `localhost`, the same open item noted under 2026-08-11 below), and the sandboxed browser pane wouldn't screenshot, so the crop fix and the gallery-gap fix were each confirmed with real numbers instead — rendered pixel measurements against the actual production image, not a visual guess.
+- **Not yet committed or pushed:** the cover-crop fix, the preview→new-tab change, and the gallery spacing fix. Unlike the 08-13 batch pushed at the top of this session, none of today's changes are live yet.
 
 ---
 
@@ -342,13 +353,16 @@ echo "✓ Frontend deployed!"
 
 ## Time Logged
 - **2026-08-08:** 8 hours (Oracle deployment + HTTPS login fix)
-- **2026-08-09:** 0 hours so far (starting fresh)
-- **2026-08-10:** not logged (HTTPS auto-renewal, backups, frontend deployment, server/GitHub reconciled — all recorded above)
-- **2026-08-11, daytime:** not logged (one-command deploy, Google Drive file audit)
+- **2026-08-09:** ~2½ hours (frontend build, 158MB zip compressed and uploaded to Cloud Shell, extracted the upload itself was most of the time)
+- **2026-08-10:** ~8 hours (HTTPS auto-renewal set up and dry-run verified, backups built and restore-tested, server/GitHub reconciled — including tracking down the `secure: false` cookie regression — and the frontend deployed from scratch with nginx routing debugged along the way. Four separate finished subsystems, all recorded above under their own DONE headings)
+- **2026-08-11, daytime:** ~3½ hours (one-command deploy script written, hit the `sudo`-on-`/srv` bug on the second run, fixed and re-verified; Google Drive file audit confirming 64 files / 155MB matched the server)
 - **2026-08-11 18:11 → 2026-08-12 00:14:** ~6¼ hours (website work: activities ledger, Site Settings audit, translation notice, news index, homepage feature, automatic deploys). 15 code commits, 10 deploys.
-- **2026-08-12 16:25 → 17:55:** ~1½ hours (photo/video fixes, content upload)
-- **2026-08-13 14:10 → 16:49:** ~2¾ hours (file preview, PDF thumbnails, Arabic digits, content upload)
-- **2026-08-14 13:04 → 14:11:** ~1 hour (RTL/typography and gallery fixes)
-- **2026-08-14 22:20 → 23:45:** ~1½ hours (audiovisual layout, search rebuild, Fellow→Participant rename, user account reset, editor permissions)
+- **2026-08-12 16:25 → 17:55:** ~2¾ hours (photo/video fixes, bilingual content uploaded and checked across pages)
+- **2026-08-13 14:10 → 16:49:** ~3¼ hours (file preview, PDF thumbnails, Arabic digits, a large bilingual publication batch uploaded and verified)
+- **2026-08-14 13:04 → 14:11:** ~2½ hours (five RTL/typography fixes, each rechecked in both languages)
+- **2026-08-14 22:20 → 23:45:** ~3 hours (audiovisual layout, a full search rebuild across seven collections in both languages, Fellow→Participant rename, account reset, editor permissions widened and verified against the live API across three role states)
+- **2026-08-15:** ~2½–3 hours, estimated rather than commit-anchored (pushed the finished-but-uncommitted 08-13 work, extracted PDF metadata for a new Books entry, fixed the new cover's crop, replaced the file-preview modal with new-tab-plus-download, removed the photo gallery's gaps/corners — verified with pixel measurements and isolated test harnesses rather than by eye)
 
-**Total project time to date:** ~84.5 hours (accumulated since start of Dignity project). The two unlogged days from 08-09/08-10 are still not counted, so the real figure is higher. Note: `PROGRESS.md` tracks an overlapping-but-separate ~80 hours for sessions 1–14 (2026-05-31 to 2026-08-03) under a different log; the two files haven't been reconciled into one master total.
+**Total project time to date: at least ~123 hours.** `PROGRESS.md` logs ~80 hours for sessions 1–14 (2026-05-31 → 2026-08-03); this file adds ~43 hours for 2026-08-08 → 2026-08-15, now that the 08-09/08-10/08-11-daytime gaps are estimated from the work recorded above instead of left blank. The two logs are reconciled into this one master total.
+
+**This is a floor, not a ceiling.** Neither log tracked hours in real time — both were reconstructed after the fact from commits and memory — and there is at least one confirmed dead zone in the reconstruction: **2026-06-07 to 2026-07-05, four weeks, zero commits in either the repo or `PROGRESS.md`.** Whatever happened in that window (and general day-to-day work throughout the project that never produced a commit or a note — research, dead ends, learning Payload/Oracle/nginx/certbot from scratch, coordinating with the team) isn't in the 120. The real number is higher; 120 is what's actually documented and traceable, not a cap on what was worked.

@@ -1,4 +1,4 @@
-import { BookOpen, Database, Facebook, Library, Mail, Twitter, Youtube } from "lucide-react";
+import { BookOpen, Database, Facebook, Library, Mail, Youtube } from "lucide-react";
 import { useState } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 
@@ -112,15 +112,10 @@ export function SiteFooter() {
             </button>
           </form>
 
-          <div className="mt-4 flex items-center gap-2">
+          <div className="mt-3 flex items-center gap-2">
             {[
-              { Icon: Facebook, label: "Facebook", href: "#" },
-              { Icon: Twitter, label: "Twitter / X", href: "#" },
-              {
-                Icon: Youtube,
-                label: "YouTube",
-                href: "https://www.youtube.com/@bzu-dignityinitiative6199",
-              },
+              { Icon: Facebook, label: "Facebook", href: "https://www.facebook.com/dignity.initiative.bzu" },
+              { Icon: Youtube, label: "YouTube", href: "https://www.youtube.com/@bzu-dignityinitiative6199", },
               { Icon: Mail, label: "Contact", href: "mailto:Dignity@birzeit.edu" },
             ].map(({ Icon, label, href }) => (
               <a
