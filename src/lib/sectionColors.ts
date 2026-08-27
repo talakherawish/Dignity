@@ -4,8 +4,8 @@
  * eyebrow always matches the color of the menu it lives under.
  */
 export const SECTION_COLORS = {
-  about: "#a9e8f9",
-  activities: "#bb41a1",
+  about: "#bb41a1",
+  activities: "#a9e8f9",
   publications: "#009340",
   information: "#000000",
 } as const;

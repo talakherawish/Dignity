@@ -169,29 +169,28 @@ function LanguageSwitcher() {
 function NavItem({ item }: { item: Item }) {
   const { t, isArabic } = useLanguage();
   const label = t(item.labelKey);
-  const [hovered, setHovered] = useState(false);
-  // Each section has its own hover color (see SECTION_COLORS) rather than one
-  // shared accent, so the header's hover state matches that section's
-  // PageHero eyebrows. Plain color + transition-colors rather than a Tailwind
-  // hover: class, since the color is only known at runtime.
-  const hoverProps = item.color
-    ? {
-        onMouseEnter: () => setHovered(true),
-        onMouseLeave: () => setHovered(false),
-        style: hovered ? { color: item.color } : undefined,
-      }
-    : {};
+  // Each section has its own hover color (see SECTION_COLORS), applied to the
+  // trigger *and* every link in its dropdown, rather than one shared accent.
+  // A CSS variable set via inline style, read back by a static Tailwind
+  // arbitrary-value class, rather than a color baked into the class name:
+  // the value is only known at runtime, but the class string still has to be
+  // a literal for Tailwind's build-time scan to generate it.
+  const hoverStyle = item.color
+    ? ({ "--section-hover": item.color } as React.CSSProperties)
+    : undefined;
+  const hoverClass = item.color ? "hover:text-[var(--section-hover)]" : "hover:text-accent";
 
   if (!item.children) {
     return (
       <Link
         to={item.to!}
         activeOptions={{ exact: item.to === "/" }}
+        style={hoverStyle}
         className={[
-          "px-2.5 py-2 font-medium text-foreground/80 hover:text-accent transition-colors data-[status=active]:text-accent whitespace-nowrap",
+          "px-2.5 py-2 font-medium text-foreground/80 transition-colors data-[status=active]:text-accent whitespace-nowrap",
+          hoverClass,
           isArabic ? "font-arabic text-[19px]" : "text-[17px]",
         ].join(" ")}
-        {...hoverProps}
       >
         {label}
       </Link>
@@ -199,19 +198,20 @@ function NavItem({ item }: { item: Item }) {
   }
 
   const triggerClassName = [
-    "px-2.5 py-2 font-medium text-foreground/80 hover:text-accent transition-colors inline-flex items-center gap-1 whitespace-nowrap data-[status=active]:text-accent",
+    "px-2.5 py-2 font-medium text-foreground/80 transition-colors inline-flex items-center gap-1 whitespace-nowrap data-[status=active]:text-accent",
+    hoverClass,
     isArabic ? "font-arabic text-[19px]" : "text-[17px]",
   ].join(" ");
 
   return (
     <div className="relative group shrink-0">
       {item.to ? (
-        <Link to={item.to} className={triggerClassName} {...hoverProps}>
+        <Link to={item.to} className={triggerClassName} style={hoverStyle}>
           {label}
           <ChevronDown className="h-3 w-3 shrink-0" />
         </Link>
       ) : (
-        <button className={triggerClassName} {...hoverProps}>
+        <button className={triggerClassName} style={hoverStyle}>
           {label}
           <ChevronDown className="h-3 w-3 shrink-0" />
         </button>
@@ -224,8 +224,10 @@ function NavItem({ item }: { item: Item }) {
             <Link
               key={c.labelKey}
               to={c.to}
+              style={hoverStyle}
               className={[
-                "block px-4 py-2 text-sm text-foreground/80 hover:bg-secondary hover:text-accent",
+                "block px-4 py-2 text-sm text-foreground/80 hover:bg-secondary",
+                hoverClass,
                 isArabic ? "font-arabic text-right" : "",
               ].join(" ")}
             >
