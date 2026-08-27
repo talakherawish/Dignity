@@ -4,8 +4,9 @@
     {
       "name": "dignity-academic-hub-dev",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev"],
-      "port": 8080
+      "runtimeArgs": ["run", "dev", "--", "--port", "8083", "--strictPort"],
+      "port": 8083,
+      "autoPort": false
     },
     {
       "name": "dignity-backend-dev",

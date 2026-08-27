@@ -1,6 +1,17 @@
+import { Handshake, Images, Newspaper, Scissors, Users } from "lucide-react";
 import { PageLayout } from "./PageLayout";
 import { Reveal } from "./Reveal";
+import { SectionTileGrid, type SectionTile } from "./SectionHub";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { SECTION_COLORS } from "@/lib/sectionColors";
+
+const HUB_TILES: SectionTile[] = [
+  { labelKey: "about.participants", to: "/about/participants", icon: Users },
+  { labelKey: "media.news", to: "/media/news", icon: Newspaper },
+  { labelKey: "media.photos", to: "/media/photos", icon: Images },
+  { labelKey: "media.clippings", to: "/media/clippings", icon: Scissors },
+  { labelKey: "about.partners", to: "/about/partners", icon: Handshake },
+];
 
 // ── Fallback content (shown while Payload loads, or if a field is empty) ───
 // Mirrors the real copy stored in the Payload "about" page doc
@@ -209,6 +220,24 @@ export function AboutPage({
               </div>
             </section>
           )}
+
+          {/* Hub tile grid — links out to this section's subsections */}
+          <section className="border-t border-border">
+            <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+              <Reveal className="mb-10">
+                <div className={`flex items-center gap-3 ${isArabic ? "text-right" : ""}`}>
+                  <div
+                    className="h-5 w-1 rounded-full shrink-0"
+                    style={{ background: "var(--brand-cyan)" }}
+                  />
+                  <h2 className="font-serif text-xl md:text-2xl text-primary leading-snug">
+                    {isArabic ? "استكشف هذا القسم" : "Explore this section"}
+                  </h2>
+                </div>
+              </Reveal>
+              <SectionTileGrid tiles={HUB_TILES} color={eyebrowColor ?? SECTION_COLORS.about} />
+            </div>
+          </section>
         </div>
       </div>
     </PageLayout>

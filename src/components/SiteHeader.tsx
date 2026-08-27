@@ -30,6 +30,7 @@ const NAV: Item[] = [
   },
   {
     labelKey: "activities",
+    to: "/activities",
     color: SECTION_COLORS.activities,
     children: [
       { labelKey: "activities.research", to: "/projects/research" },
@@ -41,6 +42,7 @@ const NAV: Item[] = [
   },
   {
     labelKey: "publications",
+    to: "/publications",
     color: SECTION_COLORS.publications,
     children: [
       { labelKey: "publications.books", to: "/publications/books" },
@@ -54,6 +56,7 @@ const NAV: Item[] = [
   },
   {
     labelKey: "information",
+    to: "/information",
     color: SECTION_COLORS.information,
     children: [
       { labelKey: "information.readings", to: "/information/readings" },

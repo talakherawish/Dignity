@@ -11,6 +11,9 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
+import { Route as ActivitiesRouteImport } from './routes/activities'
+import { Route as InformationRouteImport } from './routes/information'
+import { Route as PublicationsRouteImport } from './routes/publications'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as AboutParticipantsRouteImport } from './routes/about.participants'
 import { Route as AboutPartnersRouteImport } from './routes/about.partners'
@@ -44,6 +47,21 @@ const AboutRoute = AboutRouteImport.update({
   path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ActivitiesRoute = ActivitiesRouteImport.update({
+  id: '/activities',
+  path: '/activities',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InformationRoute = InformationRouteImport.update({
+  id: '/information',
+  path: '/information',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PublicationsRoute = PublicationsRouteImport.update({
+  id: '/publications',
+  path: '/publications',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SearchRoute = SearchRouteImport.update({
   id: '/search',
   path: '/search',
@@ -60,35 +78,35 @@ const AboutPartnersRoute = AboutPartnersRouteImport.update({
   getParentRoute: () => AboutRoute,
 } as any)
 const ActivitiesConferencesRoute = ActivitiesConferencesRouteImport.update({
-  id: '/activities/conferences',
-  path: '/activities/conferences',
-  getParentRoute: () => rootRouteImport,
+  id: '/conferences',
+  path: '/conferences',
+  getParentRoute: () => ActivitiesRoute,
 } as any)
 const ActivitiesMeetingsRoute = ActivitiesMeetingsRouteImport.update({
-  id: '/activities/meetings',
-  path: '/activities/meetings',
-  getParentRoute: () => rootRouteImport,
+  id: '/meetings',
+  path: '/meetings',
+  getParentRoute: () => ActivitiesRoute,
 } as any)
 const ActivitiesSeminarsRoute = ActivitiesSeminarsRouteImport.update({
-  id: '/activities/seminars',
-  path: '/activities/seminars',
-  getParentRoute: () => rootRouteImport,
+  id: '/seminars',
+  path: '/seminars',
+  getParentRoute: () => ActivitiesRoute,
 } as any)
 const ActivitiesWindsorBirzeitRoute =
   ActivitiesWindsorBirzeitRouteImport.update({
-    id: '/activities/windsor-birzeit',
-    path: '/activities/windsor-birzeit',
-    getParentRoute: () => rootRouteImport,
+    id: '/windsor-birzeit',
+    path: '/windsor-birzeit',
+    getParentRoute: () => ActivitiesRoute,
   } as any)
 const InformationDatabasesRoute = InformationDatabasesRouteImport.update({
-  id: '/information/databases',
-  path: '/information/databases',
-  getParentRoute: () => rootRouteImport,
+  id: '/databases',
+  path: '/databases',
+  getParentRoute: () => InformationRoute,
 } as any)
 const InformationReadingsRoute = InformationReadingsRouteImport.update({
-  id: '/information/readings',
-  path: '/information/readings',
-  getParentRoute: () => rootRouteImport,
+  id: '/readings',
+  path: '/readings',
+  getParentRoute: () => InformationRoute,
 } as any)
 const MediaAnnouncementsRoute = MediaAnnouncementsRouteImport.update({
   id: '/media/announcements',
@@ -111,39 +129,39 @@ const MediaPhotosRoute = MediaPhotosRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const PublicationsAudiovisualRoute = PublicationsAudiovisualRouteImport.update({
-  id: '/publications/audiovisual',
-  path: '/publications/audiovisual',
-  getParentRoute: () => rootRouteImport,
+  id: '/audiovisual',
+  path: '/audiovisual',
+  getParentRoute: () => PublicationsRoute,
 } as any)
 const PublicationsBooksRoute = PublicationsBooksRouteImport.update({
-  id: '/publications/books',
-  path: '/publications/books',
-  getParentRoute: () => rootRouteImport,
+  id: '/books',
+  path: '/books',
+  getParentRoute: () => PublicationsRoute,
 } as any)
 const PublicationsBrochuresRoute = PublicationsBrochuresRouteImport.update({
-  id: '/publications/brochures',
-  path: '/publications/brochures',
-  getParentRoute: () => rootRouteImport,
+  id: '/brochures',
+  path: '/brochures',
+  getParentRoute: () => PublicationsRoute,
 } as any)
 const PublicationsPapersRoute = PublicationsPapersRouteImport.update({
-  id: '/publications/papers',
-  path: '/publications/papers',
-  getParentRoute: () => rootRouteImport,
+  id: '/papers',
+  path: '/papers',
+  getParentRoute: () => PublicationsRoute,
 } as any)
 const PublicationsPostersRoute = PublicationsPostersRouteImport.update({
-  id: '/publications/posters',
-  path: '/publications/posters',
-  getParentRoute: () => rootRouteImport,
+  id: '/posters',
+  path: '/posters',
+  getParentRoute: () => PublicationsRoute,
 } as any)
 const PublicationsReportsRoute = PublicationsReportsRouteImport.update({
-  id: '/publications/reports',
-  path: '/publications/reports',
-  getParentRoute: () => rootRouteImport,
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => PublicationsRoute,
 } as any)
 const PublicationsThesesRoute = PublicationsThesesRouteImport.update({
-  id: '/publications/theses',
-  path: '/publications/theses',
-  getParentRoute: () => rootRouteImport,
+  id: '/theses',
+  path: '/theses',
+  getParentRoute: () => PublicationsRoute,
 } as any)
 const ProjectsResearchIndexRoute = ProjectsResearchIndexRouteImport.update({
   id: '/projects/research/',
@@ -159,6 +177,9 @@ const ProjectsResearchSlugRoute = ProjectsResearchSlugRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRouteWithChildren
+  '/activities': typeof ActivitiesRouteWithChildren
+  '/information': typeof InformationRouteWithChildren
+  '/publications': typeof PublicationsRouteWithChildren
   '/search': typeof SearchRoute
   '/about/participants': typeof AboutParticipantsRoute
   '/about/partners': typeof AboutPartnersRoute
@@ -185,6 +206,9 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRouteWithChildren
+  '/activities': typeof ActivitiesRouteWithChildren
+  '/information': typeof InformationRouteWithChildren
+  '/publications': typeof PublicationsRouteWithChildren
   '/search': typeof SearchRoute
   '/about/participants': typeof AboutParticipantsRoute
   '/about/partners': typeof AboutPartnersRoute
@@ -212,6 +236,9 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRouteWithChildren
+  '/activities': typeof ActivitiesRouteWithChildren
+  '/information': typeof InformationRouteWithChildren
+  '/publications': typeof PublicationsRouteWithChildren
   '/search': typeof SearchRoute
   '/about/participants': typeof AboutParticipantsRoute
   '/about/partners': typeof AboutPartnersRoute
@@ -240,6 +267,9 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/activities'
+    | '/information'
+    | '/publications'
     | '/search'
     | '/about/participants'
     | '/about/partners'
@@ -266,6 +296,9 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about'
+    | '/activities'
+    | '/information'
+    | '/publications'
     | '/search'
     | '/about/participants'
     | '/about/partners'
@@ -292,6 +325,9 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/about'
+    | '/activities'
+    | '/information'
+    | '/publications'
     | '/search'
     | '/about/participants'
     | '/about/partners'
@@ -319,24 +355,14 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRouteWithChildren
+  ActivitiesRoute: typeof ActivitiesRouteWithChildren
+  InformationRoute: typeof InformationRouteWithChildren
+  PublicationsRoute: typeof PublicationsRouteWithChildren
   SearchRoute: typeof SearchRoute
-  ActivitiesConferencesRoute: typeof ActivitiesConferencesRoute
-  ActivitiesMeetingsRoute: typeof ActivitiesMeetingsRoute
-  ActivitiesSeminarsRoute: typeof ActivitiesSeminarsRoute
-  ActivitiesWindsorBirzeitRoute: typeof ActivitiesWindsorBirzeitRoute
-  InformationDatabasesRoute: typeof InformationDatabasesRoute
-  InformationReadingsRoute: typeof InformationReadingsRoute
   MediaAnnouncementsRoute: typeof MediaAnnouncementsRoute
   MediaClippingsRoute: typeof MediaClippingsRoute
   MediaNewsRoute: typeof MediaNewsRoute
   MediaPhotosRoute: typeof MediaPhotosRoute
-  PublicationsAudiovisualRoute: typeof PublicationsAudiovisualRoute
-  PublicationsBooksRoute: typeof PublicationsBooksRoute
-  PublicationsBrochuresRoute: typeof PublicationsBrochuresRoute
-  PublicationsPapersRoute: typeof PublicationsPapersRoute
-  PublicationsPostersRoute: typeof PublicationsPostersRoute
-  PublicationsReportsRoute: typeof PublicationsReportsRoute
-  PublicationsThesesRoute: typeof PublicationsThesesRoute
   ProjectsResearchSlugRoute: typeof ProjectsResearchSlugRoute
   ProjectsResearchIndexRoute: typeof ProjectsResearchIndexRoute
 }
@@ -355,6 +381,27 @@ declare module '@tanstack/react-router' {
       path: '/about'
       fullPath: '/about'
       preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/activities': {
+      id: '/activities'
+      path: '/activities'
+      fullPath: '/activities'
+      preLoaderRoute: typeof ActivitiesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/information': {
+      id: '/information'
+      path: '/information'
+      fullPath: '/information'
+      preLoaderRoute: typeof InformationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/publications': {
+      id: '/publications'
+      path: '/publications'
+      fullPath: '/publications'
+      preLoaderRoute: typeof PublicationsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/search': {
@@ -380,45 +427,45 @@ declare module '@tanstack/react-router' {
     }
     '/activities/conferences': {
       id: '/activities/conferences'
-      path: '/activities/conferences'
+      path: '/conferences'
       fullPath: '/activities/conferences'
       preLoaderRoute: typeof ActivitiesConferencesRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof ActivitiesRoute
     }
     '/activities/meetings': {
       id: '/activities/meetings'
-      path: '/activities/meetings'
+      path: '/meetings'
       fullPath: '/activities/meetings'
       preLoaderRoute: typeof ActivitiesMeetingsRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof ActivitiesRoute
     }
     '/activities/seminars': {
       id: '/activities/seminars'
-      path: '/activities/seminars'
+      path: '/seminars'
       fullPath: '/activities/seminars'
       preLoaderRoute: typeof ActivitiesSeminarsRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof ActivitiesRoute
     }
     '/activities/windsor-birzeit': {
       id: '/activities/windsor-birzeit'
-      path: '/activities/windsor-birzeit'
+      path: '/windsor-birzeit'
       fullPath: '/activities/windsor-birzeit'
       preLoaderRoute: typeof ActivitiesWindsorBirzeitRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof ActivitiesRoute
     }
     '/information/databases': {
       id: '/information/databases'
-      path: '/information/databases'
+      path: '/databases'
       fullPath: '/information/databases'
       preLoaderRoute: typeof InformationDatabasesRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof InformationRoute
     }
     '/information/readings': {
       id: '/information/readings'
-      path: '/information/readings'
+      path: '/readings'
       fullPath: '/information/readings'
       preLoaderRoute: typeof InformationReadingsRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof InformationRoute
     }
     '/media/announcements': {
       id: '/media/announcements'
@@ -450,52 +497,52 @@ declare module '@tanstack/react-router' {
     }
     '/publications/audiovisual': {
       id: '/publications/audiovisual'
-      path: '/publications/audiovisual'
+      path: '/audiovisual'
       fullPath: '/publications/audiovisual'
       preLoaderRoute: typeof PublicationsAudiovisualRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof PublicationsRoute
     }
     '/publications/books': {
       id: '/publications/books'
-      path: '/publications/books'
+      path: '/books'
       fullPath: '/publications/books'
       preLoaderRoute: typeof PublicationsBooksRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof PublicationsRoute
     }
     '/publications/brochures': {
       id: '/publications/brochures'
-      path: '/publications/brochures'
+      path: '/brochures'
       fullPath: '/publications/brochures'
       preLoaderRoute: typeof PublicationsBrochuresRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof PublicationsRoute
     }
     '/publications/papers': {
       id: '/publications/papers'
-      path: '/publications/papers'
+      path: '/papers'
       fullPath: '/publications/papers'
       preLoaderRoute: typeof PublicationsPapersRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof PublicationsRoute
     }
     '/publications/posters': {
       id: '/publications/posters'
-      path: '/publications/posters'
+      path: '/posters'
       fullPath: '/publications/posters'
       preLoaderRoute: typeof PublicationsPostersRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof PublicationsRoute
     }
     '/publications/reports': {
       id: '/publications/reports'
-      path: '/publications/reports'
+      path: '/reports'
       fullPath: '/publications/reports'
       preLoaderRoute: typeof PublicationsReportsRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof PublicationsRoute
     }
     '/publications/theses': {
       id: '/publications/theses'
-      path: '/publications/theses'
+      path: '/theses'
       fullPath: '/publications/theses'
       preLoaderRoute: typeof PublicationsThesesRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof PublicationsRoute
     }
     '/projects/research/': {
       id: '/projects/research/'
@@ -526,20 +573,49 @@ const AboutRouteChildren: AboutRouteChildren = {
 
 const AboutRouteWithChildren = AboutRoute._addFileChildren(AboutRouteChildren)
 
-const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  AboutRoute: AboutRouteWithChildren,
-  SearchRoute: SearchRoute,
+interface ActivitiesRouteChildren {
+  ActivitiesConferencesRoute: typeof ActivitiesConferencesRoute
+  ActivitiesMeetingsRoute: typeof ActivitiesMeetingsRoute
+  ActivitiesSeminarsRoute: typeof ActivitiesSeminarsRoute
+  ActivitiesWindsorBirzeitRoute: typeof ActivitiesWindsorBirzeitRoute
+}
+
+const ActivitiesRouteChildren: ActivitiesRouteChildren = {
   ActivitiesConferencesRoute: ActivitiesConferencesRoute,
   ActivitiesMeetingsRoute: ActivitiesMeetingsRoute,
   ActivitiesSeminarsRoute: ActivitiesSeminarsRoute,
   ActivitiesWindsorBirzeitRoute: ActivitiesWindsorBirzeitRoute,
+}
+
+const ActivitiesRouteWithChildren = ActivitiesRoute._addFileChildren(
+  ActivitiesRouteChildren,
+)
+
+interface InformationRouteChildren {
+  InformationDatabasesRoute: typeof InformationDatabasesRoute
+  InformationReadingsRoute: typeof InformationReadingsRoute
+}
+
+const InformationRouteChildren: InformationRouteChildren = {
   InformationDatabasesRoute: InformationDatabasesRoute,
   InformationReadingsRoute: InformationReadingsRoute,
-  MediaAnnouncementsRoute: MediaAnnouncementsRoute,
-  MediaClippingsRoute: MediaClippingsRoute,
-  MediaNewsRoute: MediaNewsRoute,
-  MediaPhotosRoute: MediaPhotosRoute,
+}
+
+const InformationRouteWithChildren = InformationRoute._addFileChildren(
+  InformationRouteChildren,
+)
+
+interface PublicationsRouteChildren {
+  PublicationsAudiovisualRoute: typeof PublicationsAudiovisualRoute
+  PublicationsBooksRoute: typeof PublicationsBooksRoute
+  PublicationsBrochuresRoute: typeof PublicationsBrochuresRoute
+  PublicationsPapersRoute: typeof PublicationsPapersRoute
+  PublicationsPostersRoute: typeof PublicationsPostersRoute
+  PublicationsReportsRoute: typeof PublicationsReportsRoute
+  PublicationsThesesRoute: typeof PublicationsThesesRoute
+}
+
+const PublicationsRouteChildren: PublicationsRouteChildren = {
   PublicationsAudiovisualRoute: PublicationsAudiovisualRoute,
   PublicationsBooksRoute: PublicationsBooksRoute,
   PublicationsBrochuresRoute: PublicationsBrochuresRoute,
@@ -547,6 +623,23 @@ const rootRouteChildren: RootRouteChildren = {
   PublicationsPostersRoute: PublicationsPostersRoute,
   PublicationsReportsRoute: PublicationsReportsRoute,
   PublicationsThesesRoute: PublicationsThesesRoute,
+}
+
+const PublicationsRouteWithChildren = PublicationsRoute._addFileChildren(
+  PublicationsRouteChildren,
+)
+
+const rootRouteChildren: RootRouteChildren = {
+  IndexRoute: IndexRoute,
+  AboutRoute: AboutRouteWithChildren,
+  ActivitiesRoute: ActivitiesRouteWithChildren,
+  InformationRoute: InformationRouteWithChildren,
+  PublicationsRoute: PublicationsRouteWithChildren,
+  SearchRoute: SearchRoute,
+  MediaAnnouncementsRoute: MediaAnnouncementsRoute,
+  MediaClippingsRoute: MediaClippingsRoute,
+  MediaNewsRoute: MediaNewsRoute,
+  MediaPhotosRoute: MediaPhotosRoute,
   ProjectsResearchSlugRoute: ProjectsResearchSlugRoute,
   ProjectsResearchIndexRoute: ProjectsResearchIndexRoute,
 }

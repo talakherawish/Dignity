@@ -1,10 +1,17 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { X, Mail } from "lucide-react";
+import { ChevronLeft, ChevronRight, X, Mail } from "lucide-react";
 import { PageLayout } from "@/components/PageLayout";
+import { TranslationNotice } from "@/components/TranslationNotice";
 import { useLanguage, type TranslationKey } from "@/contexts/LanguageContext";
-import { ARTICLES, getField, mapPayloadNews } from "@/data/articles";
+import {
+  ARTICLES,
+  excerptUntranslated,
+  getField,
+  mapPayloadNews,
+  type Article,
+} from "@/data/articles";
 import { withItalicQuotes } from "@/lib/text";
 import { fetchNews, fetchParticipants, mediaUrl, type PayloadParticipant } from "@/lib/payload";
 
@@ -101,15 +108,131 @@ function mapPayloadToTeamPerson(p: PayloadParticipant): TeamPerson {
   };
 }
 
-// ── Latest news and announcements: the newest 4, as a grid of cards ───────
-/** Enough to fill a 2x2 grid without the feed sprawling. */
-const FEATURED_COUNT = 4;
+// ── Latest news and announcements: an auto-advancing carousel of slots ────
+/** Enough for a handful of slots without turning the teaser into the archive. */
+const QUEUE_SIZE = 6;
 
-/** Fixed so every card's text starts at the same height regardless of image. */
-const CARD_IMAGE = "h-28 w-28 sm:h-32 sm:w-32 object-cover rounded-sm border border-border";
+/** Within the "every ~5-6s" the design calls for. */
+const SLOT_INTERVAL_MS = 5500;
+
+/**
+ * A slot is one 2-column row of the carousel. An item with its own image
+ * fills a slot by itself, image on one side and its own text on the other.
+ * Two imageless items sit side by side sharing a slot -- both text-only, same
+ * treatment either would get alone -- and a leftover imageless item with no
+ * imageless neighbour spans the row alone rather than leaving a column empty.
+ */
+type Slot =
+  | { kind: "image"; article: Article }
+  | { kind: "pair"; a: Article; b: Article }
+  | { kind: "wide"; article: Article };
+
+/**
+ * Pairing only ever looks at the very next item in the queue -- not the next
+ * imageless item however far off -- so a slot never reaches past an image
+ * item to grab a partner from further down the list, which would reorder the
+ * feed out of its latest-first order.
+ */
+function buildSlots(articles: Article[]): Slot[] {
+  const slots: Slot[] = [];
+  let i = 0;
+  while (i < articles.length) {
+    const article = articles[i];
+    if (article.image) {
+      slots.push({ kind: "image", article });
+      i += 1;
+      continue;
+    }
+    const next = articles[i + 1];
+    if (next && !next.image) {
+      slots.push({ kind: "pair", a: article, b: next });
+      i += 2;
+    } else {
+      slots.push({ kind: "wide", article });
+      i += 1;
+    }
+  }
+  return slots;
+}
+
+/** The text half of a slot: date, title, excerpt (or a notice standing in for it). */
+function NewsSlotCard({ article, className = "" }: { article: Article; className?: string }) {
+  const { lang, isArabic } = useLanguage();
+  const excerpt = getField(article, "excerpt", lang);
+
+  return (
+    <Link
+      to="/media/news"
+      search={{ id: article.id }}
+      className={
+        "group flex min-h-[220px] flex-col justify-center rounded-sm border border-border bg-card p-6 transition-colors hover:border-accent/30 hover:shadow-sm " +
+        className
+      }
+    >
+      <p
+        className={
+          "font-semibold uppercase tracking-[0.18em] text-[color:var(--brand-magenta)] " +
+          (isArabic ? "text-[13px]" : "text-[11px]")
+        }
+      >
+        {getField(article, "date", lang)}
+      </p>
+      <h3
+        className={
+          "mt-2 font-serif text-lg leading-snug text-primary transition-colors group-hover:text-accent " +
+          (isArabic ? "md:text-[21px]" : "md:text-xl")
+        }
+      >
+        {withItalicQuotes(getField(article, "title", lang))}
+      </h3>
+      {excerpt ? (
+        <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-muted-foreground">{excerpt}</p>
+      ) : (
+        excerptUntranslated(article, lang) && <TranslationNotice compact className="mt-2" />
+      )}
+    </Link>
+  );
+}
+
+function NewsSlot({ slot }: { slot: Slot }) {
+  const { lang, isArabic } = useLanguage();
+
+  if (slot.kind === "wide") {
+    return (
+      <div className="flex" dir={isArabic ? "rtl" : "ltr"}>
+        <NewsSlotCard article={slot.article} className="w-full" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="grid gap-5 sm:grid-cols-2" dir={isArabic ? "rtl" : "ltr"}>
+      {slot.kind === "image" ? (
+        <>
+          <NewsSlotCard article={slot.article} />
+          {/* Only ever the item's own image -- a slot is built around having
+              one, so there is never a stand-in photo needing a caveat. */}
+          <div className="overflow-hidden rounded-sm border border-border">
+            <img
+              src={slot.article.image}
+              alt={getField(slot.article, "title", lang)}
+              loading="lazy"
+              className="h-48 w-full object-cover sm:h-full sm:min-h-[220px]"
+            />
+          </div>
+        </>
+      ) : (
+        <>
+          <NewsSlotCard article={slot.a} />
+          <NewsSlotCard article={slot.b} />
+        </>
+      )}
+    </div>
+  );
+}
 
 function LatestNewsAndAnnouncements() {
-  const { lang, isArabic } = useLanguage();
+  const { isArabic } = useLanguage();
 
   const { data: payloadNews = [] } = useQuery({
     queryKey: ["news"],
@@ -118,53 +241,94 @@ function LatestNewsAndAnnouncements() {
   });
   const articles = (payloadNews.length > 0 ? payloadNews.map(mapPayloadNews) : ARTICLES).slice(
     0,
-    FEATURED_COUNT,
+    QUEUE_SIZE,
   );
+  const slots = buildSlots(articles);
 
-  if (articles.length === 0) return null;
+  const [index, setIndex] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const safeIndex = slots.length > 0 ? index % slots.length : 0;
+
+  // Restarts on every slide change, whether that came from this timeout or
+  // from a manual dot/arrow click, and stops while paused -- so hovering
+  // away and back simply gives the new slide a fresh full interval rather
+  // than resuming a partial one.
+  useEffect(() => {
+    if (paused || slots.length <= 1) return;
+    const id = setTimeout(() => {
+      setIndex((i) => (i + 1) % slots.length);
+    }, SLOT_INTERVAL_MS);
+    return () => clearTimeout(id);
+  }, [index, paused, slots.length]);
+
+  if (slots.length === 0) return null;
+
+  const step = (delta: number) => setIndex((i) => (i + delta + slots.length) % slots.length);
 
   return (
-    <div className="grid gap-5 sm:grid-cols-2" dir={isArabic ? "rtl" : "ltr"}>
-      {articles.map((article) => (
-        <Link
-          key={article.id}
-          to="/media/news"
-          search={{ id: article.id }}
-          aria-label={getField(article, "title", lang)}
-          // items-start: the title/date column starts level with the top of
-          // the image rather than centering against its full height.
-          className="group flex items-start gap-4 rounded-sm border border-border bg-card p-4 transition-colors hover:border-accent/30 hover:shadow-sm"
-        >
-          {article.image ? (
-            <img src={article.image} alt="" className={"shrink-0 " + CARD_IMAGE} />
-          ) : (
-            <div className={"shrink-0 bg-secondary " + CARD_IMAGE} />
-          )}
-          <div className="min-w-0">
-            <p
-              className={
-                "font-semibold uppercase tracking-[0.18em] text-[color:var(--brand-magenta)] " +
-                (isArabic ? "text-[13px]" : "text-[11px]")
-              }
-            >
-              {getField(article, "date", lang)}
-            </p>
-            <h3
-              className={
-                "mt-1.5 font-serif text-base leading-snug text-primary transition-colors group-hover:text-accent " +
-                (isArabic ? "md:text-[19px]" : "md:text-[17px]")
-              }
-            >
-              {withItalicQuotes(getField(article, "title", lang))}
-            </h3>
-            {getField(article, "excerpt", lang) && (
-              <p className="mt-1.5 line-clamp-2 text-sm leading-relaxed text-muted-foreground">
-                {getField(article, "excerpt", lang)}
-              </p>
-            )}
+    <div
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+      onFocus={() => setPaused(true)}
+      onBlur={() => setPaused(false)}
+    >
+      <div key={safeIndex} className="animate-[fadeIn_0.5s_ease-out]">
+        <NewsSlot slot={slots[safeIndex]} />
+      </div>
+
+      {slots.length > 1 && (
+        <div className="mt-6 flex items-center justify-center gap-3" dir={isArabic ? "rtl" : "ltr"}>
+          <button
+            type="button"
+            onClick={() => step(-1)}
+            aria-label={isArabic ? "السابق" : "Previous"}
+            className="inline-flex h-7 w-7 items-center justify-center rounded-full text-muted-foreground transition-colors hover:text-accent"
+          >
+            <ChevronLeft className={"h-4 w-4" + (isArabic ? " rotate-180" : "")} />
+          </button>
+
+          <div className="flex items-center gap-2">
+            {slots.map((_, i) => (
+              <button
+                key={i}
+                type="button"
+                onClick={() => setIndex(i)}
+                aria-label={isArabic ? `الانتقال إلى الشريحة ${i + 1}` : `Go to slide ${i + 1}`}
+                aria-current={i === safeIndex}
+                className={
+                  "relative h-1.5 overflow-hidden rounded-full transition-all " +
+                  (i === safeIndex
+                    ? "w-7 bg-border"
+                    : "w-1.5 bg-border hover:bg-muted-foreground/40")
+                }
+              >
+                {i === safeIndex && (
+                  <span
+                    key={safeIndex}
+                    className="absolute inset-y-0 start-0 rounded-full bg-[color:var(--brand-magenta)]"
+                    style={{
+                      animationName: "newsProgress",
+                      animationDuration: `${SLOT_INTERVAL_MS}ms`,
+                      animationTimingFunction: "linear",
+                      animationFillMode: "forwards",
+                      animationPlayState: paused ? "paused" : "running",
+                    }}
+                  />
+                )}
+              </button>
+            ))}
           </div>
-        </Link>
-      ))}
+
+          <button
+            type="button"
+            onClick={() => step(1)}
+            aria-label={isArabic ? "التالي" : "Next"}
+            className="inline-flex h-7 w-7 items-center justify-center rounded-full text-muted-foreground transition-colors hover:text-accent"
+          >
+            <ChevronRight className={"h-4 w-4" + (isArabic ? " rotate-180" : "")} />
+          </button>
+        </div>
+      )}
     </div>
   );
 }
@@ -190,7 +354,10 @@ function TeamModal({
           the same card and should stay in step. No photo means no avatar at
           all, rather than an empty placeholder circle, so both paddings
           collapse the same way ParticipantModal's do. */}
-      <div className="relative w-full max-w-md" style={{ paddingTop: person.photo ? "112px" : "0px" }}>
+      <div
+        className="relative w-full max-w-md"
+        style={{ paddingTop: person.photo ? "112px" : "0px" }}
+      >
         {/* Floating avatar */}
         {person.photo && (
           <div className="absolute left-1/2 top-0 -translate-x-1/2 z-10">
@@ -418,7 +585,10 @@ function Home() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
             <div className="flex items-center justify-between mb-8">
               <div className="flex items-center gap-3">
-                <div className="h-6 w-1.5 rounded-full" style={{ background: "var(--brand-cyan)" }} />
+                <div
+                  className="h-6 w-1.5 rounded-full"
+                  style={{ background: "var(--brand-cyan)" }}
+                />
                 <div>
                   <div
                     className={
@@ -430,7 +600,8 @@ function Home() {
                   </div>
                   <h2
                     className={
-                      "font-serif text-3xl text-primary " + (isArabic ? "lg:text-[2.65rem]" : "lg:text-[2.5rem]")
+                      "font-serif text-3xl text-primary " +
+                      (isArabic ? "lg:text-[2.65rem]" : "lg:text-[2.5rem]")
                     }
                   >
                     {t("news.title")}
