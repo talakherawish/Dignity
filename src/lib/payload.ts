@@ -142,6 +142,8 @@ export type PayloadPublication = {
   titleAr?: string;
   author?: string;
   authorAr?: string;
+  /** Picked from Participants instead of typed -- when set, shown instead of `author`/`authorAr`, each linking to that person's profile. */
+  authorParticipants?: (PayloadParticipant | string)[];
   date: string;
   description?: unknown;
   descriptionAr?: unknown;
@@ -185,6 +187,17 @@ export function youtubeThumbnail(url: string | undefined): string {
 export function youtubeThumbnailFallback(url: string | undefined): string {
   const id = youtubeId(url);
   return id ? `https://img.youtube.com/vi/${id}/mqdefault.jpg` : "";
+}
+
+/**
+ * Embed URL for a YouTube video, so a card can play it inline instead of
+ * only linking away to youtube.com. youtube-nocookie.com is the
+ * privacy-enhanced embed host YouTube itself recommends for this: no
+ * tracking cookie until the viewer actually presses play.
+ */
+export function youtubeEmbedUrl(url: string | undefined): string {
+  const id = youtubeId(url);
+  return id ? `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0` : "";
 }
 
 /**

@@ -33,12 +33,26 @@ function publicationFields(): Field[] {
       name: 'author',
       type: 'text',
       label: 'Author/Authors (English)',
+      admin: {
+        description: 'Type a name freehand, or leave this blank and pick people from Participants below instead.',
+      },
     },
     {
       name: 'authorAr',
       type: 'text',
       label: 'Author/Authors (Arabic / المؤلف بالعربية)',
       admin: { rtl: true },
+    },
+    {
+      name: 'authorParticipants',
+      type: 'relationship',
+      relationTo: 'participants',
+      hasMany: true,
+      label: 'Author(s) from Participants',
+      admin: {
+        description:
+          'Pick existing people instead of typing a name above. When this is set, these are shown in place of the typed Author field, each linking to that person\'s profile under About → Participants.',
+      },
     },
     {
       name: 'date',

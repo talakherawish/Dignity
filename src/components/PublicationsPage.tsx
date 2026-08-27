@@ -4,12 +4,15 @@ import {
   PublicationCard,
   PublicationCardGrid,
   PUBLICATION_GRID_SKELETON,
+  type PublicationCardAuthor,
 } from "@/components/PublicationCard";
 import { useLanguage, type TranslationKey } from "@/contexts/LanguageContext";
 import {
   fetchPublications,
   mediaUrl,
+  populated,
   youtubeThumbnail,
+  type PayloadParticipant,
   type PublicationCollection,
   type PayloadPublication,
 } from "@/lib/payload";
@@ -22,6 +25,7 @@ type DisplayPublication = {
   titleAr?: string;
   author?: string;
   authorAr?: string;
+  authorParticipants?: PublicationCardAuthor[];
   date: string;
   fileUrl: string;
   fileMimeType?: string;
@@ -54,6 +58,11 @@ function fromPayload(item: PayloadPublication): DisplayPublication {
     titleAr: item.titleAr,
     author: item.author,
     authorAr: item.authorAr,
+    authorParticipants: populated<PayloadParticipant>(item.authorParticipants).map((p) => ({
+      id: p.id,
+      name: p.name,
+      nameAr: p.nameAr,
+    })),
     date: item.date,
     fileUrl: mediaUrl(item.file),
     fileMimeType: item.file?.mimeType,
@@ -116,6 +125,7 @@ export function PublicationsPage({
                 titleAr={item.titleAr}
                 author={item.author}
                 authorAr={item.authorAr}
+                authorParticipants={item.authorParticipants}
                 date={item.date}
                 previewUrl={item.previewUrl}
                 previewWidth={item.previewWidth}

@@ -59,9 +59,9 @@ function ResearchPage() {
   return (
     <PageLayout>
       <PageHero
-        eyebrow={isArabic ? "الأنشطة" : "Activities"}
+        eyebrow={isArabic ? "نشاطات" : "Activities"}
         eyebrowColor={SECTION_COLORS.activities}
-        title={isArabic ? "الأبحاث" : "Research"}
+        title={isArabic ? "المشاريع البحثية" : "Research Projects"}
       />
       <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {isLoading ? (

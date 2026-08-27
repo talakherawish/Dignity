@@ -11,6 +11,8 @@ import {
   fetchPublications,
   fetchResearch,
   fetchWindsorDignity,
+  populated,
+  type PayloadParticipant,
   type PublicationCollection,
 } from "@/lib/payload";
 
@@ -221,7 +223,14 @@ export async function buildSearchIndex(): Promise<SearchResult[]> {
           titleAr: item.titleAr,
           display: [item.description],
           displayAr: [item.descriptionAr],
-          extraSearch: [item.author, item.authorAr],
+          extraSearch: [
+            item.author,
+            item.authorAr,
+            ...populated<PayloadParticipant>(item.authorParticipants).flatMap((p) => [
+              p.name,
+              p.nameAr,
+            ]),
+          ],
           to,
         }),
       );

@@ -17,6 +17,7 @@ import {
   youtubeThumbnail,
   type ForumType,
   type PayloadActivity,
+  type PayloadParticipant,
   type PayloadResearchActivity,
   type PayloadClipping,
   type PayloadPhoto,
@@ -88,6 +89,11 @@ function PublicationGrid({
             titleAr={p.titleAr}
             author={p.author}
             authorAr={p.authorAr}
+            authorParticipants={populated<PayloadParticipant>(p.authorParticipants).map((a) => ({
+              id: a.id,
+              name: a.name,
+              nameAr: a.nameAr,
+            }))}
             date={p.date}
             previewUrl={previewUrl}
             previewWidth={previewSource?.width}
@@ -314,7 +320,7 @@ function ResearchDetailPage() {
         {backLink}
 
         <div className="text-[11px] uppercase tracking-[0.22em] text-[color:var(--brand-magenta)] font-semibold mt-8 mb-3">
-          {isArabic ? "الأنشطة — الأبحاث" : "Activities — Research"}
+          {isArabic ? "نشاطات — المشاريع البحثية" : "Activities — Research Projects"}
         </div>
         <h1 className="font-serif text-3xl md:text-4xl text-primary tracking-tight leading-tight">
           {title}

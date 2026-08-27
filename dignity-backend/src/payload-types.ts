@@ -551,8 +551,15 @@ export interface Book {
   id: string;
   title: string;
   titleAr: string;
+  /**
+   * Type a name freehand, or leave this blank and pick people from Participants below instead.
+   */
   author?: string | null;
   authorAr?: string | null;
+  /**
+   * Pick existing people instead of typing a name above. When this is set, these are shown in place of the typed Author field, each linking to that person's profile under About → Participants.
+   */
+  authorParticipants?: (string | Participant)[] | null;
   date?: string | null;
   description?: string | null;
   descriptionAr?: string | null;
@@ -595,8 +602,15 @@ export interface Paper {
   id: string;
   title: string;
   titleAr: string;
+  /**
+   * Type a name freehand, or leave this blank and pick people from Participants below instead.
+   */
   author?: string | null;
   authorAr?: string | null;
+  /**
+   * Pick existing people instead of typing a name above. When this is set, these are shown in place of the typed Author field, each linking to that person's profile under About → Participants.
+   */
+  authorParticipants?: (string | Participant)[] | null;
   date?: string | null;
   description?: string | null;
   descriptionAr?: string | null;
@@ -639,8 +653,15 @@ export interface Report {
   id: string;
   title: string;
   titleAr: string;
+  /**
+   * Type a name freehand, or leave this blank and pick people from Participants below instead.
+   */
   author?: string | null;
   authorAr?: string | null;
+  /**
+   * Pick existing people instead of typing a name above. When this is set, these are shown in place of the typed Author field, each linking to that person's profile under About → Participants.
+   */
+  authorParticipants?: (string | Participant)[] | null;
   date?: string | null;
   description?: string | null;
   descriptionAr?: string | null;
@@ -683,8 +704,15 @@ export interface Brochure {
   id: string;
   title: string;
   titleAr: string;
+  /**
+   * Type a name freehand, or leave this blank and pick people from Participants below instead.
+   */
   author?: string | null;
   authorAr?: string | null;
+  /**
+   * Pick existing people instead of typing a name above. When this is set, these are shown in place of the typed Author field, each linking to that person's profile under About → Participants.
+   */
+  authorParticipants?: (string | Participant)[] | null;
   date?: string | null;
   description?: string | null;
   descriptionAr?: string | null;
@@ -727,8 +755,15 @@ export interface Thesis {
   id: string;
   title: string;
   titleAr: string;
+  /**
+   * Type a name freehand, or leave this blank and pick people from Participants below instead.
+   */
   author?: string | null;
   authorAr?: string | null;
+  /**
+   * Pick existing people instead of typing a name above. When this is set, these are shown in place of the typed Author field, each linking to that person's profile under About → Participants.
+   */
+  authorParticipants?: (string | Participant)[] | null;
   date?: string | null;
   description?: string | null;
   descriptionAr?: string | null;
@@ -771,8 +806,15 @@ export interface Audiovisual {
   id: string;
   title: string;
   titleAr: string;
+  /**
+   * Type a name freehand, or leave this blank and pick people from Participants below instead.
+   */
   author?: string | null;
   authorAr?: string | null;
+  /**
+   * Pick existing people instead of typing a name above. When this is set, these are shown in place of the typed Author field, each linking to that person's profile under About → Participants.
+   */
+  authorParticipants?: (string | Participant)[] | null;
   date?: string | null;
   description?: string | null;
   descriptionAr?: string | null;
@@ -815,8 +857,15 @@ export interface Poster {
   id: string;
   title: string;
   titleAr: string;
+  /**
+   * Type a name freehand, or leave this blank and pick people from Participants below instead.
+   */
   author?: string | null;
   authorAr?: string | null;
+  /**
+   * Pick existing people instead of typing a name above. When this is set, these are shown in place of the typed Author field, each linking to that person's profile under About → Participants.
+   */
+  authorParticipants?: (string | Participant)[] | null;
   date?: string | null;
   description?: string | null;
   descriptionAr?: string | null;
@@ -1539,6 +1588,7 @@ export interface BooksSelect<T extends boolean = true> {
   titleAr?: T;
   author?: T;
   authorAr?: T;
+  authorParticipants?: T;
   date?: T;
   description?: T;
   descriptionAr?: T;
@@ -1562,6 +1612,7 @@ export interface PapersSelect<T extends boolean = true> {
   titleAr?: T;
   author?: T;
   authorAr?: T;
+  authorParticipants?: T;
   date?: T;
   description?: T;
   descriptionAr?: T;
@@ -1585,6 +1636,7 @@ export interface ReportsSelect<T extends boolean = true> {
   titleAr?: T;
   author?: T;
   authorAr?: T;
+  authorParticipants?: T;
   date?: T;
   description?: T;
   descriptionAr?: T;
@@ -1608,6 +1660,7 @@ export interface BrochuresSelect<T extends boolean = true> {
   titleAr?: T;
   author?: T;
   authorAr?: T;
+  authorParticipants?: T;
   date?: T;
   description?: T;
   descriptionAr?: T;
@@ -1631,6 +1684,7 @@ export interface ThesesSelect<T extends boolean = true> {
   titleAr?: T;
   author?: T;
   authorAr?: T;
+  authorParticipants?: T;
   date?: T;
   description?: T;
   descriptionAr?: T;
@@ -1654,6 +1708,7 @@ export interface AudiovisualSelect<T extends boolean = true> {
   titleAr?: T;
   author?: T;
   authorAr?: T;
+  authorParticipants?: T;
   date?: T;
   description?: T;
   descriptionAr?: T;
@@ -1677,6 +1732,7 @@ export interface PostersSelect<T extends boolean = true> {
   titleAr?: T;
   author?: T;
   authorAr?: T;
+  authorParticipants?: T;
   date?: T;
   description?: T;
   descriptionAr?: T;
