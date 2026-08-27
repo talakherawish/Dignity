@@ -15,7 +15,7 @@ import { News } from '../src/collections/News'
 import { DignityResearchInitiative } from '../src/collections/AboutPages'
 import { Participants } from '../src/collections/Participants'
 import { Books } from '../src/collections/Publications'
-import { Seminars } from '../src/collections/Seminars'
+import { Forums } from '../src/collections/Forums'
 
 let failures = 0
 const ok = (name: string) => console.log(`  PASS  ${name}`)
@@ -54,7 +54,7 @@ function expectIndependent(label: string, c: CollectionConfig, enName: string, a
 async function main() {
   console.log('\n— Title required, mirrored EN -> AR —')
   expectRequired('News: titleAr required (mirrored from title)', News, 'title', 'titleAr')
-  expectRequired('Seminars: titleAr required (mirrored from title)', Seminars, 'title', 'titleAr')
+  expectRequired('Forums: titleAr required (mirrored from title)', Forums, 'title', 'titleAr')
   expectRequired('Participants: nameAr required (mirrored from name)', Participants, 'name', 'nameAr')
   expectRequired('Books: titleAr required (mirrored from title)', Books, 'title', 'titleAr')
   // DignityResearchInitiative and Partners are standalone prose pages (see
@@ -65,7 +65,7 @@ async function main() {
   console.log('\n— Every other pair is independent: no forced coupling, no custom validator —')
   expectIndependent('News: excerpt/excerptAr', News, 'excerpt', 'excerptAr')
   expectIndependent('News: content/contentAr', News, 'content', 'contentAr')
-  expectIndependent('Seminars: description/descriptionAr', Seminars, 'description', 'descriptionAr')
+  expectIndependent('Forums: description/descriptionAr', Forums, 'description', 'descriptionAr')
   expectIndependent('Participants: bio/bioAr', Participants, 'bio', 'bioAr')
   expectIndependent('Books: author/authorAr', Books, 'author', 'authorAr')
   expectIndependent('Books: description/descriptionAr', Books, 'description', 'descriptionAr')

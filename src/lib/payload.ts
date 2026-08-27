@@ -509,21 +509,25 @@ const NEWEST_FIRST = { sort: "-date" };
 
 export const fetchNews = () => fetchCollection<PayloadNews>("news", NEWEST_FIRST);
 
-// Activities — separated into individual collections
-export const fetchSeminars = () => fetchCollection<PayloadActivity>("seminars", NEWEST_FIRST);
-
-export const fetchConferences = () => fetchCollection<PayloadActivity>("conferences", NEWEST_FIRST);
-
 /**
- * Meetings, newest first.
+ * Everything shown on Activities -> Forums, newest first: every seminar,
+ * roundtable, workshop, and conference the Dignity initiative has run.
+ * Seminars, Conferences, and Meetings used to be three separate Payload
+ * collections; they were merged into this one (see
+ * scripts/merge-seminars-conferences-meetings-into-forums.ts in the
+ * backend), so this is now a single fetch rather than three stitched
+ * together. A document's forumType says which of the four types it's filed
+ * under; the handful migrated in from the old Meetings collection without
+ * one yet still come back (for the "All" tab) rather than disappearing --
+ * see the `forumType` field on the Forums collection.
  *
- * depth 2 rather than the shared default of 1: a meeting's extra images are
- * uploads nested inside the `gallery` array, a hop further in than the
- * featured image, so they need the extra level to arrive as media objects
- * with a url rather than as bare ids.
+ * depth 2 rather than the shared default of 1: an entry's extra images (from
+ * the old Meetings collection) are uploads nested inside the `gallery`
+ * array, a hop further in than the featured image, so they need the extra
+ * level to arrive as media objects with a url rather than as bare ids.
  */
-export const fetchMeetings = () =>
-  fetchCollection<PayloadActivity>("meetings", { ...NEWEST_FIRST, depth: "2" });
+export const fetchForums = () =>
+  fetchCollection<PayloadActivity>("forums", { ...NEWEST_FIRST, depth: "2" });
 
 /**
  * Research areas, shown under Activities → Research.
@@ -553,33 +557,6 @@ export async function fetchResearchBySlug(
 
 export const fetchWindsorDignity = () =>
   fetchCollection<PayloadActivity>("windsor-dignity", NEWEST_FIRST);
-
-/**
- * Everything shown on Activities -> Forums: every Seminar, every Conference,
- * and every Meeting -- there's no separate Meetings section any more, so all
- * of it lives here. A Meeting's forumType (see that field on the Meetings
- * collection) says which of the four types it's filed under; one not yet
- * tagged by an editor still shows up (under "All", just not under any one
- * filter tab) rather than silently disappearing. The three still live in
- * separate Payload collections -- no data was moved to build Forums, only
- * this merge -- so they're fetched in parallel and stitched into one
- * newest-first list here.
- */
-export async function fetchForums(): Promise<PayloadActivity[]> {
-  const [seminars, conferences, meetings] = await Promise.all([
-    fetchSeminars(),
-    fetchConferences(),
-    fetchMeetings(),
-  ]);
-
-  const items: PayloadActivity[] = [
-    ...seminars.map((item) => ({ ...item, forumType: "seminar" as const })),
-    ...conferences.map((item) => ({ ...item, forumType: "conference" as const })),
-    ...meetings,
-  ];
-
-  return items.sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
-}
 
 export const fetchPhotos = () => fetchCollection<PayloadPhoto>("photos", NEWEST_FIRST);
 

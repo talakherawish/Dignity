@@ -32,9 +32,7 @@ import { News } from './collections/News'
 import { Photos } from './collections/Photos'
 import { Clippings } from './collections/Clippings'
 import { Research } from './collections/Research'
-import { Seminars } from './collections/Seminars'
-import { Conferences } from './collections/Conferences'
-import { Meetings } from './collections/Meetings'
+import { Forums } from './collections/Forums'
 import { WindsorDignity } from './collections/WindsorDignity'
 import {
   Books,
@@ -86,9 +84,11 @@ export default buildConfig({
 
     // Activities
     Research,
-    Seminars,
-    Conferences,
-    Meetings,
+    // Seminars, Conferences, and Meetings were merged into this one
+    // collection -- see scripts/merge-seminars-conferences-meetings-into-forums.ts.
+    // The three old collections' raw data still exists in MongoDB under
+    // their old names; nothing was deleted, just no longer wired in here.
+    Forums,
     WindsorDignity,
 
     // Publications

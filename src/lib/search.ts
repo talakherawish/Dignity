@@ -3,15 +3,13 @@ import {
   extractText,
   fetchAboutInitiative,
   fetchClippings,
-  fetchConferences,
+  fetchForums,
   fetchInformation,
-  fetchMeetings,
   fetchNews,
   fetchParticipants,
   fetchPartners,
   fetchPublications,
   fetchResearch,
-  fetchSeminars,
   fetchWindsorDignity,
   type PublicationCollection,
 } from "@/lib/payload";
@@ -100,9 +98,7 @@ const PUBLICATION_TYPES: {
 export async function buildSearchIndex(): Promise<SearchResult[]> {
   const [
     news,
-    seminars,
-    conferences,
-    meetings,
+    forums,
     windsor,
     research,
     participants,
@@ -114,9 +110,7 @@ export async function buildSearchIndex(): Promise<SearchResult[]> {
     ...publicationLists
   ] = await Promise.all([
     fetchNews(),
-    fetchSeminars(),
-    fetchConferences(),
-    fetchMeetings(),
+    fetchForums(),
     fetchWindsorDignity(),
     fetchResearch(),
     fetchParticipants(),
@@ -142,27 +136,29 @@ export async function buildSearchIndex(): Promise<SearchResult[]> {
       }),
     );
 
-  // Seminars, Conferences, and Meetings are all Forums content now -- there's
-  // no separate Meetings destination to send a result to any more (see
-  // fetchForums).
-  const activityGroups: { items: typeof seminars; typeKey: TranslationKey; to: string }[] = [
-    { items: seminars, typeKey: "activities.forums", to: "/activities/forums" },
-    { items: conferences, typeKey: "activities.forums", to: "/activities/forums" },
-    { items: meetings, typeKey: "activities.forums", to: "/activities/forums" },
-    { items: windsor, typeKey: "activities.windsor", to: "/activities/windsor-birzeit" },
-  ];
-  for (const group of activityGroups)
-    for (const item of group.items)
-      results.push(
-        makeResult({
-          typeKey: group.typeKey,
-          title: item.title,
-          titleAr: item.titleAr,
-          display: [item.description, item.content],
-          displayAr: [item.descriptionAr, item.contentAr],
-          to: group.to,
-        }),
-      );
+  for (const item of forums)
+    results.push(
+      makeResult({
+        typeKey: "activities.forums",
+        title: item.title,
+        titleAr: item.titleAr,
+        display: [item.description, item.content],
+        displayAr: [item.descriptionAr, item.contentAr],
+        to: "/activities/forums",
+      }),
+    );
+
+  for (const item of windsor)
+    results.push(
+      makeResult({
+        typeKey: "activities.windsor",
+        title: item.title,
+        titleAr: item.titleAr,
+        display: [item.description, item.content],
+        displayAr: [item.descriptionAr, item.contentAr],
+        to: "/activities/windsor-birzeit",
+      }),
+    );
 
   for (const item of research)
     results.push(

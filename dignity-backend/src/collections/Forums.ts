@@ -1,13 +1,13 @@
 import type { CollectionConfig } from 'payload'
 
-export const Meetings: CollectionConfig = {
-  slug: 'meetings',
+export const Forums: CollectionConfig = {
+  slug: 'forums',
   admin: {
     group: 'Activities',
     useAsTitle: 'title',
-    defaultColumns: ['title', 'date', 'status', 'updatedAt'],
+    defaultColumns: ['title', 'forumType', 'date', 'status', 'updatedAt'],
     description:
-      'Meetings organized through the Dignity initiative. There is no separate Meetings page on the website any more -- every meeting appears under Activities -> Forums, so set its Forum Type below to say which type it is filed under.',
+      'Seminars, roundtables, workshops, and conferences organized through the Dignity initiative. Appears on the website under Activities -> Forums, filterable by Forum Type. Replaces the old separate Seminars, Conferences, and Meetings collections -- see scripts/merge-seminars-conferences-meetings-into-forums.ts.',
   },
   versions: {
     drafts: true,
@@ -40,45 +40,42 @@ export const Meetings: CollectionConfig = {
       required: true,
     },
     /**
-     * Some meetings are run as a round table or as a discussion; most are just
-     * meetings. Left blank the website says nothing, so an ordinary meeting is
-     * not labelled as anything.
-     */
-    {
-      name: 'kind',
-      type: 'select',
-      label: 'Kind of Meeting (optional)',
-      options: [
-        { label: 'Round Table', value: 'roundtable' },
-        { label: 'Discussion', value: 'discussion' },
-      ],
-      admin: {
-        description:
-          'Leave blank for an ordinary meeting. A round table or a discussion is labelled as such above its title on the website.',
-      },
-    },
-    /**
-     * Which of the four Forum sub-types this meeting is filed under. Every
-     * meeting shows on Activities -> Forums regardless -- there is no
-     * separate Meetings page any more -- but only a tagged one shows up
-     * under one of the type filter tabs there; left blank, it still appears
-     * under "All", just not under any specific tab, until an editor tags it.
-     * Independent of `kind` above -- a meeting can carry both, or either
-     * alone -- so tagging one never touches or loses the other.
+     * Which of the four sub-types this is. Required -- every document here is
+     * a forum event, and this is what the filter tabs on Activities -> Forums
+     * key off. The handful of documents migrated in from the old Meetings
+     * collection without a kind (see `kind` below) were left without this
+     * set too, since guessing their type risked mischaracterizing real
+     * events; Payload will ask for it the next time one of those is edited.
      */
     {
       name: 'forumType',
       type: 'select',
       label: 'Forum Type',
+      required: true,
       options: [
         { label: 'Seminar', value: 'seminar' },
         { label: 'Roundtable', value: 'roundtable' },
         { label: 'Workshop', value: 'workshop' },
         { label: 'Conference', value: 'conference' },
       ],
+    },
+    /**
+     * Legacy from the old Meetings collection, before Seminars, Conferences,
+     * and Meetings were merged into this one. Only present on documents
+     * migrated in from there that don't have a Forum Type yet -- a hint
+     * toward what to tag them as, not something new entries should use.
+     */
+    {
+      name: 'kind',
+      type: 'select',
+      label: 'Legacy Kind (from the old Meetings collection)',
+      options: [
+        { label: 'Round Table', value: 'roundtable' },
+        { label: 'Discussion', value: 'discussion' },
+      ],
       admin: {
         description:
-          'Which type of forum this is. Every meeting appears under Activities -> Forums either way; this decides which filter tab (Seminar/Roundtable/Workshop/Conference) it shows up under. Leave blank for now if unsure -- it will still appear under "All".',
+          'Left over from before Seminars/Conferences/Meetings were merged into Forums. Only meaningful on documents migrated from the old Meetings collection that are still missing a Forum Type above -- set that instead for anything new.',
       },
     },
     {
@@ -110,8 +107,8 @@ export const Meetings: CollectionConfig = {
     },
     /**
      * Extra images, beyond the featured one. Optional and often empty, which is
-     * why the website shows the whole set only once a visitor opens the meeting
-     * -- the list of meetings stays an even list of dates and titles whether an
+     * why the website shows the whole set only once a visitor opens the entry
+     * -- the Forums list stays an even list of dates and titles whether an
      * entry carries photographs or not.
      */
     {
@@ -121,7 +118,7 @@ export const Meetings: CollectionConfig = {
       labels: { singular: 'Image', plural: 'Images' },
       admin: {
         description:
-          'Additional photographs for this meeting. They appear only inside the meeting, after a visitor opens it.',
+          'Additional photographs for this entry. They appear only inside it, after a visitor opens it.',
       },
       fields: [
         {

@@ -77,9 +77,7 @@ export interface Config {
     clippings: Clipping;
     partners: Partner;
     research: Research;
-    seminars: Seminar;
-    conferences: Conference;
-    meetings: Meeting;
+    forums: Forum;
     'windsor-dignity': WindsorDignity;
     books: Book;
     papers: Paper;
@@ -107,9 +105,7 @@ export interface Config {
     clippings: ClippingsSelect<false> | ClippingsSelect<true>;
     partners: PartnersSelect<false> | PartnersSelect<true>;
     research: ResearchSelect<false> | ResearchSelect<true>;
-    seminars: SeminarsSelect<false> | SeminarsSelect<true>;
-    conferences: ConferencesSelect<false> | ConferencesSelect<true>;
-    meetings: MeetingsSelect<false> | MeetingsSelect<true>;
+    forums: ForumsSelect<false> | ForumsSelect<true>;
     'windsor-dignity': WindsorDignitySelect<false> | WindsorDignitySelect<true>;
     books: BooksSelect<false> | BooksSelect<true>;
     papers: PapersSelect<false> | PapersSelect<true>;
@@ -757,120 +753,21 @@ export interface Poster {
   _status?: ('draft' | 'published') | null;
 }
 /**
- * Seminars organized through the Dignity initiative. Appears on the website under Activities -> Forums, filtered as Seminar.
+ * Seminars, roundtables, workshops, and conferences organized through the Dignity initiative. Appears on the website under Activities -> Forums, filterable by Forum Type. Replaces the old separate Seminars, Conferences, and Meetings collections -- see scripts/merge-seminars-conferences-meetings-into-forums.ts.
  *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "seminars".
+ * via the `definition` "forums".
  */
-export interface Seminar {
+export interface Forum {
   id: string;
   title: string;
   titleAr: string;
   date: string;
-  description?: string | null;
-  descriptionAr?: string | null;
-  content?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  contentAr?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  image?: (string | null) | Media;
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
-}
-/**
- * Conferences organized through the Dignity initiative. Appears on the website under Activities -> Forums, filtered as Conference.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "conferences".
- */
-export interface Conference {
-  id: string;
-  title: string;
-  titleAr: string;
-  date: string;
-  description?: string | null;
-  descriptionAr?: string | null;
-  content?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  contentAr?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  image?: (string | null) | Media;
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
-}
-/**
- * Meetings organized through the Dignity initiative.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "meetings".
- */
-export interface Meeting {
-  id: string;
-  title: string;
-  titleAr: string;
-  date: string;
+  forumType: 'seminar' | 'roundtable' | 'workshop' | 'conference';
   /**
-   * Leave blank for an ordinary meeting. A round table or a discussion is labelled as such above its title on the website.
+   * Left over from before Seminars/Conferences/Meetings were merged into Forums. Only meaningful on documents migrated from the old Meetings collection that are still missing a Forum Type above -- set that instead for anything new.
    */
   kind?: ('roundtable' | 'discussion') | null;
-  /**
-   * Leave blank for an ordinary meeting or discussion. Set this to have the meeting appear under Activities -> Forums instead, filtered under the chosen type.
-   */
-  forumType?: ('seminar' | 'roundtable' | 'workshop' | 'conference') | null;
   description?: string | null;
   descriptionAr?: string | null;
   content?: {
@@ -905,7 +802,7 @@ export interface Meeting {
   } | null;
   image?: (string | null) | Media;
   /**
-   * Additional photographs for this meeting. They appear only inside the meeting, after a visitor opens it.
+   * Additional photographs for this entry. They appear only inside it, after a visitor opens it.
    */
   gallery?:
     | {
@@ -1152,16 +1049,8 @@ export interface PayloadLockedDocument {
         value: string | Research;
       } | null)
     | ({
-        relationTo: 'seminars';
-        value: string | Seminar;
-      } | null)
-    | ({
-        relationTo: 'conferences';
-        value: string | Conference;
-      } | null)
-    | ({
-        relationTo: 'meetings';
-        value: string | Meeting;
+        relationTo: 'forums';
+        value: string | Forum;
       } | null)
     | ({
         relationTo: 'windsor-dignity';
@@ -1419,48 +1308,14 @@ export interface ResearchSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "seminars_select".
+ * via the `definition` "forums_select".
  */
-export interface SeminarsSelect<T extends boolean = true> {
+export interface ForumsSelect<T extends boolean = true> {
   title?: T;
   titleAr?: T;
   date?: T;
-  description?: T;
-  descriptionAr?: T;
-  content?: T;
-  contentAr?: T;
-  image?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  _status?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "conferences_select".
- */
-export interface ConferencesSelect<T extends boolean = true> {
-  title?: T;
-  titleAr?: T;
-  date?: T;
-  description?: T;
-  descriptionAr?: T;
-  content?: T;
-  contentAr?: T;
-  image?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  _status?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "meetings_select".
- */
-export interface MeetingsSelect<T extends boolean = true> {
-  title?: T;
-  titleAr?: T;
-  date?: T;
-  kind?: T;
   forumType?: T;
+  kind?: T;
   description?: T;
   descriptionAr?: T;
   content?: T;
@@ -1744,8 +1599,6 @@ export interface SiteSetting {
   navProjectsResearchAr?: string | null;
   navActivitiesForums?: string | null;
   navActivitiesForumsAr?: string | null;
-  navActivitiesMeetings?: string | null;
-  navActivitiesMeetingsAr?: string | null;
   navActivitiesWindsor?: string | null;
   navActivitiesWindsorAr?: string | null;
   navPublications?: string | null;
@@ -1898,8 +1751,6 @@ export interface SiteSettingsSelect<T extends boolean = true> {
   navProjectsResearchAr?: T;
   navActivitiesForums?: T;
   navActivitiesForumsAr?: T;
-  navActivitiesMeetings?: T;
-  navActivitiesMeetingsAr?: T;
   navActivitiesWindsor?: T;
   navActivitiesWindsorAr?: T;
   navPublications?: T;
