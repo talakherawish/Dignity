@@ -17,10 +17,11 @@ export const Route = createFileRoute("/media/clippings")({
 
 function ClippingsPage() {
   const { t, isArabic } = useLanguage();
+  // No staleTime: an editor publishing a change in the admin expects to see
+  // it on the next load, not up to five minutes later.
   const { data: items = [], isLoading } = useQuery({
     queryKey: ["clippings"],
     queryFn: fetchClippings,
-    staleTime: 5 * 60 * 1000,
   });
 
   return (

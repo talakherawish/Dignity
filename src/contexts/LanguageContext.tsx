@@ -96,8 +96,6 @@ const translations = {
     "news.collapse": "Collapse",
     "content.untranslated":
       "This text is not available in English yet. A translation is on the way.",
-    "activity.kind.roundtable": "Round Table",
-    "activity.kind.discussion": "Discussion",
     "news.item1.date": "DEC 14 - JAN 2023",
     "news.item1.title": "Discussion of Raef Zreik's book / \"Kant's Struggle for Independence\"",
     "news.item1.excerpt":
@@ -279,8 +277,6 @@ const translations = {
     "news.readMore": "اقرأ المزيد",
     "news.collapse": "طيّ",
     "content.untranslated": "هذا النص غير متوفر بالعربية بعد، والترجمة قيد الإعداد.",
-    "activity.kind.roundtable": "طاولة مستديرة",
-    "activity.kind.discussion": "نقاش",
     "news.item1.date": "تاريخ",
     "news.item1.title": "عنوان المقال الأول",
     "news.item1.excerpt": "سيظهر هنا ملخص مختصر للمقال الأول بمجرد إضافة المحتوى.",
@@ -425,8 +421,6 @@ const SITE_SETTINGS_KEY_MAP: Partial<Record<TranslationKey, string>> = {
   "news.readMore": "newsReadMore",
   "news.collapse": "newsCollapse",
   "content.untranslated": "contentUntranslated",
-  "activity.kind.roundtable": "kindRoundtable",
-  "activity.kind.discussion": "kindDiscussion",
   "forums.filter.all": "forumFilterAll",
   "forums.type.seminar": "forumTypeSeminar",
   "forums.type.roundtable": "forumTypeRoundtable",

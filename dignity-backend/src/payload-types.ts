@@ -763,11 +763,7 @@ export interface Forum {
   title: string;
   titleAr: string;
   date: string;
-  forumType: 'seminar' | 'roundtable' | 'workshop' | 'conference';
-  /**
-   * Left over from before Seminars/Conferences/Meetings were merged into Forums. Only meaningful on documents migrated from the old Meetings collection that are still missing a Forum Type above -- set that instead for anything new.
-   */
-  kind?: ('roundtable' | 'discussion') | null;
+  forumType?: ('seminar' | 'roundtable' | 'workshop' | 'conference') | null;
   description?: string | null;
   descriptionAr?: string | null;
   content?: {
@@ -1315,7 +1311,6 @@ export interface ForumsSelect<T extends boolean = true> {
   titleAr?: T;
   date?: T;
   forumType?: T;
-  kind?: T;
   description?: T;
   descriptionAr?: T;
   content?: T;
@@ -1705,10 +1700,6 @@ export interface SiteSetting {
   newsCollapseAr?: string | null;
   contentUntranslated?: string | null;
   contentUntranslatedAr?: string | null;
-  kindRoundtable?: string | null;
-  kindRoundtableAr?: string | null;
-  kindDiscussion?: string | null;
-  kindDiscussionAr?: string | null;
   forumFilterAll?: string | null;
   forumFilterAllAr?: string | null;
   forumTypeSeminar?: string | null;
@@ -1857,10 +1848,6 @@ export interface SiteSettingsSelect<T extends boolean = true> {
   newsCollapseAr?: T;
   contentUntranslated?: T;
   contentUntranslatedAr?: T;
-  kindRoundtable?: T;
-  kindRoundtableAr?: T;
-  kindDiscussion?: T;
-  kindDiscussionAr?: T;
   forumFilterAll?: T;
   forumFilterAllAr?: T;
   forumTypeSeminar?: T;

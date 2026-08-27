@@ -23,10 +23,11 @@ export function InformationPage({
   breadcrumb?: string;
 }) {
   const { t, lang, isArabic } = useLanguage();
+  // No staleTime: an editor publishing a change in the admin expects to see
+  // it on the next load, not up to five minutes later.
   const { data: items = [], isLoading } = useQuery({
     queryKey: ["information", type],
     queryFn: () => fetchInformation(type),
-    staleTime: 5 * 60 * 1000,
   });
 
   return (

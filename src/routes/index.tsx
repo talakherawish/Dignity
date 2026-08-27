@@ -246,10 +246,11 @@ function NewsSlot({ slot }: { slot: Slot }) {
 function LatestNewsAndAnnouncements() {
   const { isArabic } = useLanguage();
 
+  // No staleTime: an editor publishing a change in the admin expects to see
+  // it on the next load, not up to five minutes later.
   const { data: payloadNews = [] } = useQuery({
     queryKey: ["news"],
     queryFn: fetchNews,
-    staleTime: 5 * 60 * 1000,
   });
   const articles = (payloadNews.length > 0 ? payloadNews.map(mapPayloadNews) : ARTICLES).slice(
     0,
@@ -411,10 +412,11 @@ function TeamSection() {
   const { t, lang, isArabic } = useLanguage();
   const [selected, setSelected] = useState<TeamPerson | null>(null);
 
+  // No staleTime: an editor publishing a change in the admin expects to see
+  // it on the next load, not up to five minutes later.
   const { data: payloadParticipants = [] } = useQuery({
     queryKey: ["participants"],
     queryFn: fetchParticipants,
-    staleTime: 5 * 60 * 1000,
   });
 
   const members: TeamPerson[] = (

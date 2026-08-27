@@ -316,10 +316,11 @@ function ParticipantsPage() {
   const [activeCategory, setActiveCategory] = useState("all");
   const [selected, setSelected] = useState<Participant | null>(null);
 
+  // No staleTime: an editor publishing a change in the admin expects to see
+  // it on the next load, not up to five minutes later.
   const { data: payloadParticipants = [] } = useQuery({
     queryKey: ["participants"],
     queryFn: fetchParticipants,
-    staleTime: 5 * 60 * 1000,
   });
 
   const participants: Participant[] =

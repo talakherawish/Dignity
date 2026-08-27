@@ -114,8 +114,6 @@ export const SiteSettings: GlobalConfig = {
             ...pair('newsReadMore', 'Read More Label'),
             ...pair('newsCollapse', 'Collapse Label'),
             ...pair('contentUntranslated', 'Notice: Body Not Translated Yet'),
-            ...pair('kindRoundtable', 'Meeting Kind: Round Table'),
-            ...pair('kindDiscussion', 'Meeting Kind: Discussion'),
             ...pair('forumFilterAll', 'Forums Filter: All'),
             ...pair('forumTypeSeminar', 'Forum Type: Seminar'),
             ...pair('forumTypeRoundtable', 'Forum Type: Roundtable'),

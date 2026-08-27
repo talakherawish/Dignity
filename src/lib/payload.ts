@@ -56,14 +56,11 @@ export type PayloadActivity = {
   titleAr?: string;
   type: "seminar" | "conference" | "meeting" | "windsor-birzeit";
   date: string;
-  /** Meetings only, and optional even there: a round table or a discussion. */
-  kind?: "roundtable" | "discussion";
   /**
-   * Which Forum sub-type this item is, if any. Always set on items fetched
-   * from Seminars/Conferences (see fetchForums) -- their collection already
-   * fixes the type. On a Meeting it's optional and set per-document: present
-   * only on the meetings an editor has tagged as a round table or workshop,
-   * absent on plain meetings and discussions, which stay off the Forums page.
+   * Which Forum sub-type this item is. Required on the Forums collection
+   * going forward, but a handful of documents migrated in from the old,
+   * separate Meetings collection were left without one rather than guess at
+   * their type -- so still optional here until every one of those is tagged.
    */
   forumType?: ForumType;
   description?: unknown;

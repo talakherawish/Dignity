@@ -31,12 +31,13 @@ function SearchPage() {
   const { t, lang, isArabic } = useLanguage();
   const query = q?.trim() ?? "";
 
-  // Every published document on the site, fetched once and cached — typing a
-  // new query re-filters the same list rather than re-fetching it.
+  // Fetched once per visit and cached while typing — a new query re-filters
+  // the same list rather than re-fetching it. No staleTime, though: a fresh
+  // visit should reflect anything an editor just published or unpublished,
+  // not a copy of the index from up to five minutes ago.
   const { data: index = [], isLoading } = useQuery({
     queryKey: ["search-index"],
     queryFn: buildSearchIndex,
-    staleTime: 5 * 60 * 1000,
   });
 
   const results = query

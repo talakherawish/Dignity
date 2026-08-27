@@ -14,11 +14,11 @@ function PartnersPage() {
   const { t, isArabic } = useLanguage();
 
   // Edited in the CMS under About the Dignity Initiative → Partners; anything
-  // left empty keeps the wording the page shipped with.
+  // left empty keeps the wording the page shipped with. No staleTime: an
+  // editor publishing a change expects to see it on the next load.
   const { data: page } = useQuery({
     queryKey: ["partners-page"],
     queryFn: fetchPartners,
-    staleTime: 5 * 60 * 1000,
   });
 
   const body = extractText(isArabic ? page?.bodyAr : page?.body);

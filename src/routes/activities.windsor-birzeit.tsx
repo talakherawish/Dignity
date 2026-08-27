@@ -11,10 +11,11 @@ export const Route = createFileRoute("/activities/windsor-birzeit")({
 
 function WindsorPage() {
   const { t, lang, isArabic } = useLanguage();
+  // No staleTime: an editor publishing a change in the admin expects to see
+  // it on the next load, not up to five minutes later.
   const { data: items = [], isLoading } = useQuery({
     queryKey: ["windsor-dignity"],
     queryFn: fetchWindsorDignity,
-    staleTime: 5 * 60 * 1000,
   });
 
   return (

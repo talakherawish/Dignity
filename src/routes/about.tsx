@@ -17,11 +17,12 @@ function AboutLayout() {
 
   // The page's own copy, edited in the CMS under About the Dignity Initiative →
   // The Dignity Research Initiative. AboutPage falls back to its built-in text
-  // for anything empty or still loading, so this only ever adds.
+  // for anything empty or still loading, so this only ever adds. No
+  // staleTime: an editor publishing a change expects to see it on the next
+  // load.
   const { data: page } = useQuery({
     queryKey: ["about-initiative"],
     queryFn: fetchAboutInitiative,
-    staleTime: 5 * 60 * 1000,
   });
 
   if (isIndex) {

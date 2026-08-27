@@ -40,43 +40,24 @@ export const Forums: CollectionConfig = {
       required: true,
     },
     /**
-     * Which of the four sub-types this is. Required -- every document here is
-     * a forum event, and this is what the filter tabs on Activities -> Forums
-     * key off. The handful of documents migrated in from the old Meetings
-     * collection without a kind (see `kind` below) were left without this
-     * set too, since guessing their type risked mischaracterizing real
-     * events; Payload will ask for it the next time one of those is edited.
+     * Which of the four sub-types this is. Not required -- a handful of
+     * documents migrated in from the old Meetings collection were left
+     * without this set, since guessing their type risked mischaracterizing
+     * real events, and a required field blocks saving *any* change to a
+     * document (including unpublishing it) until it's filled in. It's what
+     * the filter tabs on Activities -> Forums key off; left blank, an entry
+     * still shows under "All" there, just not under a specific tab.
      */
     {
       name: 'forumType',
       type: 'select',
       label: 'Forum Type',
-      required: true,
       options: [
         { label: 'Seminar', value: 'seminar' },
         { label: 'Roundtable', value: 'roundtable' },
         { label: 'Workshop', value: 'workshop' },
         { label: 'Conference', value: 'conference' },
       ],
-    },
-    /**
-     * Legacy from the old Meetings collection, before Seminars, Conferences,
-     * and Meetings were merged into this one. Only present on documents
-     * migrated in from there that don't have a Forum Type yet -- a hint
-     * toward what to tag them as, not something new entries should use.
-     */
-    {
-      name: 'kind',
-      type: 'select',
-      label: 'Legacy Kind (from the old Meetings collection)',
-      options: [
-        { label: 'Round Table', value: 'roundtable' },
-        { label: 'Discussion', value: 'discussion' },
-      ],
-      admin: {
-        description:
-          'Left over from before Seminars/Conferences/Meetings were merged into Forums. Only meaningful on documents migrated from the old Meetings collection that are still missing a Forum Type above -- set that instead for anything new.',
-      },
     },
     {
       name: 'description',

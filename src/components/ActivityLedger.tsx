@@ -136,18 +136,9 @@ function ActivityEntry({
   const figures = figuresOf(item, lang);
   const parts = dateParts(item.date, lang);
 
-  // A Forums item (seminar/roundtable/workshop/conference) shows its type;
-  // failing that, some meetings are a round table or a discussion, and the
-  // rest are simply meetings and say nothing here. forumType takes priority
-  // since a meeting tagged with one has already moved onto the Forums page,
-  // where its type -- not its old kind -- is what a reader needs to see.
-  const kind = item.forumType
-    ? t(FORUM_TYPE_LABEL_KEY[item.forumType])
-    : item.kind === "roundtable"
-      ? t("activity.kind.roundtable")
-      : item.kind === "discussion"
-        ? t("activity.kind.discussion")
-        : null;
+  // Untagged items (not yet given a Forum Type in the admin) show nothing
+  // here rather than guessing.
+  const typeLabel = item.forumType ? t(FORUM_TYPE_LABEL_KEY[item.forumType]) : null;
 
   const prose = hasProse(lead) || hasProse(body);
   const untranslated =
@@ -187,14 +178,14 @@ function ActivityEntry({
       </div>
 
       <div className="min-w-0">
-        {kind && (
+        {typeLabel && (
           <span
             className={
               "mb-1.5 block uppercase tracking-[0.2em] text-[color:var(--brand-magenta)] " +
               (isArabic ? "text-xs md:text-[13px]" : "text-[10px]")
             }
           >
-            {kind}
+            {typeLabel}
           </span>
         )}
         <h3

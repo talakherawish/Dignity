@@ -37,10 +37,12 @@ function ForumsPage() {
   const { type } = Route.useSearch();
   const [active, setActive] = useState<FilterValue>(type ?? "all");
 
+  // No staleTime: an editor publishing or unpublishing something in the
+  // admin expects to see it reflected on the next load, not up to five
+  // minutes later.
   const { data: items = [], isLoading } = useQuery({
     queryKey: ["forums"],
     queryFn: fetchForums,
-    staleTime: 5 * 60 * 1000,
   });
 
   const filtered = active === "all" ? items : items.filter((item) => item.forumType === active);

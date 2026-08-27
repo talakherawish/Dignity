@@ -75,10 +75,11 @@ export function PublicationsPage({
   breadcrumb?: string;
 }) {
   const { t } = useLanguage();
+  // No staleTime: an editor publishing a change in the admin expects to see
+  // it on the next load, not up to five minutes later.
   const { data: payloadItems = [], isLoading } = useQuery({
     queryKey: ["publications", type],
     queryFn: () => fetchPublications(type),
-    staleTime: 5 * 60 * 1000,
   });
 
   // Payload is the only source. A type with nothing published shows the empty

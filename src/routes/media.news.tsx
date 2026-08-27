@@ -150,10 +150,11 @@ function NewsPage() {
   const { id: linkedId } = Route.useSearch();
   const [openIds, setOpenIds] = useState<Set<string>>(() => new Set(linkedId ? [linkedId] : []));
 
+  // No staleTime: an editor publishing a change in the admin expects to see
+  // it on the next load, not up to five minutes later.
   const { data: payloadNews = [], isLoading } = useQuery({
     queryKey: ["news"],
     queryFn: fetchNews,
-    staleTime: 5 * 60 * 1000,
   });
   const articles = payloadNews.length > 0 ? payloadNews.map(mapPayloadNews) : ARTICLES;
 
