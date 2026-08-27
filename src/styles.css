@@ -223,6 +223,32 @@ html.lang-ar h4 {
   font-family: var(--font-sans);
 }
 
+/* Arabic reads smaller than Latin text at the same point size, so every step
+   of the shared type scale is ~2px larger in Arabic. Redefining the scale's
+   own custom properties means every text-xs..text-7xl usage site-wide picks
+   this up automatically, the same way .dark re-themes colors above. */
+html.lang-ar {
+  --text-xs: 0.9375rem;          /* 15px */
+  --text-xs--line-height: 1.3rem;
+  --text-sm: 1.125rem;           /* 18px */
+  --text-sm--line-height: 1.65rem;
+  --text-base: 1.1875rem;        /* 19px */
+  --text-base--line-height: 1.8rem;
+  --text-lg: 1.3125rem;          /* 21px */
+  --text-lg--line-height: 1.95rem;
+  --text-xl: 1.5rem;             /* 24px */
+  --text-xl--line-height: 2.05rem;
+  --text-2xl: 1.75rem;           /* 28px */
+  --text-2xl--line-height: 2.25rem;
+  --text-3xl: 2.125rem;          /* 34px */
+  --text-3xl--line-height: 2.5rem;
+  --text-4xl: 2.625rem;          /* 42px */
+  --text-4xl--line-height: 2.85rem;
+  --text-5xl: 3.375rem;          /* 54px */
+  --text-6xl: 4.125rem;          /* 66px */
+  --text-7xl: 4.875rem;          /* 78px */
+}
+
 /* ── Arabic-mode fixes ────────────────────────────────────────────── */
 
 /* Nav font size in Arabic is set via the text-[17px] class in SiteHeader.tsx

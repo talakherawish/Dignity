@@ -1,10 +1,12 @@
 import { Download, ExternalLink, FileText, Play } from "lucide-react";
 import type { ReactNode } from "react";
+import { TranslationNotice } from "@/components/TranslationNotice";
 import { useLanguage } from "@/contexts/LanguageContext";
 import {
   formatDate,
   isYoutubeLink,
   openFileInNewTab,
+  resolveAttachment,
   youtubeThumbnailFallback,
 } from "@/lib/payload";
 import { withItalicQuotes } from "@/lib/text";
@@ -91,9 +93,14 @@ export type PublicationCardProps = {
   /** The file's real type, so it can be made to preview in place — see
    * openFileInNewTab. */
   fileMimeType?: string;
+  /** Arabic-only counterpart to `fileUrl`, when the two differ — see resolveAttachment. */
+  fileUrlAr?: string;
+  fileMimeTypeAr?: string;
   /** External destination (YouTube), which makes the thumbnail clickable and
    * swaps the file actions for a play button. */
   linkUrl?: string;
+  /** Arabic-only counterpart to `linkUrl`, when the two differ. */
+  linkUrlAr?: string;
   /** Headings inside a section that already has its own h3 pass "h4". */
   as?: "h3" | "h4";
 };
@@ -110,7 +117,10 @@ export function PublicationCard({
   preview = "document",
   fileUrl,
   fileMimeType,
+  fileUrlAr,
+  fileMimeTypeAr,
   linkUrl,
+  linkUrlAr,
   as: Heading = "h3",
 }: PublicationCardProps) {
   const { t, lang, isArabic } = useLanguage();
@@ -118,6 +128,18 @@ export function PublicationCard({
   const displayTitle = isAr ? (titleAr ?? title) : title;
   const displayAuthor = isAr ? (authorAr ?? author) : author;
   const watchLabel = isArabic ? "مشاهدة الفيديو" : "Watch video";
+
+  // File and link are independent per language (see resolveAttachment): a
+  // plain value with no Arabic counterpart is shared across both languages,
+  // while an Arabic-only value means an English reader sees a fallback notice
+  // instead of the action row.
+  const resolvedLink = resolveAttachment(linkUrl, linkUrlAr, isAr);
+  const resolvedFile = resolveAttachment(fileUrl, fileUrlAr, isAr);
+  const resolvedFileMimeType = isAr && fileUrlAr ? fileMimeTypeAr : fileMimeType;
+  linkUrl = resolvedLink.value;
+  fileUrl = resolvedFile.value;
+  const attachmentMissing = !linkUrl && !fileUrl && (resolvedLink.missing || resolvedFile.missing);
+
   const isVideo = isYoutubeLink(linkUrl);
   const knownRatio = previewWidth && previewHeight ? previewWidth / previewHeight : undefined;
 
@@ -171,7 +193,7 @@ export function PublicationCard({
     <div className="flex items-center gap-1.5">
       <button
         type="button"
-        onClick={() => openFileInNewTab(fileUrl, fileMimeType)}
+        onClick={() => openFileInNewTab(fileUrl, resolvedFileMimeType)}
         aria-label={t("publications.view")}
         title={t("publications.view")}
         className={actionButtonClass}
@@ -217,7 +239,7 @@ export function PublicationCard({
         ) : fileUrl ? (
           <button
             type="button"
-            onClick={() => openFileInNewTab(fileUrl, fileMimeType)}
+            onClick={() => openFileInNewTab(fileUrl, resolvedFileMimeType)}
             aria-label={t("publications.view")}
             className={"group block w-full " + wellClass}
             style={wellStyle}
@@ -248,7 +270,11 @@ export function PublicationCard({
           {withItalicQuotes(displayTitle)}
         </Heading>
 
-        {action && <div className="mt-auto pt-4 flex justify-end">{action}</div>}
+        {action ? (
+          <div className="mt-auto pt-4 flex justify-end">{action}</div>
+        ) : (
+          attachmentMissing && <TranslationNotice compact className="mt-auto pt-4 text-end" />
+        )}
       </div>
     </div>
   );

@@ -37,12 +37,37 @@ function informationFields(): Field[] {
       name: 'link',
       type: 'text',
       label: 'External Link (URL)',
+      admin: {
+        description: 'Shown to readers in both languages unless an Arabic-only link is set below.',
+      },
+    },
+    {
+      name: 'linkAr',
+      type: 'text',
+      label: 'External Link (Arabic only, if different / رابط عربي مختلف)',
+      admin: {
+        rtl: true,
+        description: 'Only needed when the Arabic destination differs from the link above.',
+      },
     },
     {
       name: 'file',
       type: 'upload',
       relationTo: 'media',
       label: 'Attached File',
+      admin: {
+        description: 'Shown to readers in both languages unless an Arabic-only file is set below.',
+      },
+    },
+    {
+      name: 'fileAr',
+      type: 'upload',
+      relationTo: 'media',
+      label: 'Attached File (Arabic only, if different / نسخة عربية مختلفة)',
+      admin: {
+        description:
+          'Only needed when the Arabic file is a different document from the one above. Leave empty to show the same file to everyone.',
+      },
     },
   ]
 }

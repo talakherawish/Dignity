@@ -1,109 +1,33 @@
 import type { CollectionConfig, Field, GlobalConfig } from 'payload'
 
 /**
- * Bilingual (English + Arabic) enforcement.
+ * Bilingual (English + Arabic) field pairing.
  *
  * Every translatable field in this project is modelled as a pair of sibling
  * fields — `title` / `titleAr`, `description` / `descriptionAr`, `body` /
- * `bodyAr`, and so on. Historically only the English half carried
- * `required: true`, so it was possible to publish a document with English
- * content and no Arabic at all (or vice versa), which then rendered as a blank
- * section for half the site's visitors.
+ * `bodyAr`, and so on.
  *
- * `enforceBilingual` walks a collection/global's field tree, finds every
- * `X` / `XAr` sibling pair, and wires up two guarantees:
+ * Titles are the one pair every collection marks `required: true` on the
+ * English half, so `enforceBilingual` mirrors that onto the Arabic half —
+ * a document can't be published with a title in only one language.
  *
- *   1. Both-or-neither — filling one language while leaving the other empty is
- *      a validation error on the empty field. Optional fields stay optional:
- *      leaving BOTH halves empty is still allowed.
- *   2. Mirrored `required` — if the English half is `required: true`, the
- *      Arabic half becomes required too, so the admin UI shows the asterisk and
- *      the same rule is enforced from both sides.
+ * Every other pair is independent: an item may carry English-only,
+ * Arabic-only, or fully bilingual content for its description, body, or
+ * attachments. This used to be blocked — filling in one side forced the
+ * other to be filled too, so a document with only an English write-up
+ * couldn't be published at all. The frontend now tells a reader when the
+ * field they're looking at doesn't exist in their active language (see
+ * TranslationNotice and resolveAttachment) instead of the CMS refusing to
+ * save half-translated content, so that block no longer serves a purpose.
  *
- * Applied centrally in payload.config.ts so every current and future collection
- * is covered automatically — there is no per-collection opt-in to forget.
- *
- * Drafts are exempt: an in-progress draft may be saved half-translated, but it
- * cannot be *published* until both languages are present.
+ * Applied centrally in payload.config.ts so every current and future
+ * collection is covered automatically.
  */
 
-/** Fields that hold translatable prose. Non-text pairs are left alone. */
 const TRANSLATABLE_TYPES = new Set(['text', 'textarea', 'richText'])
 
-/**
- * True when a field value carries no meaningful content. Handles plain strings
- * and Lexical richText values (whose "empty" state is still a populated object
- * containing a single blank paragraph).
- */
-function isEmptyValue(value: unknown): boolean {
-  if (value === null || value === undefined) return true
-  if (typeof value === 'string') return value.trim() === ''
-
-  if (typeof value === 'object') {
-    const root = (value as { root?: { children?: unknown[] } }).root
-    if (root) {
-      const children = root.children
-      if (!Array.isArray(children) || children.length === 0) return true
-      // Walk the tree; any non-blank text node means the field has content.
-      const hasText = (node: unknown): boolean => {
-        if (!node || typeof node !== 'object') return false
-        const n = node as { type?: string; text?: string; children?: unknown[] }
-        if (n.type === 'text') return typeof n.text === 'string' && n.text.trim() !== ''
-        // Non-text leaves (uploads, relationships, horizontal rules…) count as content.
-        if (!Array.isArray(n.children)) return n.type !== undefined && n.type !== 'paragraph'
-        return n.children.some(hasText)
-      }
-      return !children.some(hasText)
-    }
-  }
-
-  return false
-}
-
-/** Human-readable name for an error message, preferring the field's label. */
-function describe(field: Field, fallbackName: string): string {
-  const label = (field as { label?: unknown }).label
-  if (typeof label === 'string' && label.trim() !== '') return label
-  return fallbackName
-}
-
-type ValidateFn = (value: unknown, options: Record<string, unknown>) => unknown
-
-/**
- * Build a validate function enforcing "the counterpart language is filled, so
- * this one must be too", chaining any validate the field already had.
- */
-function pairedValidate(
-  counterpartName: string,
-  counterpartLabel: string,
-  thisLabel: string,
-  existing: ValidateFn | undefined,
-): ValidateFn {
-  return async (value, options) => {
-    // Run the field's original validation first so we never silently drop it.
-    if (typeof existing === 'function') {
-      const prior = await existing(value, options)
-      if (prior !== true && prior !== undefined) return prior
-    }
-
-    const siblingData = (options?.siblingData ?? {}) as Record<string, unknown>
-    const data = (options?.data ?? {}) as Record<string, unknown>
-
-    // Allow half-translated drafts; enforce completeness on publish.
-    if (data._status === 'draft') return true
-
-    const counterpartValue = siblingData[counterpartName]
-    if (!isEmptyValue(counterpartValue) && isEmptyValue(value)) {
-      return `"${thisLabel}" is required because "${counterpartLabel}" has content — every field must be provided in both English and Arabic.`
-    }
-
-    return true
-  }
-}
-
-/** Recursively apply bilingual pairing to a field list. */
+/** Recursively mirror `required` from an English field onto its `...Ar` sibling. */
 function processFields(fields: Field[]): Field[] {
-  // Index sibling fields by name so pairs can find each other at this level.
   const byName = new Map<string, Field>()
   for (const field of fields) {
     const name = (field as { name?: string }).name
@@ -133,36 +57,13 @@ function processFields(fields: Field[]): Field[] {
 
     const name = (next as { name?: string }).name
     const type = (next as { type?: string }).type
-    if (!name || !type || !TRANSLATABLE_TYPES.has(type)) return next
+    if (!name || !type || !TRANSLATABLE_TYPES.has(type) || !name.endsWith('Ar')) return next
 
-    // Determine this field's counterpart: `X` <-> `XAr`.
-    const isArabic = name.endsWith('Ar')
-    const counterpartName = isArabic ? name.slice(0, -2) : `${name}Ar`
-    const counterpart = byName.get(counterpartName)
-    if (!counterpart) return next
-    if (!TRANSLATABLE_TYPES.has((counterpart as { type?: string }).type ?? '')) return next
+    const english = byName.get(name.slice(0, -2))
+    if (!english || !TRANSLATABLE_TYPES.has((english as { type?: string }).type ?? '')) return next
+    if (!(english as { required?: boolean }).required) return next
 
-    const thisLabel = describe(next, name)
-    const counterpartLabel = describe(counterpart, counterpartName)
-
-    const patched: Record<string, unknown> = {
-      ...(next as Record<string, unknown>),
-      validate: pairedValidate(
-        counterpartName,
-        counterpartLabel,
-        thisLabel,
-        (next as { validate?: ValidateFn }).validate,
-      ),
-    }
-
-    // Mirror `required` from the English half onto the Arabic half so the admin
-    // UI marks it required too. (Only English -> Arabic: the English field
-    // already declares its own intent.)
-    if (isArabic && (counterpart as { required?: boolean }).required) {
-      patched.required = true
-    }
-
-    return patched as Field
+    return { ...next, required: true } as Field
   })
 }
 

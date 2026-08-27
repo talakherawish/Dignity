@@ -25,11 +25,14 @@ type DisplayPublication = {
   date: string;
   fileUrl: string;
   fileMimeType?: string;
+  fileUrlAr: string;
+  fileMimeTypeAr?: string;
   previewUrl: string;
   previewWidth?: number;
   previewHeight?: number;
   /** External destination (YouTube) for items that aren't uploads. */
   linkUrl: string;
+  linkUrlAr: string;
 };
 
 function fromPayload(item: PayloadPublication): DisplayPublication {
@@ -45,6 +48,7 @@ function fromPayload(item: PayloadPublication): DisplayPublication {
   const previewUrl = previewSource ? mediaUrl(previewSource) : youtubeThumbnail(item.link);
   return {
     linkUrl: item.link ?? "",
+    linkUrlAr: item.linkAr ?? "",
     id: item.id,
     title: item.title,
     titleAr: item.titleAr,
@@ -53,6 +57,8 @@ function fromPayload(item: PayloadPublication): DisplayPublication {
     date: item.date,
     fileUrl: mediaUrl(item.file),
     fileMimeType: item.file?.mimeType,
+    fileUrlAr: mediaUrl(item.fileAr),
+    fileMimeTypeAr: item.fileAr?.mimeType,
     previewUrl,
     previewWidth: previewSource?.width,
     previewHeight: previewSource?.height,
@@ -115,7 +121,10 @@ export function PublicationsPage({
                 previewHeight={item.previewHeight}
                 fileUrl={item.fileUrl}
                 fileMimeType={item.fileMimeType}
+                fileUrlAr={item.fileUrlAr}
+                fileMimeTypeAr={item.fileMimeTypeAr}
                 linkUrl={item.linkUrl}
+                linkUrlAr={item.linkUrlAr}
               />
             ))}
           </PublicationCardGrid>

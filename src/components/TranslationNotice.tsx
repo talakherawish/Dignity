@@ -13,8 +13,31 @@ import { useLanguage } from "@/contexts/LanguageContext";
  * The wording lives in Site Settings under Small UI Labels, so it can be
  * softened without a deploy.
  */
-export function TranslationNotice({ className = "" }: { className?: string }) {
+export function TranslationNotice({
+  className = "",
+  compact = false,
+}: {
+  className?: string;
+  /**
+   * Drops the padded, bordered block in favour of a bare line of text, for
+   * tight spaces (a publication card's action row, an information list row)
+   * where the full block reads as heavier than the content it stands in for.
+   */
+  compact?: boolean;
+}) {
   const { t, isArabic } = useLanguage();
+
+  if (compact) {
+    return (
+      <p
+        className={
+          "text-xs leading-relaxed text-muted-foreground " + (isArabic ? "" : "italic ") + className
+        }
+      >
+        {t("content.untranslated")}
+      </p>
+    );
+  }
 
   return (
     <p

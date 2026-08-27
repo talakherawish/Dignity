@@ -60,6 +60,20 @@ function publicationFields(): Field[] {
       type: 'upload',
       relationTo: 'media',
       label: 'PDF or File',
+      admin: {
+        description:
+          'Shown to readers in both languages. Leave this as the only file unless the Arabic version below is a genuinely different document.',
+      },
+    },
+    {
+      name: 'fileAr',
+      type: 'upload',
+      relationTo: 'media',
+      label: 'PDF or File (Arabic only, if different / نسخة عربية مختلفة)',
+      admin: {
+        description:
+          'Only needed when the Arabic file is a different document from the one above — a separate translation, say. Leave empty to show the same file to everyone.',
+      },
     },
     {
       name: 'link',
@@ -68,6 +82,15 @@ function publicationFields(): Field[] {
       admin: {
         description:
           'Use for items that live elsewhere rather than as an uploaded file — a YouTube video, for example. Leave empty when a file is attached above.',
+      },
+    },
+    {
+      name: 'linkAr',
+      type: 'text',
+      label: 'External Link (Arabic only, if different / رابط عربي مختلف)',
+      admin: {
+        rtl: true,
+        description: 'Only needed when the Arabic destination differs from the link above.',
       },
     },
     {

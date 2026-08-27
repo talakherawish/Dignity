@@ -91,10 +91,13 @@ function PublicationGrid({
             previewHeight={previewSource?.height}
             fileUrl={showDownload && p.file ? mediaUrl(p.file) : ""}
             fileMimeType={showDownload ? p.file?.mimeType : undefined}
+            fileUrlAr={showDownload && p.fileAr ? mediaUrl(p.fileAr) : ""}
+            fileMimeTypeAr={showDownload ? p.fileAr?.mimeType : undefined}
             // Audiovisual entries are a link rather than an upload. Without this
             // they rendered as a bare thumbnail: no play button, nothing
             // clickable, no way to reach the video the entry exists to point at.
             linkUrl={p.link ?? ""}
+            linkUrlAr={p.linkAr ?? ""}
           />
         );
       })}

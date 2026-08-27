@@ -18,7 +18,7 @@ type Participant = {
   nameAr: string;
   title: string;
   titleAr: string;
-  category: "faculty" | "researcher" | "intern" | "student" | "visitor";
+  category: "researcher" | "visitor" | "student" | "speaker" | "author" | "team_member";
   email: string;
   bio: string;
   bioAr: string;
@@ -32,7 +32,7 @@ const PARTICIPANTS: Participant[] = [
     nameAr: "مضر قسيس",
     title: "",
     titleAr: "",
-    category: "faculty",
+    category: "team_member",
     email: "m.kassis@birzeit.edu",
     bio: "",
     bioAr: "",
@@ -44,7 +44,7 @@ const PARTICIPANTS: Participant[] = [
     nameAr: "إيمان العصا",
     title: "",
     titleAr: "",
-    category: "faculty",
+    category: "team_member",
     email: "e.alassa@birzeit.edu",
     bio: "",
     bioAr: "",
@@ -93,7 +93,7 @@ const PARTICIPANTS: Participant[] = [
     nameAr: "د. سارة الأمين",
     title: "Associate Professor",
     titleAr: "أستاذة مشاركة",
-    category: "faculty",
+    category: "team_member",
     email: "s.alamin@birzeit.edu",
     bio: "Dr. Al-Amin is an associate professor specializing in political philosophy and human rights theory. She has been a core member of the Dignity Initiative since its founding.",
     bioAr:
@@ -166,7 +166,7 @@ const PARTICIPANTS: Participant[] = [
     nameAr: "نور حداد",
     title: "Research Intern",
     titleAr: "متدربة بحثية",
-    category: "intern",
+    category: "student",
     email: "n.haddad@birzeit.edu",
     bio: "Nour is a research intern supporting ongoing projects related to dignity and children's rights.",
     bioAr: "متدربة بحثية تدعم المشاريع الجارية المتعلقة بالكرامة وحقوق الأطفال.",
@@ -176,11 +176,12 @@ const PARTICIPANTS: Participant[] = [
 
 const CATEGORIES = [
   { value: "all", en: "All", ar: "الكل" },
-  { value: "faculty", en: "Faculty", ar: "هيئة التدريس" },
   { value: "researcher", en: "Researchers", ar: "باحثون" },
-  { value: "intern", en: "Interns", ar: "متدربون" },
-  { value: "student", en: "Students", ar: "طلاب" },
   { value: "visitor", en: "Visitors", ar: "زائرون" },
+  { value: "student", en: "Students", ar: "طلاب" },
+  { value: "speaker", en: "Speakers", ar: "متحدثون" },
+  { value: "author", en: "Authors", ar: "مؤلفون" },
+  { value: "team_member", en: "Team Members", ar: "أعضاء الفريق" },
 ];
 
 function mapPayloadParticipant(p: PayloadParticipant, idx: number): Participant {
@@ -198,23 +199,6 @@ function mapPayloadParticipant(p: PayloadParticipant, idx: number): Participant 
   };
 }
 
-function Avatar({ photo, name }: { photo?: string; name: string }) {
-  if (photo) {
-    return <img src={photo} alt={name} className="w-full h-full object-cover" />;
-  }
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      className="h-1/2 w-1/2 text-muted-foreground/25"
-      aria-hidden
-    >
-      <circle cx="12" cy="8" r="4.5" fill="currentColor" />
-      <path d="M3 20c0-4.4 4-8 9-8s9 3.6 9 8" fill="currentColor" />
-    </svg>
-  );
-}
-
 function ParticipantModal({
   participant,
   onClose,
@@ -226,6 +210,7 @@ function ParticipantModal({
   isArabic: boolean;
   lang: string;
 }) {
+  const hasPhoto = Boolean(participant.photo);
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
@@ -234,13 +219,16 @@ function ParticipantModal({
       {/* The avatar is half outside the card, so the wrapper's top padding is
           half the avatar's height and the card's own top padding clears the
           overlapping half. Both follow from the h-56 below — keep them in step
-          if the avatar is resized. */}
-      <div className="relative w-full max-w-md" style={{ paddingTop: "112px" }}>
-        <div className="absolute left-1/2 top-0 -translate-x-1/2 z-10">
-          <div className="h-56 w-56 rounded-full overflow-hidden shadow-2xl bg-secondary flex items-center justify-center">
-            <Avatar photo={participant.photo} name={participant.name} />
+          if the avatar is resized. No photo means no avatar at all (rather
+          than an empty placeholder circle), so both paddings collapse. */}
+      <div className="relative w-full max-w-md" style={{ paddingTop: hasPhoto ? "112px" : "0px" }}>
+        {hasPhoto && (
+          <div className="absolute left-1/2 top-0 -translate-x-1/2 z-10">
+            <div className="h-56 w-56 rounded-full overflow-hidden shadow-2xl bg-secondary flex items-center justify-center">
+              <img src={participant.photo} alt={participant.name} className="w-full h-full object-cover" />
+            </div>
           </div>
-        </div>
+        )}
         <div
           className={
             "relative bg-card border border-border rounded-lg shadow-2xl overflow-y-auto max-h-[80vh]" +
@@ -254,7 +242,7 @@ function ParticipantModal({
           >
             <X className="h-4 w-4" />
           </button>
-          <div className="px-8 pb-8" style={{ paddingTop: "116px" }}>
+          <div className="px-8 pb-8" style={{ paddingTop: hasPhoto ? "116px" : "48px" }}>
             <h2 className="font-serif text-2xl text-primary text-center">
               {lang === "ar" ? participant.nameAr : participant.name}
             </h2>
@@ -288,6 +276,7 @@ function ParticipantCard({
   participant,
   onClick,
   lang,
+  isArabic,
 }: {
   participant: Participant;
   onClick: () => void;
@@ -299,28 +288,9 @@ function ParticipantCard({
       onClick={onClick}
       className="group text-center border border-border rounded-md overflow-hidden bg-card hover:border-accent/40 hover:shadow-md transition-all duration-200 cursor-pointer w-full flex flex-col"
     >
-      <div
-        className="w-full bg-secondary/20 flex items-center justify-center overflow-hidden"
-        style={{ aspectRatio: "3/4" }}
-      >
-        {participant.photo ? (
-          <img
-            src={participant.photo}
-            alt={participant.name}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-          />
-        ) : (
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            className="h-16 w-16 text-muted-foreground/20"
-            aria-hidden
-          >
-            <circle cx="12" cy="8" r="4.5" fill="currentColor" />
-            <path d="M3 20c0-4.4 4-8 9-8s9 3.6 9 8" fill="currentColor" />
-          </svg>
-        )}
-      </div>
+      {/* The grid never shows a photo, even when one exists — it only
+          appears in the modal once someone clicks through. Keeps every card
+          the same compact height regardless of who has a picture on file. */}
       <div className="px-4 py-4 flex-1">
         <div className="font-serif text-base text-primary leading-tight group-hover:text-accent transition-colors">
           {lang === "ar" ? participant.nameAr : participant.name}
@@ -330,6 +300,9 @@ function ParticipantCard({
             {lang === "ar" ? participant.titleAr : participant.title}
           </div>
         )}
+        <div className="text-[11px] font-medium text-green-600 mt-1.5 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+          {isArabic ? "اضغط لقراءة المزيد" : "Click to read more"}
+        </div>
       </div>
     </button>
   );

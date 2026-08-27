@@ -1,11 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 import { Download, ExternalLink } from "lucide-react";
 import { PageLayout, PageHero } from "@/components/PageLayout";
+import { TranslationNotice } from "@/components/TranslationNotice";
 import { useLanguage, type TranslationKey } from "@/contexts/LanguageContext";
 import {
   fetchInformation,
   mediaUrl,
   openFileInNewTab,
+  resolveAttachment,
   type InformationCollection,
   type PayloadInformationItem,
 } from "@/lib/payload";
@@ -51,7 +53,22 @@ export function InformationPage({
         ) : (
           <div className="space-y-4" dir={isArabic ? "rtl" : "ltr"}>
             {items.map((item: PayloadInformationItem) => {
-              const fileUrl = mediaUrl(item.file);
+              // Link and file are independent per language (see
+              // resolveAttachment): a plain value with no Arabic counterpart is
+              // shared across both languages, while an Arabic-only value means
+              // an English reader sees a fallback notice instead of an action.
+              const resolvedLink = resolveAttachment(item.link, item.linkAr, isArabic);
+              const resolvedFile = resolveAttachment(
+                mediaUrl(item.file) || undefined,
+                mediaUrl(item.fileAr) || undefined,
+                isArabic,
+              );
+              const link = resolvedLink.value;
+              const fileUrl = resolvedFile.value;
+              const fileMimeType =
+                isArabic && item.fileAr ? item.fileAr.mimeType : item.file?.mimeType;
+              const attachmentMissing =
+                !link && !fileUrl && (resolvedLink.missing || resolvedFile.missing);
               return (
                 <div
                   key={item.id}
@@ -68,9 +85,9 @@ export function InformationPage({
                     </h3>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
-                    {item.link && (
+                    {link && (
                       <a
-                        href={item.link}
+                        href={link}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-border text-sm text-foreground/80 hover:text-accent hover:border-accent/40 transition-colors"
@@ -83,7 +100,7 @@ export function InformationPage({
                       <>
                         <button
                           type="button"
-                          onClick={() => openFileInNewTab(fileUrl, item.file?.mimeType)}
+                          onClick={() => openFileInNewTab(fileUrl, fileMimeType)}
                           className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-border text-sm text-foreground/80 hover:text-accent hover:border-accent/40 transition-colors"
                         >
                           <ExternalLink className="h-3.5 w-3.5" />
@@ -99,6 +116,7 @@ export function InformationPage({
                         </a>
                       </>
                     )}
+                    {attachmentMissing && <TranslationNotice compact />}
                   </div>
                 </div>
               );

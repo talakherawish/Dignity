@@ -141,10 +141,20 @@ function LatestNewsAndAnnouncements() {
             <div className={"shrink-0 bg-secondary " + CARD_IMAGE} />
           )}
           <div className="min-w-0">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[color:var(--brand-magenta)]">
+            <p
+              className={
+                "font-semibold uppercase tracking-[0.18em] text-[color:var(--brand-magenta)] " +
+                (isArabic ? "text-[13px]" : "text-[11px]")
+              }
+            >
               {getField(article, "date", lang)}
             </p>
-            <h3 className="mt-1.5 font-serif text-base leading-snug text-primary transition-colors group-hover:text-accent md:text-[17px]">
+            <h3
+              className={
+                "mt-1.5 font-serif text-base leading-snug text-primary transition-colors group-hover:text-accent " +
+                (isArabic ? "md:text-[19px]" : "md:text-[17px]")
+              }
+            >
               {withItalicQuotes(getField(article, "title", lang))}
             </h3>
             {getField(article, "excerpt", lang) && (
@@ -177,26 +187,18 @@ function TeamModal({
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
       {/* Sized to match ParticipantModal on /about/participants — the two are
-          the same card and should stay in step. */}
-      <div className="relative w-full max-w-md" style={{ paddingTop: "112px" }}>
+          the same card and should stay in step. No photo means no avatar at
+          all, rather than an empty placeholder circle, so both paddings
+          collapse the same way ParticipantModal's do. */}
+      <div className="relative w-full max-w-md" style={{ paddingTop: person.photo ? "112px" : "0px" }}>
         {/* Floating avatar */}
-        <div className="absolute left-1/2 top-0 -translate-x-1/2 z-10">
-          <div className="h-56 w-56 rounded-full overflow-hidden shadow-2xl bg-secondary flex items-center justify-center">
-            {person.photo ? (
+        {person.photo && (
+          <div className="absolute left-1/2 top-0 -translate-x-1/2 z-10">
+            <div className="h-56 w-56 rounded-full overflow-hidden shadow-2xl bg-secondary flex items-center justify-center">
               <img src={person.photo} alt={person.name} className="w-full h-full object-cover" />
-            ) : (
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                className="h-20 w-20 text-muted-foreground/25"
-                aria-hidden
-              >
-                <circle cx="12" cy="8" r="4.5" fill="currentColor" />
-                <path d="M3 20c0-4.4 4-8 9-8s9 3.6 9 8" fill="currentColor" />
-              </svg>
-            )}
+            </div>
           </div>
-        </div>
+        )}
         {/* Card */}
         <div
           className={
@@ -211,7 +213,7 @@ function TeamModal({
           >
             <X className="h-4 w-4" />
           </button>
-          <div className="px-8 pb-8" style={{ paddingTop: "116px" }}>
+          <div className="px-8 pb-8" style={{ paddingTop: person.photo ? "116px" : "48px" }}>
             <h2 className="font-serif text-2xl text-primary text-center">
               {lang === "ar" ? person.nameAr : person.name}
             </h2>
@@ -258,14 +260,24 @@ function TeamSection() {
 
   return (
     <>
-      <section className="border-b border-border">
+      <section>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
           <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-8 items-center">
             <div>
-              <div className="text-[12px] uppercase tracking-[0.22em] text-[color:var(--brand-magenta)] font-semibold mb-2">
+              <div
+                className={
+                  "uppercase tracking-[0.22em] text-[color:var(--brand-magenta)] font-semibold mb-2 " +
+                  (isArabic ? "text-[14px]" : "text-[12px]")
+                }
+              >
                 {t("team.eyebrow")}
               </div>
-              <h2 className="font-serif text-2xl lg:text-[2rem] text-primary leading-tight mb-5">
+              <h2
+                className={
+                  "font-serif text-2xl text-primary leading-tight mb-5 " +
+                  (isArabic ? "lg:text-[2.125rem]" : "lg:text-[2rem]")
+                }
+              >
                 {t("team.title")}
               </h2>
               <Link
@@ -282,25 +294,8 @@ function TeamSection() {
                   onClick={() => setSelected(person)}
                   className="group flex items-start gap-3.5 p-4 border border-border rounded-sm bg-card hover:border-accent/30 hover:shadow-sm transition-all duration-200 text-left w-full"
                 >
-                  <div className="shrink-0 h-[52px] w-[52px] rounded-full overflow-hidden border border-border bg-secondary flex items-center justify-center">
-                    {person.photo ? (
-                      <img
-                        src={person.photo}
-                        alt={person.name}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <svg
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        className="h-6 w-6 text-muted-foreground/40"
-                        aria-hidden
-                      >
-                        <circle cx="12" cy="8" r="4" fill="currentColor" />
-                        <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" fill="currentColor" />
-                      </svg>
-                    )}
-                  </div>
+                  {/* The list never shows a photo, even when one exists — it
+                      only appears in the modal once someone clicks through. */}
                   <div className={"min-w-0 pt-0.5" + (isArabic ? " text-right" : "")}>
                     <div className="font-semibold text-sm text-primary leading-tight group-hover:text-accent transition-colors">
                       {lang === "ar" ? person.nameAr : person.name}
@@ -310,6 +305,9 @@ function TeamSection() {
                         {lang === "ar" ? person.titleAr : person.title}
                       </div>
                     )}
+                    <div className="text-[11px] font-medium text-green-600 mt-1 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                      {isArabic ? "اضغط لقراءة المزيد" : "Click to read more"}
+                    </div>
                   </div>
                 </button>
               ))}
@@ -332,101 +330,143 @@ function TeamSection() {
 
 // ── Home page ─────────────────────────────────────────────────────────────
 function Home() {
-  const { t } = useLanguage();
+  const { t, isArabic } = useLanguage();
   return (
     <PageLayout>
-      {/* Hero */}
-      <section className="border-b border-border relative overflow-hidden">
+      {/* Shared backdrop for the whole page: soft cyan/magenta blobs staggered
+          down the full scroll length, so the color motif carries past the
+          hero instead of stopping at its edge. vh-based offsets rather than
+          fixed pixels, since the sections below are variable height. */}
+      <div className="relative overflow-hidden">
         <div
           className="absolute -top-24 -right-24 h-72 w-72 rounded-full opacity-20 blur-3xl pointer-events-none"
           style={{ background: "var(--brand-cyan)" }}
         />
         <div
-          className="absolute -bottom-24 -left-24 h-64 w-64 rounded-full opacity-15 blur-3xl pointer-events-none"
+          className="absolute top-[60vh] -left-24 h-64 w-64 rounded-full opacity-15 blur-3xl pointer-events-none"
           style={{ background: "var(--brand-magenta)" }}
         />
-        {/*
-         * Temporary centered layout with the office photo dropped, while a
-         * proper homepage design is worked out -- not the final treatment.
-         */}
-        <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-14 flex flex-col items-center text-center">
-          <div className="text-[12px] uppercase tracking-[0.22em] text-[color:var(--brand-magenta)] font-semibold mb-4">
-            {t("hero.eyebrow")}
-          </div>
+        <div
+          className="absolute top-[130vh] -right-28 h-80 w-80 rounded-full opacity-10 blur-3xl pointer-events-none"
+          style={{ background: "var(--brand-cyan)" }}
+        />
+        <div
+          className="absolute top-[200vh] -left-28 h-72 w-72 rounded-full opacity-15 blur-3xl pointer-events-none"
+          style={{ background: "var(--brand-magenta)" }}
+        />
+
+        {/* Hero — fills the rest of the first screen (100vh minus the sticky
+            header, whose height changes at each breakpoint: 4px gradient bar +
+            60/80/101px row) so this is the only thing visible on first load,
+            whatever the copy length, and the content is centered in what's
+            actually visible rather than in a box that runs past the fold. */}
+        <section className="relative flex items-center min-h-[calc(100vh-64px)] sm:min-h-[calc(100vh-84px)] lg:min-h-[calc(100vh-105px)]">
           {/*
-           * whitespace-pre-line so a line break typed into the Hero Title or
-           * Hero Description in Site Settings is the line break shown here.
-           * Both are textarea fields, so the newline was always stored -- it
-           * was HTML that collapsed it into a space, which made pressing
-           * Enter in the admin look like it did nothing.
+           * Temporary centered layout with the office photo dropped, while a
+           * proper homepage design is worked out -- not the final treatment.
            */}
-          <h1 className="font-serif text-4xl md:text-5xl lg:text-[3.6rem] text-primary tracking-tight leading-[1.07] whitespace-pre-line">
-            {t("hero.title")}
-          </h1>
-          <p className="mt-5 text-base text-muted-foreground leading-relaxed max-w-lg whitespace-pre-line">
-            {t("hero.desc")}
-          </p>
-          <div className="mt-7 flex flex-wrap justify-center gap-3">
-            <Link
-              to="/about"
-              className="inline-flex items-center px-5 py-2.5 bg-primary text-primary-foreground text-sm font-medium rounded-sm hover:bg-primary/90 transition-colors"
+          <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-14 flex flex-col items-center text-center">
+            <div
+              className={
+                "uppercase tracking-[0.22em] text-[color:var(--brand-magenta)] font-semibold mb-4 " +
+                (isArabic ? "text-[14px]" : "text-[12px]")
+              }
             >
-              {t("hero.btn.about")}
-            </Link>
-            <Link
-              to="/projects/research"
-              className="inline-flex items-center px-5 py-2.5 border border-border text-foreground text-sm font-medium rounded-sm hover:bg-secondary transition-colors"
-            >
-              {t("hero.btn.research")}
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* Latest News — prominently featured */}
-      <section className="border-b border-border bg-gradient-to-b from-secondary/5 to-transparent">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="flex items-center justify-between mb-8">
-            <div className="flex items-center gap-3">
-              <div className="h-6 w-1.5 rounded-full" style={{ background: "var(--brand-cyan)" }} />
-              <div>
-                <div className="text-[12px] uppercase tracking-[0.22em] text-[color:var(--brand-cyan)] font-semibold mb-1">
-                  {t("news.eyebrow")}
-                </div>
-                <h2 className="font-serif text-3xl lg:text-[2.5rem] text-primary">
-                  {t("news.title")}
-                </h2>
-              </div>
+              {t("hero.eyebrow")}
             </div>
-            <Link
-              to="/media/news"
-              className="text-xs font-medium text-muted-foreground hover:text-accent transition-colors tracking-wide"
+            {/*
+             * whitespace-pre-line so a line break typed into the Hero Title or
+             * Hero Description in Site Settings is the line break shown here.
+             * Both are textarea fields, so the newline was always stored -- it
+             * was HTML that collapsed it into a space, which made pressing
+             * Enter in the admin look like it did nothing.
+             *
+             * lg:whitespace-nowrap forces the title onto one line at desktop
+             * widths -- font metrics for the Arabic serif fallback vary enough
+             * across systems that a width-based fit can't be guaranteed.
+             */}
+            <h1
+              className={
+                "font-serif text-4xl md:text-5xl text-primary tracking-tight leading-[1.07] whitespace-pre-line lg:whitespace-nowrap " +
+                (isArabic ? "lg:text-[3.75rem]" : "lg:text-[3.6rem]")
+              }
             >
-              {t("news.viewAll")}
-            </Link>
+              {t("hero.title")}
+            </h1>
+            <p className="mt-5 text-base text-muted-foreground leading-relaxed max-w-lg whitespace-pre-line">
+              {t("hero.desc")}
+            </p>
+            <div className="mt-7 flex flex-wrap justify-center gap-3">
+              <Link
+                to="/about"
+                className="inline-flex items-center px-5 py-2.5 rounded-full bg-[color:var(--brand-magenta)]/10 text-[color:var(--brand-magenta)] text-sm font-medium hover:bg-[color:var(--brand-magenta)]/20 transition-colors"
+              >
+                {t("hero.btn.about")}
+              </Link>
+              <Link
+                to="/projects/research"
+                className="inline-flex items-center px-5 py-2.5 rounded-full bg-[color:var(--brand-cyan)]/60 text-foreground text-sm font-medium hover:bg-[color:var(--brand-cyan)]/80 transition-colors"
+              >
+                {t("hero.btn.research")}
+              </Link>
+            </div>
           </div>
-          <LatestNewsAndAnnouncements />
-        </div>
-      </section>
+        </section>
 
-      {/* Pillars */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 border-b border-border">
-        <div className="grid gap-8 md:grid-cols-3">
-          {PILLARS.map((p) => (
-            <Link key={p.titleKey} to={p.to} className="group block">
-              <div className="border-t-2 pt-5" style={{ borderColor: p.color }}>
-                <h3 className="font-serif text-xl text-primary mb-2 group-hover:text-accent transition-colors">
-                  {t(p.titleKey)}
-                </h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{t(p.descKey)}</p>
+        {/* Latest News — prominently featured */}
+        <section className="bg-gradient-to-b from-secondary/5 to-transparent">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+            <div className="flex items-center justify-between mb-8">
+              <div className="flex items-center gap-3">
+                <div className="h-6 w-1.5 rounded-full" style={{ background: "var(--brand-cyan)" }} />
+                <div>
+                  <div
+                    className={
+                      "uppercase tracking-[0.22em] text-[color:var(--brand-cyan)] font-semibold mb-1 " +
+                      (isArabic ? "text-[14px]" : "text-[12px]")
+                    }
+                  >
+                    {t("news.eyebrow")}
+                  </div>
+                  <h2
+                    className={
+                      "font-serif text-3xl text-primary " + (isArabic ? "lg:text-[2.65rem]" : "lg:text-[2.5rem]")
+                    }
+                  >
+                    {t("news.title")}
+                  </h2>
+                </div>
               </div>
-            </Link>
-          ))}
-        </div>
-      </section>
+              <Link
+                to="/media/news"
+                className="text-xs font-medium text-muted-foreground hover:text-accent transition-colors tracking-wide"
+              >
+                {t("news.viewAll")}
+              </Link>
+            </div>
+            <LatestNewsAndAnnouncements />
+          </div>
+        </section>
 
-      {/* Meet the Team */}
-      <TeamSection />
+        {/* Pillars */}
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="grid gap-8 md:grid-cols-3">
+            {PILLARS.map((p) => (
+              <Link key={p.titleKey} to={p.to} className="group block">
+                <div className="border-t-2 pt-5" style={{ borderColor: p.color }}>
+                  <h3 className="font-serif text-xl text-primary mb-2 group-hover:text-accent transition-colors">
+                    {t(p.titleKey)}
+                  </h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{t(p.descKey)}</p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        {/* Meet the Team */}
+        <TeamSection />
+      </div>
     </PageLayout>
   );
 }

@@ -86,7 +86,7 @@ export type PayloadParticipant = {
   nameAr?: string;
   title?: string;
   titleAr?: string;
-  category: "faculty" | "researcher" | "intern" | "student" | "visitor";
+  category: "researcher" | "visitor" | "student" | "speaker" | "author" | "team_member";
   email?: string;
   bio?: string;
   bioAr?: string;
@@ -112,9 +112,13 @@ export type PayloadPublication = {
   description?: unknown;
   descriptionAr?: unknown;
   file?: PayloadMedia;
+  /** Only set when the Arabic file is a different document from `file` — see resolveAttachment. */
+  fileAr?: PayloadMedia;
   image?: PayloadMedia;
   /** External destination for items that aren't uploads — a YouTube video, say. */
   link?: string;
+  /** Only set when the Arabic destination differs from `link`. */
+  linkAr?: string;
 };
 
 /** The video id inside a YouTube watch/embed/short/youtu.be URL. */
@@ -170,7 +174,11 @@ export type PayloadInformationItem = {
   description?: unknown;
   descriptionAr?: unknown;
   link?: string;
+  /** Only set when the Arabic destination differs from `link`. */
+  linkAr?: string;
   file?: PayloadMedia;
+  /** Only set when the Arabic file is a different document from `file` — see resolveAttachment. */
+  fileAr?: PayloadMedia;
 };
 
 export type PayloadResearchActivity = {
@@ -357,6 +365,33 @@ export function formatDate(iso: string, locale: "en" | "ar"): string {
   } catch {
     return iso;
   }
+}
+
+/**
+ * Picks which side of a bilingual file/link pair to show for the active
+ * language.
+ *
+ * A value with no Arabic counterpart is shown regardless of language —
+ * `fileAr`/`linkAr` are new fields, so every attachment uploaded before they
+ * existed (and most uploaded since, for editors who don't need a distinct
+ * Arabic copy) has only the plain field filled in. Treating that as "missing"
+ * for an Arabic reader would flip every attachment on the site to "not
+ * available" the moment this shipped. An Arabic-only value (the plain field
+ * empty, its `Ar` counterpart filled) is unambiguous — that combination could
+ * not exist before this field did — so an English reader sees the fallback
+ * notice instead of nothing.
+ */
+export function resolveAttachment<T>(
+  value: T | undefined,
+  valueAr: T | undefined,
+  isArabic: boolean,
+): { value: T | undefined; missing: boolean } {
+  // `||`, not `??`: callers commonly pass `""` rather than `undefined` for an
+  // absent media URL (see mediaUrl), and an empty string must fall through
+  // the same as a missing value would.
+  if (isArabic) return { value: valueAr || value, missing: false };
+  if (value) return { value, missing: false };
+  return { value: undefined, missing: !!valueAr };
 }
 
 /** Resolve a media URL to an absolute URL. */

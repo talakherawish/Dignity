@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { SiteHeader } from "./SiteHeader";
 import { SiteFooter } from "./SiteFooter";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export function PageLayout({ children }: { children: ReactNode }) {
   return (
@@ -24,12 +25,15 @@ export function PageHero({
   title: string;
   description?: string;
 }) {
+  const { isArabic } = useLanguage();
   return (
     <section>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-4 text-center">
         {eyebrow && (
           <p
-            className="text-[11px] uppercase tracking-[0.22em] font-semibold mb-3"
+            className={
+              "uppercase tracking-[0.22em] font-semibold mb-3 " + (isArabic ? "text-[13px]" : "text-[11px]")
+            }
             style={{ color: eyebrowColor ?? "var(--brand-magenta)" }}
           >
             {eyebrow}

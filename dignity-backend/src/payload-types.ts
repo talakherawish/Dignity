@@ -272,11 +272,17 @@ export interface Participant {
   id: string;
   name: string;
   nameAr: string;
-  category: 'faculty' | 'researcher' | 'intern' | 'student' | 'visitor';
+  category: 'researcher' | 'visitor' | 'student' | 'speaker' | 'author' | 'team_member';
   title?: string | null;
   titleAr?: string | null;
   email?: string | null;
+  /**
+   * Up to 200 words.
+   */
   bio?: string | null;
+  /**
+   * Up to 200 words.
+   */
   bioAr?: string | null;
   photo?: (string | null) | Media;
   updatedAt: string;
@@ -496,11 +502,22 @@ export interface Book {
   date?: string | null;
   description?: string | null;
   descriptionAr?: string | null;
+  /**
+   * Shown to readers in both languages. Leave this as the only file unless the Arabic version below is a genuinely different document.
+   */
   file?: (string | null) | Media;
+  /**
+   * Only needed when the Arabic file is a different document from the one above — a separate translation, say. Leave empty to show the same file to everyone.
+   */
+  fileAr?: (string | null) | Media;
   /**
    * Use for items that live elsewhere rather than as an uploaded file — a YouTube video, for example. Leave empty when a file is attached above.
    */
   link?: string | null;
+  /**
+   * Only needed when the Arabic destination differs from the link above.
+   */
+  linkAr?: string | null;
   image?: (string | null) | Media;
   updatedAt: string;
   createdAt: string;
@@ -521,11 +538,22 @@ export interface Paper {
   date?: string | null;
   description?: string | null;
   descriptionAr?: string | null;
+  /**
+   * Shown to readers in both languages. Leave this as the only file unless the Arabic version below is a genuinely different document.
+   */
   file?: (string | null) | Media;
+  /**
+   * Only needed when the Arabic file is a different document from the one above — a separate translation, say. Leave empty to show the same file to everyone.
+   */
+  fileAr?: (string | null) | Media;
   /**
    * Use for items that live elsewhere rather than as an uploaded file — a YouTube video, for example. Leave empty when a file is attached above.
    */
   link?: string | null;
+  /**
+   * Only needed when the Arabic destination differs from the link above.
+   */
+  linkAr?: string | null;
   image?: (string | null) | Media;
   updatedAt: string;
   createdAt: string;
@@ -546,11 +574,22 @@ export interface Report {
   date?: string | null;
   description?: string | null;
   descriptionAr?: string | null;
+  /**
+   * Shown to readers in both languages. Leave this as the only file unless the Arabic version below is a genuinely different document.
+   */
   file?: (string | null) | Media;
+  /**
+   * Only needed when the Arabic file is a different document from the one above — a separate translation, say. Leave empty to show the same file to everyone.
+   */
+  fileAr?: (string | null) | Media;
   /**
    * Use for items that live elsewhere rather than as an uploaded file — a YouTube video, for example. Leave empty when a file is attached above.
    */
   link?: string | null;
+  /**
+   * Only needed when the Arabic destination differs from the link above.
+   */
+  linkAr?: string | null;
   image?: (string | null) | Media;
   updatedAt: string;
   createdAt: string;
@@ -571,11 +610,22 @@ export interface Brochure {
   date?: string | null;
   description?: string | null;
   descriptionAr?: string | null;
+  /**
+   * Shown to readers in both languages. Leave this as the only file unless the Arabic version below is a genuinely different document.
+   */
   file?: (string | null) | Media;
+  /**
+   * Only needed when the Arabic file is a different document from the one above — a separate translation, say. Leave empty to show the same file to everyone.
+   */
+  fileAr?: (string | null) | Media;
   /**
    * Use for items that live elsewhere rather than as an uploaded file — a YouTube video, for example. Leave empty when a file is attached above.
    */
   link?: string | null;
+  /**
+   * Only needed when the Arabic destination differs from the link above.
+   */
+  linkAr?: string | null;
   image?: (string | null) | Media;
   updatedAt: string;
   createdAt: string;
@@ -596,11 +646,22 @@ export interface Thesis {
   date?: string | null;
   description?: string | null;
   descriptionAr?: string | null;
+  /**
+   * Shown to readers in both languages. Leave this as the only file unless the Arabic version below is a genuinely different document.
+   */
   file?: (string | null) | Media;
+  /**
+   * Only needed when the Arabic file is a different document from the one above — a separate translation, say. Leave empty to show the same file to everyone.
+   */
+  fileAr?: (string | null) | Media;
   /**
    * Use for items that live elsewhere rather than as an uploaded file — a YouTube video, for example. Leave empty when a file is attached above.
    */
   link?: string | null;
+  /**
+   * Only needed when the Arabic destination differs from the link above.
+   */
+  linkAr?: string | null;
   image?: (string | null) | Media;
   updatedAt: string;
   createdAt: string;
@@ -621,11 +682,22 @@ export interface Audiovisual {
   date?: string | null;
   description?: string | null;
   descriptionAr?: string | null;
+  /**
+   * Shown to readers in both languages. Leave this as the only file unless the Arabic version below is a genuinely different document.
+   */
   file?: (string | null) | Media;
+  /**
+   * Only needed when the Arabic file is a different document from the one above — a separate translation, say. Leave empty to show the same file to everyone.
+   */
+  fileAr?: (string | null) | Media;
   /**
    * Use for items that live elsewhere rather than as an uploaded file — a YouTube video, for example. Leave empty when a file is attached above.
    */
   link?: string | null;
+  /**
+   * Only needed when the Arabic destination differs from the link above.
+   */
+  linkAr?: string | null;
   image?: (string | null) | Media;
   updatedAt: string;
   createdAt: string;
@@ -646,11 +718,22 @@ export interface Poster {
   date?: string | null;
   description?: string | null;
   descriptionAr?: string | null;
+  /**
+   * Shown to readers in both languages. Leave this as the only file unless the Arabic version below is a genuinely different document.
+   */
   file?: (string | null) | Media;
+  /**
+   * Only needed when the Arabic file is a different document from the one above — a separate translation, say. Leave empty to show the same file to everyone.
+   */
+  fileAr?: (string | null) | Media;
   /**
    * Use for items that live elsewhere rather than as an uploaded file — a YouTube video, for example. Leave empty when a file is attached above.
    */
   link?: string | null;
+  /**
+   * Only needed when the Arabic destination differs from the link above.
+   */
+  linkAr?: string | null;
   image?: (string | null) | Media;
   updatedAt: string;
   createdAt: string;
@@ -903,8 +986,22 @@ export interface ReadingsDocument {
     };
     [k: string]: unknown;
   } | null;
+  /**
+   * Shown to readers in both languages unless an Arabic-only link is set below.
+   */
   link?: string | null;
+  /**
+   * Only needed when the Arabic destination differs from the link above.
+   */
+  linkAr?: string | null;
+  /**
+   * Shown to readers in both languages unless an Arabic-only file is set below.
+   */
   file?: (string | null) | Media;
+  /**
+   * Only needed when the Arabic file is a different document from the one above. Leave empty to show the same file to everyone.
+   */
+  fileAr?: (string | null) | Media;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -949,8 +1046,22 @@ export interface Database {
     };
     [k: string]: unknown;
   } | null;
+  /**
+   * Shown to readers in both languages unless an Arabic-only link is set below.
+   */
   link?: string | null;
+  /**
+   * Only needed when the Arabic destination differs from the link above.
+   */
+  linkAr?: string | null;
+  /**
+   * Shown to readers in both languages unless an Arabic-only file is set below.
+   */
   file?: (string | null) | Media;
+  /**
+   * Only needed when the Arabic file is a different document from the one above. Leave empty to show the same file to everyone.
+   */
+  fileAr?: (string | null) | Media;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -1359,7 +1470,9 @@ export interface BooksSelect<T extends boolean = true> {
   description?: T;
   descriptionAr?: T;
   file?: T;
+  fileAr?: T;
   link?: T;
+  linkAr?: T;
   image?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1378,7 +1491,9 @@ export interface PapersSelect<T extends boolean = true> {
   description?: T;
   descriptionAr?: T;
   file?: T;
+  fileAr?: T;
   link?: T;
+  linkAr?: T;
   image?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1397,7 +1512,9 @@ export interface ReportsSelect<T extends boolean = true> {
   description?: T;
   descriptionAr?: T;
   file?: T;
+  fileAr?: T;
   link?: T;
+  linkAr?: T;
   image?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1416,7 +1533,9 @@ export interface BrochuresSelect<T extends boolean = true> {
   description?: T;
   descriptionAr?: T;
   file?: T;
+  fileAr?: T;
   link?: T;
+  linkAr?: T;
   image?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1435,7 +1554,9 @@ export interface ThesesSelect<T extends boolean = true> {
   description?: T;
   descriptionAr?: T;
   file?: T;
+  fileAr?: T;
   link?: T;
+  linkAr?: T;
   image?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1454,7 +1575,9 @@ export interface AudiovisualSelect<T extends boolean = true> {
   description?: T;
   descriptionAr?: T;
   file?: T;
+  fileAr?: T;
   link?: T;
+  linkAr?: T;
   image?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1473,7 +1596,9 @@ export interface PostersSelect<T extends boolean = true> {
   description?: T;
   descriptionAr?: T;
   file?: T;
+  fileAr?: T;
   link?: T;
+  linkAr?: T;
   image?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1489,7 +1614,9 @@ export interface ReadingsDocumentsSelect<T extends boolean = true> {
   description?: T;
   descriptionAr?: T;
   link?: T;
+  linkAr?: T;
   file?: T;
+  fileAr?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -1504,7 +1631,9 @@ export interface DatabasesSelect<T extends boolean = true> {
   description?: T;
   descriptionAr?: T;
   link?: T;
+  linkAr?: T;
   file?: T;
+  fileAr?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
