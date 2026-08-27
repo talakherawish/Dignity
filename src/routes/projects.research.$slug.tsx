@@ -10,10 +10,13 @@ import { TranslationNotice } from "@/components/TranslationNotice";
 import { useLanguage } from "@/contexts/LanguageContext";
 import {
   fetchResearchBySlug,
+  formatDate,
   hasProse,
   mediaUrl,
   populated,
   youtubeThumbnail,
+  type ForumType,
+  type PayloadActivity,
   type PayloadResearchActivity,
   type PayloadClipping,
   type PayloadPhoto,
@@ -105,6 +108,66 @@ function PublicationGrid({
   );
 }
 
+const FORUM_TYPE_LABEL: Record<ForumType, { en: string; ar: string }> = {
+  seminar: { en: "Seminar", ar: "ندوة" },
+  roundtable: { en: "Roundtable", ar: "طاولة مستديرة" },
+  workshop: { en: "Workshop", ar: "ورشة عمل" },
+  conference: { en: "Conference", ar: "مؤتمر" },
+};
+
+/**
+ * Forums have no page of their own to link to (see /activities/forums,
+ * which opens an entry in place rather than routing to it) -- so each card
+ * here reopens that ledger with `open` set to this entry's id, the same
+ * deep-link PhotoGallery's "Enter" link already uses for a photo's related
+ * activity.
+ */
+function ForumGrid({ items }: { items: PayloadActivity[] }) {
+  const { lang, isArabic } = useLanguage();
+
+  return (
+    <PublicationCardGrid>
+      {items.map((item) => {
+        const displayTitle = lang === "ar" ? (item.titleAr ?? item.title) : item.title;
+        const typeLabel = item.forumType
+          ? isArabic
+            ? FORUM_TYPE_LABEL[item.forumType].ar
+            : FORUM_TYPE_LABEL[item.forumType].en
+          : null;
+        const image = mediaUrl(item.image);
+
+        return (
+          <Link
+            key={item.id}
+            to="/activities/forums"
+            search={{ type: item.forumType, open: item.id }}
+            className="w-full sm:w-[calc(50%-0.75rem)] lg:w-[calc(25%-1.125rem)] border border-border rounded-sm bg-card overflow-hidden hover:shadow-sm transition-shadow flex flex-col text-start"
+          >
+            {image && (
+              <div className="aspect-[1/1.41] max-h-[26rem] bg-secondary/20 overflow-hidden">
+                <img src={image} alt="" className="w-full h-full object-cover object-top" />
+              </div>
+            )}
+            <div className="p-5 flex flex-col flex-1">
+              {(item.date || typeLabel) && (
+                <div className="text-[11px] uppercase tracking-widest text-muted-foreground font-semibold mb-1.5">
+                  {item.date && <div>{formatDate(item.date, isArabic ? "ar" : "en")}</div>}
+                  {typeLabel && (
+                    <div className="text-[color:var(--brand-magenta)]">{typeLabel}</div>
+                  )}
+                </div>
+              )}
+              <h4 className="font-serif text-sm text-primary leading-snug text-balance hyphens-auto break-words">
+                {displayTitle}
+              </h4>
+            </div>
+          </Link>
+        );
+      })}
+    </PublicationCardGrid>
+  );
+}
+
 export const Route = createFileRoute("/projects/research/$slug")({
   head: () => ({ meta: [{ title: "Research — Dignity" }] }),
   component: ResearchDetailPage,
@@ -183,6 +246,7 @@ function ResearchDetailPage() {
   // on screen, because the entry was never what the page was reading.
   const clippings = populated<PayloadClipping>(research.relatedClippings);
   const photos = populated<PayloadPhoto>(research.relatedPhotos);
+  const forums = populated<PayloadActivity>(research.relatedForums);
 
   // The seven publication collections, in the order they appear under Outputs.
   // Theses, audiovisual and posters are listed without a download control.
@@ -236,7 +300,8 @@ function ResearchDetailPage() {
   const hasOutputs =
     publicationSections.some((s) => s.items.length > 0) ||
     clippings.length > 0 ||
-    photos.length > 0;
+    photos.length > 0 ||
+    forums.length > 0;
 
   return (
     <PageLayout>
@@ -332,6 +397,12 @@ function ResearchDetailPage() {
                       .map((p) => toGalleryPhoto(p, lang === "ar" ? "ar" : "en"))
                       .filter((photo) => photo.url)}
                   />
+                </OutputSection>
+              )}
+
+              {forums.length > 0 && (
+                <OutputSection title={isArabic ? "المنتديات" : "Forums"} count={forums.length}>
+                  <ForumGrid items={forums} />
                 </OutputSection>
               )}
             </div>

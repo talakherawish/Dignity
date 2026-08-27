@@ -60,7 +60,12 @@ function ArticleRow({
         aria-controls={panelId}
         className="group w-full cursor-pointer py-6 text-start focus:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--brand-magenta)] focus-visible:ring-offset-2"
       >
-        <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[color:var(--brand-magenta)]">
+        <p
+          className={
+            "font-semibold uppercase tracking-[0.2em] text-[color:var(--brand-magenta)] " +
+            (isArabic ? "text-[12px]" : "text-[10px]")
+          }
+        >
           {getField(article, "date", lang)}
         </p>
         <h2
@@ -76,7 +81,9 @@ function ArticleRow({
         )}
         <span
           className={
-            "mt-3 inline-block text-[10px] uppercase tracking-[0.2em] transition-colors duration-300 " +
+            "mt-3 inline-block uppercase tracking-[0.2em] transition-colors duration-300 " +
+            (isArabic ? "text-[12px]" : "text-[10px]") +
+            " " +
             (open
               ? "text-[color:var(--brand-magenta)]"
               : "text-muted-foreground group-hover:text-[color:var(--brand-magenta)]")

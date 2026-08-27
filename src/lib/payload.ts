@@ -245,6 +245,7 @@ export type PayloadResearchActivity = {
   relatedPosters?: (PayloadPublication | string)[];
   relatedClippings?: (PayloadClipping | string)[];
   relatedPhotos?: (PayloadPhoto | string)[];
+  relatedForums?: (PayloadActivity | string)[];
 };
 
 /**
