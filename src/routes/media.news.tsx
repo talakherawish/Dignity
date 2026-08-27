@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { PageLayout, PageHero } from "@/components/PageLayout";
 import { TranslationNotice } from "@/components/TranslationNotice";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { ARTICLES, getField, getBody, mapPayloadNews, type Article } from "@/data/articles";
+import { getField, getBody, mapPayloadNews, type Article } from "@/data/articles";
 import { fetchNews } from "@/lib/payload";
 import { SECTION_COLORS } from "@/lib/sectionColors";
 import { withItalicQuotes } from "@/lib/text";
@@ -156,7 +156,7 @@ function NewsPage() {
     queryKey: ["news"],
     queryFn: fetchNews,
   });
-  const articles = payloadNews.length > 0 ? payloadNews.map(mapPayloadNews) : ARTICLES;
+  const articles = payloadNews.map(mapPayloadNews);
 
   // The linked article only exists once the feed has loaded, so the jump has
   // to wait for that render rather than firing once on mount.

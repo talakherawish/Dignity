@@ -271,6 +271,10 @@ export interface AboutInitiative {
     };
     [k: string]: unknown;
   } | null;
+  /**
+   * Read-only. Reflects the Publish / Save as Draft state above.
+   */
+  publicationStatus?: string | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -298,6 +302,10 @@ export interface Participant {
    */
   bioAr?: string | null;
   photo?: (string | null) | Media;
+  /**
+   * Read-only. Reflects the Publish / Save as Draft state above.
+   */
+  publicationStatus?: string | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -346,6 +354,10 @@ export interface News {
     [k: string]: unknown;
   } | null;
   image?: (string | null) | Media;
+  /**
+   * Read-only. Reflects the Publish / Save as Draft state above.
+   */
+  publicationStatus?: string | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -368,6 +380,10 @@ export interface Photo {
    */
   date?: string | null;
   image: string | Media;
+  /**
+   * Read-only. Reflects the Publish / Save as Draft state above.
+   */
+  publicationStatus?: string | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -387,6 +403,10 @@ export interface Clipping {
   titleAr: string;
   date: string;
   image?: (string | null) | Media;
+  /**
+   * Read-only. Reflects the Publish / Save as Draft state above.
+   */
+  publicationStatus?: string | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -433,6 +453,10 @@ export interface Partner {
     };
     [k: string]: unknown;
   } | null;
+  /**
+   * Read-only. Reflects the Publish / Save as Draft state above.
+   */
+  publicationStatus?: string | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -496,6 +520,10 @@ export interface Research {
   relatedPosters?: (string | Poster)[] | null;
   relatedClippings?: (string | Clipping)[] | null;
   relatedPhotos?: (string | Photo)[] | null;
+  /**
+   * Read-only. Reflects the Publish / Save as Draft state above.
+   */
+  publicationStatus?: string | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -532,6 +560,10 @@ export interface Book {
    */
   linkAr?: string | null;
   image?: (string | null) | Media;
+  /**
+   * Read-only. Reflects the Publish / Save as Draft state above.
+   */
+  publicationStatus?: string | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -568,6 +600,10 @@ export interface Paper {
    */
   linkAr?: string | null;
   image?: (string | null) | Media;
+  /**
+   * Read-only. Reflects the Publish / Save as Draft state above.
+   */
+  publicationStatus?: string | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -604,6 +640,10 @@ export interface Report {
    */
   linkAr?: string | null;
   image?: (string | null) | Media;
+  /**
+   * Read-only. Reflects the Publish / Save as Draft state above.
+   */
+  publicationStatus?: string | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -640,6 +680,10 @@ export interface Brochure {
    */
   linkAr?: string | null;
   image?: (string | null) | Media;
+  /**
+   * Read-only. Reflects the Publish / Save as Draft state above.
+   */
+  publicationStatus?: string | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -676,6 +720,10 @@ export interface Thesis {
    */
   linkAr?: string | null;
   image?: (string | null) | Media;
+  /**
+   * Read-only. Reflects the Publish / Save as Draft state above.
+   */
+  publicationStatus?: string | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -712,6 +760,10 @@ export interface Audiovisual {
    */
   linkAr?: string | null;
   image?: (string | null) | Media;
+  /**
+   * Read-only. Reflects the Publish / Save as Draft state above.
+   */
+  publicationStatus?: string | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -748,6 +800,10 @@ export interface Poster {
    */
   linkAr?: string | null;
   image?: (string | null) | Media;
+  /**
+   * Read-only. Reflects the Publish / Save as Draft state above.
+   */
+  publicationStatus?: string | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -808,6 +864,10 @@ export interface Forum {
         id?: string | null;
       }[]
     | null;
+  /**
+   * Read-only. Reflects the Publish / Save as Draft state above.
+   */
+  publicationStatus?: string | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -856,6 +916,10 @@ export interface WindsorDignity {
     [k: string]: unknown;
   } | null;
   image?: (string | null) | Media;
+  /**
+   * Read-only. Reflects the Publish / Save as Draft state above.
+   */
+  publicationStatus?: string | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -916,6 +980,10 @@ export interface ReadingsDocument {
    * Only needed when the Arabic file is a different document from the one above. Leave empty to show the same file to everyone.
    */
   fileAr?: (string | null) | Media;
+  /**
+   * Read-only. Reflects the Publish / Save as Draft state above.
+   */
+  publicationStatus?: string | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -976,6 +1044,10 @@ export interface Database {
    * Only needed when the Arabic file is a different document from the one above. Leave empty to show the same file to everyone.
    */
   fileAr?: (string | null) | Media;
+  /**
+   * Read-only. Reflects the Publish / Save as Draft state above.
+   */
+  publicationStatus?: string | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -1196,6 +1268,7 @@ export interface AboutInitiativeSelect<T extends boolean = true> {
   descriptionAr?: T;
   body?: T;
   bodyAr?: T;
+  publicationStatus?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -1214,6 +1287,7 @@ export interface ParticipantsSelect<T extends boolean = true> {
   bio?: T;
   bioAr?: T;
   photo?: T;
+  publicationStatus?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -1231,6 +1305,7 @@ export interface NewsSelect<T extends boolean = true> {
   content?: T;
   contentAr?: T;
   image?: T;
+  publicationStatus?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -1244,6 +1319,7 @@ export interface PhotosSelect<T extends boolean = true> {
   titleAr?: T;
   date?: T;
   image?: T;
+  publicationStatus?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -1257,6 +1333,7 @@ export interface ClippingsSelect<T extends boolean = true> {
   titleAr?: T;
   date?: T;
   image?: T;
+  publicationStatus?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -1272,6 +1349,7 @@ export interface PartnersSelect<T extends boolean = true> {
   descriptionAr?: T;
   body?: T;
   bodyAr?: T;
+  publicationStatus?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -1298,6 +1376,7 @@ export interface ResearchSelect<T extends boolean = true> {
   relatedPosters?: T;
   relatedClippings?: T;
   relatedPhotos?: T;
+  publicationStatus?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -1324,6 +1403,7 @@ export interface ForumsSelect<T extends boolean = true> {
         captionAr?: T;
         id?: T;
       };
+  publicationStatus?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -1341,6 +1421,7 @@ export interface WindsorDignitySelect<T extends boolean = true> {
   content?: T;
   contentAr?: T;
   image?: T;
+  publicationStatus?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -1362,6 +1443,7 @@ export interface BooksSelect<T extends boolean = true> {
   link?: T;
   linkAr?: T;
   image?: T;
+  publicationStatus?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -1383,6 +1465,7 @@ export interface PapersSelect<T extends boolean = true> {
   link?: T;
   linkAr?: T;
   image?: T;
+  publicationStatus?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -1404,6 +1487,7 @@ export interface ReportsSelect<T extends boolean = true> {
   link?: T;
   linkAr?: T;
   image?: T;
+  publicationStatus?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -1425,6 +1509,7 @@ export interface BrochuresSelect<T extends boolean = true> {
   link?: T;
   linkAr?: T;
   image?: T;
+  publicationStatus?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -1446,6 +1531,7 @@ export interface ThesesSelect<T extends boolean = true> {
   link?: T;
   linkAr?: T;
   image?: T;
+  publicationStatus?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -1467,6 +1553,7 @@ export interface AudiovisualSelect<T extends boolean = true> {
   link?: T;
   linkAr?: T;
   image?: T;
+  publicationStatus?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -1488,6 +1575,7 @@ export interface PostersSelect<T extends boolean = true> {
   link?: T;
   linkAr?: T;
   image?: T;
+  publicationStatus?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -1505,6 +1593,7 @@ export interface ReadingsDocumentsSelect<T extends boolean = true> {
   linkAr?: T;
   file?: T;
   fileAr?: T;
+  publicationStatus?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -1522,6 +1611,7 @@ export interface DatabasesSelect<T extends boolean = true> {
   linkAr?: T;
   file?: T;
   fileAr?: T;
+  publicationStatus?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;

@@ -5,13 +5,7 @@ import { ChevronLeft, ChevronRight, X, Mail } from "lucide-react";
 import { PageLayout } from "@/components/PageLayout";
 import { TranslationNotice } from "@/components/TranslationNotice";
 import { useLanguage, type TranslationKey } from "@/contexts/LanguageContext";
-import {
-  ARTICLES,
-  excerptUntranslated,
-  getField,
-  mapPayloadNews,
-  type Article,
-} from "@/data/articles";
+import { excerptUntranslated, getField, mapPayloadNews, type Article } from "@/data/articles";
 import { withItalicQuotes } from "@/lib/text";
 import {
   fetchNews,
@@ -68,42 +62,6 @@ type TeamPerson = {
   bioAr: string;
   photo?: string;
 };
-
-const TEAM_FALLBACK: TeamPerson[] = [
-  {
-    name: "Mudar Kassis",
-    nameAr: "مضر قسيس",
-    title: "Director",
-    titleAr: "المدير",
-    category: "team_member",
-    email: "m.kassis@birzeit.edu",
-    bio: "",
-    bioAr: "",
-    photo: undefined,
-  },
-  {
-    name: "Eman Al-Assa",
-    nameAr: "إيمان العصا",
-    title: "Faculty",
-    titleAr: "هيئة التدريس",
-    category: "team_member",
-    email: "e.alassa@birzeit.edu",
-    bio: "",
-    bioAr: "",
-    photo: undefined,
-  },
-  {
-    name: "Dr. Raef Zreik",
-    nameAr: "د. رائف زريق",
-    title: "Senior Researcher",
-    titleAr: "باحث أول",
-    category: "researcher",
-    email: "r.zreik@birzeit.edu",
-    bio: "Dr. Zreik is a senior researcher whose work focuses on the philosophy of law, colonialism, and dignity.",
-    bioAr: "باحث أول يتمحور عمله حول فلسفة القانون والاستعمار والكرامة.",
-    photo: undefined,
-  },
-];
 
 function mapPayloadToTeamPerson(p: PayloadParticipant): TeamPerson {
   const role = PARTICIPANT_ROLE_LABEL[p.category];
@@ -252,10 +210,7 @@ function LatestNewsAndAnnouncements() {
     queryKey: ["news"],
     queryFn: fetchNews,
   });
-  const articles = (payloadNews.length > 0 ? payloadNews.map(mapPayloadNews) : ARTICLES).slice(
-    0,
-    QUEUE_SIZE,
-  );
+  const articles = payloadNews.map(mapPayloadNews).slice(0, QUEUE_SIZE);
   const slots = buildSlots(articles);
 
   const [index, setIndex] = useState(0);
@@ -419,9 +374,7 @@ function TeamSection() {
     queryFn: fetchParticipants,
   });
 
-  const members: TeamPerson[] = (
-    payloadParticipants.length > 0 ? payloadParticipants.map(mapPayloadToTeamPerson) : TEAM_FALLBACK
-  ).slice(0, 3);
+  const members: TeamPerson[] = payloadParticipants.map(mapPayloadToTeamPerson).slice(0, 3);
 
   return (
     <>

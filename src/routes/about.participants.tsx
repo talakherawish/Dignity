@@ -11,7 +11,6 @@ import {
   type PayloadParticipant,
 } from "@/lib/payload";
 import { SECTION_COLORS } from "@/lib/sectionColors";
-import talaPhoto from "@/assets/tala.jpg";
 
 export const Route = createFileRoute("/about/participants")({
   component: ParticipantsPage,
@@ -29,155 +28,6 @@ type Participant = {
   bioAr: string;
   photo?: string;
 };
-
-const PARTICIPANTS: Participant[] = [
-  {
-    id: 1,
-    name: "Mudar Kassis",
-    nameAr: "مضر قسيس",
-    title: PARTICIPANT_ROLE_LABEL.team_member.en,
-    titleAr: PARTICIPANT_ROLE_LABEL.team_member.ar,
-    category: "team_member",
-    email: "m.kassis@birzeit.edu",
-    bio: "",
-    bioAr: "",
-    photo: undefined,
-  },
-  {
-    id: 2,
-    name: "Eman Al-Assa",
-    nameAr: "إيمان العصا",
-    title: PARTICIPANT_ROLE_LABEL.team_member.en,
-    titleAr: PARTICIPANT_ROLE_LABEL.team_member.ar,
-    category: "team_member",
-    email: "e.alassa@birzeit.edu",
-    bio: "",
-    bioAr: "",
-    photo: undefined,
-  },
-  {
-    id: 3,
-    name: "Aseel Hussein",
-    nameAr: "أسيل حسين",
-    title: "",
-    titleAr: "",
-    category: "researcher",
-    email: "a.hussein@birzeit.edu",
-    bio: "",
-    bioAr: "",
-    photo: undefined,
-  },
-  {
-    id: 4,
-    name: "Rahaf Salahat",
-    nameAr: "رهف صلاحات",
-    title: "",
-    titleAr: "",
-    category: "researcher",
-    email: "r.salahat@birzeit.edu",
-    bio: "",
-    bioAr: "",
-    photo: undefined,
-  },
-  {
-    id: 5,
-    name: "Tala Kherawish",
-    nameAr: "تالا خريوش",
-    title: "Web Developer",
-    titleAr: "مطورة ويب",
-    category: "student",
-    email: "talakherawish@gmail.com",
-    bio: "Tala is a university student studying Computer Science. She joined the Dignity Initiative in 2026 and helped develop the website you are seeing today.",
-    bioAr:
-      "طالبة جامعية تدرس علم الحاسوب. انضمت إلى مبادرة الكرامة عام 2026 وساهمت في تطوير الموقع الذي تراه اليوم.",
-    photo: talaPhoto,
-  },
-  {
-    id: 6,
-    name: "Dr. Sarah Al-Amin",
-    nameAr: "د. سارة الأمين",
-    title: "Associate Professor",
-    titleAr: "أستاذة مشاركة",
-    category: "team_member",
-    email: "s.alamin@birzeit.edu",
-    bio: "Dr. Al-Amin is an associate professor specializing in political philosophy and human rights theory. She has been a core member of the Dignity Initiative since its founding.",
-    bioAr:
-      "أستاذة مشاركة متخصصة في الفلسفة السياسية ونظرية حقوق الإنسان، وهي عضو أساسي في مبادرة الكرامة منذ تأسيسها.",
-    photo: undefined,
-  },
-  {
-    id: 7,
-    name: "Dr. Raef Zreik",
-    nameAr: "د. رائف زريق",
-    title: "Senior Researcher",
-    titleAr: "باحث أول",
-    category: "researcher",
-    email: "r.zreik@birzeit.edu",
-    bio: "Dr. Zreik is a senior researcher whose work focuses on the philosophy of law, colonialism, and dignity.",
-    bioAr: "باحث أول يتمحور عمله حول فلسفة القانون والاستعمار والكرامة.",
-    photo: undefined,
-  },
-  {
-    id: 8,
-    name: "Lina Mansour",
-    nameAr: "لينا منصور",
-    title: "Research Participant",
-    titleAr: "مشاركة بحثية",
-    category: "researcher",
-    email: "l.mansour@birzeit.edu",
-    bio: "Lina Mansour is a research participant focusing on feminist theory and dignity discourse in the Arab world.",
-    bioAr: "مشاركة بحثية تتركز اهتماماتها على النظرية النسوية وخطاب الكرامة في العالم العربي.",
-    photo: undefined,
-  },
-  {
-    id: 9,
-    name: "Omar Khalil",
-    nameAr: "عمر خليل",
-    title: "PhD Researcher",
-    titleAr: "باحث دكتوراه",
-    category: "researcher",
-    email: "o.khalil@birzeit.edu",
-    bio: "Omar Khalil is a doctoral researcher examining the intersection of artificial intelligence and human dignity in legal frameworks.",
-    bioAr: "باحث دكتوراه يدرس العلاقة بين الذكاء الاصطناعي والكرامة الإنسانية في الأطر القانونية.",
-    photo: undefined,
-  },
-  {
-    id: 10,
-    name: "Ahmad Suleiman",
-    nameAr: "أحمد سليمان",
-    title: "Graduate Student",
-    titleAr: "طالب دراسات عليا",
-    category: "student",
-    email: "a.suleiman@birzeit.edu",
-    bio: "Ahmad is a graduate student in philosophy, with a focus on decolonial thought and Arab intellectual history.",
-    bioAr: "طالب دراسات عليا في الفلسفة، يركز على الفكر ما بعد الاستعماري والتاريخ الفكري العربي.",
-    photo: undefined,
-  },
-  {
-    id: 11,
-    name: "Maya Barakat",
-    nameAr: "مايا بركات",
-    title: "Visiting Scholar",
-    titleAr: "باحثة زائرة",
-    category: "visitor",
-    email: "m.barakat@external.edu",
-    bio: "Maya Barakat is a visiting scholar from the University of Windsor, contributing to the Windsor-Birzeit Dignity Initiative.",
-    bioAr: "باحثة زائرة من جامعة وندسور، تساهم في مبادرة وندسور-بيرزيت للكرامة.",
-    photo: undefined,
-  },
-  {
-    id: 12,
-    name: "Nour Haddad",
-    nameAr: "نور حداد",
-    title: "Research Intern",
-    titleAr: "متدربة بحثية",
-    category: "student",
-    email: "n.haddad@birzeit.edu",
-    bio: "Nour is a research intern supporting ongoing projects related to dignity and children's rights.",
-    bioAr: "متدربة بحثية تدعم المشاريع الجارية المتعلقة بالكرامة وحقوق الأطفال.",
-    photo: undefined,
-  },
-];
 
 const CATEGORIES = [
   { value: "all", en: "All", ar: "الكل" },
@@ -323,8 +173,12 @@ function ParticipantsPage() {
     queryFn: fetchParticipants,
   });
 
-  const participants: Participant[] =
-    payloadParticipants.length > 0 ? payloadParticipants.map(mapPayloadParticipant) : PARTICIPANTS;
+  // Always the real CMS data, even when it's empty -- falling back to the
+  // hardcoded PARTICIPANTS placeholder list on an empty result meant a fetch
+  // that failed for any reason (wrong URL, CORS, the backend being down)
+  // silently showed fake people instead of surfacing the problem, which is
+  // exactly what made unpublishing someone look like it had no effect.
+  const participants: Participant[] = payloadParticipants.map(mapPayloadParticipant);
 
   const q = search.toLowerCase();
   const filtered = participants.filter((f) => {

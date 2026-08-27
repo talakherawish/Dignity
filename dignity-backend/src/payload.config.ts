@@ -9,6 +9,7 @@ import sharp from 'sharp'
 
 import { createGithubStorageAdapter } from './lib/githubStorageAdapter'
 import { enforceBilingual, enforceBilingualGlobal } from './lib/bilingual'
+import { withPublicationStatus } from './lib/publicationStatus'
 import { resolveGithubStorageConfig } from './lib/storageConfig'
 import { resolveEmailConfig } from './lib/emailConfig'
 
@@ -67,7 +68,10 @@ export default buildConfig({
   // Every collection is wrapped in enforceBilingual() so that any English /
   // Arabic field pair (title/titleAr, body/bodyAr, …) must be filled in both
   // languages before a document can be published — see src/lib/bilingual.ts.
-  // Wrapping centrally means new collections are covered automatically.
+  // Also wrapped in withPublicationStatus(), which adds an explicit
+  // "Published?" field to every collection with a draft/publish workflow —
+  // see src/lib/publicationStatus.ts. Wrapping both centrally means new
+  // collections are covered automatically.
   collections: [
     // Admin
     Users,
@@ -103,7 +107,9 @@ export default buildConfig({
     // Information
     ReadingsAndDocuments,
     Databases,
-  ].map(enforceBilingual),
+  ]
+    .map(withPublicationStatus)
+    .map(enforceBilingual),
   globals: [SiteSettings].map(enforceBilingualGlobal),
   editor: lexicalEditor(),
   cors: process.env.CORS_ORIGINS
