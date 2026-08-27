@@ -349,7 +349,7 @@ function Home() {
          * Temporary centered layout with the office photo dropped, while a
          * proper homepage design is worked out -- not the final treatment.
          */}
-        <div className="relative max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-14 flex flex-col items-center text-center">
+        <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-14 flex flex-col items-center text-center">
           <div className="text-[12px] uppercase tracking-[0.22em] text-[color:var(--brand-magenta)] font-semibold mb-4">
             {t("hero.eyebrow")}
           </div>
