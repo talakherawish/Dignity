@@ -5,7 +5,7 @@ import { ChevronLeft, ChevronRight, X, Mail } from "lucide-react";
 import { PageLayout } from "@/components/PageLayout";
 import { TranslationNotice } from "@/components/TranslationNotice";
 import { useLanguage, type TranslationKey } from "@/contexts/LanguageContext";
-import { excerptUntranslated, getField, mapPayloadNews, type Article } from "@/data/articles";
+import { excerptUntranslated, getBody, getField, mapPayloadNews, type Article } from "@/data/articles";
 import { withItalicQuotes } from "@/lib/text";
 import {
   fetchNews,
@@ -164,13 +164,50 @@ function NewsSlotCard({ article, className = "" }: { article: Article; className
   );
 }
 
+/**
+ * The "other side" of a wide slot: a lone imageless item has no picture to
+ * pair its text with, so this stands in with a few lines pulled from the
+ * article's own full content and an explicit link into the archive -- the
+ * same destination a click on the text side already goes to.
+ */
+function NewsSlotPreview({ article }: { article: Article }) {
+  const { t, lang, isArabic } = useLanguage();
+  const paragraphs = getBody(article, lang);
+  const preview = paragraphs.join(" ");
+  const untranslated =
+    paragraphs.length === 0 && getBody(article, isArabic ? "en" : "ar").length > 0;
+
+  return (
+    <div className="flex h-[240px] flex-col justify-center overflow-hidden rounded-sm border border-border bg-card p-6">
+      {preview ? (
+        <p className="line-clamp-5 font-serif text-[15px] leading-relaxed text-foreground/80">
+          {preview}
+        </p>
+      ) : (
+        untranslated && <TranslationNotice compact />
+      )}
+      <Link
+        to="/media/news"
+        search={{ id: article.id }}
+        className={
+          "mt-4 inline-block w-fit font-semibold uppercase tracking-[0.18em] text-muted-foreground transition-colors hover:text-[color:var(--brand-magenta)] " +
+          (isArabic ? "text-[12px]" : "text-[10px]")
+        }
+      >
+        {t("news.readMore")}
+      </Link>
+    </div>
+  );
+}
+
 function NewsSlot({ slot }: { slot: Slot }) {
   const { lang, isArabic } = useLanguage();
 
   if (slot.kind === "wide") {
     return (
-      <div className="flex" dir={isArabic ? "rtl" : "ltr"}>
-        <NewsSlotCard article={slot.article} className="w-full" />
+      <div className="grid gap-5 sm:grid-cols-2" dir={isArabic ? "rtl" : "ltr"}>
+        <NewsSlotCard article={slot.article} />
+        <NewsSlotPreview article={slot.article} />
       </div>
     );
   }
