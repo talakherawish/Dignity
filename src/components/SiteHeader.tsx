@@ -172,16 +172,21 @@ function LanguageSwitcher() {
 function NavItem({ item }: { item: Item }) {
   const { t, isArabic } = useLanguage();
   const label = t(item.labelKey);
-  // Each section has its own hover color (see SECTION_COLORS), applied to the
-  // trigger *and* every link in its dropdown, rather than one shared accent.
-  // A CSS variable set via inline style, read back by a static Tailwind
-  // arbitrary-value class, rather than a color baked into the class name:
-  // the value is only known at runtime, but the class string still has to be
-  // a literal for Tailwind's build-time scan to generate it.
+  // Each section has its own color (see SECTION_COLORS), applied on hover
+  // *and* while active (i.e. the current route is inside that section) to
+  // the trigger and every link in its dropdown, rather than one shared
+  // accent for every section. A CSS variable set via inline style, read back
+  // by a static Tailwind arbitrary-value class, rather than a color baked
+  // into the class name: the value is only known at runtime, but the class
+  // string still has to be a literal for Tailwind's build-time scan to
+  // generate it.
   const hoverStyle = item.color
     ? ({ "--section-hover": item.color } as React.CSSProperties)
     : undefined;
   const hoverClass = item.color ? "hover:text-[var(--section-hover)]" : "hover:text-accent";
+  const activeClass = item.color
+    ? "data-[status=active]:text-[var(--section-hover)]"
+    : "data-[status=active]:text-accent";
 
   if (!item.children) {
     return (
@@ -190,8 +195,9 @@ function NavItem({ item }: { item: Item }) {
         activeOptions={{ exact: item.to === "/" }}
         style={hoverStyle}
         className={[
-          "px-2.5 py-2 font-medium text-foreground/80 transition-colors data-[status=active]:text-accent whitespace-nowrap",
+          "px-2.5 py-2 font-medium text-foreground/80 transition-colors whitespace-nowrap",
           hoverClass,
+          activeClass,
           isArabic ? "font-arabic text-[19px]" : "text-[17px]",
         ].join(" ")}
       >
@@ -201,8 +207,9 @@ function NavItem({ item }: { item: Item }) {
   }
 
   const triggerClassName = [
-    "px-2.5 py-2 font-medium text-foreground/80 transition-colors inline-flex items-center gap-1 whitespace-nowrap data-[status=active]:text-accent",
+    "px-2.5 py-2 font-medium text-foreground/80 transition-colors inline-flex items-center gap-1 whitespace-nowrap",
     hoverClass,
+    activeClass,
     isArabic ? "font-arabic text-[19px]" : "text-[17px]",
   ].join(" ");
 
@@ -231,6 +238,7 @@ function NavItem({ item }: { item: Item }) {
               className={[
                 "block px-4 py-2 text-sm text-foreground/80 hover:bg-secondary",
                 hoverClass,
+                activeClass,
                 isArabic ? "font-arabic text-right" : "",
               ].join(" ")}
             >
@@ -257,7 +265,14 @@ function MobileNav({ open, onNavigate }: { open: boolean; onNavigate: () => void
       }}
     >
       <nav className="px-4 py-2" dir={isArabic ? "rtl" : "ltr"}>
-        {NAV.map((item) => (
+        {NAV.map((item) => {
+          const sectionStyle = item.color
+            ? ({ "--section-hover": item.color } as React.CSSProperties)
+            : undefined;
+          const activeClass = item.color
+            ? "data-[status=active]:text-[var(--section-hover)]"
+            : "data-[status=active]:text-accent";
+          return (
           <div key={item.labelKey} className="border-b border-border last:border-b-0">
             {item.children ? (
               <>
@@ -266,8 +281,10 @@ function MobileNav({ open, onNavigate }: { open: boolean; onNavigate: () => void
                     <Link
                       to={item.to}
                       onClick={onNavigate}
+                      style={sectionStyle}
                       className={[
                         "flex-1 py-3 font-medium text-foreground/80",
+                        activeClass,
                         isArabic ? "font-arabic text-[18px]" : "text-[17px]",
                       ].join(" ")}
                     >
@@ -312,7 +329,12 @@ function MobileNav({ open, onNavigate }: { open: boolean; onNavigate: () => void
                         key={c.labelKey}
                         to={c.to}
                         onClick={onNavigate}
-                        className="block py-2 text-sm text-foreground/75 hover:text-accent"
+                        style={sectionStyle}
+                        className={[
+                          "block py-2 text-sm text-foreground/75",
+                          item.color ? "hover:text-[var(--section-hover)]" : "hover:text-accent",
+                          activeClass,
+                        ].join(" ")}
                       >
                         {t(c.labelKey)}
                       </Link>
@@ -324,8 +346,10 @@ function MobileNav({ open, onNavigate }: { open: boolean; onNavigate: () => void
               <Link
                 to={item.to!}
                 onClick={onNavigate}
+                style={sectionStyle}
                 className={[
                   "block py-3 font-medium text-foreground/80",
+                  activeClass,
                   isArabic ? "font-arabic text-[18px]" : "text-[17px]",
                 ].join(" ")}
               >
@@ -333,7 +357,8 @@ function MobileNav({ open, onNavigate }: { open: boolean; onNavigate: () => void
               </Link>
             )}
           </div>
-        ))}
+          );
+        })}
       </nav>
     </div>
   );
