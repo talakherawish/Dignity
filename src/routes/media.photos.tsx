@@ -1,9 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { PageLayout, PageHero } from "@/components/PageLayout";
-import { PhotoGallery, type GalleryPhoto } from "@/components/PhotoGallery";
+import { PhotoGallery, toGalleryPhoto } from "@/components/PhotoGallery";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { fetchPhotos, mediaUrl, type PayloadPhoto } from "@/lib/payload";
+import { fetchPhotos } from "@/lib/payload";
 import { SECTION_COLORS } from "@/lib/sectionColors";
 
 export const Route = createFileRoute("/media/photos")({
@@ -48,17 +48,7 @@ function PhotosPage() {
         ) : (
           <PhotoGallery
             photos={items
-              .map((item: PayloadPhoto): GalleryPhoto => {
-                const caption = lang === "ar" ? (item.titleAr ?? item.title) : item.title;
-                return {
-                  id: item.id,
-                  url: mediaUrl(item.image),
-                  caption: caption || undefined,
-                  date: item.date,
-                  width: item.image?.width,
-                  height: item.image?.height,
-                };
-              })
+              .map((item) => toGalleryPhoto(item, lang === "ar" ? "ar" : "en"))
               // An entry whose upload went missing would otherwise render as a
               // broken image in the middle of the gallery.
               .filter((photo) => photo.url)}

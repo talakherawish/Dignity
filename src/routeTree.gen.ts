@@ -28,6 +28,7 @@ import { Route as MediaAnnouncementsRouteImport } from './routes/media.announcem
 import { Route as MediaClippingsRouteImport } from './routes/media.clippings'
 import { Route as MediaNewsRouteImport } from './routes/media.news'
 import { Route as MediaPhotosRouteImport } from './routes/media.photos'
+import { Route as MediaStickersRouteImport } from './routes/media.stickers'
 import { Route as PublicationsAudiovisualRouteImport } from './routes/publications.audiovisual'
 import { Route as PublicationsBooksRouteImport } from './routes/publications.books'
 import { Route as PublicationsBrochuresRouteImport } from './routes/publications.brochures'
@@ -134,6 +135,11 @@ const MediaPhotosRoute = MediaPhotosRouteImport.update({
   path: '/media/photos',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MediaStickersRoute = MediaStickersRouteImport.update({
+  id: '/media/stickers',
+  path: '/media/stickers',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PublicationsAudiovisualRoute = PublicationsAudiovisualRouteImport.update({
   id: '/audiovisual',
   path: '/audiovisual',
@@ -200,6 +206,7 @@ export interface FileRoutesByFullPath {
   '/media/clippings': typeof MediaClippingsRoute
   '/media/news': typeof MediaNewsRoute
   '/media/photos': typeof MediaPhotosRoute
+  '/media/stickers': typeof MediaStickersRoute
   '/publications/audiovisual': typeof PublicationsAudiovisualRoute
   '/publications/books': typeof PublicationsBooksRoute
   '/publications/brochures': typeof PublicationsBrochuresRoute
@@ -230,6 +237,7 @@ export interface FileRoutesByTo {
   '/media/clippings': typeof MediaClippingsRoute
   '/media/news': typeof MediaNewsRoute
   '/media/photos': typeof MediaPhotosRoute
+  '/media/stickers': typeof MediaStickersRoute
   '/publications/audiovisual': typeof PublicationsAudiovisualRoute
   '/publications/books': typeof PublicationsBooksRoute
   '/publications/brochures': typeof PublicationsBrochuresRoute
@@ -261,6 +269,7 @@ export interface FileRoutesById {
   '/media/clippings': typeof MediaClippingsRoute
   '/media/news': typeof MediaNewsRoute
   '/media/photos': typeof MediaPhotosRoute
+  '/media/stickers': typeof MediaStickersRoute
   '/publications/audiovisual': typeof PublicationsAudiovisualRoute
   '/publications/books': typeof PublicationsBooksRoute
   '/publications/brochures': typeof PublicationsBrochuresRoute
@@ -293,6 +302,7 @@ export interface FileRouteTypes {
     | '/media/clippings'
     | '/media/news'
     | '/media/photos'
+    | '/media/stickers'
     | '/publications/audiovisual'
     | '/publications/books'
     | '/publications/brochures'
@@ -323,6 +333,7 @@ export interface FileRouteTypes {
     | '/media/clippings'
     | '/media/news'
     | '/media/photos'
+    | '/media/stickers'
     | '/publications/audiovisual'
     | '/publications/books'
     | '/publications/brochures'
@@ -353,6 +364,7 @@ export interface FileRouteTypes {
     | '/media/clippings'
     | '/media/news'
     | '/media/photos'
+    | '/media/stickers'
     | '/publications/audiovisual'
     | '/publications/books'
     | '/publications/brochures'
@@ -375,6 +387,7 @@ export interface RootRouteChildren {
   MediaClippingsRoute: typeof MediaClippingsRoute
   MediaNewsRoute: typeof MediaNewsRoute
   MediaPhotosRoute: typeof MediaPhotosRoute
+  MediaStickersRoute: typeof MediaStickersRoute
   ProjectsResearchSlugRoute: typeof ProjectsResearchSlugRoute
   ProjectsResearchIndexRoute: typeof ProjectsResearchIndexRoute
 }
@@ -512,6 +525,13 @@ declare module '@tanstack/react-router' {
       path: '/media/photos'
       fullPath: '/media/photos'
       preLoaderRoute: typeof MediaPhotosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/media/stickers': {
+      id: '/media/stickers'
+      path: '/media/stickers'
+      fullPath: '/media/stickers'
+      preLoaderRoute: typeof MediaStickersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/publications/audiovisual': {
@@ -661,6 +681,7 @@ const rootRouteChildren: RootRouteChildren = {
   MediaClippingsRoute: MediaClippingsRoute,
   MediaNewsRoute: MediaNewsRoute,
   MediaPhotosRoute: MediaPhotosRoute,
+  MediaStickersRoute: MediaStickersRoute,
   ProjectsResearchSlugRoute: ProjectsResearchSlugRoute,
   ProjectsResearchIndexRoute: ProjectsResearchIndexRoute,
 }

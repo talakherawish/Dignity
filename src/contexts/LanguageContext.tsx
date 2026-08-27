@@ -25,6 +25,7 @@ const translations = {
     "about.students": "Students",
     "about.visitors": "Visitors",
     "about.partners": "Partners",
+    "about.stickers": "Stickers",
     projects: "Projects",
     "projects.research": "Research Projects",
     activities: "Activities",
@@ -59,6 +60,7 @@ const translations = {
     "publications.theses": "Theses",
     "publications.audiovisual": "Audiovisual",
     "publications.posters": "Posters",
+    "stickers.page.desc": "Stickers from the Dignity initiative.",
     "publications.page.desc":
       "Books, papers, reports, and other publications produced by the Dignity initiative.",
     "publications.empty": "No publications available yet.",
@@ -210,6 +212,7 @@ const translations = {
     "about.students": "طلاب",
     "about.visitors": "زائرون",
     "about.partners": "الشركاء",
+    "about.stickers": "الملصقات",
     projects: "المشاريع",
     "projects.research": "المشاريع البحثية",
     activities: "الأنشطة",
@@ -243,7 +246,8 @@ const translations = {
     "publications.brochures": "بروشورات",
     "publications.theses": "رسائل الماجستير",
     "publications.audiovisual": "مرئي مسموع",
-    "publications.posters": "ملصقات",
+    "publications.posters": "معلّقات",
+    "stickers.page.desc": "آخر الملصقات من مبادرة الكرامة.",
     "publications.page.desc":
       "كتب وأوراق بحثية وتقارير وغيرها من المنشورات الصادرة عن مبادرة الكرامة.",
     "publications.empty": "لا توجد منشورات متاحة حالياً.",
@@ -378,6 +382,7 @@ const SITE_SETTINGS_KEY_MAP: Partial<Record<TranslationKey, string>> = {
   "media.news": "navMediaNews",
   "media.photos": "navMediaPhotos",
   "media.clippings": "navMediaClippings",
+  "about.stickers": "navAboutStickers",
   "about.partners": "navAboutPartners",
 
   activities: "navActivities",

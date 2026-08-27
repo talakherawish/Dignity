@@ -24,7 +24,7 @@ const NAV: Item[] = [
       { labelKey: "about.participants", to: "/about/participants" },
       { labelKey: "media.news", to: "/media/news" },
       { labelKey: "media.photos", to: "/media/photos" },
-      { labelKey: "media.clippings", to: "/media/clippings" },
+      { labelKey: "about.stickers", to: "/media/stickers" },
       { labelKey: "about.partners", to: "/about/partners" },
     ],
   },

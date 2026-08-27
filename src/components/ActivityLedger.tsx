@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { RichText } from "@/components/RichText";
 import { TranslationNotice } from "@/components/TranslationNotice";
 import { useLanguage, type TranslationKey } from "@/contexts/LanguageContext";
 import {
+  arabicDualMonthName,
   formatDate,
   hasProse,
   mediaUrl,
@@ -44,6 +45,7 @@ type Lang = "en" | "ar";
  * two have to arrive separately. `numberingSystem: "latn"` matches
  * `formatDate`: the client asked for Western digits (1234) even in the
  * Arabic month name's own locale, not ar-EG's default Arabic-Indic (١٢٣٤).
+ * The Arabic month uses the same dual MSA/Levantine name as `formatDate`.
  */
 function dateParts(iso: string, lang: Lang) {
   const locale = lang === "ar" ? "ar-EG" : "en-US";
@@ -51,7 +53,10 @@ function dateParts(iso: string, lang: Lang) {
   if (!iso || Number.isNaN(date.getTime())) return null;
   return {
     day: date.toLocaleDateString(locale, { day: "numeric", numberingSystem: "latn" }),
-    month: date.toLocaleDateString(locale, { month: "long" }),
+    month:
+      lang === "ar"
+        ? arabicDualMonthName(date.getMonth())
+        : date.toLocaleDateString(locale, { month: "long" }),
     year: date.toLocaleDateString(locale, { year: "numeric", numberingSystem: "latn" }),
     yearKey: date.getFullYear(),
   };
@@ -117,11 +122,14 @@ function ActivityEntry({
   lang,
   open,
   onToggle,
+  entryRef,
 }: {
   item: PayloadActivity;
   lang: Lang;
   open: boolean;
   onToggle: () => void;
+  /** Deep-link target (see `ActivityLedger`'s `initialOpenId`) scrolls to this. */
+  entryRef?: (el: HTMLLIElement | null) => void;
 }) {
   const { t } = useLanguage();
   const isArabic = lang === "ar";
@@ -224,7 +232,7 @@ function ActivityEntry({
     /* No rule under each entry: the year rules alone divide the page, and a
        line under every row turned a short list into a stack of boxes. The
        vertical rhythm does the separating instead. */
-    <li className="group relative">
+    <li ref={entryRef} className="group relative">
       {expandable ? (
         <button
           type="button"
@@ -327,15 +335,39 @@ export function ActivityLedger({
   items,
   isLoading,
   empty,
+  initialOpenId,
 }: {
   items: PayloadActivity[];
   isLoading: boolean;
   /** Shown when the collection has nothing published, in the reader's language. */
   empty: string;
+  /**
+   * Deep-linked from elsewhere (a photo tagged with the activity it's from --
+   * see PhotoGallery's "Enter" link) -- opened and scrolled into view once
+   * `items` has loaded. Applied once; toggling the entry closed afterward
+   * doesn't reopen it.
+   */
+  initialOpenId?: string;
 }) {
   const { lang, isArabic } = useLanguage();
   const language: Lang = lang === "ar" ? "ar" : "en";
   const [openIds, setOpenIds] = useState<Set<string>>(new Set());
+  const entryElements = useRef(new Map<string, HTMLLIElement>());
+  const appliedInitialOpen = useRef(false);
+
+  useEffect(() => {
+    if (!initialOpenId || appliedInitialOpen.current) return;
+    const match = items.some((item) => item.id === initialOpenId);
+    if (!match) return;
+    appliedInitialOpen.current = true;
+    setOpenIds((current) => new Set(current).add(initialOpenId));
+    // Wait a frame so the expand transition has laid out before scrolling.
+    requestAnimationFrame(() => {
+      entryElements.current
+        .get(initialOpenId)
+        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  }, [initialOpenId, items]);
 
   const groups = groupByYear(items, language);
 
@@ -364,6 +396,10 @@ export function ActivityLedger({
                     item={item}
                     lang={language}
                     open={openIds.has(item.id)}
+                    entryRef={(el) => {
+                      if (el) entryElements.current.set(item.id, el);
+                      else entryElements.current.delete(item.id);
+                    }}
                     onToggle={() =>
                       setOpenIds((current) => {
                         const next = new Set(current);

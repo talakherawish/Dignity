@@ -32,6 +32,7 @@ import { Participants } from './collections/Participants'
 import { News } from './collections/News'
 import { Photos } from './collections/Photos'
 import { Clippings } from './collections/Clippings'
+import { Stickers } from './collections/Stickers'
 import { Research } from './collections/Research'
 import { Forums } from './collections/Forums'
 import { WindsorDignity } from './collections/WindsorDignity'
@@ -84,6 +85,7 @@ export default buildConfig({
     News,
     Photos,
     Clippings,
+    Stickers,
     Partners,
 
     // Activities

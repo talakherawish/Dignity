@@ -3,7 +3,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, ChevronDown } from "lucide-react";
 import { PageLayout } from "@/components/PageLayout";
-import { PhotoGallery, type GalleryPhoto } from "@/components/PhotoGallery";
+import { PhotoGallery, toGalleryPhoto } from "@/components/PhotoGallery";
 import { PublicationCard, PublicationCardGrid } from "@/components/PublicationCard";
 import { RichText } from "@/components/RichText";
 import { TranslationNotice } from "@/components/TranslationNotice";
@@ -228,7 +228,7 @@ function ResearchDetailPage() {
     },
     {
       key: "posters",
-      label: isArabic ? "الملصقات" : "Posters",
+      label: isArabic ? "معلّقات" : "Posters",
       items: populated<PayloadPublication>(research.relatedPosters),
     },
   ];
@@ -329,17 +329,7 @@ function ResearchDetailPage() {
                 <OutputSection title={isArabic ? "صور" : "Photos"} count={photos.length}>
                   <PhotoGallery
                     photos={photos
-                      .map((p: PayloadPhoto): GalleryPhoto => {
-                        const caption = lang === "ar" ? (p.titleAr ?? p.title) : p.title;
-                        return {
-                          id: p.id,
-                          url: mediaUrl(p.image),
-                          caption: caption || undefined,
-                          date: p.date,
-                          width: p.image?.width,
-                          height: p.image?.height,
-                        };
-                      })
+                      .map((p) => toGalleryPhoto(p, lang === "ar" ? "ar" : "en"))
                       .filter((photo) => photo.url)}
                   />
                 </OutputSection>

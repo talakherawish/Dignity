@@ -33,6 +33,7 @@ export const SiteSettings: GlobalConfig = {
             ...pair('navMediaNews', 'About: News & Announcements'),
             ...pair('navMediaPhotos', 'About: Photos'),
             ...pair('navMediaClippings', 'About: Clippings'),
+            ...pair('navAboutStickers', 'About: Stickers'),
             ...pair('navAboutPartners', 'About: Partners'),
 
             ...pair('navActivities', 'Activities — menu heading'),

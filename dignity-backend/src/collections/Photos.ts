@@ -50,5 +50,26 @@ export const Photos: CollectionConfig = {
       required: true,
       label: 'Photo',
     },
+    {
+      name: 'relatedActivity',
+      type: 'relationship',
+      relationTo: 'forums',
+      label: 'Related Activity (optional)',
+      admin: {
+        description:
+          'If this photo is from a specific seminar, roundtable, workshop, or conference, link it here — the gallery will show an "Enter" link to that activity.',
+      },
+    },
+    {
+      name: 'taggedParticipants',
+      type: 'relationship',
+      relationTo: 'participants',
+      hasMany: true,
+      label: 'Tagged People (optional)',
+      admin: {
+        description:
+          'People shown in this photo. Each one appears as a clickable tag linking to their profile under About → Participants.',
+      },
+    },
   ],
 }

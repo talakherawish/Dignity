@@ -1,7 +1,15 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { formatDate } from "@/lib/payload";
+import {
+  formatDate,
+  mediaUrl,
+  populated,
+  type ForumType,
+  type PayloadParticipant,
+  type PayloadPhoto,
+} from "@/lib/payload";
 
 /**
  * The photo gallery, shared by the Photos page and a research entry's photos.
@@ -37,7 +45,61 @@ export type GalleryPhoto = {
   date?: string;
   width?: number;
   height?: number;
+  /**
+   * The Forums activity (seminar, roundtable, workshop, conference) this
+   * photo is from, if one was linked in the admin. Shown in the lightbox as
+   * an "Enter" link to that activity, already resolved to the visitor's
+   * language by the caller.
+   */
+  activity?: { id: string; title: string; forumType?: ForumType };
+  /**
+   * People tagged in this photo, if any. Shown in the lightbox as clickable
+   * tags linking to each person's profile under About → Participants,
+   * already resolved to the visitor's language by the caller.
+   */
+  people?: { id: string; name: string }[];
 };
+
+/**
+ * Turns a Photos collection document into what this gallery renders,
+ * resolving its optional related-activity and tagged-people relations into
+ * the visitor's language. Shared by the standalone Photos page and a
+ * research entry's photos, which both draw from the same collection.
+ */
+export function toGalleryPhoto(photo: PayloadPhoto, lang: "en" | "ar"): GalleryPhoto {
+  const caption = lang === "ar" ? (photo.titleAr ?? photo.title) : photo.title;
+
+  const relatedActivity =
+    typeof photo.relatedActivity === "object" && photo.relatedActivity
+      ? photo.relatedActivity
+      : undefined;
+  const activity = relatedActivity
+    ? {
+        id: relatedActivity.id,
+        title:
+          lang === "ar"
+            ? (relatedActivity.titleAr ?? relatedActivity.title)
+            : relatedActivity.title,
+        forumType: relatedActivity.forumType,
+      }
+    : undefined;
+
+  const people = populated<PayloadParticipant>(photo.taggedParticipants).map((person) => ({
+    id: person.id,
+    name: lang === "ar" ? (person.nameAr ?? person.name) : person.name,
+  }));
+
+  return {
+    id: photo.id,
+    url: mediaUrl(photo.image),
+    caption: caption || undefined,
+    date: photo.date,
+    width: photo.image?.width,
+    height: photo.image?.height,
+    activity,
+    people: people.length > 0 ? people : undefined,
+  };
+}
 
 /** Landscape-ish, used when an upload predates Payload recording dimensions. */
 const FALLBACK_RATIO = 1.5;
@@ -328,7 +390,10 @@ export function PhotoGallery({ photos }: { photos: GalleryPhoto[] }) {
             className="max-h-[85vh] max-w-full object-contain"
           />
 
-          {(open.caption || open.date) && (
+          {(open.caption ||
+            open.date ||
+            open.activity ||
+            (open.people && open.people.length > 0)) && (
             <div
               className="mt-3 max-w-2xl text-center text-white/80"
               onClick={(e) => e.stopPropagation()}
@@ -338,6 +403,34 @@ export function PhotoGallery({ photos }: { photos: GalleryPhoto[] }) {
                 <p className="text-[12px] text-white/50 mt-1">
                   {formatDate(open.date, lang === "ar" ? "ar" : "en")}
                 </p>
+              )}
+              {open.people && open.people.length > 0 && (
+                <p className="mt-2 text-xs text-white/70">
+                  {isArabic ? "مع: " : "With: "}
+                  {open.people.map((person, index) => (
+                    <span key={person.id}>
+                      <Link
+                        to="/about/participants"
+                        search={{ participant: person.id }}
+                        className="underline underline-offset-4 hover:text-white"
+                      >
+                        {person.name}
+                      </Link>
+                      {index < open.people!.length - 1 ? ", " : ""}
+                    </span>
+                  ))}
+                </p>
+              )}
+              {open.activity && (
+                <Link
+                  to="/activities/forums"
+                  search={{ type: open.activity.forumType, open: open.activity.id }}
+                  className="mt-3 inline-block text-xs uppercase tracking-widest text-white underline underline-offset-4 hover:text-white/80"
+                >
+                  {isArabic
+                    ? `الدخول إلى ${open.activity.title} ←`
+                    : `Enter ${open.activity.title} →`}
+                </Link>
               )}
             </div>
           )}

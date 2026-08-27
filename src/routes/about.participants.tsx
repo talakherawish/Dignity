@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Search, X, Mail } from "lucide-react";
 import { PageLayout, PageHero } from "@/components/PageLayout";
@@ -12,12 +12,20 @@ import {
 } from "@/lib/payload";
 import { SECTION_COLORS } from "@/lib/sectionColors";
 
+/** ?participant=<id> deep-links to one profile -- used by a photo's tagged
+ * people (see PhotoGallery's "With: ..." tags) -- opening that person's
+ * modal once the list has loaded. */
+type ParticipantsSearch = { participant?: string };
+
 export const Route = createFileRoute("/about/participants")({
+  validateSearch: (search: Record<string, unknown>): ParticipantsSearch => ({
+    participant: typeof search.participant === "string" ? search.participant : undefined,
+  }),
   component: ParticipantsPage,
 });
 
 type Participant = {
-  id: number;
+  id: string;
   name: string;
   nameAr: string;
   title: string;
@@ -39,10 +47,10 @@ const CATEGORIES = [
   { value: "team_member", en: "Team Members", ar: "أعضاء الفريق" },
 ];
 
-function mapPayloadParticipant(p: PayloadParticipant, idx: number): Participant {
+function mapPayloadParticipant(p: PayloadParticipant): Participant {
   const role = PARTICIPANT_ROLE_LABEL[p.category];
   return {
-    id: idx + 1000,
+    id: p.id,
     name: p.name,
     nameAr: p.nameAr ?? p.name,
     title: p.title ?? role.en,
@@ -81,7 +89,11 @@ function ParticipantModal({
         {hasPhoto && (
           <div className="absolute left-1/2 top-0 -translate-x-1/2 z-10">
             <div className="h-56 w-56 rounded-full overflow-hidden shadow-2xl bg-secondary flex items-center justify-center">
-              <img src={participant.photo} alt={participant.name} className="w-full h-full object-cover" />
+              <img
+                src={participant.photo}
+                alt={participant.name}
+                className="w-full h-full object-cover"
+              />
             </div>
           </div>
         )}
@@ -162,6 +174,7 @@ function ParticipantCard({
 
 function ParticipantsPage() {
   const { lang, isArabic } = useLanguage();
+  const { participant: deepLinkedId } = Route.useSearch();
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("all");
   const [selected, setSelected] = useState<Participant | null>(null);
@@ -172,6 +185,16 @@ function ParticipantsPage() {
     queryKey: ["participants"],
     queryFn: fetchParticipants,
   });
+
+  // Opens a tagged person's modal when arriving from a photo's "With: ..."
+  // tag. Runs once per deep link -- payloadParticipants is a stable
+  // reference between renders (React Query), so this doesn't refire just
+  // because a visitor closed the modal.
+  useEffect(() => {
+    if (!deepLinkedId) return;
+    const match = payloadParticipants.find((p) => p.id === deepLinkedId);
+    if (match) setSelected(mapPayloadParticipant(match));
+  }, [deepLinkedId, payloadParticipants]);
 
   // Always the real CMS data, even when it's empty -- falling back to the
   // hardcoded PARTICIPANTS placeholder list on an empty result meant a fetch

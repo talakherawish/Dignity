@@ -78,6 +78,10 @@ export type PayloadPhoto = {
   titleAr?: string;
   date?: string;
   image: PayloadMedia;
+  /** The seminar/roundtable/workshop/conference this photo is from, if the admin linked one. */
+  relatedActivity?: PayloadActivity | string;
+  /** People shown in this photo, if any were tagged in the admin. */
+  taggedParticipants?: (PayloadParticipant | string)[];
 };
 
 export type PayloadClipping = {
@@ -86,6 +90,15 @@ export type PayloadClipping = {
   titleAr?: string;
   date: string;
   image?: PayloadMedia;
+};
+
+export type PayloadSticker = {
+  id: string;
+  /** Both optional: a sticker that speaks for itself needs no caption or date. */
+  title?: string;
+  titleAr?: string;
+  date?: string;
+  image: PayloadMedia;
 };
 
 export type PayloadParticipant = {
@@ -363,24 +376,47 @@ export function extractListItems(lexical: unknown): string[] {
 }
 
 /**
+ * Arabic month names, MSA (Modern Standard Arabic) name first and the
+ * Levantine/Syriac-derived name second, joined with "/" — the client's
+ * requested dual-name format (e.g. "أغسطس/آب"). Indexed 0–11 like
+ * `Date#getMonth`.
+ */
+const ARABIC_DUAL_MONTHS = [
+  "يناير/كانون الثاني",
+  "فبراير/شباط",
+  "مارس/آذار",
+  "أبريل/نيسان",
+  "مايو/أيار",
+  "يونيو/حزيران",
+  "يوليو/تموز",
+  "أغسطس/آب",
+  "سبتمبر/أيلول",
+  "أكتوبر/تشرين الأول",
+  "نوفمبر/تشرين الثاني",
+  "ديسمبر/كانون الأول",
+] as const;
+
+export function arabicDualMonthName(monthIndex: number): string {
+  return ARABIC_DUAL_MONTHS[monthIndex] ?? "";
+}
+
+/**
  * Format an ISO date string for display.
  *
  * `numberingSystem: "latn"` on the Arabic branch: ar-EG's default digit
  * shapes are Arabic-Indic (١٢٣٤), which the client asked to have replaced
  * with the Western digits (1234) already used everywhere else on the site.
- * The Arabic month name is untouched — only the numeral shapes change.
+ * The month name uses the dual MSA/Levantine format (`ARABIC_DUAL_MONTHS`)
+ * instead of ar-EG's single-name default.
  */
 export function formatDate(iso: string, locale: "en" | "ar"): string {
   if (!iso) return "";
   try {
     const date = new Date(iso);
     if (locale === "ar") {
-      return date.toLocaleDateString("ar-EG", {
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-        numberingSystem: "latn",
-      });
+      const day = date.toLocaleDateString("ar-EG", { day: "numeric", numberingSystem: "latn" });
+      const year = date.toLocaleDateString("ar-EG", { year: "numeric", numberingSystem: "latn" });
+      return `${day} ${arabicDualMonthName(date.getMonth())} ${year}`;
     }
     return date.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
   } catch {
@@ -561,6 +597,8 @@ export const fetchClippings = () =>
   // depth: 2 so item.image.thumbnail (the auto-generated PDF preview) resolves
   // to a full Media object, not just an id string.
   fetchCollection<PayloadClipping>("clippings", { depth: "2", ...NEWEST_FIRST });
+
+export const fetchStickers = () => fetchCollection<PayloadSticker>("stickers", NEWEST_FIRST);
 
 // Participants carry no date — Payload's own ordering is what the admin sees.
 export const fetchParticipants = () => fetchCollection<PayloadParticipant>("participants");

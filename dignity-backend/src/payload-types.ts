@@ -75,6 +75,7 @@ export interface Config {
     news: News;
     photos: Photo;
     clippings: Clipping;
+    stickers: Sticker;
     partners: Partner;
     research: Research;
     forums: Forum;
@@ -103,6 +104,7 @@ export interface Config {
     news: NewsSelect<false> | NewsSelect<true>;
     photos: PhotosSelect<false> | PhotosSelect<true>;
     clippings: ClippingsSelect<false> | ClippingsSelect<true>;
+    stickers: StickersSelect<false> | StickersSelect<true>;
     partners: PartnersSelect<false> | PartnersSelect<true>;
     research: ResearchSelect<false> | ResearchSelect<true>;
     forums: ForumsSelect<false> | ForumsSelect<true>;
@@ -381,6 +383,78 @@ export interface Photo {
   date?: string | null;
   image: string | Media;
   /**
+   * If this photo is from a specific seminar, roundtable, workshop, or conference, link it here — the gallery will show an "Enter" link to that activity.
+   */
+  relatedActivity?: (string | null) | Forum;
+  /**
+   * People shown in this photo. Each one appears as a clickable tag linking to their profile under About → Participants.
+   */
+  taggedParticipants?: (string | Participant)[] | null;
+  /**
+   * Read-only. Reflects the Publish / Save as Draft state above.
+   */
+  publicationStatus?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Seminars, roundtables, workshops, and conferences organized through the Dignity initiative. Appears on the website under Activities -> Forums, filterable by Forum Type. Replaces the old separate Seminars, Conferences, and Meetings collections -- see scripts/merge-seminars-conferences-meetings-into-forums.ts.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "forums".
+ */
+export interface Forum {
+  id: string;
+  title: string;
+  titleAr: string;
+  date: string;
+  forumType?: ('seminar' | 'roundtable' | 'workshop' | 'conference') | null;
+  description?: string | null;
+  descriptionAr?: string | null;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  contentAr?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  image?: (string | null) | Media;
+  /**
+   * Additional photographs for this entry. They appear only inside it, after a visitor opens it.
+   */
+  gallery?:
+    | {
+        image: string | Media;
+        caption?: string | null;
+        captionAr?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
   publicationStatus?: string | null;
@@ -403,6 +477,32 @@ export interface Clipping {
   titleAr: string;
   date: string;
   image?: (string | null) | Media;
+  /**
+   * Read-only. Reflects the Publish / Save as Draft state above.
+   */
+  publicationStatus?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Shows on the website under About the Dignity Initiative → Stickers. Upload one sticker image per entry (click the Image field below to upload).
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "stickers".
+ */
+export interface Sticker {
+  id: string;
+  /**
+   * Optional caption, e.g. "Dignity Initiative sticker set". A sticker that speaks for itself can be left untitled.
+   */
+  title?: string | null;
+  titleAr?: string | null;
+  /**
+   * Optional. Shown under the caption when set.
+   */
+  date?: string | null;
+  image: string | Media;
   /**
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
@@ -809,70 +909,6 @@ export interface Poster {
   _status?: ('draft' | 'published') | null;
 }
 /**
- * Seminars, roundtables, workshops, and conferences organized through the Dignity initiative. Appears on the website under Activities -> Forums, filterable by Forum Type. Replaces the old separate Seminars, Conferences, and Meetings collections -- see scripts/merge-seminars-conferences-meetings-into-forums.ts.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "forums".
- */
-export interface Forum {
-  id: string;
-  title: string;
-  titleAr: string;
-  date: string;
-  forumType?: ('seminar' | 'roundtable' | 'workshop' | 'conference') | null;
-  description?: string | null;
-  descriptionAr?: string | null;
-  content?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  contentAr?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  image?: (string | null) | Media;
-  /**
-   * Additional photographs for this entry. They appear only inside it, after a visitor opens it.
-   */
-  gallery?:
-    | {
-        image: string | Media;
-        caption?: string | null;
-        captionAr?: string | null;
-        id?: string | null;
-      }[]
-    | null;
-  /**
-   * Read-only. Reflects the Publish / Save as Draft state above.
-   */
-  publicationStatus?: string | null;
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
-}
-/**
  * Windsor Birzeit Dignity Initiative events, activities, and information.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1109,6 +1145,10 @@ export interface PayloadLockedDocument {
         value: string | Clipping;
       } | null)
     | ({
+        relationTo: 'stickers';
+        value: string | Sticker;
+      } | null)
+    | ({
         relationTo: 'partners';
         value: string | Partner;
       } | null)
@@ -1319,6 +1359,8 @@ export interface PhotosSelect<T extends boolean = true> {
   titleAr?: T;
   date?: T;
   image?: T;
+  relatedActivity?: T;
+  taggedParticipants?: T;
   publicationStatus?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1329,6 +1371,20 @@ export interface PhotosSelect<T extends boolean = true> {
  * via the `definition` "clippings_select".
  */
 export interface ClippingsSelect<T extends boolean = true> {
+  title?: T;
+  titleAr?: T;
+  date?: T;
+  image?: T;
+  publicationStatus?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "stickers_select".
+ */
+export interface StickersSelect<T extends boolean = true> {
   title?: T;
   titleAr?: T;
   date?: T;
@@ -1676,6 +1732,8 @@ export interface SiteSetting {
   navMediaPhotosAr?: string | null;
   navMediaClippings?: string | null;
   navMediaClippingsAr?: string | null;
+  navAboutStickers?: string | null;
+  navAboutStickersAr?: string | null;
   navAboutPartners?: string | null;
   navAboutPartnersAr?: string | null;
   navActivities?: string | null;
@@ -1824,6 +1882,8 @@ export interface SiteSettingsSelect<T extends boolean = true> {
   navMediaPhotosAr?: T;
   navMediaClippings?: T;
   navMediaClippingsAr?: T;
+  navAboutStickers?: T;
+  navAboutStickersAr?: T;
   navAboutPartners?: T;
   navAboutPartnersAr?: T;
   navActivities?: T;

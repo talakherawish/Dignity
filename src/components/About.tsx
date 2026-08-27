@@ -1,4 +1,4 @@
-import { Handshake, Images, Newspaper, Scissors, Users } from "lucide-react";
+import { Handshake, Images, Newspaper, Sticker, Users } from "lucide-react";
 import { PageLayout } from "./PageLayout";
 import { Reveal } from "./Reveal";
 import { SectionTileGrid, type SectionTile } from "./SectionHub";
@@ -9,7 +9,7 @@ const HUB_TILES: SectionTile[] = [
   { labelKey: "about.participants", to: "/about/participants", icon: Users },
   { labelKey: "media.news", to: "/media/news", icon: Newspaper },
   { labelKey: "media.photos", to: "/media/photos", icon: Images },
-  { labelKey: "media.clippings", to: "/media/clippings", icon: Scissors },
+  { labelKey: "about.stickers", to: "/media/stickers", icon: Sticker },
   { labelKey: "about.partners", to: "/about/partners", icon: Handshake },
 ];
 

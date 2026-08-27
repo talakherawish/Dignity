@@ -9,9 +9,14 @@ import { SECTION_COLORS } from "@/lib/sectionColors";
 
 type FilterValue = "all" | ForumType;
 
-/** ?type=seminar (etc) preselects a tab -- used by the old /activities/seminars
- * and /activities/conferences links, which redirect here (see those routes). */
-type ForumsSearch = { type?: FilterValue };
+/**
+ * ?type=seminar (etc) preselects a tab -- used by the old /activities/seminars
+ * and /activities/conferences links, which redirect here (see those routes).
+ * ?open=<id> deep-links to one entry -- used by a photo tagged with the
+ * activity it's from (see PhotoGallery's "Enter" link) -- opening it and
+ * scrolling it into view once the list has loaded.
+ */
+type ForumsSearch = { type?: FilterValue; open?: string };
 
 export const Route = createFileRoute("/activities/forums")({
   head: () => ({ meta: [{ title: "Forums — Dignity" }] }),
@@ -19,6 +24,7 @@ export const Route = createFileRoute("/activities/forums")({
     const forumTypes: readonly string[] = ["seminar", "roundtable", "workshop", "conference"];
     return {
       type: forumTypes.includes(search.type as string) ? (search.type as ForumType) : undefined,
+      open: typeof search.open === "string" ? search.open : undefined,
     };
   },
   component: ForumsPage,
@@ -34,7 +40,7 @@ const FILTERS: { value: FilterValue; labelKey: TranslationKey }[] = [
 
 function ForumsPage() {
   const { t, isArabic } = useLanguage();
-  const { type } = Route.useSearch();
+  const { type, open } = Route.useSearch();
   const [active, setActive] = useState<FilterValue>(type ?? "all");
 
   // No staleTime: an editor publishing or unpublishing something in the
@@ -79,7 +85,12 @@ function ForumsPage() {
         </div>
       </div>
 
-      <ActivityLedger items={filtered} isLoading={isLoading} empty={t("forums.empty")} />
+      <ActivityLedger
+        items={filtered}
+        isLoading={isLoading}
+        empty={t("forums.empty")}
+        initialOpenId={open}
+      />
     </PageLayout>
   );
 }
