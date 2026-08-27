@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { mirrorLinksOnChange, mirrorLinksOnDelete } from '../hooks/syncResearchLinks'
 
 export const Photos: CollectionConfig = {
   slug: 'photos',
@@ -10,6 +11,10 @@ export const Photos: CollectionConfig = {
   },
   versions: {
     drafts: true,
+  },
+  hooks: {
+    afterChange: [mirrorLinksOnChange({ field: 'researchLines', relationTo: 'research', mirrorField: 'relatedPhotos' })],
+    afterDelete: [mirrorLinksOnDelete({ relationTo: 'research', mirrorField: 'relatedPhotos' })],
   },
   access: {
     read: ({ req }) => {
@@ -69,6 +74,17 @@ export const Photos: CollectionConfig = {
       admin: {
         description:
           'People shown in this photo. Each one appears as a clickable tag linking to their profile under About → Participants.',
+      },
+    },
+    {
+      name: 'researchLines',
+      type: 'relationship',
+      relationTo: 'research',
+      hasMany: true,
+      label: 'Research Line(s)',
+      admin: {
+        position: 'sidebar',
+        description: 'Which research line(s) this photo is from. Shows up on that research line\'s page automatically.',
       },
     },
   ],

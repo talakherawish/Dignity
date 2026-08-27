@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { mirrorLinksOnChange, mirrorLinksOnDelete } from '../hooks/syncResearchLinks'
 
 export const Forums: CollectionConfig = {
   slug: 'forums',
@@ -11,6 +12,10 @@ export const Forums: CollectionConfig = {
   },
   versions: {
     drafts: true,
+  },
+  hooks: {
+    afterChange: [mirrorLinksOnChange({ field: 'researchLines', relationTo: 'research', mirrorField: 'relatedForums' })],
+    afterDelete: [mirrorLinksOnDelete({ relationTo: 'research', mirrorField: 'relatedForums' })],
   },
   access: {
     read: ({ req }) => {
@@ -120,6 +125,17 @@ export const Forums: CollectionConfig = {
           admin: { rtl: true },
         },
       ],
+    },
+    {
+      name: 'researchLines',
+      type: 'relationship',
+      relationTo: 'research',
+      hasMany: true,
+      label: 'Research Line(s)',
+      admin: {
+        position: 'sidebar',
+        description: 'Which research line(s) this forum came out of. Shows up on that research line\'s page automatically.',
+      },
     },
   ],
 }

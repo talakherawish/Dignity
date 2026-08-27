@@ -1,4 +1,5 @@
-import type { CollectionConfig, Field } from 'payload'
+import type { CollectionConfig, CollectionSlug, Field } from 'payload'
+import { mirrorLinksOnChange, mirrorLinksOnDelete } from '../hooks/syncResearchLinks'
 
 /**
  * The seven publication collections — one for each entry under Publications in
@@ -99,14 +100,32 @@ function publicationFields(): Field[] {
       relationTo: 'media',
       label: 'Cover Image or Thumbnail',
     },
+    {
+      name: 'researchLines',
+      type: 'relationship',
+      relationTo: 'research',
+      hasMany: true,
+      label: 'Research Line(s)',
+      admin: {
+        position: 'sidebar',
+        description: 'Which research line(s) this is an output of. Shows up on that research line\'s page automatically.',
+      },
+    },
   ]
 }
 
+/**
+ * `researchField` is the matching `related*` field back on Research (see
+ * OUTPUT_LINKS in Research.ts) -- it's what this collection's `researchLines`
+ * field stays mirrored against, so an editor can attach the link from either
+ * side. See src/hooks/syncResearchLinks.ts.
+ */
 function publicationCollection(
-  slug: string,
+  slug: CollectionSlug,
   singular: string,
   plural: string,
   description: string,
+  researchField: string,
 ): CollectionConfig {
   return {
     slug,
@@ -119,6 +138,10 @@ function publicationCollection(
     },
     versions: {
       drafts: true,
+    },
+    hooks: {
+      afterChange: [mirrorLinksOnChange({ field: 'researchLines', relationTo: 'research', mirrorField: researchField })],
+      afterDelete: [mirrorLinksOnDelete({ relationTo: 'research', mirrorField: researchField })],
     },
     access: {
       read: ({ req }) => {
@@ -138,6 +161,7 @@ export const Books = publicationCollection(
   'Book',
   'Books',
   'Shows on the website under Publications → Books.',
+  'relatedBooks',
 )
 
 export const Papers = publicationCollection(
@@ -145,6 +169,7 @@ export const Papers = publicationCollection(
   'Paper',
   'Papers',
   'Shows on the website under Publications → Papers.',
+  'relatedPapers',
 )
 
 export const Reports = publicationCollection(
@@ -152,6 +177,7 @@ export const Reports = publicationCollection(
   'Report',
   'Reports',
   'Shows on the website under Publications → Reports.',
+  'relatedReports',
 )
 
 export const Brochures = publicationCollection(
@@ -159,6 +185,7 @@ export const Brochures = publicationCollection(
   'Brochure',
   'Brochures',
   'Shows on the website under Publications → Brochures.',
+  'relatedBrochures',
 )
 
 export const Theses = publicationCollection(
@@ -166,6 +193,7 @@ export const Theses = publicationCollection(
   'Thesis',
   'Theses',
   'Shows on the website under Publications → Theses.',
+  'relatedTheses',
 )
 
 export const Audiovisual = publicationCollection(
@@ -173,6 +201,7 @@ export const Audiovisual = publicationCollection(
   'Audiovisual Item',
   'Audiovisual',
   'Shows on the website under Publications → Audiovisual. Videos are usually a link rather than an upload.',
+  'relatedAudiovisual',
 )
 
 export const Posters = publicationCollection(
@@ -180,4 +209,5 @@ export const Posters = publicationCollection(
   'Poster',
   'Posters',
   'Shows on the website under Publications → Posters.',
+  'relatedPosters',
 )

@@ -1,4 +1,19 @@
 import type { CollectionConfig } from 'payload'
+import { mirrorLinksOnChange, mirrorLinksOnDelete } from '../hooks/syncResearchLinks'
+
+/** Every output type a research line can list, and the field each mirrors on the other side. */
+const OUTPUT_LINKS = [
+  { field: 'relatedBooks', relationTo: 'books' },
+  { field: 'relatedPapers', relationTo: 'papers' },
+  { field: 'relatedReports', relationTo: 'reports' },
+  { field: 'relatedBrochures', relationTo: 'brochures' },
+  { field: 'relatedTheses', relationTo: 'theses' },
+  { field: 'relatedAudiovisual', relationTo: 'audiovisual' },
+  { field: 'relatedPosters', relationTo: 'posters' },
+  { field: 'relatedClippings', relationTo: 'clippings' },
+  { field: 'relatedPhotos', relationTo: 'photos' },
+  { field: 'relatedForums', relationTo: 'forums' },
+] as const
 
 /** "Dignity of Children" -> "dignity-of-children". */
 function toSlug(value: string): string {
@@ -32,6 +47,15 @@ export const Research: CollectionConfig = {
         return data
       },
     ],
+    // Keeps each `related*` field in sync with the matching output's own
+    // `researchLines` field -- see src/hooks/syncResearchLinks.ts. Editors can
+    // attach an output from either this page or the output's own page.
+    afterChange: OUTPUT_LINKS.map(({ field, relationTo }) =>
+      mirrorLinksOnChange({ field, relationTo, mirrorField: 'researchLines' }),
+    ),
+    afterDelete: OUTPUT_LINKS.map(({ relationTo }) =>
+      mirrorLinksOnDelete({ relationTo, mirrorField: 'researchLines' }),
+    ),
   },
   access: {
     read: ({ req }) => {
@@ -162,6 +186,16 @@ export const Research: CollectionConfig = {
       relationTo: 'photos',
       hasMany: true,
       label: 'Photos from this research',
+    },
+    {
+      name: 'relatedForums',
+      type: 'relationship',
+      relationTo: 'forums',
+      hasMany: true,
+      label: 'Forums from this research',
+      admin: {
+        description: 'Seminars, roundtables, workshops, and conferences that came out of this research.',
+      },
     },
   ],
 }

@@ -391,6 +391,10 @@ export interface Photo {
    */
   taggedParticipants?: (string | Participant)[] | null;
   /**
+   * Which research line(s) this photo is from. Shows up on that research line's page automatically.
+   */
+  researchLines?: (string | Research)[] | null;
+  /**
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
   publicationStatus?: string | null;
@@ -455,6 +459,389 @@ export interface Forum {
       }[]
     | null;
   /**
+   * Which research line(s) this forum came out of. Shows up on that research line's page automatically.
+   */
+  researchLines?: (string | Research)[] | null;
+  /**
+   * Read-only. Reflects the Publish / Save as Draft state above.
+   */
+  publicationStatus?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Shows on the website under Activities → Research. Each entry gets its own page, where the publications, clippings and photos selected below appear alongside it.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "research".
+ */
+export interface Research {
+  id: string;
+  title: string;
+  titleAr: string;
+  description?: string | null;
+  descriptionAr?: string | null;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  contentAr?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  image?: (string | null) | Media;
+  /**
+   * Filled in automatically from the English title. It is the end of this entry's web address, so changing it after the page has been shared will break the old link.
+   */
+  slug?: string | null;
+  /**
+   * Select existing books or add new ones.
+   */
+  relatedBooks?: (string | Book)[] | null;
+  relatedPapers?: (string | Paper)[] | null;
+  relatedReports?: (string | Report)[] | null;
+  relatedBrochures?: (string | Brochure)[] | null;
+  relatedTheses?: (string | Thesis)[] | null;
+  relatedAudiovisual?: (string | Audiovisual)[] | null;
+  relatedPosters?: (string | Poster)[] | null;
+  relatedClippings?: (string | Clipping)[] | null;
+  relatedPhotos?: (string | Photo)[] | null;
+  /**
+   * Seminars, roundtables, workshops, and conferences that came out of this research.
+   */
+  relatedForums?: (string | Forum)[] | null;
+  /**
+   * Read-only. Reflects the Publish / Save as Draft state above.
+   */
+  publicationStatus?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Shows on the website under Publications → Books.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "books".
+ */
+export interface Book {
+  id: string;
+  title: string;
+  titleAr: string;
+  author?: string | null;
+  authorAr?: string | null;
+  date?: string | null;
+  description?: string | null;
+  descriptionAr?: string | null;
+  /**
+   * Shown to readers in both languages. Leave this as the only file unless the Arabic version below is a genuinely different document.
+   */
+  file?: (string | null) | Media;
+  /**
+   * Only needed when the Arabic file is a different document from the one above — a separate translation, say. Leave empty to show the same file to everyone.
+   */
+  fileAr?: (string | null) | Media;
+  /**
+   * Use for items that live elsewhere rather than as an uploaded file — a YouTube video, for example. Leave empty when a file is attached above.
+   */
+  link?: string | null;
+  /**
+   * Only needed when the Arabic destination differs from the link above.
+   */
+  linkAr?: string | null;
+  image?: (string | null) | Media;
+  /**
+   * Which research line(s) this is an output of. Shows up on that research line's page automatically.
+   */
+  researchLines?: (string | Research)[] | null;
+  /**
+   * Read-only. Reflects the Publish / Save as Draft state above.
+   */
+  publicationStatus?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Shows on the website under Publications → Papers.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "papers".
+ */
+export interface Paper {
+  id: string;
+  title: string;
+  titleAr: string;
+  author?: string | null;
+  authorAr?: string | null;
+  date?: string | null;
+  description?: string | null;
+  descriptionAr?: string | null;
+  /**
+   * Shown to readers in both languages. Leave this as the only file unless the Arabic version below is a genuinely different document.
+   */
+  file?: (string | null) | Media;
+  /**
+   * Only needed when the Arabic file is a different document from the one above — a separate translation, say. Leave empty to show the same file to everyone.
+   */
+  fileAr?: (string | null) | Media;
+  /**
+   * Use for items that live elsewhere rather than as an uploaded file — a YouTube video, for example. Leave empty when a file is attached above.
+   */
+  link?: string | null;
+  /**
+   * Only needed when the Arabic destination differs from the link above.
+   */
+  linkAr?: string | null;
+  image?: (string | null) | Media;
+  /**
+   * Which research line(s) this is an output of. Shows up on that research line's page automatically.
+   */
+  researchLines?: (string | Research)[] | null;
+  /**
+   * Read-only. Reflects the Publish / Save as Draft state above.
+   */
+  publicationStatus?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Shows on the website under Publications → Reports.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "reports".
+ */
+export interface Report {
+  id: string;
+  title: string;
+  titleAr: string;
+  author?: string | null;
+  authorAr?: string | null;
+  date?: string | null;
+  description?: string | null;
+  descriptionAr?: string | null;
+  /**
+   * Shown to readers in both languages. Leave this as the only file unless the Arabic version below is a genuinely different document.
+   */
+  file?: (string | null) | Media;
+  /**
+   * Only needed when the Arabic file is a different document from the one above — a separate translation, say. Leave empty to show the same file to everyone.
+   */
+  fileAr?: (string | null) | Media;
+  /**
+   * Use for items that live elsewhere rather than as an uploaded file — a YouTube video, for example. Leave empty when a file is attached above.
+   */
+  link?: string | null;
+  /**
+   * Only needed when the Arabic destination differs from the link above.
+   */
+  linkAr?: string | null;
+  image?: (string | null) | Media;
+  /**
+   * Which research line(s) this is an output of. Shows up on that research line's page automatically.
+   */
+  researchLines?: (string | Research)[] | null;
+  /**
+   * Read-only. Reflects the Publish / Save as Draft state above.
+   */
+  publicationStatus?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Shows on the website under Publications → Brochures.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "brochures".
+ */
+export interface Brochure {
+  id: string;
+  title: string;
+  titleAr: string;
+  author?: string | null;
+  authorAr?: string | null;
+  date?: string | null;
+  description?: string | null;
+  descriptionAr?: string | null;
+  /**
+   * Shown to readers in both languages. Leave this as the only file unless the Arabic version below is a genuinely different document.
+   */
+  file?: (string | null) | Media;
+  /**
+   * Only needed when the Arabic file is a different document from the one above — a separate translation, say. Leave empty to show the same file to everyone.
+   */
+  fileAr?: (string | null) | Media;
+  /**
+   * Use for items that live elsewhere rather than as an uploaded file — a YouTube video, for example. Leave empty when a file is attached above.
+   */
+  link?: string | null;
+  /**
+   * Only needed when the Arabic destination differs from the link above.
+   */
+  linkAr?: string | null;
+  image?: (string | null) | Media;
+  /**
+   * Which research line(s) this is an output of. Shows up on that research line's page automatically.
+   */
+  researchLines?: (string | Research)[] | null;
+  /**
+   * Read-only. Reflects the Publish / Save as Draft state above.
+   */
+  publicationStatus?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Shows on the website under Publications → Theses.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "theses".
+ */
+export interface Thesis {
+  id: string;
+  title: string;
+  titleAr: string;
+  author?: string | null;
+  authorAr?: string | null;
+  date?: string | null;
+  description?: string | null;
+  descriptionAr?: string | null;
+  /**
+   * Shown to readers in both languages. Leave this as the only file unless the Arabic version below is a genuinely different document.
+   */
+  file?: (string | null) | Media;
+  /**
+   * Only needed when the Arabic file is a different document from the one above — a separate translation, say. Leave empty to show the same file to everyone.
+   */
+  fileAr?: (string | null) | Media;
+  /**
+   * Use for items that live elsewhere rather than as an uploaded file — a YouTube video, for example. Leave empty when a file is attached above.
+   */
+  link?: string | null;
+  /**
+   * Only needed when the Arabic destination differs from the link above.
+   */
+  linkAr?: string | null;
+  image?: (string | null) | Media;
+  /**
+   * Which research line(s) this is an output of. Shows up on that research line's page automatically.
+   */
+  researchLines?: (string | Research)[] | null;
+  /**
+   * Read-only. Reflects the Publish / Save as Draft state above.
+   */
+  publicationStatus?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Shows on the website under Publications → Audiovisual. Videos are usually a link rather than an upload.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "audiovisual".
+ */
+export interface Audiovisual {
+  id: string;
+  title: string;
+  titleAr: string;
+  author?: string | null;
+  authorAr?: string | null;
+  date?: string | null;
+  description?: string | null;
+  descriptionAr?: string | null;
+  /**
+   * Shown to readers in both languages. Leave this as the only file unless the Arabic version below is a genuinely different document.
+   */
+  file?: (string | null) | Media;
+  /**
+   * Only needed when the Arabic file is a different document from the one above — a separate translation, say. Leave empty to show the same file to everyone.
+   */
+  fileAr?: (string | null) | Media;
+  /**
+   * Use for items that live elsewhere rather than as an uploaded file — a YouTube video, for example. Leave empty when a file is attached above.
+   */
+  link?: string | null;
+  /**
+   * Only needed when the Arabic destination differs from the link above.
+   */
+  linkAr?: string | null;
+  image?: (string | null) | Media;
+  /**
+   * Which research line(s) this is an output of. Shows up on that research line's page automatically.
+   */
+  researchLines?: (string | Research)[] | null;
+  /**
+   * Read-only. Reflects the Publish / Save as Draft state above.
+   */
+  publicationStatus?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Shows on the website under Publications → Posters.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "posters".
+ */
+export interface Poster {
+  id: string;
+  title: string;
+  titleAr: string;
+  author?: string | null;
+  authorAr?: string | null;
+  date?: string | null;
+  description?: string | null;
+  descriptionAr?: string | null;
+  /**
+   * Shown to readers in both languages. Leave this as the only file unless the Arabic version below is a genuinely different document.
+   */
+  file?: (string | null) | Media;
+  /**
+   * Only needed when the Arabic file is a different document from the one above — a separate translation, say. Leave empty to show the same file to everyone.
+   */
+  fileAr?: (string | null) | Media;
+  /**
+   * Use for items that live elsewhere rather than as an uploaded file — a YouTube video, for example. Leave empty when a file is attached above.
+   */
+  link?: string | null;
+  /**
+   * Only needed when the Arabic destination differs from the link above.
+   */
+  linkAr?: string | null;
+  image?: (string | null) | Media;
+  /**
+   * Which research line(s) this is an output of. Shows up on that research line's page automatically.
+   */
+  researchLines?: (string | Research)[] | null;
+  /**
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
   publicationStatus?: string | null;
@@ -477,6 +864,10 @@ export interface Clipping {
   titleAr: string;
   date: string;
   image?: (string | null) | Media;
+  /**
+   * Which research line(s) this clipping is about. Shows up on that research line's page automatically.
+   */
+  researchLines?: (string | Research)[] | null;
   /**
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
@@ -553,353 +944,6 @@ export interface Partner {
     };
     [k: string]: unknown;
   } | null;
-  /**
-   * Read-only. Reflects the Publish / Save as Draft state above.
-   */
-  publicationStatus?: string | null;
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
-}
-/**
- * Shows on the website under Activities → Research. Each entry gets its own page, where the publications, clippings and photos selected below appear alongside it.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "research".
- */
-export interface Research {
-  id: string;
-  title: string;
-  titleAr: string;
-  description?: string | null;
-  descriptionAr?: string | null;
-  content?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  contentAr?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  image?: (string | null) | Media;
-  /**
-   * Filled in automatically from the English title. It is the end of this entry's web address, so changing it after the page has been shared will break the old link.
-   */
-  slug?: string | null;
-  /**
-   * Select existing books or add new ones.
-   */
-  relatedBooks?: (string | Book)[] | null;
-  relatedPapers?: (string | Paper)[] | null;
-  relatedReports?: (string | Report)[] | null;
-  relatedBrochures?: (string | Brochure)[] | null;
-  relatedTheses?: (string | Thesis)[] | null;
-  relatedAudiovisual?: (string | Audiovisual)[] | null;
-  relatedPosters?: (string | Poster)[] | null;
-  relatedClippings?: (string | Clipping)[] | null;
-  relatedPhotos?: (string | Photo)[] | null;
-  /**
-   * Read-only. Reflects the Publish / Save as Draft state above.
-   */
-  publicationStatus?: string | null;
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
-}
-/**
- * Shows on the website under Publications → Books.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "books".
- */
-export interface Book {
-  id: string;
-  title: string;
-  titleAr: string;
-  author?: string | null;
-  authorAr?: string | null;
-  date?: string | null;
-  description?: string | null;
-  descriptionAr?: string | null;
-  /**
-   * Shown to readers in both languages. Leave this as the only file unless the Arabic version below is a genuinely different document.
-   */
-  file?: (string | null) | Media;
-  /**
-   * Only needed when the Arabic file is a different document from the one above — a separate translation, say. Leave empty to show the same file to everyone.
-   */
-  fileAr?: (string | null) | Media;
-  /**
-   * Use for items that live elsewhere rather than as an uploaded file — a YouTube video, for example. Leave empty when a file is attached above.
-   */
-  link?: string | null;
-  /**
-   * Only needed when the Arabic destination differs from the link above.
-   */
-  linkAr?: string | null;
-  image?: (string | null) | Media;
-  /**
-   * Read-only. Reflects the Publish / Save as Draft state above.
-   */
-  publicationStatus?: string | null;
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
-}
-/**
- * Shows on the website under Publications → Papers.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "papers".
- */
-export interface Paper {
-  id: string;
-  title: string;
-  titleAr: string;
-  author?: string | null;
-  authorAr?: string | null;
-  date?: string | null;
-  description?: string | null;
-  descriptionAr?: string | null;
-  /**
-   * Shown to readers in both languages. Leave this as the only file unless the Arabic version below is a genuinely different document.
-   */
-  file?: (string | null) | Media;
-  /**
-   * Only needed when the Arabic file is a different document from the one above — a separate translation, say. Leave empty to show the same file to everyone.
-   */
-  fileAr?: (string | null) | Media;
-  /**
-   * Use for items that live elsewhere rather than as an uploaded file — a YouTube video, for example. Leave empty when a file is attached above.
-   */
-  link?: string | null;
-  /**
-   * Only needed when the Arabic destination differs from the link above.
-   */
-  linkAr?: string | null;
-  image?: (string | null) | Media;
-  /**
-   * Read-only. Reflects the Publish / Save as Draft state above.
-   */
-  publicationStatus?: string | null;
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
-}
-/**
- * Shows on the website under Publications → Reports.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "reports".
- */
-export interface Report {
-  id: string;
-  title: string;
-  titleAr: string;
-  author?: string | null;
-  authorAr?: string | null;
-  date?: string | null;
-  description?: string | null;
-  descriptionAr?: string | null;
-  /**
-   * Shown to readers in both languages. Leave this as the only file unless the Arabic version below is a genuinely different document.
-   */
-  file?: (string | null) | Media;
-  /**
-   * Only needed when the Arabic file is a different document from the one above — a separate translation, say. Leave empty to show the same file to everyone.
-   */
-  fileAr?: (string | null) | Media;
-  /**
-   * Use for items that live elsewhere rather than as an uploaded file — a YouTube video, for example. Leave empty when a file is attached above.
-   */
-  link?: string | null;
-  /**
-   * Only needed when the Arabic destination differs from the link above.
-   */
-  linkAr?: string | null;
-  image?: (string | null) | Media;
-  /**
-   * Read-only. Reflects the Publish / Save as Draft state above.
-   */
-  publicationStatus?: string | null;
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
-}
-/**
- * Shows on the website under Publications → Brochures.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "brochures".
- */
-export interface Brochure {
-  id: string;
-  title: string;
-  titleAr: string;
-  author?: string | null;
-  authorAr?: string | null;
-  date?: string | null;
-  description?: string | null;
-  descriptionAr?: string | null;
-  /**
-   * Shown to readers in both languages. Leave this as the only file unless the Arabic version below is a genuinely different document.
-   */
-  file?: (string | null) | Media;
-  /**
-   * Only needed when the Arabic file is a different document from the one above — a separate translation, say. Leave empty to show the same file to everyone.
-   */
-  fileAr?: (string | null) | Media;
-  /**
-   * Use for items that live elsewhere rather than as an uploaded file — a YouTube video, for example. Leave empty when a file is attached above.
-   */
-  link?: string | null;
-  /**
-   * Only needed when the Arabic destination differs from the link above.
-   */
-  linkAr?: string | null;
-  image?: (string | null) | Media;
-  /**
-   * Read-only. Reflects the Publish / Save as Draft state above.
-   */
-  publicationStatus?: string | null;
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
-}
-/**
- * Shows on the website under Publications → Theses.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "theses".
- */
-export interface Thesis {
-  id: string;
-  title: string;
-  titleAr: string;
-  author?: string | null;
-  authorAr?: string | null;
-  date?: string | null;
-  description?: string | null;
-  descriptionAr?: string | null;
-  /**
-   * Shown to readers in both languages. Leave this as the only file unless the Arabic version below is a genuinely different document.
-   */
-  file?: (string | null) | Media;
-  /**
-   * Only needed when the Arabic file is a different document from the one above — a separate translation, say. Leave empty to show the same file to everyone.
-   */
-  fileAr?: (string | null) | Media;
-  /**
-   * Use for items that live elsewhere rather than as an uploaded file — a YouTube video, for example. Leave empty when a file is attached above.
-   */
-  link?: string | null;
-  /**
-   * Only needed when the Arabic destination differs from the link above.
-   */
-  linkAr?: string | null;
-  image?: (string | null) | Media;
-  /**
-   * Read-only. Reflects the Publish / Save as Draft state above.
-   */
-  publicationStatus?: string | null;
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
-}
-/**
- * Shows on the website under Publications → Audiovisual. Videos are usually a link rather than an upload.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "audiovisual".
- */
-export interface Audiovisual {
-  id: string;
-  title: string;
-  titleAr: string;
-  author?: string | null;
-  authorAr?: string | null;
-  date?: string | null;
-  description?: string | null;
-  descriptionAr?: string | null;
-  /**
-   * Shown to readers in both languages. Leave this as the only file unless the Arabic version below is a genuinely different document.
-   */
-  file?: (string | null) | Media;
-  /**
-   * Only needed when the Arabic file is a different document from the one above — a separate translation, say. Leave empty to show the same file to everyone.
-   */
-  fileAr?: (string | null) | Media;
-  /**
-   * Use for items that live elsewhere rather than as an uploaded file — a YouTube video, for example. Leave empty when a file is attached above.
-   */
-  link?: string | null;
-  /**
-   * Only needed when the Arabic destination differs from the link above.
-   */
-  linkAr?: string | null;
-  image?: (string | null) | Media;
-  /**
-   * Read-only. Reflects the Publish / Save as Draft state above.
-   */
-  publicationStatus?: string | null;
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
-}
-/**
- * Shows on the website under Publications → Posters.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "posters".
- */
-export interface Poster {
-  id: string;
-  title: string;
-  titleAr: string;
-  author?: string | null;
-  authorAr?: string | null;
-  date?: string | null;
-  description?: string | null;
-  descriptionAr?: string | null;
-  /**
-   * Shown to readers in both languages. Leave this as the only file unless the Arabic version below is a genuinely different document.
-   */
-  file?: (string | null) | Media;
-  /**
-   * Only needed when the Arabic file is a different document from the one above — a separate translation, say. Leave empty to show the same file to everyone.
-   */
-  fileAr?: (string | null) | Media;
-  /**
-   * Use for items that live elsewhere rather than as an uploaded file — a YouTube video, for example. Leave empty when a file is attached above.
-   */
-  link?: string | null;
-  /**
-   * Only needed when the Arabic destination differs from the link above.
-   */
-  linkAr?: string | null;
-  image?: (string | null) | Media;
   /**
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
@@ -1361,6 +1405,7 @@ export interface PhotosSelect<T extends boolean = true> {
   image?: T;
   relatedActivity?: T;
   taggedParticipants?: T;
+  researchLines?: T;
   publicationStatus?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1375,6 +1420,7 @@ export interface ClippingsSelect<T extends boolean = true> {
   titleAr?: T;
   date?: T;
   image?: T;
+  researchLines?: T;
   publicationStatus?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1432,6 +1478,7 @@ export interface ResearchSelect<T extends boolean = true> {
   relatedPosters?: T;
   relatedClippings?: T;
   relatedPhotos?: T;
+  relatedForums?: T;
   publicationStatus?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1459,6 +1506,7 @@ export interface ForumsSelect<T extends boolean = true> {
         captionAr?: T;
         id?: T;
       };
+  researchLines?: T;
   publicationStatus?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1499,6 +1547,7 @@ export interface BooksSelect<T extends boolean = true> {
   link?: T;
   linkAr?: T;
   image?: T;
+  researchLines?: T;
   publicationStatus?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1521,6 +1570,7 @@ export interface PapersSelect<T extends boolean = true> {
   link?: T;
   linkAr?: T;
   image?: T;
+  researchLines?: T;
   publicationStatus?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1543,6 +1593,7 @@ export interface ReportsSelect<T extends boolean = true> {
   link?: T;
   linkAr?: T;
   image?: T;
+  researchLines?: T;
   publicationStatus?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1565,6 +1616,7 @@ export interface BrochuresSelect<T extends boolean = true> {
   link?: T;
   linkAr?: T;
   image?: T;
+  researchLines?: T;
   publicationStatus?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1587,6 +1639,7 @@ export interface ThesesSelect<T extends boolean = true> {
   link?: T;
   linkAr?: T;
   image?: T;
+  researchLines?: T;
   publicationStatus?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1609,6 +1662,7 @@ export interface AudiovisualSelect<T extends boolean = true> {
   link?: T;
   linkAr?: T;
   image?: T;
+  researchLines?: T;
   publicationStatus?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1631,6 +1685,7 @@ export interface PostersSelect<T extends boolean = true> {
   link?: T;
   linkAr?: T;
   image?: T;
+  researchLines?: T;
   publicationStatus?: T;
   updatedAt?: T;
   createdAt?: T;

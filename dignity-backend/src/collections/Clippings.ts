@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { mirrorLinksOnChange, mirrorLinksOnDelete } from '../hooks/syncResearchLinks'
 
 export const Clippings: CollectionConfig = {
   slug: 'clippings',
@@ -10,6 +11,10 @@ export const Clippings: CollectionConfig = {
   },
   versions: {
     drafts: true,
+  },
+  hooks: {
+    afterChange: [mirrorLinksOnChange({ field: 'researchLines', relationTo: 'research', mirrorField: 'relatedClippings' })],
+    afterDelete: [mirrorLinksOnDelete({ relationTo: 'research', mirrorField: 'relatedClippings' })],
   },
   access: {
     read: ({ req }) => {
@@ -46,6 +51,17 @@ export const Clippings: CollectionConfig = {
       type: 'upload',
       relationTo: 'media',
       label: 'Scanned Image',
+    },
+    {
+      name: 'researchLines',
+      type: 'relationship',
+      relationTo: 'research',
+      hasMany: true,
+      label: 'Research Line(s)',
+      admin: {
+        position: 'sidebar',
+        description: 'Which research line(s) this clipping is about. Shows up on that research line\'s page automatically.',
+      },
     },
   ],
 }
