@@ -18,7 +18,10 @@
     "test:int": "cross-env NODE_OPTIONS=--no-deprecation vitest run --config ./vitest.config.mts"
   },
   "dependencies": {
+    "@payloadcms/db-mongodb": "3.85.0",
+    "@payloadcms/email-nodemailer": "^3.85.0",
     "@payloadcms/next": "3.85.0",
+    "@payloadcms/plugin-cloud-storage": "3.85.0",
     "@payloadcms/richtext-lexical": "3.85.0",
     "@payloadcms/ui": "3.85.0",
     "cross-env": "^7.0.3",
@@ -29,9 +32,7 @@
     "pdf-to-img": "^6.2.0",
     "react": "19.2.6",
     "react-dom": "19.2.6",
-    "sharp": "0.34.2",
-    "@payloadcms/db-mongodb": "3.85.0",
-    "@payloadcms/plugin-cloud-storage": "3.85.0"
+    "sharp": "0.34.2"
   },
   "devDependencies": {
     "@playwright/test": "1.58.2",

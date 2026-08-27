@@ -4,7 +4,12 @@ import { useQuery } from "@tanstack/react-query";
 import { Search, X, Mail } from "lucide-react";
 import { PageLayout, PageHero } from "@/components/PageLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { fetchParticipants, mediaUrl, type PayloadParticipant } from "@/lib/payload";
+import {
+  fetchParticipants,
+  mediaUrl,
+  PARTICIPANT_ROLE_LABEL,
+  type PayloadParticipant,
+} from "@/lib/payload";
 import { SECTION_COLORS } from "@/lib/sectionColors";
 import talaPhoto from "@/assets/tala.jpg";
 
@@ -30,8 +35,8 @@ const PARTICIPANTS: Participant[] = [
     id: 1,
     name: "Mudar Kassis",
     nameAr: "مضر قسيس",
-    title: "",
-    titleAr: "",
+    title: PARTICIPANT_ROLE_LABEL.team_member.en,
+    titleAr: PARTICIPANT_ROLE_LABEL.team_member.ar,
     category: "team_member",
     email: "m.kassis@birzeit.edu",
     bio: "",
@@ -42,8 +47,8 @@ const PARTICIPANTS: Participant[] = [
     id: 2,
     name: "Eman Al-Assa",
     nameAr: "إيمان العصا",
-    title: "",
-    titleAr: "",
+    title: PARTICIPANT_ROLE_LABEL.team_member.en,
+    titleAr: PARTICIPANT_ROLE_LABEL.team_member.ar,
     category: "team_member",
     email: "e.alassa@birzeit.edu",
     bio: "",
@@ -185,12 +190,13 @@ const CATEGORIES = [
 ];
 
 function mapPayloadParticipant(p: PayloadParticipant, idx: number): Participant {
+  const role = PARTICIPANT_ROLE_LABEL[p.category];
   return {
     id: idx + 1000,
     name: p.name,
     nameAr: p.nameAr ?? p.name,
-    title: p.title ?? "",
-    titleAr: p.titleAr ?? p.title ?? "",
+    title: p.title ?? role.en,
+    titleAr: p.titleAr ?? p.title ?? role.ar,
     category: p.category,
     email: p.email ?? "",
     bio: p.bio ?? "",
@@ -246,11 +252,9 @@ function ParticipantModal({
             <h2 className="font-serif text-2xl text-primary text-center">
               {lang === "ar" ? participant.nameAr : participant.name}
             </h2>
-            {(participant.title || participant.titleAr) && (
-              <p className="text-muted-foreground text-sm text-center mt-1">
-                {lang === "ar" ? participant.titleAr : participant.title}
-              </p>
-            )}
+            <p className="text-muted-foreground text-sm text-center mt-1">
+              {lang === "ar" ? participant.titleAr : participant.title}
+            </p>
             {participant.email && (
               <a
                 href={"mailto:" + participant.email}
@@ -295,11 +299,9 @@ function ParticipantCard({
         <div className="font-serif text-base text-primary leading-tight group-hover:text-accent transition-colors">
           {lang === "ar" ? participant.nameAr : participant.name}
         </div>
-        {(participant.title || participant.titleAr) && (
-          <div className="text-xs text-muted-foreground mt-1">
-            {lang === "ar" ? participant.titleAr : participant.title}
-          </div>
-        )}
+        <div className="text-xs text-muted-foreground mt-1">
+          {lang === "ar" ? participant.titleAr : participant.title}
+        </div>
         <div className="text-[11px] font-medium text-green-600 mt-1.5 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
           {isArabic ? "اضغط لقراءة المزيد" : "Click to read more"}
         </div>

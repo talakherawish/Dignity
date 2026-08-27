@@ -206,18 +206,6 @@
   }
 }
 
-/* Fills a carousel dot to show time remaining on the current slide -- see
-   LatestNewsAndAnnouncements. Anchored with `start-0` rather than `left-0` so
-   it fills toward the reading direction in RTL too. */
-@keyframes newsProgress {
-  from {
-    width: 0%;
-  }
-  to {
-    width: 100%;
-  }
-}
-
 /* ── Arabic typography ─────────────────────────────────────────────────────
    Arabic runs in the same Times New Roman stack as English — see --font-sans
    above. Only the metrics differ: Arabic headings need a little more leading

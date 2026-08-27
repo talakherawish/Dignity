@@ -47,6 +47,9 @@ export type PayloadGalleryItem = {
   captionAr?: string;
 };
 
+/** The four sub-types shown as filter tabs on Activities -> Forums. */
+export type ForumType = "seminar" | "roundtable" | "workshop" | "conference";
+
 export type PayloadActivity = {
   id: string;
   title: string;
@@ -55,6 +58,14 @@ export type PayloadActivity = {
   date: string;
   /** Meetings only, and optional even there: a round table or a discussion. */
   kind?: "roundtable" | "discussion";
+  /**
+   * Which Forum sub-type this item is, if any. Always set on items fetched
+   * from Seminars/Conferences (see fetchForums) -- their collection already
+   * fixes the type. On a Meeting it's optional and set per-document: present
+   * only on the meetings an editor has tagged as a round table or workshop,
+   * absent on plain meetings and discussions, which stay off the Forums page.
+   */
+  forumType?: ForumType;
   description?: unknown;
   descriptionAr?: unknown;
   content?: unknown;
@@ -91,6 +102,19 @@ export type PayloadParticipant = {
   bio?: string;
   bioAr?: string;
   photo?: PayloadMedia;
+};
+
+/** Shown under a participant's name in place of their title when the CMS entry leaves it blank. */
+export const PARTICIPANT_ROLE_LABEL: Record<
+  PayloadParticipant["category"],
+  { en: string; ar: string }
+> = {
+  researcher: { en: "Researcher", ar: "باحث" },
+  visitor: { en: "Visitor", ar: "زائر" },
+  student: { en: "Student", ar: "طالب" },
+  speaker: { en: "Speaker", ar: "متحدث" },
+  author: { en: "Author", ar: "مؤلف" },
+  team_member: { en: "Team Member", ar: "عضو الفريق" },
 };
 
 /**
@@ -530,6 +554,33 @@ export async function fetchResearchBySlug(
 export const fetchWindsorDignity = () =>
   fetchCollection<PayloadActivity>("windsor-dignity", NEWEST_FIRST);
 
+/**
+ * Everything shown on Activities -> Forums: every Seminar, every Conference,
+ * and every Meeting -- there's no separate Meetings section any more, so all
+ * of it lives here. A Meeting's forumType (see that field on the Meetings
+ * collection) says which of the four types it's filed under; one not yet
+ * tagged by an editor still shows up (under "All", just not under any one
+ * filter tab) rather than silently disappearing. The three still live in
+ * separate Payload collections -- no data was moved to build Forums, only
+ * this merge -- so they're fetched in parallel and stitched into one
+ * newest-first list here.
+ */
+export async function fetchForums(): Promise<PayloadActivity[]> {
+  const [seminars, conferences, meetings] = await Promise.all([
+    fetchSeminars(),
+    fetchConferences(),
+    fetchMeetings(),
+  ]);
+
+  const items: PayloadActivity[] = [
+    ...seminars.map((item) => ({ ...item, forumType: "seminar" as const })),
+    ...conferences.map((item) => ({ ...item, forumType: "conference" as const })),
+    ...meetings,
+  ];
+
+  return items.sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
+}
+
 export const fetchPhotos = () => fetchCollection<PayloadPhoto>("photos", NEWEST_FIRST);
 
 export const fetchClippings = () =>
@@ -575,4 +626,28 @@ export async function fetchSiteSettings(): Promise<PayloadSiteSettings | null> {
   } catch {
     return null;
   }
+}
+
+export type SubscribeToMailingListInput = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+};
+
+/**
+ * Submits the footer's "Subscribe" form to the Recipients collection.
+ *
+ * Saving the entry is what actually matters -- the CMS backend notifies
+ * Dignity@birzeit.edu on its own (see dignity-backend's Recipients
+ * afterChange hook) once the record is created. Throws on failure so the
+ * form can show an error instead of a false "subscribed" message.
+ */
+export async function subscribeToMailingList(input: SubscribeToMailingListInput): Promise<void> {
+  const res = await fetch(`${PAYLOAD_URL}/api/recipients`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(input),
+  });
+  if (!res.ok) throw new Error(`Subscribing returned ${res.status}`);
 }

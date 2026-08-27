@@ -142,10 +142,13 @@ export async function buildSearchIndex(): Promise<SearchResult[]> {
       }),
     );
 
+  // Seminars, Conferences, and Meetings are all Forums content now -- there's
+  // no separate Meetings destination to send a result to any more (see
+  // fetchForums).
   const activityGroups: { items: typeof seminars; typeKey: TranslationKey; to: string }[] = [
-    { items: seminars, typeKey: "activities.seminars", to: "/activities/seminars" },
-    { items: conferences, typeKey: "activities.conferences", to: "/activities/conferences" },
-    { items: meetings, typeKey: "activities.meetings", to: "/activities/meetings" },
+    { items: seminars, typeKey: "activities.forums", to: "/activities/forums" },
+    { items: conferences, typeKey: "activities.forums", to: "/activities/forums" },
+    { items: meetings, typeKey: "activities.forums", to: "/activities/forums" },
     { items: windsor, typeKey: "activities.windsor", to: "/activities/windsor-birzeit" },
   ];
   for (const group of activityGroups)

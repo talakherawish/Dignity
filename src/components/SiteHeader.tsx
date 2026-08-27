@@ -34,9 +34,7 @@ const NAV: Item[] = [
     color: SECTION_COLORS.activities,
     children: [
       { labelKey: "activities.research", to: "/projects/research" },
-      { labelKey: "activities.seminars", to: "/activities/seminars" },
-      { labelKey: "activities.conferences", to: "/activities/conferences" },
-      { labelKey: "activities.meetings", to: "/activities/meetings" },
+      { labelKey: "activities.forums", to: "/activities/forums" },
       { labelKey: "activities.windsor", to: "/activities/windsor-birzeit" },
     ],
   },

@@ -6,7 +6,8 @@ export const Meetings: CollectionConfig = {
     group: 'Activities',
     useAsTitle: 'title',
     defaultColumns: ['title', 'date', 'status', 'updatedAt'],
-    description: 'Meetings organized through the Dignity initiative.',
+    description:
+      'Meetings organized through the Dignity initiative. There is no separate Meetings page on the website any more -- every meeting appears under Activities -> Forums, so set its Forum Type below to say which type it is filed under.',
   },
   versions: {
     drafts: true,
@@ -54,6 +55,30 @@ export const Meetings: CollectionConfig = {
       admin: {
         description:
           'Leave blank for an ordinary meeting. A round table or a discussion is labelled as such above its title on the website.',
+      },
+    },
+    /**
+     * Which of the four Forum sub-types this meeting is filed under. Every
+     * meeting shows on Activities -> Forums regardless -- there is no
+     * separate Meetings page any more -- but only a tagged one shows up
+     * under one of the type filter tabs there; left blank, it still appears
+     * under "All", just not under any specific tab, until an editor tags it.
+     * Independent of `kind` above -- a meeting can carry both, or either
+     * alone -- so tagging one never touches or loses the other.
+     */
+    {
+      name: 'forumType',
+      type: 'select',
+      label: 'Forum Type',
+      options: [
+        { label: 'Seminar', value: 'seminar' },
+        { label: 'Roundtable', value: 'roundtable' },
+        { label: 'Workshop', value: 'workshop' },
+        { label: 'Conference', value: 'conference' },
+      ],
+      admin: {
+        description:
+          'Which type of forum this is. Every meeting appears under Activities -> Forums either way; this decides which filter tab (Seminar/Roundtable/Workshop/Conference) it shows up under. Leave blank for now if unsure -- it will still appear under "All".',
       },
     },
     {

@@ -1,36 +1,13 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
-import { ActivityLedger } from "@/components/ActivityLedger";
-import { PageLayout, PageHero } from "@/components/PageLayout";
-import { useLanguage } from "@/contexts/LanguageContext";
-import { fetchSeminars } from "@/lib/payload";
-import { SECTION_COLORS } from "@/lib/sectionColors";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
+/**
+ * Seminars merged into Activities -> Forums, filterable by type there.
+ * Nothing moved at the database level -- Seminars is still its own Payload
+ * collection (see fetchForums) -- only the site's navigation changed, so
+ * this old link is kept alive as a redirect rather than a 404.
+ */
 export const Route = createFileRoute("/activities/seminars")({
-  head: () => ({ meta: [{ title: "Seminars — Dignity" }] }),
-  component: SeminarsPage,
+  beforeLoad: () => {
+    throw redirect({ to: "/activities/forums", search: { type: "seminar" } });
+  },
 });
-
-function SeminarsPage() {
-  const { t, isArabic } = useLanguage();
-  const { data: items = [], isLoading } = useQuery({
-    queryKey: ["seminars"],
-    queryFn: fetchSeminars,
-    staleTime: 5 * 60 * 1000,
-  });
-
-  return (
-    <PageLayout>
-      <PageHero
-        eyebrow={t("activities")}
-        eyebrowColor={SECTION_COLORS.activities}
-        title={t("activities.seminars")}
-      />
-      <ActivityLedger
-        items={items}
-        isLoading={isLoading}
-        empty={isArabic ? "لا توجد ندوات منشورة حالياً." : "No seminars published yet."}
-      />
-    </PageLayout>
-  );
-}

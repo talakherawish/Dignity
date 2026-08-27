@@ -40,9 +40,10 @@ export const SiteSettings: GlobalConfig = {
             // the wording already saved in the database survives. It is the
             // Research link inside Activities.
             ...pair('navProjectsResearch', 'Activities: Research'),
-            ...pair('navActivitiesSeminars', 'Activities: Seminars'),
-            ...pair('navActivitiesConferences', 'Activities: Conferences'),
-            ...pair('navActivitiesMeetings', 'Activities: Meetings'),
+            // Seminars, Roundtables, Workshops, Conferences and Meetings were
+            // each their own top-level entry (Meetings still had a page of its
+            // own); they are now sub-types on one Forums page.
+            ...pair('navActivitiesForums', 'Activities: Forums'),
             ...pair('navActivitiesWindsor', 'Activities: The Windsor Birzeit Dignity Initiative'),
 
             ...pair('navPublications', 'Publications — menu heading'),
@@ -115,6 +116,11 @@ export const SiteSettings: GlobalConfig = {
             ...pair('contentUntranslated', 'Notice: Body Not Translated Yet'),
             ...pair('kindRoundtable', 'Meeting Kind: Round Table'),
             ...pair('kindDiscussion', 'Meeting Kind: Discussion'),
+            ...pair('forumFilterAll', 'Forums Filter: All'),
+            ...pair('forumTypeSeminar', 'Forum Type: Seminar'),
+            ...pair('forumTypeRoundtable', 'Forum Type: Roundtable'),
+            ...pair('forumTypeWorkshop', 'Forum Type: Workshop'),
+            ...pair('forumTypeConference', 'Forum Type: Conference'),
             ...pair('projectsArea', 'Research Area Label'),
             ...pair('navMedia', 'Media Pages: Section Eyebrow'),
             ],

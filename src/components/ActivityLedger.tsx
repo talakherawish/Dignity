@@ -1,14 +1,22 @@
 import { useState } from "react";
 import { RichText } from "@/components/RichText";
 import { TranslationNotice } from "@/components/TranslationNotice";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage, type TranslationKey } from "@/contexts/LanguageContext";
 import {
   formatDate,
   hasProse,
   mediaUrl,
+  type ForumType,
   type PayloadActivity,
   type PayloadMedia,
 } from "@/lib/payload";
+
+const FORUM_TYPE_LABEL_KEY: Record<ForumType, TranslationKey> = {
+  seminar: "forums.type.seminar",
+  roundtable: "forums.type.roundtable",
+  workshop: "forums.type.workshop",
+  conference: "forums.type.conference",
+};
 
 /**
  * A dated ledger of activities: meetings, seminars, and anything else in
@@ -128,10 +136,14 @@ function ActivityEntry({
   const figures = figuresOf(item, lang);
   const parts = dateParts(item.date, lang);
 
-  // Only some meetings are a round table or a discussion; the rest are simply
-  // meetings and say nothing here.
-  const kind =
-    item.kind === "roundtable"
+  // A Forums item (seminar/roundtable/workshop/conference) shows its type;
+  // failing that, some meetings are a round table or a discussion, and the
+  // rest are simply meetings and say nothing here. forumType takes priority
+  // since a meeting tagged with one has already moved onto the Forums page,
+  // where its type -- not its old kind -- is what a reader needs to see.
+  const kind = item.forumType
+    ? t(FORUM_TYPE_LABEL_KEY[item.forumType])
+    : item.kind === "roundtable"
       ? t("activity.kind.roundtable")
       : item.kind === "discussion"
         ? t("activity.kind.discussion")

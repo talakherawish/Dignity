@@ -18,6 +18,7 @@ import { Route as SearchRouteImport } from './routes/search'
 import { Route as AboutParticipantsRouteImport } from './routes/about.participants'
 import { Route as AboutPartnersRouteImport } from './routes/about.partners'
 import { Route as ActivitiesConferencesRouteImport } from './routes/activities.conferences'
+import { Route as ActivitiesForumsRouteImport } from './routes/activities.forums'
 import { Route as ActivitiesMeetingsRouteImport } from './routes/activities.meetings'
 import { Route as ActivitiesSeminarsRouteImport } from './routes/activities.seminars'
 import { Route as ActivitiesWindsorBirzeitRouteImport } from './routes/activities.windsor-birzeit'
@@ -80,6 +81,11 @@ const AboutPartnersRoute = AboutPartnersRouteImport.update({
 const ActivitiesConferencesRoute = ActivitiesConferencesRouteImport.update({
   id: '/conferences',
   path: '/conferences',
+  getParentRoute: () => ActivitiesRoute,
+} as any)
+const ActivitiesForumsRoute = ActivitiesForumsRouteImport.update({
+  id: '/forums',
+  path: '/forums',
   getParentRoute: () => ActivitiesRoute,
 } as any)
 const ActivitiesMeetingsRoute = ActivitiesMeetingsRouteImport.update({
@@ -184,6 +190,7 @@ export interface FileRoutesByFullPath {
   '/about/participants': typeof AboutParticipantsRoute
   '/about/partners': typeof AboutPartnersRoute
   '/activities/conferences': typeof ActivitiesConferencesRoute
+  '/activities/forums': typeof ActivitiesForumsRoute
   '/activities/meetings': typeof ActivitiesMeetingsRoute
   '/activities/seminars': typeof ActivitiesSeminarsRoute
   '/activities/windsor-birzeit': typeof ActivitiesWindsorBirzeitRoute
@@ -213,6 +220,7 @@ export interface FileRoutesByTo {
   '/about/participants': typeof AboutParticipantsRoute
   '/about/partners': typeof AboutPartnersRoute
   '/activities/conferences': typeof ActivitiesConferencesRoute
+  '/activities/forums': typeof ActivitiesForumsRoute
   '/activities/meetings': typeof ActivitiesMeetingsRoute
   '/activities/seminars': typeof ActivitiesSeminarsRoute
   '/activities/windsor-birzeit': typeof ActivitiesWindsorBirzeitRoute
@@ -243,6 +251,7 @@ export interface FileRoutesById {
   '/about/participants': typeof AboutParticipantsRoute
   '/about/partners': typeof AboutPartnersRoute
   '/activities/conferences': typeof ActivitiesConferencesRoute
+  '/activities/forums': typeof ActivitiesForumsRoute
   '/activities/meetings': typeof ActivitiesMeetingsRoute
   '/activities/seminars': typeof ActivitiesSeminarsRoute
   '/activities/windsor-birzeit': typeof ActivitiesWindsorBirzeitRoute
@@ -274,6 +283,7 @@ export interface FileRouteTypes {
     | '/about/participants'
     | '/about/partners'
     | '/activities/conferences'
+    | '/activities/forums'
     | '/activities/meetings'
     | '/activities/seminars'
     | '/activities/windsor-birzeit'
@@ -303,6 +313,7 @@ export interface FileRouteTypes {
     | '/about/participants'
     | '/about/partners'
     | '/activities/conferences'
+    | '/activities/forums'
     | '/activities/meetings'
     | '/activities/seminars'
     | '/activities/windsor-birzeit'
@@ -332,6 +343,7 @@ export interface FileRouteTypes {
     | '/about/participants'
     | '/about/partners'
     | '/activities/conferences'
+    | '/activities/forums'
     | '/activities/meetings'
     | '/activities/seminars'
     | '/activities/windsor-birzeit'
@@ -430,6 +442,13 @@ declare module '@tanstack/react-router' {
       path: '/conferences'
       fullPath: '/activities/conferences'
       preLoaderRoute: typeof ActivitiesConferencesRouteImport
+      parentRoute: typeof ActivitiesRoute
+    }
+    '/activities/forums': {
+      id: '/activities/forums'
+      path: '/forums'
+      fullPath: '/activities/forums'
+      preLoaderRoute: typeof ActivitiesForumsRouteImport
       parentRoute: typeof ActivitiesRoute
     }
     '/activities/meetings': {
@@ -575,6 +594,7 @@ const AboutRouteWithChildren = AboutRoute._addFileChildren(AboutRouteChildren)
 
 interface ActivitiesRouteChildren {
   ActivitiesConferencesRoute: typeof ActivitiesConferencesRoute
+  ActivitiesForumsRoute: typeof ActivitiesForumsRoute
   ActivitiesMeetingsRoute: typeof ActivitiesMeetingsRoute
   ActivitiesSeminarsRoute: typeof ActivitiesSeminarsRoute
   ActivitiesWindsorBirzeitRoute: typeof ActivitiesWindsorBirzeitRoute
@@ -582,6 +602,7 @@ interface ActivitiesRouteChildren {
 
 const ActivitiesRouteChildren: ActivitiesRouteChildren = {
   ActivitiesConferencesRoute: ActivitiesConferencesRoute,
+  ActivitiesForumsRoute: ActivitiesForumsRoute,
   ActivitiesMeetingsRoute: ActivitiesMeetingsRoute,
   ActivitiesSeminarsRoute: ActivitiesSeminarsRoute,
   ActivitiesWindsorBirzeitRoute: ActivitiesWindsorBirzeitRoute,

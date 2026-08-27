@@ -6,7 +6,8 @@ export const Seminars: CollectionConfig = {
     group: 'Activities',
     useAsTitle: 'title',
     defaultColumns: ['title', 'date', 'status', 'updatedAt'],
-    description: 'Seminars organized through the Dignity initiative.',
+    description:
+      'Seminars organized through the Dignity initiative. Appears on the website under Activities -> Forums, filtered as Seminar.',
   },
   versions: {
     drafts: true,

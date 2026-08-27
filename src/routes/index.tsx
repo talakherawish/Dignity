@@ -13,7 +13,13 @@ import {
   type Article,
 } from "@/data/articles";
 import { withItalicQuotes } from "@/lib/text";
-import { fetchNews, fetchParticipants, mediaUrl, type PayloadParticipant } from "@/lib/payload";
+import {
+  fetchNews,
+  fetchParticipants,
+  mediaUrl,
+  PARTICIPANT_ROLE_LABEL,
+  type PayloadParticipant,
+} from "@/lib/payload";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -40,7 +46,7 @@ const PILLARS: PillarItem[] = [
   {
     titleKey: "pillar.dialogue",
     descKey: "pillar.dialogue.desc",
-    to: "/activities/seminars",
+    to: "/activities/forums",
     color: "var(--brand-magenta)",
   },
   {
@@ -56,6 +62,7 @@ type TeamPerson = {
   nameAr: string;
   title: string;
   titleAr: string;
+  category: PayloadParticipant["category"];
   email: string;
   bio: string;
   bioAr: string;
@@ -68,6 +75,7 @@ const TEAM_FALLBACK: TeamPerson[] = [
     nameAr: "مضر قسيس",
     title: "Director",
     titleAr: "المدير",
+    category: "team_member",
     email: "m.kassis@birzeit.edu",
     bio: "",
     bioAr: "",
@@ -78,6 +86,7 @@ const TEAM_FALLBACK: TeamPerson[] = [
     nameAr: "إيمان العصا",
     title: "Faculty",
     titleAr: "هيئة التدريس",
+    category: "team_member",
     email: "e.alassa@birzeit.edu",
     bio: "",
     bioAr: "",
@@ -88,6 +97,7 @@ const TEAM_FALLBACK: TeamPerson[] = [
     nameAr: "د. رائف زريق",
     title: "Senior Researcher",
     titleAr: "باحث أول",
+    category: "researcher",
     email: "r.zreik@birzeit.edu",
     bio: "Dr. Zreik is a senior researcher whose work focuses on the philosophy of law, colonialism, and dignity.",
     bioAr: "باحث أول يتمحور عمله حول فلسفة القانون والاستعمار والكرامة.",
@@ -96,11 +106,13 @@ const TEAM_FALLBACK: TeamPerson[] = [
 ];
 
 function mapPayloadToTeamPerson(p: PayloadParticipant): TeamPerson {
+  const role = PARTICIPANT_ROLE_LABEL[p.category];
   return {
     name: p.name,
     nameAr: p.nameAr ?? p.name,
-    title: p.title ?? "",
-    titleAr: p.titleAr ?? p.title ?? "",
+    title: p.title ?? role.en,
+    titleAr: p.titleAr ?? p.title ?? role.ar,
+    category: p.category,
     email: p.email ?? "",
     bio: p.bio ?? "",
     bioAr: p.bioAr ?? p.bio ?? "",
@@ -165,7 +177,7 @@ function NewsSlotCard({ article, className = "" }: { article: Article; className
       to="/media/news"
       search={{ id: article.id }}
       className={
-        "group flex min-h-[220px] flex-col justify-center rounded-sm border border-border bg-card p-6 transition-colors hover:border-accent/30 hover:shadow-sm " +
+        "group flex h-[240px] flex-col justify-center overflow-hidden rounded-sm border border-border bg-card p-6 transition-colors hover:border-accent/30 hover:shadow-sm " +
         className
       }
     >
@@ -179,7 +191,7 @@ function NewsSlotCard({ article, className = "" }: { article: Article; className
       </p>
       <h3
         className={
-          "mt-2 font-serif text-lg leading-snug text-primary transition-colors group-hover:text-accent " +
+          "mt-2 line-clamp-3 font-serif text-lg leading-snug text-primary transition-colors group-hover:text-accent " +
           (isArabic ? "md:text-[21px]" : "md:text-xl")
         }
       >
@@ -217,7 +229,7 @@ function NewsSlot({ slot }: { slot: Slot }) {
               src={slot.article.image}
               alt={getField(slot.article, "title", lang)}
               loading="lazy"
-              className="h-48 w-full object-cover sm:h-full sm:min-h-[220px]"
+              className="h-48 w-full object-cover sm:h-[240px]"
             />
           </div>
         </>
@@ -296,26 +308,12 @@ function LatestNewsAndAnnouncements() {
                 aria-label={isArabic ? `الانتقال إلى الشريحة ${i + 1}` : `Go to slide ${i + 1}`}
                 aria-current={i === safeIndex}
                 className={
-                  "relative h-1.5 overflow-hidden rounded-full transition-all " +
+                  "h-1.5 rounded-full transition-all " +
                   (i === safeIndex
-                    ? "w-7 bg-border"
+                    ? "w-7 bg-[color:var(--brand-magenta)]"
                     : "w-1.5 bg-border hover:bg-muted-foreground/40")
                 }
-              >
-                {i === safeIndex && (
-                  <span
-                    key={safeIndex}
-                    className="absolute inset-y-0 start-0 rounded-full bg-[color:var(--brand-magenta)]"
-                    style={{
-                      animationName: "newsProgress",
-                      animationDuration: `${SLOT_INTERVAL_MS}ms`,
-                      animationTimingFunction: "linear",
-                      animationFillMode: "forwards",
-                      animationPlayState: paused ? "paused" : "running",
-                    }}
-                  />
-                )}
-              </button>
+              />
             ))}
           </div>
 
@@ -384,11 +382,9 @@ function TeamModal({
             <h2 className="font-serif text-2xl text-primary text-center">
               {lang === "ar" ? person.nameAr : person.name}
             </h2>
-            {(person.title || person.titleAr) && (
-              <p className="text-muted-foreground text-sm text-center mt-1">
-                {lang === "ar" ? person.titleAr : person.title}
-              </p>
-            )}
+            <p className="text-muted-foreground text-sm text-center mt-1">
+              {lang === "ar" ? person.titleAr : person.title}
+            </p>
             {person.email && (
               <a
                 href={"mailto:" + person.email}
@@ -467,11 +463,9 @@ function TeamSection() {
                     <div className="font-semibold text-sm text-primary leading-tight group-hover:text-accent transition-colors">
                       {lang === "ar" ? person.nameAr : person.name}
                     </div>
-                    {(person.title || person.titleAr) && (
-                      <div className="text-xs text-muted-foreground mt-0.5 leading-snug">
-                        {lang === "ar" ? person.titleAr : person.title}
-                      </div>
-                    )}
+                    <div className="text-xs text-muted-foreground mt-0.5 leading-snug">
+                      {lang === "ar" ? person.titleAr : person.title}
+                    </div>
                     <div className="text-[11px] font-medium text-green-600 mt-1 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                       {isArabic ? "اضغط لقراءة المزيد" : "Click to read more"}
                     </div>

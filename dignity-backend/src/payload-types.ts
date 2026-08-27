@@ -69,6 +69,7 @@ export interface Config {
   collections: {
     users: User;
     media: Media;
+    recipients: Recipient;
     'about-initiative': AboutInitiative;
     participants: Participant;
     news: News;
@@ -98,6 +99,7 @@ export interface Config {
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    recipients: RecipientsSelect<false> | RecipientsSelect<true>;
     'about-initiative': AboutInitiativeSelect<false> | AboutInitiativeSelect<true>;
     participants: ParticipantsSelect<false> | ParticipantsSelect<true>;
     news: NewsSelect<false> | NewsSelect<true>;
@@ -215,6 +217,21 @@ export interface Media {
   height?: number | null;
   focalX?: number | null;
   focalY?: number | null;
+}
+/**
+ * Everyone who subscribed through the "Subscribe" form in the site footer. Select rows and use the list's Export action to download this as a spreadsheet.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "recipients".
+ */
+export interface Recipient {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * The heading, intro and full text of the website's "The Dignity Research Initiative" page. Open the entry below to edit it.
@@ -740,7 +757,7 @@ export interface Poster {
   _status?: ('draft' | 'published') | null;
 }
 /**
- * Seminars organized through the Dignity initiative.
+ * Seminars organized through the Dignity initiative. Appears on the website under Activities -> Forums, filtered as Seminar.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "seminars".
@@ -788,7 +805,7 @@ export interface Seminar {
   _status?: ('draft' | 'published') | null;
 }
 /**
- * Conferences organized through the Dignity initiative.
+ * Conferences organized through the Dignity initiative. Appears on the website under Activities -> Forums, filtered as Conference.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "conferences".
@@ -850,6 +867,10 @@ export interface Meeting {
    * Leave blank for an ordinary meeting. A round table or a discussion is labelled as such above its title on the website.
    */
   kind?: ('roundtable' | 'discussion') | null;
+  /**
+   * Leave blank for an ordinary meeting or discussion. Set this to have the meeting appear under Activities -> Forums instead, filtered under the chosen type.
+   */
+  forumType?: ('seminar' | 'roundtable' | 'workshop' | 'conference') | null;
   description?: string | null;
   descriptionAr?: string | null;
   content?: {
@@ -1099,6 +1120,10 @@ export interface PayloadLockedDocument {
         value: string | Media;
       } | null)
     | ({
+        relationTo: 'recipients';
+        value: string | Recipient;
+      } | null)
+    | ({
         relationTo: 'about-initiative';
         value: string | AboutInitiative;
       } | null)
@@ -1265,6 +1290,18 @@ export interface MediaSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "recipients_select".
+ */
+export interface RecipientsSelect<T extends boolean = true> {
+  firstName?: T;
+  lastName?: T;
+  email?: T;
+  phone?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "about-initiative_select".
  */
 export interface AboutInitiativeSelect<T extends boolean = true> {
@@ -1423,6 +1460,7 @@ export interface MeetingsSelect<T extends boolean = true> {
   titleAr?: T;
   date?: T;
   kind?: T;
+  forumType?: T;
   description?: T;
   descriptionAr?: T;
   content?: T;
@@ -1704,10 +1742,8 @@ export interface SiteSetting {
   navActivitiesAr?: string | null;
   navProjectsResearch?: string | null;
   navProjectsResearchAr?: string | null;
-  navActivitiesSeminars?: string | null;
-  navActivitiesSeminarsAr?: string | null;
-  navActivitiesConferences?: string | null;
-  navActivitiesConferencesAr?: string | null;
+  navActivitiesForums?: string | null;
+  navActivitiesForumsAr?: string | null;
   navActivitiesMeetings?: string | null;
   navActivitiesMeetingsAr?: string | null;
   navActivitiesWindsor?: string | null;
@@ -1820,6 +1856,16 @@ export interface SiteSetting {
   kindRoundtableAr?: string | null;
   kindDiscussion?: string | null;
   kindDiscussionAr?: string | null;
+  forumFilterAll?: string | null;
+  forumFilterAllAr?: string | null;
+  forumTypeSeminar?: string | null;
+  forumTypeSeminarAr?: string | null;
+  forumTypeRoundtable?: string | null;
+  forumTypeRoundtableAr?: string | null;
+  forumTypeWorkshop?: string | null;
+  forumTypeWorkshopAr?: string | null;
+  forumTypeConference?: string | null;
+  forumTypeConferenceAr?: string | null;
   projectsArea?: string | null;
   projectsAreaAr?: string | null;
   navMedia?: string | null;
@@ -1850,10 +1896,8 @@ export interface SiteSettingsSelect<T extends boolean = true> {
   navActivitiesAr?: T;
   navProjectsResearch?: T;
   navProjectsResearchAr?: T;
-  navActivitiesSeminars?: T;
-  navActivitiesSeminarsAr?: T;
-  navActivitiesConferences?: T;
-  navActivitiesConferencesAr?: T;
+  navActivitiesForums?: T;
+  navActivitiesForumsAr?: T;
   navActivitiesMeetings?: T;
   navActivitiesMeetingsAr?: T;
   navActivitiesWindsor?: T;
@@ -1966,6 +2010,16 @@ export interface SiteSettingsSelect<T extends boolean = true> {
   kindRoundtableAr?: T;
   kindDiscussion?: T;
   kindDiscussionAr?: T;
+  forumFilterAll?: T;
+  forumFilterAllAr?: T;
+  forumTypeSeminar?: T;
+  forumTypeSeminarAr?: T;
+  forumTypeRoundtable?: T;
+  forumTypeRoundtableAr?: T;
+  forumTypeWorkshop?: T;
+  forumTypeWorkshopAr?: T;
+  forumTypeConference?: T;
+  forumTypeConferenceAr?: T;
   projectsArea?: T;
   projectsAreaAr?: T;
   navMedia?: T;

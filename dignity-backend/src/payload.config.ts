@@ -1,4 +1,5 @@
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
+import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { cloudStoragePlugin } from '@payloadcms/plugin-cloud-storage'
 import path from 'path'
@@ -9,6 +10,7 @@ import sharp from 'sharp'
 import { createGithubStorageAdapter } from './lib/githubStorageAdapter'
 import { enforceBilingual, enforceBilingualGlobal } from './lib/bilingual'
 import { resolveGithubStorageConfig } from './lib/storageConfig'
+import { resolveEmailConfig } from './lib/emailConfig'
 
 // Resolved once at config load so a missing/half-set storage configuration is
 // reported immediately and loudly, rather than silently degrading to the
@@ -16,8 +18,14 @@ import { resolveGithubStorageConfig } from './lib/storageConfig'
 // uploaded file). See src/lib/storageConfig.ts.
 const storage = resolveGithubStorageConfig()
 
+// Same fail-fast treatment for the SMTP settings the Recipients collection
+// uses to notify Dignity@birzeit.edu of new mailing-list signups. See
+// src/lib/emailConfig.ts.
+const email = resolveEmailConfig()
+
 import { Users } from './collections/Users'
 import { Media } from './collections/Media'
+import { Recipients } from './collections/Recipients'
 import { DignityResearchInitiative, Partners } from './collections/AboutPages'
 import { Participants } from './collections/Participants'
 import { News } from './collections/News'
@@ -66,6 +74,7 @@ export default buildConfig({
     // Admin
     Users,
     Media,
+    Recipients,
 
     // About the Dignity Initiative
     DignityResearchInitiative,
@@ -110,6 +119,20 @@ export default buildConfig({
   db: mongooseAdapter({
     url: process.env.DATABASE_URL || '',
   }),
+  email: email.enabled
+    ? nodemailerAdapter({
+        defaultFromAddress: email.settings.fromAddress,
+        defaultFromName: email.settings.fromName,
+        transportOptions: {
+          host: email.settings.host,
+          port: email.settings.port,
+          auth: {
+            user: email.settings.user,
+            pass: email.settings.pass,
+          },
+        },
+      })
+    : undefined,
   sharp,
   plugins: [
     // Files uploaded through Payload's admin (photos, clippings, PDFs, etc)
