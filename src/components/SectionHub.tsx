@@ -39,7 +39,8 @@ export function SectionTileGrid({ tiles, color }: { tiles: SectionTile[]; color?
           </span>
           <span
             className={
-              "text-sm font-medium leading-snug text-foreground/85 " + (isArabic ? "font-arabic" : "")
+              "text-sm font-medium leading-snug text-foreground/85 " +
+              (isArabic ? "font-arabic" : "")
             }
           >
             {t(tile.labelKey)}
@@ -73,7 +74,12 @@ export function SectionHubPage({
 }) {
   return (
     <PageLayout>
-      <PageHero eyebrow={eyebrow} eyebrowColor={eyebrowColor} title={title} description={description} />
+      <PageHero
+        eyebrow={eyebrow}
+        eyebrowColor={eyebrowColor}
+        title={title}
+        description={description}
+      />
       {children}
       <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-20 pt-6">
         <SectionTileGrid tiles={tiles} color={eyebrowColor} />

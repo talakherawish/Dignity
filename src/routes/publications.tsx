@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Outlet, useLocation } from "@tanstack/react-router";
 import {
   BookOpen,
   ClipboardList,
@@ -14,7 +14,7 @@ import { SECTION_COLORS } from "@/lib/sectionColors";
 
 export const Route = createFileRoute("/publications")({
   head: () => ({ meta: [{ title: "Publications — Dignity" }] }),
-  component: PublicationsHub,
+  component: PublicationsLayout,
 });
 
 const TILES: SectionTile[] = [
@@ -27,8 +27,16 @@ const TILES: SectionTile[] = [
   { labelKey: "publications.posters", to: "/publications/posters", icon: Image },
 ];
 
-function PublicationsHub() {
+// Having this file also makes it the layout route for every publications.*
+// child -- each still renders its own full PageLayout, so the non-index
+// branch here must stay a bare Outlet rather than wrapping them again.
+function PublicationsLayout() {
   const { t } = useLanguage();
+  const { pathname } = useLocation();
+  const isIndex = pathname === "/publications" || pathname === "/publications/";
+
+  if (!isIndex) return <Outlet />;
+
   return (
     <SectionHubPage
       eyebrowColor={SECTION_COLORS.publications}

@@ -61,7 +61,7 @@ export const ARTICLES: Article[] = [
 
   {
     id: "research-ethics-portal",
-    image: "" /* TEMP-TEST: verifying pair-slot rendering */,
+    image: relpImg,
     date: {
       en: "November 21, 2022",
       ar: "٢١ تشرين الثاني/نوفمبر ٢٠٢٢",
@@ -96,7 +96,7 @@ export const ARTICLES: Article[] = [
 
   {
     id: "revolutionary-heritage",
-    image: "" /* TEMP-TEST: verifying pair-slot rendering */,
+    image: article3Img,
     date: {
       en: "March 12, 2022",
       ar: "١٢ آذار/مارس ٢٠٢٢",
