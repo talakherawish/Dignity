@@ -1,99 +1,17 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { PageLayout, PageHero } from "@/components/PageLayout";
-import { useLanguage } from "@/contexts/LanguageContext";
-import { fetchAnnouncements, formatDate, type PayloadAnnouncement } from "@/lib/payload";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
 type AnnouncementsSearch = { id?: string };
 
+/**
+ * Announcements merged into News & Announcements at /media/news. Announcement
+ * documents were copied into the `news` collection at the database level,
+ * keeping their ids, so an old ?id=... link still resolves once redirected.
+ */
 export const Route = createFileRoute("/media/announcements")({
-  head: () => ({ meta: [{ title: "Announcements — Dignity" }] }),
   validateSearch: (search: Record<string, unknown>): AnnouncementsSearch => ({
     id: typeof search.id === "string" ? search.id : undefined,
   }),
-  component: AnnouncementsPage,
+  beforeLoad: ({ search }) => {
+    throw redirect({ to: "/media/news", search: search.id ? { id: search.id } : {} });
+  },
 });
-
-function AnnouncementsPage() {
-  const { t, lang, isArabic } = useLanguage();
-  const { id: linkedId } = Route.useSearch();
-  const { data: items = [], isLoading } = useQuery({
-    queryKey: ["announcements"],
-    queryFn: fetchAnnouncements,
-    staleTime: 5 * 60 * 1000,
-  });
-
-  // Cards show everything up front, so there's no panel to open here -- just
-  // scroll the linked one into view once the list has loaded.
-  useEffect(() => {
-    if (!linkedId || isLoading) return;
-    document.getElementById(`announcement-${linkedId}`)?.scrollIntoView({ block: "center" });
-  }, [linkedId, isLoading]);
-
-  return (
-    <PageLayout>
-      <PageHero
-        eyebrow={`${t("media")} — ${t("media.announcements")}`}
-        title={t("media.announcements")}
-      />
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {isLoading ? (
-          <div className="grid gap-4 sm:grid-cols-3">
-            {[1, 2, 3].map((n) => (
-              <div
-                key={n}
-                className="border border-border rounded-lg h-36 bg-secondary/30 animate-pulse"
-              />
-            ))}
-          </div>
-        ) : items.length === 0 ? (
-          <p className="text-sm text-muted-foreground py-12 text-center">
-            {isArabic ? "لا توجد إعلانات منشورة حالياً." : "No announcements published yet."}
-          </p>
-        ) : (
-          <div className="grid gap-4 sm:grid-cols-3" dir={isArabic ? "rtl" : "ltr"}>
-            {items.map((item: PayloadAnnouncement) => (
-              <div
-                key={item.id}
-                id={`announcement-${item.id}`}
-                className={
-                  "scroll-mt-24 bg-card border rounded-lg overflow-hidden transition-colors" +
-                  (item.id === linkedId ? " border-[color:var(--brand-magenta)]" : " border-border")
-                }
-              >
-                <div className="h-1 w-full" style={{ background: "var(--brand-magenta)" }} />
-                <div className={"p-6" + (isArabic ? " text-right" : "")}>
-                  <div
-                    className={
-                      "font-semibold mb-2 text-muted-foreground" +
-                      (isArabic ? " text-sm" : " text-[11px] uppercase tracking-widest")
-                    }
-                  >
-                    {isArabic ? "إعلان" : "Announcement"}
-                  </div>
-                  <p
-                    className={
-                      "font-medium text-primary leading-snug mb-4" +
-                      (isArabic ? " text-lg md:text-xl" : " text-base md:text-lg")
-                    }
-                  >
-                    {lang === "ar" ? (item.titleAr ?? item.title) : item.title}
-                  </p>
-                  <div
-                    className={
-                      "font-medium tracking-wide" + (isArabic ? " text-sm" : " text-[12px]")
-                    }
-                    style={{ color: "var(--brand-magenta)" }}
-                  >
-                    {formatDate(item.date, lang === "ar" ? "ar" : "en")}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </section>
-    </PageLayout>
-  );
-}

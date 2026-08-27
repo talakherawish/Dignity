@@ -2,7 +2,6 @@ import type { TranslationKey } from "@/contexts/LanguageContext";
 import {
   extractText,
   fetchAboutInitiative,
-  fetchAnnouncements,
   fetchClippings,
   fetchConferences,
   fetchInformation,
@@ -101,7 +100,6 @@ const PUBLICATION_TYPES: {
 export async function buildSearchIndex(): Promise<SearchResult[]> {
   const [
     news,
-    announcements,
     seminars,
     conferences,
     meetings,
@@ -116,7 +114,6 @@ export async function buildSearchIndex(): Promise<SearchResult[]> {
     ...publicationLists
   ] = await Promise.all([
     fetchNews(),
-    fetchAnnouncements(),
     fetchSeminars(),
     fetchConferences(),
     fetchMeetings(),
@@ -142,18 +139,6 @@ export async function buildSearchIndex(): Promise<SearchResult[]> {
         display: [item.excerpt, item.content],
         displayAr: [item.excerptAr, item.contentAr],
         to: "/media/news",
-      }),
-    );
-
-  for (const item of announcements)
-    results.push(
-      makeResult({
-        typeKey: "media.announcements",
-        title: item.title,
-        titleAr: item.titleAr,
-        display: [item.content],
-        displayAr: [item.contentAr],
-        to: "/media/announcements",
       }),
     );
 

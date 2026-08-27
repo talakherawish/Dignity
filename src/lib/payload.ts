@@ -63,16 +63,6 @@ export type PayloadActivity = {
   gallery?: PayloadGalleryItem[];
 };
 
-export type PayloadAnnouncement = {
-  id: string;
-  title: string;
-  titleAr?: string;
-  date: string;
-  content?: unknown;
-  contentAr?: unknown;
-  image?: PayloadMedia;
-};
-
 export type PayloadPhoto = {
   id: string;
   /** Both optional: a photo that speaks for itself needs no caption or date. */
@@ -504,9 +494,6 @@ export async function fetchResearchBySlug(
 
 export const fetchWindsorDignity = () =>
   fetchCollection<PayloadActivity>("windsor-dignity", NEWEST_FIRST);
-
-export const fetchAnnouncements = () =>
-  fetchCollection<PayloadAnnouncement>("announcements", NEWEST_FIRST);
 
 export const fetchPhotos = () => fetchCollection<PayloadPhoto>("photos", NEWEST_FIRST);
 

@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { X, Mail } from "lucide-react";
 import { PageLayout } from "@/components/PageLayout";
@@ -7,15 +7,7 @@ import officeImg from "@/assets/dignity-office.jpg";
 import { useLanguage, type TranslationKey } from "@/contexts/LanguageContext";
 import { ARTICLES, getField, mapPayloadNews } from "@/data/articles";
 import { withItalicQuotes } from "@/lib/text";
-import {
-  fetchNews,
-  fetchAnnouncements,
-  fetchParticipants,
-  formatDate,
-  mediaUrl,
-  type PayloadAnnouncement,
-  type PayloadParticipant,
-} from "@/lib/payload";
+import { fetchNews, fetchParticipants, mediaUrl, type PayloadParticipant } from "@/lib/payload";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -110,33 +102,15 @@ function mapPayloadToTeamPerson(p: PayloadParticipant): TeamPerson {
   };
 }
 
-// ── Latest news: one story large, the rest as a numbered index ────────────
-/**
- * The feature rotates every five seconds and the index marks whichever story
- * is showing, so the two halves always agree. Picking a heading jumps to it.
- *
- * This replaced a slide carousel whose only navigation was three arrow
- * buttons and a row of dots -- controls that said nothing about what they
- * would show. The headings are the navigation now, which is why the arrows
- * and dots are gone.
- */
-
-/**
- * Capped in viewport units rather than by aspect ratio alone: an aspect ratio
- * grows with the column, and a picture taller than the window cannot be seen
- * at all. The headline sits over the foot of this one, so it has to stay on
- * screen.
- */
-const FEATURE_HEIGHT = "h-[clamp(16rem,50vh,28rem)]";
-
-/** Enough to fill the index beside the picture without it sprawling. */
+// ── Latest news and announcements: the newest 4, as a grid of cards ───────
+/** Enough to fill a 2x2 grid without the feed sprawling. */
 const FEATURED_COUNT = 4;
 
-function LatestNews() {
-  const { t, lang, isArabic } = useLanguage();
-  const [i, setI] = useState(0);
-  const [visible, setVisible] = useState(true);
-  const [paused, setPaused] = useState(false);
+/** Fixed so every card's text starts at the same height regardless of image. */
+const CARD_IMAGE = "h-28 w-28 sm:h-32 sm:w-32 object-cover rounded-sm border border-border";
+
+function LatestNewsAndAnnouncements() {
+  const { lang, isArabic } = useLanguage();
 
   const { data: payloadNews = [] } = useQuery({
     queryKey: ["news"],
@@ -148,216 +122,41 @@ function LatestNews() {
     FEATURED_COUNT,
   );
 
-  const goTo = useCallback((next: number) => {
-    setVisible(false);
-    setTimeout(() => {
-      setI(next);
-      setVisible(true);
-    }, 240);
-  }, []);
-
-  // articles.length belongs in the deps: the Payload feed arrives after mount
-  // and usually has a different number of entries than the built-in fallback,
-  // so an interval left over from the old length would wrap at the wrong point.
-  const slideCount = articles.length;
-  useEffect(() => {
-    if (paused || slideCount < 2) return;
-    const id = setInterval(() => goTo((i + 1) % slideCount), 5000);
-    return () => clearInterval(id);
-  }, [i, paused, goTo, slideCount]);
-
-  if (slideCount === 0) return null;
-
-  const article = articles[Math.min(i, slideCount - 1)];
-  const fade = { opacity: visible ? 1 : 0, transition: "opacity 0.24s ease" } as const;
+  if (articles.length === 0) return null;
 
   return (
-    <div
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
-      className="grid gap-8 lg:grid-cols-[minmax(0,7fr)_minmax(0,3fr)] lg:gap-12"
-    >
-      <Link
-        to="/media/news"
-        search={{ id: article.id }}
-        aria-label={getField(article, "title", lang)}
-        className="group block overflow-hidden rounded-sm border border-border"
-      >
-        {/* Without a picture the gradient has nothing to darken, so the panel
-            brings its own ground rather than putting white text on white. */}
-        <div className={"relative " + FEATURE_HEIGHT + (article.image ? "" : " bg-primary")}>
-          {article.image && (
-            /*
-             * The cross-fade and the hover zoom share one inline `transition`,
-             * because an inline style overrides Tailwind's transition utility
-             * outright and the fade has to be declared here -- it depends on
-             * component state.
-             *
-             * It names `scale`, not `transform`: Tailwind v4 compiles
-             * scale-[1.03] to the standalone `scale` property (confirmed in
-             * the built CSS), so a transition covering `transform` leaves the
-             * zoom untransitioned and the picture snaps. Tailwind's own
-             * transition-transform covers transform, translate, scale and
-             * rotate together, which is why it never had this problem.
-             */
-            <img
-              src={article.image}
-              alt={getField(article, "title", lang)}
-              style={{
-                opacity: visible ? 1 : 0,
-                transition: "opacity 0.24s ease, scale 0.9s cubic-bezier(0.22, 1, 0.36, 1)",
-                willChange: "scale, opacity",
-              }}
-              className="absolute inset-0 h-full w-full object-cover group-hover:scale-[1.03] motion-reduce:scale-100"
-            />
+    <div className="grid gap-5 sm:grid-cols-2" dir={isArabic ? "rtl" : "ltr"}>
+      {articles.map((article) => (
+        <Link
+          key={article.id}
+          to="/media/news"
+          search={{ id: article.id }}
+          aria-label={getField(article, "title", lang)}
+          // items-start: the title/date column starts level with the top of
+          // the image rather than centering against its full height.
+          className="group flex items-start gap-4 rounded-sm border border-border bg-card p-4 transition-colors hover:border-accent/30 hover:shadow-sm"
+        >
+          {article.image ? (
+            <img src={article.image} alt="" className={"shrink-0 " + CARD_IMAGE} />
+          ) : (
+            <div className={"shrink-0 bg-secondary " + CARD_IMAGE} />
           )}
-          <div
-            aria-hidden="true"
-            className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/45 to-black/10"
-          />
-          <div className="absolute inset-x-0 bottom-0 p-6 md:p-9" style={fade}>
-            <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-[color:var(--brand-magenta)]">
-              {t("news.eyebrow")}
+          <div className="min-w-0">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[color:var(--brand-magenta)]">
+              {getField(article, "date", lang)}
             </p>
-            <h3 className="max-w-3xl font-serif text-2xl leading-tight text-white md:text-[2rem]">
+            <h3 className="mt-1.5 font-serif text-base leading-snug text-primary transition-colors group-hover:text-accent md:text-[17px]">
               {withItalicQuotes(getField(article, "title", lang))}
             </h3>
-            <p className="mt-3 line-clamp-2 max-w-2xl text-sm leading-relaxed text-white/75">
-              {getField(article, "excerpt", lang)}
-            </p>
-            <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
-              <span className="text-[11px] uppercase tracking-[0.2em] text-white/60">
-                {getField(article, "date", lang)}
-              </span>
-              <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-white group-hover:underline">
-                {t("news.readMore")}
-              </span>
-            </div>
+            {getField(article, "excerpt", lang) && (
+              <p className="mt-1.5 line-clamp-2 text-sm leading-relaxed text-muted-foreground">
+                {getField(article, "excerpt", lang)}
+              </p>
+            )}
           </div>
-        </div>
-      </Link>
-
-      <div>
-        <p className="mb-4 text-[11px] uppercase tracking-[0.22em] text-muted-foreground">
-          {isArabic ? "أحدث الأخبار" : "Latest stories"}
-        </p>
-        <ul className="border-t border-border">
-          {articles.map((entry, index) => {
-            const active = index === i;
-            // Western digits (1234) even beside Arabic text -- the client
-            // asked not to use ar-EG's default Arabic-Indic numerals (١٢٣٤).
-            const number = (index + 1).toLocaleString(isArabic ? "ar-EG" : "en-US", {
-              minimumIntegerDigits: 2,
-              numberingSystem: "latn",
-            });
-
-            return (
-              <li key={entry.id} className="border-b border-border">
-                <button
-                  type="button"
-                  onClick={() => goTo(index)}
-                  aria-current={active ? "true" : undefined}
-                  className={
-                    "group flex w-full gap-4 border-s-2 py-5 ps-4 text-start transition-colors duration-300 " +
-                    (active ? "border-[color:var(--brand-magenta)]" : "border-transparent")
-                  }
-                >
-                  <span className="font-serif text-sm tabular-nums text-muted-foreground/70">
-                    {number}
-                  </span>
-                  <span className="min-w-0">
-                    <span
-                      className={
-                        "block font-serif text-[15px] leading-snug transition-colors duration-300 " +
-                        (active
-                          ? "text-[color:var(--brand-magenta)]"
-                          : "text-primary group-hover:text-[color:var(--brand-magenta)]")
-                      }
-                    >
-                      {withItalicQuotes(getField(entry, "title", lang))}
-                    </span>
-                    <span className="mt-1.5 block text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
-                      {getField(entry, "date", lang)}
-                    </span>
-                  </span>
-                </button>
-              </li>
-            );
-          })}
-        </ul>
-      </div>
+        </Link>
+      ))}
     </div>
-  );
-}
-
-function AnnouncementsSection() {
-  const { t, lang, isArabic } = useLanguage();
-
-  const { data: items = [] } = useQuery({
-    queryKey: ["announcements"],
-    queryFn: fetchAnnouncements,
-    staleTime: 5 * 60 * 1000,
-  });
-
-  // Every announcement comes from Payload. With nothing authored (or the
-  // backend unreachable, which fetchAnnouncements reports as an empty list)
-  // the whole block goes away rather than leaving a heading over an empty
-  // grid — the homepage shouldn't advertise announcements there aren't any of.
-  if (items.length === 0) return null;
-
-  return (
-    <section className="border-b border-border bg-secondary/20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <div className="h-5 w-1 rounded-full" style={{ background: "var(--brand-magenta)" }} />
-            <h2 className="font-serif text-2xl text-primary">
-              {isArabic ? "الإعلانات" : "Announcements"}
-            </h2>
-          </div>
-          <Link
-            to="/media/announcements"
-            className="text-xs font-medium text-muted-foreground hover:text-accent transition-colors tracking-wide"
-          >
-            {t("news.viewAll")}
-          </Link>
-        </div>
-
-        <div
-          className="announcements-grid grid gap-4 sm:grid-cols-3"
-          dir={isArabic ? "rtl" : "ltr"}
-        >
-          {items.map((item: PayloadAnnouncement) => (
-            <Link
-              key={item.id}
-              to="/media/announcements"
-              search={{ id: item.id }}
-              className="group block bg-card border border-border rounded-lg overflow-hidden hover:shadow-md transition-all duration-200"
-            >
-              <div className="h-1 w-full" style={{ background: "var(--brand-magenta)" }} />
-              <div className={`p-6 ${isArabic ? "text-right" : ""}`}>
-                <div
-                  className={`font-semibold mb-2 text-muted-foreground ${isArabic ? "text-sm" : "text-[11px] uppercase tracking-widest"}`}
-                >
-                  {isArabic ? "إعلان" : "Announcement"}
-                </div>
-                <p
-                  className={`font-medium text-primary leading-snug group-hover:text-accent transition-colors mb-4 ${isArabic ? "text-base" : "text-sm"}`}
-                >
-                  {lang === "ar" ? (item.titleAr ?? item.title) : item.title}
-                </p>
-                <div
-                  className={`font-medium tracking-wide ${isArabic ? "text-sm" : "text-[12px]"}`}
-                  style={{ color: "var(--brand-magenta)" }}
-                >
-                  {formatDate(item.date, lang === "ar" ? "ar" : "en")}
-                </div>
-              </div>
-            </Link>
-          ))}
-        </div>
-      </div>
-    </section>
   );
 }
 
@@ -615,7 +414,7 @@ function Home() {
               {t("news.viewAll")}
             </Link>
           </div>
-          <LatestNews />
+          <LatestNewsAndAnnouncements />
         </div>
       </section>
 
@@ -634,9 +433,6 @@ function Home() {
           ))}
         </div>
       </section>
-
-      {/* Announcements */}
-      <AnnouncementsSection />
 
       {/* Meet the Team */}
       <TeamSection />

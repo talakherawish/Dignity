@@ -21,7 +21,6 @@ import { Media } from './collections/Media'
 import { DignityResearchInitiative, Partners } from './collections/AboutPages'
 import { Participants } from './collections/Participants'
 import { News } from './collections/News'
-import { Announcements } from './collections/Announcements'
 import { Photos } from './collections/Photos'
 import { Clippings } from './collections/Clippings'
 import { Research } from './collections/Research'
@@ -72,7 +71,6 @@ export default buildConfig({
     DignityResearchInitiative,
     Participants,
     News,
-    Announcements,
     Photos,
     Clippings,
     Partners,

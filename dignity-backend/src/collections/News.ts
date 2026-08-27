@@ -2,11 +2,15 @@ import type { CollectionConfig } from 'payload'
 
 export const News: CollectionConfig = {
   slug: 'news',
+  labels: {
+    singular: 'News & Announcement',
+    plural: 'News & Announcements',
+  },
   admin: {
     group: 'About the Dignity Initiative',
     useAsTitle: 'title',
     defaultColumns: ['title', 'status', 'publishedAt', 'updatedAt'],
-    description: 'Add a new entry here for each news post.',
+    description: 'Shows on the website under About the Dignity Initiative → News & Announcements. Add a new entry here for each news post or announcement.',
   },
   // Enable draft/publish — nothing goes live until content manager publishes
   versions: {

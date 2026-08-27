@@ -72,7 +72,6 @@ export interface Config {
     'about-initiative': AboutInitiative;
     participants: Participant;
     news: News;
-    announcements: Announcement;
     photos: Photo;
     clippings: Clipping;
     partners: Partner;
@@ -102,7 +101,6 @@ export interface Config {
     'about-initiative': AboutInitiativeSelect<false> | AboutInitiativeSelect<true>;
     participants: ParticipantsSelect<false> | ParticipantsSelect<true>;
     news: NewsSelect<false> | NewsSelect<true>;
-    announcements: AnnouncementsSelect<false> | AnnouncementsSelect<true>;
     photos: PhotosSelect<false> | PhotosSelect<true>;
     clippings: ClippingsSelect<false> | ClippingsSelect<true>;
     partners: PartnersSelect<false> | PartnersSelect<true>;
@@ -286,7 +284,7 @@ export interface Participant {
   _status?: ('draft' | 'published') | null;
 }
 /**
- * Add a new entry here for each news post.
+ * Shows on the website under About the Dignity Initiative → News & Announcements. Add a new entry here for each news post or announcement.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "news".
@@ -298,52 +296,6 @@ export interface News {
   date: string;
   excerpt?: string | null;
   excerptAr?: string | null;
-  content?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  contentAr?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  image?: (string | null) | Media;
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
-}
-/**
- * Shows on the website under About the Dignity Initiative → Announcements. Add a new entry here for each announcement.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "announcements".
- */
-export interface Announcement {
-  id: string;
-  title: string;
-  titleAr: string;
-  date: string;
   content?: {
     root: {
       type: string;
@@ -1048,10 +1000,6 @@ export interface PayloadLockedDocument {
         value: string | News;
       } | null)
     | ({
-        relationTo: 'announcements';
-        value: string | Announcement;
-      } | null)
-    | ({
         relationTo: 'photos';
         value: string | Photo;
       } | null)
@@ -1247,21 +1195,6 @@ export interface NewsSelect<T extends boolean = true> {
   date?: T;
   excerpt?: T;
   excerptAr?: T;
-  content?: T;
-  contentAr?: T;
-  image?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  _status?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "announcements_select".
- */
-export interface AnnouncementsSelect<T extends boolean = true> {
-  title?: T;
-  titleAr?: T;
-  date?: T;
   content?: T;
   contentAr?: T;
   image?: T;
@@ -1632,8 +1565,6 @@ export interface SiteSetting {
   navAboutFellowsAr?: string | null;
   navMediaNews?: string | null;
   navMediaNewsAr?: string | null;
-  navMediaAnnouncements?: string | null;
-  navMediaAnnouncementsAr?: string | null;
   navMediaPhotos?: string | null;
   navMediaPhotosAr?: string | null;
   navMediaClippings?: string | null;
@@ -1780,8 +1711,6 @@ export interface SiteSettingsSelect<T extends boolean = true> {
   navAboutFellowsAr?: T;
   navMediaNews?: T;
   navMediaNewsAr?: T;
-  navMediaAnnouncements?: T;
-  navMediaAnnouncementsAr?: T;
   navMediaPhotos?: T;
   navMediaPhotosAr?: T;
   navMediaClippings?: T;
