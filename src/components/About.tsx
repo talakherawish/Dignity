@@ -53,12 +53,14 @@ const PRINCIPLES: { en: string; ar: string }[] = [
 
 export function AboutPage({
   eyebrow,
+  eyebrowColor,
   title,
   description,
   paragraphs,
   items,
 }: {
   eyebrow?: string;
+  eyebrowColor?: string;
   title: string;
   description?: string;
   paragraphs?: string[];
@@ -104,7 +106,10 @@ export function AboutPage({
             <div className="relative max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-8 text-center">
               <Reveal>
                 {eyebrow && (
-                  <div className="text-[12px] uppercase tracking-[0.22em] text-[color:var(--brand-magenta)] font-semibold mb-3">
+                  <div
+                    className="text-[12px] uppercase tracking-[0.22em] font-semibold mb-3"
+                    style={{ color: eyebrowColor ?? "var(--brand-magenta)" }}
+                  >
                     {eyebrow}
                   </div>
                 )}

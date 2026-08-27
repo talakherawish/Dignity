@@ -13,6 +13,7 @@ import {
   type PublicationCollection,
   type PayloadPublication,
 } from "@/lib/payload";
+import { SECTION_COLORS } from "@/lib/sectionColors";
 
 /** Normalized shape both Payload docs and hardcoded fallback items get mapped into. */
 type DisplayPublication = {
@@ -81,7 +82,8 @@ export function PublicationsPage({
   return (
     <PageLayout>
       <PageHero
-        eyebrow={breadcrumb || `${t("publications")} — ${t(titleKey)}`}
+        eyebrow={breadcrumb || t("publications")}
+        eyebrowColor={SECTION_COLORS.publications}
         title={t(titleKey)}
       />
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">

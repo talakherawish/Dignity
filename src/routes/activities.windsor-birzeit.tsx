@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { PageLayout, PageHero } from "@/components/PageLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { fetchWindsorDignity, formatDate, type PayloadActivity } from "@/lib/payload";
+import { SECTION_COLORS } from "@/lib/sectionColors";
 export const Route = createFileRoute("/activities/windsor-birzeit")({
   head: () => ({ meta: [{ title: "The Windsor Birzeit Dignity Initiative — Dignity" }] }),
   component: WindsorPage,
@@ -19,7 +20,8 @@ function WindsorPage() {
   return (
     <PageLayout>
       <PageHero
-        eyebrow={`${t("activities")} — ${t("activities.windsor")}`}
+        eyebrow={t("activities")}
+        eyebrowColor={SECTION_COLORS.activities}
         title={t("activities.windsor")}
       />
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">

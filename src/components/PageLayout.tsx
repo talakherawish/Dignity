@@ -14,10 +14,13 @@ export function PageLayout({ children }: { children: ReactNode }) {
 
 export function PageHero({
   eyebrow,
+  eyebrowColor,
   title,
   description,
 }: {
   eyebrow?: string;
+  /** Defaults to the site's magenta -- pass a `SECTION_COLORS` value to match the eyebrow to the page's nav group. */
+  eyebrowColor?: string;
   title: string;
   description?: string;
 }) {
@@ -25,7 +28,10 @@ export function PageHero({
     <section>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-4 text-center">
         {eyebrow && (
-          <p className="text-[11px] uppercase tracking-[0.22em] text-[color:var(--brand-magenta)] font-semibold mb-3">
+          <p
+            className="text-[11px] uppercase tracking-[0.22em] font-semibold mb-3"
+            style={{ color: eyebrowColor ?? "var(--brand-magenta)" }}
+          >
             {eyebrow}
           </p>
         )}

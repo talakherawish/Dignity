@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { SimplePage } from "@/components/SimplePage";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { extractText, fetchPartners } from "@/lib/payload";
+import { SECTION_COLORS } from "@/lib/sectionColors";
 
 export const Route = createFileRoute("/about/partners")({
   head: () => ({ meta: [{ title: "Partners — Dignity" }] }),
@@ -25,6 +26,7 @@ function PartnersPage() {
   return (
     <SimplePage
       eyebrow={t("about")}
+      eyebrowColor={SECTION_COLORS.about}
       title={(isArabic ? page?.titleAr : page?.title) || t("about.partners")}
       description={(isArabic ? page?.descriptionAr : page?.description) || t("partners.page.desc")}
       body={body.length > 0 ? body : undefined}

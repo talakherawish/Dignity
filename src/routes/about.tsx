@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { AboutPage } from "@/components/About";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { extractListItems, extractText, fetchAboutInitiative } from "@/lib/payload";
+import { SECTION_COLORS } from "@/lib/sectionColors";
 
 export const Route = createFileRoute("/about")({
   head: () => ({ meta: [{ title: "The Dignity Research Initiative — Dignity" }] }),
@@ -28,6 +29,7 @@ function AboutLayout() {
     return (
       <AboutPage
         eyebrow={t("about")}
+        eyebrowColor={SECTION_COLORS.about}
         title={(isArabic ? page?.titleAr : page?.title) || t("about.initiative")}
         description={(isArabic ? page?.descriptionAr : page?.description) || t("about.page.desc")}
         paragraphs={extractText(body)}

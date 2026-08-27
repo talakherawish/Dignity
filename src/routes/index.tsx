@@ -3,7 +3,6 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { X, Mail } from "lucide-react";
 import { PageLayout } from "@/components/PageLayout";
-import officeImg from "@/assets/dignity-office.jpg";
 import { useLanguage, type TranslationKey } from "@/contexts/LanguageContext";
 import { ARTICLES, getField, mapPayloadNews } from "@/data/articles";
 import { withItalicQuotes } from "@/lib/text";
@@ -346,49 +345,41 @@ function Home() {
           className="absolute -bottom-24 -left-24 h-64 w-64 rounded-full opacity-15 blur-3xl pointer-events-none"
           style={{ background: "var(--brand-magenta)" }}
         />
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-14 grid gap-10 lg:grid-cols-2 items-center">
-          <div>
-            <div className="text-[12px] uppercase tracking-[0.22em] text-[color:var(--brand-magenta)] font-semibold mb-4">
-              {t("hero.eyebrow")}
-            </div>
-            {/*
-             * whitespace-pre-line so a line break typed into the Hero Title or
-             * Hero Description in Site Settings is the line break shown here.
-             * Both are textarea fields, so the newline was always stored -- it
-             * was HTML that collapsed it into a space, which made pressing
-             * Enter in the admin look like it did nothing.
-             */}
-            <h1 className="font-serif text-4xl md:text-5xl lg:text-[3.6rem] text-primary tracking-tight leading-[1.07] whitespace-pre-line">
-              {t("hero.title")}
-            </h1>
-            <p className="mt-5 text-base text-muted-foreground leading-relaxed max-w-lg whitespace-pre-line">
-              {t("hero.desc")}
-            </p>
-            <div className="mt-7 flex flex-wrap gap-3">
-              <Link
-                to="/about"
-                className="inline-flex items-center px-5 py-2.5 bg-primary text-primary-foreground text-sm font-medium rounded-sm hover:bg-primary/90 transition-colors"
-              >
-                {t("hero.btn.about")}
-              </Link>
-              <Link
-                to="/projects/research"
-                className="inline-flex items-center px-5 py-2.5 border border-border text-foreground text-sm font-medium rounded-sm hover:bg-secondary transition-colors"
-              >
-                {t("hero.btn.research")}
-              </Link>
-            </div>
+        {/*
+         * Temporary centered layout with the office photo dropped, while a
+         * proper homepage design is worked out -- not the final treatment.
+         */}
+        <div className="relative max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-14 flex flex-col items-center text-center">
+          <div className="text-[12px] uppercase tracking-[0.22em] text-[color:var(--brand-magenta)] font-semibold mb-4">
+            {t("hero.eyebrow")}
           </div>
-          {/* The initiative's entrance at Birzeit's Faculty of Graduate Studies
-              and Research. `aspect-[3/2]` matches the placeholder this replaced,
-              so the hero's two columns stay balanced; the photo is 4:3, so
-              object-cover trims the top and bottom rather than letterboxing. */}
-          <img
-            src={officeImg}
-            alt="Entrance to the Dignity Initiative at Birzeit University's Faculty of Graduate Studies and Research"
-            loading="eager"
-            className="w-full aspect-[3/2] object-cover rounded-sm border border-border"
-          />
+          {/*
+           * whitespace-pre-line so a line break typed into the Hero Title or
+           * Hero Description in Site Settings is the line break shown here.
+           * Both are textarea fields, so the newline was always stored -- it
+           * was HTML that collapsed it into a space, which made pressing
+           * Enter in the admin look like it did nothing.
+           */}
+          <h1 className="font-serif text-4xl md:text-5xl lg:text-[3.6rem] text-primary tracking-tight leading-[1.07] whitespace-pre-line">
+            {t("hero.title")}
+          </h1>
+          <p className="mt-5 text-base text-muted-foreground leading-relaxed max-w-lg whitespace-pre-line">
+            {t("hero.desc")}
+          </p>
+          <div className="mt-7 flex flex-wrap justify-center gap-3">
+            <Link
+              to="/about"
+              className="inline-flex items-center px-5 py-2.5 bg-primary text-primary-foreground text-sm font-medium rounded-sm hover:bg-primary/90 transition-colors"
+            >
+              {t("hero.btn.about")}
+            </Link>
+            <Link
+              to="/projects/research"
+              className="inline-flex items-center px-5 py-2.5 border border-border text-foreground text-sm font-medium rounded-sm hover:bg-secondary transition-colors"
+            >
+              {t("hero.btn.research")}
+            </Link>
+          </div>
         </div>
       </section>
 

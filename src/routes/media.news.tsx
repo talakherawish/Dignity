@@ -6,6 +6,7 @@ import { TranslationNotice } from "@/components/TranslationNotice";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { ARTICLES, getField, getBody, mapPayloadNews, type Article } from "@/data/articles";
 import { fetchNews } from "@/lib/payload";
+import { SECTION_COLORS } from "@/lib/sectionColors";
 import { withItalicQuotes } from "@/lib/text";
 
 type NewsSearch = { id?: string };
@@ -165,7 +166,7 @@ function NewsPage() {
 
   return (
     <PageLayout>
-      <PageHero eyebrow={t("media")} title={t("media.news")} />
+      <PageHero eyebrow={t("about")} eyebrowColor={SECTION_COLORS.about} title={t("media.news")} />
       <section className="mx-auto max-w-4xl px-4 py-8 sm:px-6 md:py-12 lg:px-8">
         {isLoading ? (
           <NewsSkeleton />

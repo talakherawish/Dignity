@@ -5,6 +5,7 @@ import { Search, X, Mail } from "lucide-react";
 import { PageLayout, PageHero } from "@/components/PageLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { fetchParticipants, mediaUrl, type PayloadParticipant } from "@/lib/payload";
+import { SECTION_COLORS } from "@/lib/sectionColors";
 import talaPhoto from "@/assets/tala.jpg";
 
 export const Route = createFileRoute("/about/participants")({
@@ -360,6 +361,7 @@ function ParticipantsPage() {
     <PageLayout>
       <PageHero
         eyebrow={isArabic ? "عن مبادرة كرامة" : "About the Dignity Initiative"}
+        eyebrowColor={SECTION_COLORS.about}
         title={isArabic ? "المشاركون" : "Participants"}
         description={
           isArabic

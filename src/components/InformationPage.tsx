@@ -9,6 +9,7 @@ import {
   type InformationCollection,
   type PayloadInformationItem,
 } from "@/lib/payload";
+import { SECTION_COLORS } from "@/lib/sectionColors";
 
 export function InformationPage({
   type,
@@ -29,7 +30,8 @@ export function InformationPage({
   return (
     <PageLayout>
       <PageHero
-        eyebrow={breadcrumb || `${t("information")} — ${t(titleKey)}`}
+        eyebrow={breadcrumb || t("information")}
+        eyebrowColor={SECTION_COLORS.information}
         title={t(titleKey)}
       />
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">

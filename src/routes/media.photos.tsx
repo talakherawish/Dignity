@@ -4,6 +4,7 @@ import { PageLayout, PageHero } from "@/components/PageLayout";
 import { PhotoGallery, type GalleryPhoto } from "@/components/PhotoGallery";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { fetchPhotos, mediaUrl, type PayloadPhoto } from "@/lib/payload";
+import { SECTION_COLORS } from "@/lib/sectionColors";
 
 export const Route = createFileRoute("/media/photos")({
   head: () => ({ meta: [{ title: "Photos — Dignity" }] }),
@@ -20,7 +21,11 @@ function PhotosPage() {
 
   return (
     <PageLayout>
-      <PageHero eyebrow={`${t("media")} — ${t("media.photos")}`} title={t("media.photos")} />
+      <PageHero
+        eyebrow={t("about")}
+        eyebrowColor={SECTION_COLORS.about}
+        title={t("media.photos")}
+      />
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {isLoading ? (
           // Mixed widths at one height, so the placeholder rows read like the

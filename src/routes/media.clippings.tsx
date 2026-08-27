@@ -8,6 +8,7 @@ import {
 } from "@/components/PublicationCard";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { fetchClippings, mediaUrl, type PayloadClipping } from "@/lib/payload";
+import { SECTION_COLORS } from "@/lib/sectionColors";
 
 export const Route = createFileRoute("/media/clippings")({
   head: () => ({ meta: [{ title: "Clippings — Dignity" }] }),
@@ -24,7 +25,11 @@ function ClippingsPage() {
 
   return (
     <PageLayout>
-      <PageHero eyebrow={`${t("media")} — ${t("media.clippings")}`} title={t("media.clippings")} />
+      <PageHero
+        eyebrow={t("about")}
+        eyebrowColor={SECTION_COLORS.about}
+        title={t("media.clippings")}
+      />
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {isLoading ? (
           <div className={PUBLICATION_GRID_SKELETON}>

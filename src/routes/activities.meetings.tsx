@@ -4,6 +4,7 @@ import { ActivityLedger } from "@/components/ActivityLedger";
 import { PageLayout, PageHero } from "@/components/PageLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { fetchMeetings } from "@/lib/payload";
+import { SECTION_COLORS } from "@/lib/sectionColors";
 
 export const Route = createFileRoute("/activities/meetings")({
   head: () => ({ meta: [{ title: "Meetings — Dignity" }] }),
@@ -21,7 +22,8 @@ function MeetingsPage() {
   return (
     <PageLayout>
       <PageHero
-        eyebrow={`${t("activities")} — ${t("activities.meetings")}`}
+        eyebrow={t("activities")}
+        eyebrowColor={SECTION_COLORS.activities}
         title={t("activities.meetings")}
       />
       <ActivityLedger

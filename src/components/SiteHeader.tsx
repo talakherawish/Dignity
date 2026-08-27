@@ -3,15 +3,23 @@ import { ChevronDown, Menu, Search, X } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 import logo from "@/assets/dignity-logo.png";
 import { type Language, type TranslationKey, useLanguage } from "@/contexts/LanguageContext";
+import { SECTION_COLORS } from "@/lib/sectionColors";
 
 /** A top-level nav entry, either a direct link or a single dropdown of links. */
-type Item = { labelKey: TranslationKey; to?: string; children?: Leaf[] };
+type Item = {
+  labelKey: TranslationKey;
+  to?: string;
+  children?: Leaf[];
+  /** Hover color for this item, matching its section's PageHero eyebrows. */
+  color?: string;
+};
 type Leaf = { labelKey: TranslationKey; to: string };
 
 const NAV: Item[] = [
   {
     labelKey: "about",
     to: "/about",
+    color: SECTION_COLORS.about,
     children: [
       { labelKey: "about.participants", to: "/about/participants" },
       { labelKey: "media.news", to: "/media/news" },
@@ -22,6 +30,7 @@ const NAV: Item[] = [
   },
   {
     labelKey: "activities",
+    color: SECTION_COLORS.activities,
     children: [
       { labelKey: "activities.research", to: "/projects/research" },
       { labelKey: "activities.seminars", to: "/activities/seminars" },
@@ -32,6 +41,7 @@ const NAV: Item[] = [
   },
   {
     labelKey: "publications",
+    color: SECTION_COLORS.publications,
     children: [
       { labelKey: "publications.books", to: "/publications/books" },
       { labelKey: "publications.papers", to: "/publications/papers" },
@@ -44,6 +54,7 @@ const NAV: Item[] = [
   },
   {
     labelKey: "information",
+    color: SECTION_COLORS.information,
     children: [
       { labelKey: "information.readings", to: "/information/readings" },
       { labelKey: "information.databases", to: "/information/databases" },
@@ -158,6 +169,18 @@ function LanguageSwitcher() {
 function NavItem({ item }: { item: Item }) {
   const { t, isArabic } = useLanguage();
   const label = t(item.labelKey);
+  const [hovered, setHovered] = useState(false);
+  // Each section has its own hover color (see SECTION_COLORS) rather than one
+  // shared accent, so the header's hover state matches that section's
+  // PageHero eyebrows. Plain color + transition-colors rather than a Tailwind
+  // hover: class, since the color is only known at runtime.
+  const hoverProps = item.color
+    ? {
+        onMouseEnter: () => setHovered(true),
+        onMouseLeave: () => setHovered(false),
+        style: hovered ? { color: item.color } : undefined,
+      }
+    : {};
 
   if (!item.children) {
     return (
@@ -168,6 +191,7 @@ function NavItem({ item }: { item: Item }) {
           "px-2.5 py-2 font-medium text-foreground/80 hover:text-accent transition-colors data-[status=active]:text-accent whitespace-nowrap",
           isArabic ? "font-arabic text-[19px]" : "text-[17px]",
         ].join(" ")}
+        {...hoverProps}
       >
         {label}
       </Link>
@@ -182,12 +206,12 @@ function NavItem({ item }: { item: Item }) {
   return (
     <div className="relative group shrink-0">
       {item.to ? (
-        <Link to={item.to} className={triggerClassName}>
+        <Link to={item.to} className={triggerClassName} {...hoverProps}>
           {label}
           <ChevronDown className="h-3 w-3 shrink-0" />
         </Link>
       ) : (
-        <button className={triggerClassName}>
+        <button className={triggerClassName} {...hoverProps}>
           {label}
           <ChevronDown className="h-3 w-3 shrink-0" />
         </button>

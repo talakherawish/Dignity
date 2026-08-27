@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { PageLayout, PageHero } from "@/components/PageLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { fetchConferences, formatDate, type PayloadActivity } from "@/lib/payload";
+import { SECTION_COLORS } from "@/lib/sectionColors";
 
 export const Route = createFileRoute("/activities/conferences")({
   head: () => ({ meta: [{ title: "Conferences — Dignity" }] }),
@@ -20,7 +21,8 @@ function ConferencesPage() {
   return (
     <PageLayout>
       <PageHero
-        eyebrow={`${t("activities")} — ${t("activities.conferences")}`}
+        eyebrow={t("activities")}
+        eyebrowColor={SECTION_COLORS.activities}
         title={t("activities.conferences")}
       />
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
