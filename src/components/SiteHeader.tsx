@@ -11,8 +11,8 @@ type Leaf = { labelKey: TranslationKey; to: string };
 const NAV: Item[] = [
   {
     labelKey: "about",
+    to: "/about",
     children: [
-      { labelKey: "about.initiative", to: "/about" },
       { labelKey: "about.participants", to: "/about/participants" },
       { labelKey: "media.news", to: "/media/news" },
       { labelKey: "media.announcements", to: "/media/announcements" },
@@ -175,17 +175,24 @@ function NavItem({ item }: { item: Item }) {
     );
   }
 
+  const triggerClassName = [
+    "px-2.5 py-2 font-medium text-foreground/80 hover:text-accent transition-colors inline-flex items-center gap-1 whitespace-nowrap data-[status=active]:text-accent",
+    isArabic ? "font-arabic text-[19px]" : "text-[17px]",
+  ].join(" ");
+
   return (
     <div className="relative group shrink-0">
-      <button
-        className={[
-          "px-2.5 py-2 font-medium text-foreground/80 hover:text-accent transition-colors inline-flex items-center gap-1 whitespace-nowrap",
-          isArabic ? "font-arabic text-[19px]" : "text-[17px]",
-        ].join(" ")}
-      >
-        {label}
-        <ChevronDown className="h-3 w-3 shrink-0" />
-      </button>
+      {item.to ? (
+        <Link to={item.to} className={triggerClassName}>
+          {label}
+          <ChevronDown className="h-3 w-3 shrink-0" />
+        </Link>
+      ) : (
+        <button className={triggerClassName}>
+          {label}
+          <ChevronDown className="h-3 w-3 shrink-0" />
+        </button>
+      )}
       <div
         className={`absolute ${isArabic ? "right-0" : "left-0"} top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 pointer-events-none group-hover:pointer-events-auto`}
       >
@@ -226,23 +233,44 @@ function MobileNav({ open, onNavigate }: { open: boolean; onNavigate: () => void
           <div key={item.labelKey} className="border-b border-border last:border-b-0">
             {item.children ? (
               <>
-                <button
-                  onClick={() =>
-                    setExpanded((cur) => (cur === item.labelKey ? null : item.labelKey))
-                  }
-                  className={[
-                    "w-full flex items-center justify-between py-3 font-medium text-foreground/80",
-                    isArabic ? "font-arabic text-[18px]" : "text-[17px]",
-                  ].join(" ")}
-                >
-                  {t(item.labelKey)}
-                  <ChevronDown
-                    className="h-4 w-4 shrink-0 transition-transform duration-200"
-                    style={{
-                      transform: expanded === item.labelKey ? "rotate(180deg)" : "rotate(0deg)",
-                    }}
-                  />
-                </button>
+                <div className="flex items-center justify-between">
+                  {item.to ? (
+                    <Link
+                      to={item.to}
+                      onClick={onNavigate}
+                      className={[
+                        "flex-1 py-3 font-medium text-foreground/80",
+                        isArabic ? "font-arabic text-[18px]" : "text-[17px]",
+                      ].join(" ")}
+                    >
+                      {t(item.labelKey)}
+                    </Link>
+                  ) : (
+                    <span
+                      className={[
+                        "flex-1 py-3 font-medium text-foreground/80",
+                        isArabic ? "font-arabic text-[18px]" : "text-[17px]",
+                      ].join(" ")}
+                    >
+                      {t(item.labelKey)}
+                    </span>
+                  )}
+                  <button
+                    onClick={() =>
+                      setExpanded((cur) => (cur === item.labelKey ? null : item.labelKey))
+                    }
+                    aria-label={expanded === item.labelKey ? "Collapse" : "Expand"}
+                    aria-expanded={expanded === item.labelKey}
+                    className="p-3 -m-3 shrink-0"
+                  >
+                    <ChevronDown
+                      className="h-4 w-4 shrink-0 transition-transform duration-200"
+                      style={{
+                        transform: expanded === item.labelKey ? "rotate(180deg)" : "rotate(0deg)",
+                      }}
+                    />
+                  </button>
+                </div>
                 <div
                   className="overflow-hidden"
                   style={{
