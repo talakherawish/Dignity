@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Download, ExternalLink, FileText, Play } from "lucide-react";
-import { useState, type ReactNode } from "react";
+import { useState, type KeyboardEvent, type ReactNode } from "react";
 import { TranslationNotice } from "@/components/TranslationNotice";
 import { useLanguage } from "@/contexts/LanguageContext";
 import {
@@ -202,6 +202,12 @@ export function PublicationCard({
   // button is the escape hatch to watch on youtube.com proper instead. A
   // non-video link (e.g. a Paper's journal page) has no embedded form, so it
   // keeps the older "this button is the only way there" Play affordance.
+  //
+  // A file has no bottom-row action at all: the whole card opens it (see
+  // isFileOnly below), and downloading is a small button overlaid on the well
+  // instead of a second row competing with the title for height. That row
+  // was the tight fit on the four-up document cards -- Papers, Posters,
+  // Reports -- whose narrower column already gives a long title little room.
   const action = linkUrl ? (
     isVideo ? (
       <a
@@ -226,42 +232,45 @@ export function PublicationCard({
         <Play className="h-3.5 w-3.5 translate-x-[1px]" fill="currentColor" />
       </a>
     )
-  ) : fileUrl ? (
-    <div className="flex items-center gap-1.5">
-      <button
-        type="button"
-        onClick={() => openFileInNewTab(fileUrl, resolvedFileMimeType)}
-        aria-label={t("publications.view")}
-        title={t("publications.view")}
-        className={actionButtonClass}
-      >
-        <ExternalLink className="h-3.5 w-3.5" />
-      </button>
-      <a
-        href={fileUrl}
-        download
-        aria-label={t("publications.download")}
-        title={t("publications.download")}
-        className={actionButtonClass}
-      >
-        <Download className="h-3.5 w-3.5" />
-      </a>
-    </div>
   ) : null;
+
+  const isFileOnly = !linkUrl && !!fileUrl;
+  const openFile = () => {
+    if (fileUrl) openFileInNewTab(fileUrl, resolvedFileMimeType);
+  };
+  const handleCardKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+    if (e.key !== "Enter" && e.key !== " ") return;
+    e.preventDefault();
+    openFile();
+  };
 
   return (
     <div
       className={
         (isVideo ? VIDEO_CARD_WIDTH : CARD_WIDTH) +
-        " border border-border rounded-sm bg-card overflow-hidden hover:shadow-sm transition-shadow flex flex-col"
+        " relative border border-border rounded-sm bg-card overflow-hidden hover:shadow-sm transition-shadow flex flex-col" +
+        (isFileOnly ? " cursor-pointer" : "")
       }
+      // The card itself is the click target for a file -- there's no
+      // separate "view" button left to carry it (see the removed action row
+      // below). role/tabIndex/onKeyDown make that work for keyboard and
+      // screen-reader users the way a real link or button would.
+      {...(isFileOnly
+        ? {
+            role: "button" as const,
+            tabIndex: 0,
+            onClick: openFile,
+            onKeyDown: handleCardKeyDown,
+            "aria-label": t("publications.view"),
+          }
+        : {})}
     >
       {/* A video plays inline in place of its thumbnail once clicked, rather
           than only ever sending the visitor away to youtube.com (that's what
           the action button below is for). A non-video link opens on its own
-          site; a file opens in a new tab from the same well its action
-          button opens; anything else stays a plain well, since it carries no
-          click of its own. */}
+          site; a file's well is plain -- the whole card (above) is already
+          the click target; anything else stays a plain well, since it
+          carries no click of its own. */}
       {preview !== "none" &&
         (isVideo && isPlaying ? (
           <div className={wellClass} style={wellStyle}>
@@ -304,17 +313,11 @@ export function PublicationCard({
             </div>
           </a>
         ) : fileUrl ? (
-          <button
-            type="button"
-            onClick={() => openFileInNewTab(fileUrl, resolvedFileMimeType)}
-            aria-label={t("publications.view")}
-            className={"group block w-full " + wellClass}
-            style={wellStyle}
-          >
+          <div className={"group w-full " + wellClass} style={wellStyle}>
             <div className="w-full h-full transition-transform duration-300 group-hover:scale-[1.03]">
               {thumbnail}
             </div>
-          </button>
+          </div>
         ) : (
           <div className={wellClass} style={wellStyle}>
             {thumbnail}
@@ -328,12 +331,13 @@ export function PublicationCard({
             {/* normal-case: a person's name isn't a label like the date above
                 it -- shouting it in caps reads as wrong, not stylised. */}
             {authorTags ? (
-              <div className="normal-case">
+              <div className="normal-case font-serif">
                 {authorTags.map((tag, index) => (
                   <span key={tag.id}>
                     <Link
                       to="/about/participants"
                       search={{ participant: tag.id }}
+                      onClick={(e) => e.stopPropagation()}
                       className="hover:text-accent hover:underline underline-offset-2"
                     >
                       {tag.name}
@@ -343,7 +347,7 @@ export function PublicationCard({
                 ))}
               </div>
             ) : (
-              displayAuthor && <div className="normal-case">{displayAuthor}</div>
+              displayAuthor && <div className="normal-case font-serif">{displayAuthor}</div>
             )}
           </div>
         )}
@@ -362,6 +366,24 @@ export function PublicationCard({
           attachmentMissing && <TranslationNotice compact className="mt-auto pt-4 text-end" />
         )}
       </div>
+
+      {/* Download for a file lives here instead of a row under the title --
+          the whole card already opens it (see the wrapper's onClick above),
+          so this only needs to carry the second, less-common action. It's
+          pinned to the well's corner, matching the video play button's dark
+          badge so it reads over any thumbnail. */}
+      {isFileOnly && (
+        <a
+          href={fileUrl}
+          download
+          onClick={(e) => e.stopPropagation()}
+          aria-label={t("publications.download")}
+          title={t("publications.download")}
+          className="absolute top-2 end-2 z-10 inline-flex h-8 w-8 items-center justify-center rounded-full bg-black/60 text-white transition-colors hover:bg-black/75"
+        >
+          <Download className="h-3.5 w-3.5" />
+        </a>
+      )}
     </div>
   );
 }
