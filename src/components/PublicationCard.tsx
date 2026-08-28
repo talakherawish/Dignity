@@ -5,6 +5,7 @@ import { TranslationNotice } from "@/components/TranslationNotice";
 import { useLanguage } from "@/contexts/LanguageContext";
 import {
   formatDate,
+  formatFileSize,
   isYoutubeLink,
   openFileInNewTab,
   resolveAttachment,
@@ -103,6 +104,9 @@ export type PublicationCardProps = {
   /** Arabic-only counterpart to `fileUrl`, when the two differ — see resolveAttachment. */
   fileUrlAr?: string;
   fileMimeTypeAr?: string;
+  /** Bytes, shown in the download button's tooltip via formatFileSize. */
+  fileSize?: number;
+  fileSizeAr?: number;
   /** External destination (YouTube), which makes the thumbnail clickable and
    * swaps the file actions for a play button. */
   linkUrl?: string;
@@ -127,6 +131,8 @@ export function PublicationCard({
   fileMimeType,
   fileUrlAr,
   fileMimeTypeAr,
+  fileSize,
+  fileSizeAr,
   linkUrl,
   linkUrlAr,
   as: Heading = "h3",
@@ -156,6 +162,7 @@ export function PublicationCard({
   const resolvedLink = resolveAttachment(linkUrl, linkUrlAr, isAr);
   const resolvedFile = resolveAttachment(fileUrl, fileUrlAr, isAr);
   const resolvedFileMimeType = isAr && fileUrlAr ? fileMimeTypeAr : fileMimeType;
+  const sizeLabel = formatFileSize(isAr && fileUrlAr ? fileSizeAr : fileSize);
   linkUrl = resolvedLink.value;
   fileUrl = resolvedFile.value;
   const attachmentMissing = !linkUrl && !fileUrl && (resolvedLink.missing || resolvedFile.missing);
@@ -377,8 +384,8 @@ export function PublicationCard({
           href={fileUrl}
           download
           onClick={(e) => e.stopPropagation()}
-          aria-label={t("publications.download")}
-          title={t("publications.download")}
+          aria-label={sizeLabel ? `${t("publications.download")} (${sizeLabel})` : t("publications.download")}
+          title={sizeLabel ? `${t("publications.download")} (${sizeLabel})` : t("publications.download")}
           className="absolute top-2 end-2 z-10 inline-flex h-8 w-8 items-center justify-center rounded-full bg-black/60 text-white transition-colors hover:bg-black/75"
         >
           <Download className="h-3.5 w-3.5" />

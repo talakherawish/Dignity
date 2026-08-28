@@ -223,6 +223,22 @@ html.lang-ar h4 {
   font-family: var(--font-sans);
 }
 
+/*
+ * Letter-spacing breaks Arabic's cursive joining: forcing a gap between
+ * glyphs strands each one in its isolated form instead of the initial/
+ * medial/final shape that makes a word read as one connected word, rather
+ * than a row of disconnected letters. Every tracking-* utility site-wide
+ * (the all-caps eyebrow labels mostly, but also tracking-tight on a couple of
+ * headings) gets neutralized for Arabic, whichever direction it pushes
+ * spacing -- SiteHeader.tsx already worked around this one instance by hand
+ * before this existed. Unlayered, so it wins over Tailwind's own (layered)
+ * utility regardless of source order -- see html.lang-ar h1..h4 above for the
+ * same technique.
+ */
+html.lang-ar [class*="tracking-"] {
+  letter-spacing: normal;
+}
+
 /* Arabic reads smaller than Latin text at the same point size, so every step
    of the shared type scale is ~2px larger in Arabic. Redefining the scale's
    own custom properties means every text-xs..text-7xl usage site-wide picks

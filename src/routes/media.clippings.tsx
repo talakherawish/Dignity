@@ -63,6 +63,7 @@ function ClippingsPage() {
                   preview={url ? "clipping" : "none"}
                   fileUrl={url}
                   fileMimeType={item.image?.mimeType}
+                  fileSize={item.image?.filesize}
                 />
               );
             })}

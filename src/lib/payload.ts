@@ -25,6 +25,8 @@ export type PayloadMedia = {
    */
   width?: number;
   height?: number;
+  /** Bytes, recorded by Payload for every upload -- see formatFileSize. */
+  filesize?: number;
   thumbnail?: PayloadMedia;
 };
 
@@ -412,6 +414,24 @@ const ARABIC_DUAL_MONTHS = [
 
 export function arabicDualMonthName(monthIndex: number): string {
   return ARABIC_DUAL_MONTHS[monthIndex] ?? "";
+}
+
+/**
+ * Human-readable size for a download button's tooltip, e.g. "2.4 MB". Payload
+ * records every upload's size in bytes on its Media doc (see
+ * `PayloadMedia.filesize`); this is the one unit conversion needed to show it.
+ */
+export function formatFileSize(bytes: number | undefined): string | undefined {
+  if (!bytes || bytes <= 0) return undefined;
+  if (bytes < 1024) return `${bytes} B`;
+  const units = ["KB", "MB", "GB"];
+  let value = bytes / 1024;
+  let unitIndex = 0;
+  while (value >= 1024 && unitIndex < units.length - 1) {
+    value /= 1024;
+    unitIndex++;
+  }
+  return `${value < 10 ? value.toFixed(1) : Math.round(value)} ${units[unitIndex]}`;
 }
 
 /**

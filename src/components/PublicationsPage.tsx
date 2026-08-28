@@ -31,6 +31,8 @@ type DisplayPublication = {
   fileMimeType?: string;
   fileUrlAr: string;
   fileMimeTypeAr?: string;
+  fileSize?: number;
+  fileSizeAr?: number;
   previewUrl: string;
   previewWidth?: number;
   previewHeight?: number;
@@ -68,6 +70,8 @@ function fromPayload(item: PayloadPublication): DisplayPublication {
     fileMimeType: item.file?.mimeType,
     fileUrlAr: mediaUrl(item.fileAr),
     fileMimeTypeAr: item.fileAr?.mimeType,
+    fileSize: item.file?.filesize,
+    fileSizeAr: item.fileAr?.filesize,
     previewUrl,
     previewWidth: previewSource?.width,
     previewHeight: previewSource?.height,
@@ -134,6 +138,8 @@ export function PublicationsPage({
                 fileMimeType={item.fileMimeType}
                 fileUrlAr={item.fileUrlAr}
                 fileMimeTypeAr={item.fileMimeTypeAr}
+                fileSize={item.fileSize}
+                fileSizeAr={item.fileSizeAr}
                 linkUrl={item.linkUrl}
                 linkUrlAr={item.linkUrlAr}
               />
