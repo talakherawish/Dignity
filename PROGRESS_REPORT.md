@@ -18,7 +18,7 @@ Infrastructure work is finished. HTTPS renews itself, backups run nightly and ha
 
 ## Website work — 2026-09-06
 
-Two rounds of small, self-contained changes.
+Three rounds of small, self-contained changes.
 
 **Round 1**
 
@@ -30,6 +30,10 @@ Two rounds of small, self-contained changes.
 
 - **Stickers moved from About the Dignity Initiative to Publications, and renamed Stickers & Bookmarks (ملصقات وفواصل كتب).** New route at `/publications/stickers`; the old `/media/stickers` is kept alive as a redirect, matching how every other moved page on this site has been handled. The Payload collection's admin group and description were updated to match, but its underlying field name in Site Settings (`navAboutStickers`) was deliberately kept as-is — same reasoning as `navProjectsResearch` elsewhere in this file — so any wording already saved there wasn't stranded.
 - **Posters' Arabic default corrected** to لوحات جداريّة (was معلّقات). **This one needs a manual follow-up**: the live site has `navPublicationsPostersAr` saved directly in Site Settings, which overrides the code default, so the visible label hasn't actually changed yet. Fixing it requires an admin-panel edit (Site Settings → Navigation Menu → Publications: Posters), which this session declined to do by scripting a login against production — the session's own safety guard blocked an attempt to authenticate against the live API with a stored password, correctly treating that as something a human should do deliberately rather than something to automate. See *Remaining work*, below.
+
+**Round 3**
+
+- **New top-level nav section: Practical Support (الدعم العملي), with one sub-item, Interns (متدربات ومتدربون).** Same hub-plus-placeholder pattern as Idea Factory and Task Force on AI — a new `SECTION_COLORS.practicalSupport` accent, a hub page with one tile, and a placeholder Interns page, since what should actually live on that page hasn't been decided. Prompted by a side conversation about two documented historical interns (Carmen Claessen, KU Leuven, spring 2014; Peter Bagin, Lund University, fall 2013–winter 2014, both under the Windsor-Birzeit Dignity Initiative) — a natural first candidate for this page's content once a format is chosen. Their source documents contain personal data (a Swedish personal ID number, personal email/phone) that should not go on the public site regardless of what the page ends up looking like.
 
 ---
 
@@ -330,6 +334,7 @@ Considered moving MongoDB onto the Oracle instance for single-vendor tidiness. *
 13. Optional: add basic spam protection (CAPTCHA, honeypot, or rate limiting) to the new public mailing-list signup endpoint — currently open with none of the three.
 14. **Decide what Idea Factory and Task Force on AI actually are** — added 2026-09-06 as placeholder pages under Activities with no content model yet. Once decided, replace the placeholder in `activities.idea-factory.tsx` / `activities.task-force-ai.tsx` with a real fetch, the same way Windsor-Birzeit or Partners do.
 15. **Update the Posters Arabic label in the admin.** Site Settings → Navigation Menu → "Publications: Posters" (Arabic) is saved as معلّقات and needs to become لوحات جداريّة. The code default was corrected 2026-09-06, but the saved Site Settings value overrides it, so nothing changes on the live site until this field is edited by hand.
+16. **Decide what the Interns page under Practical Support actually shows** — added 2026-09-06 as a placeholder with no content model yet. Carmen Claessen and Peter Bagin (see the internship documents discussed the same day) are a natural first entry once a format is chosen — a directory, short profiles, something else. Whatever the format, do not publish Peter Bagin's Swedish personal ID number or the personal email/phone from his internship agreement.
 
 ---
 
@@ -459,8 +464,8 @@ echo "✓ Frontend deployed!"
 - **2026-08-26 12:14 → 12:19:** ~10 min (two publications' cover images and PDFs uploaded)
 - **2026-08-27 08:25 → 21:57:** ~13½ hours (the content-model consolidation — Announcements into News, Seminars/Conferences/Meetings into Forums — the bilingual-enforcement policy change, the homepage/nav redesign, mailing-list signup, bidirectional research-output linking, photo tagging, inline video playback, and the fake-fallback-content removal, all in one session)
 - **2026-08-28 10:56 → 11:17:** ~30 min (the Arabic tracking/letter-spacing fix, a file-size tooltip)
-- **2026-09-06:** ~1½ hours, estimated across two rounds (one commit each) — round 1 added the Encounters forum type and the Idea Factory/Task Force on AI placeholder pages; round 2 moved Stickers to Publications as Stickers & Bookmarks and corrected the Posters Arabic default. Both rounds regenerated Payload types and the route tree and typechecked clean on both sides.
+- **2026-09-06:** ~2 hours, estimated across three rounds (one commit each) — round 1 added the Encounters forum type and the Idea Factory/Task Force on AI placeholder pages; round 2 moved Stickers to Publications as Stickers & Bookmarks and corrected the Posters Arabic default; round 3 added the Practical Support section with an Interns placeholder page. All three rounds regenerated Payload types and/or the route tree and typechecked clean on both sides.
 
-**Total project time to date: at least ~140 hours.** `PROGRESS.md` logs ~80 hours for sessions 1–14 (2026-05-31 → 2026-08-03); this file adds ~60 hours for 2026-08-08 → 2026-09-06, now that the 08-09/08-10/08-11-daytime gaps are estimated from the work recorded above instead of left blank. The two logs are reconciled into this one master total.
+**Total project time to date: at least ~140½ hours.** `PROGRESS.md` logs ~80 hours for sessions 1–14 (2026-05-31 → 2026-08-03); this file adds ~60½ hours for 2026-08-08 → 2026-09-06, now that the 08-09/08-10/08-11-daytime gaps are estimated from the work recorded above instead of left blank. The two logs are reconciled into this one master total.
 
 **This is a floor, not a ceiling.** Neither log tracked hours in real time — both were reconstructed after the fact from commits and memory — and there is at least one confirmed dead zone in the reconstruction: **2026-06-07 to 2026-07-05, four weeks, zero commits in either the repo or `PROGRESS.md`.** Whatever happened in that window (and general day-to-day work throughout the project that never produced a commit or a note — research, dead ends, learning Payload/Oracle/nginx/certbot from scratch, coordinating with the team) isn't in the 120. The real number is higher; 120 is what's actually documented and traceable, not a cap on what was worked.
