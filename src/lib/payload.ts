@@ -49,8 +49,8 @@ export type PayloadGalleryItem = {
   captionAr?: string;
 };
 
-/** The four sub-types shown as filter tabs on Activities -> Forums. */
-export type ForumType = "seminar" | "roundtable" | "workshop" | "conference";
+/** The five sub-types shown as filter tabs on Activities -> Forums. */
+export type ForumType = "seminar" | "roundtable" | "workshop" | "conference" | "encounters";
 
 export type PayloadActivity = {
   id: string;

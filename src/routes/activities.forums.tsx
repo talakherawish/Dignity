@@ -21,7 +21,7 @@ type ForumsSearch = { type?: FilterValue; open?: string };
 export const Route = createFileRoute("/activities/forums")({
   head: () => ({ meta: [{ title: "Forums — Dignity" }] }),
   validateSearch: (search: Record<string, unknown>): ForumsSearch => {
-    const forumTypes: readonly string[] = ["seminar", "roundtable", "workshop", "conference"];
+    const forumTypes: readonly string[] = ["seminar", "roundtable", "workshop", "conference", "encounters"];
     return {
       type: forumTypes.includes(search.type as string) ? (search.type as ForumType) : undefined,
       open: typeof search.open === "string" ? search.open : undefined,
@@ -36,6 +36,7 @@ const FILTERS: { value: FilterValue; labelKey: TranslationKey }[] = [
   { value: "roundtable", labelKey: "forums.filter.roundtable" },
   { value: "workshop", labelKey: "forums.filter.workshop" },
   { value: "conference", labelKey: "forums.filter.conference" },
+  { value: "encounters", labelKey: "forums.filter.encounters" },
 ];
 
 function ForumsPage() {

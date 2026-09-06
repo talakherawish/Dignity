@@ -36,6 +36,8 @@ const NAV: Item[] = [
       { labelKey: "activities.research", to: "/projects/research" },
       { labelKey: "activities.forums", to: "/activities/forums" },
       { labelKey: "activities.windsor", to: "/activities/windsor-birzeit" },
+      { labelKey: "activities.ideaFactory", to: "/activities/idea-factory" },
+      { labelKey: "activities.taskForceAI", to: "/activities/task-force-ai" },
     ],
   },
   {

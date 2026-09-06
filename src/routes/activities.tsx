@@ -1,5 +1,5 @@
 import { createFileRoute, Outlet, useLocation } from "@tanstack/react-router";
-import { FlaskConical, Globe2, Presentation } from "lucide-react";
+import { Bot, FlaskConical, Globe2, Lightbulb, Presentation } from "lucide-react";
 import { SectionHubPage, type SectionTile } from "@/components/SectionHub";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { SECTION_COLORS } from "@/lib/sectionColors";
@@ -14,11 +14,17 @@ export const Route = createFileRoute("/activities")({
 // all now sub-types filtered on the single Forums tile -- see
 // activities.forums.tsx. Meetings itself no longer has a tile or a page --
 // every meeting is a forum event now, tagged (or not yet tagged) with one of
-// the four types.
+// the five types.
+//
+// Idea Factory and Task Force on AI are placeholders -- see
+// activities.idea-factory.tsx and activities.task-force-ai.tsx -- until
+// their content shape is decided.
 const TILES: SectionTile[] = [
   { labelKey: "activities.research", to: "/projects/research", icon: FlaskConical },
   { labelKey: "activities.forums", to: "/activities/forums", icon: Presentation },
   { labelKey: "activities.windsor", to: "/activities/windsor-birzeit", icon: Globe2 },
+  { labelKey: "activities.ideaFactory", to: "/activities/idea-factory", icon: Lightbulb },
+  { labelKey: "activities.taskForceAI", to: "/activities/task-force-ai", icon: Bot },
 ];
 
 // Having this file also makes it the layout route for every activities.*

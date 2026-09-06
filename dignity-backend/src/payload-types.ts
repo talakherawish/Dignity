@@ -413,7 +413,7 @@ export interface Forum {
   title: string;
   titleAr: string;
   date: string;
-  forumType?: ('seminar' | 'roundtable' | 'workshop' | 'conference') | null;
+  forumType?: ('seminar' | 'roundtable' | 'workshop' | 'conference' | 'encounters') | null;
   description?: string | null;
   descriptionAr?: string | null;
   content?: {
@@ -1969,6 +1969,8 @@ export interface SiteSetting {
   forumTypeWorkshopAr?: string | null;
   forumTypeConference?: string | null;
   forumTypeConferenceAr?: string | null;
+  forumTypeEncounters?: string | null;
+  forumTypeEncountersAr?: string | null;
   projectsArea?: string | null;
   projectsAreaAr?: string | null;
   navMedia?: string | null;
@@ -2119,6 +2121,8 @@ export interface SiteSettingsSelect<T extends boolean = true> {
   forumTypeWorkshopAr?: T;
   forumTypeConference?: T;
   forumTypeConferenceAr?: T;
+  forumTypeEncounters?: T;
+  forumTypeEncountersAr?: T;
   projectsArea?: T;
   projectsAreaAr?: T;
   navMedia?: T;

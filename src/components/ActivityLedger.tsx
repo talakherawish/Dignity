@@ -17,6 +17,7 @@ const FORUM_TYPE_LABEL_KEY: Record<ForumType, TranslationKey> = {
   roundtable: "forums.type.roundtable",
   workshop: "forums.type.workshop",
   conference: "forums.type.conference",
+  encounters: "forums.type.encounters",
 };
 
 /**

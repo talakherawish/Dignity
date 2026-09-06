@@ -45,7 +45,7 @@ export const Forums: CollectionConfig = {
       required: true,
     },
     /**
-     * Which of the four sub-types this is. Not required -- a handful of
+     * Which of the five sub-types this is. Not required -- a handful of
      * documents migrated in from the old Meetings collection were left
      * without this set, since guessing their type risked mischaracterizing
      * real events, and a required field blocks saving *any* change to a
@@ -62,6 +62,7 @@ export const Forums: CollectionConfig = {
         { label: 'Roundtable', value: 'roundtable' },
         { label: 'Workshop', value: 'workshop' },
         { label: 'Conference', value: 'conference' },
+        { label: 'Encounters', value: 'encounters' },
       ],
     },
     {

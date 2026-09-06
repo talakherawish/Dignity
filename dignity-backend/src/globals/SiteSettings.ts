@@ -46,6 +46,10 @@ export const SiteSettings: GlobalConfig = {
             // own); they are now sub-types on one Forums page.
             ...pair('navActivitiesForums', 'Activities: Forums'),
             ...pair('navActivitiesWindsor', 'Activities: The Windsor Birzeit Dignity Initiative'),
+            // Content shape not decided yet -- these two are placeholder pages
+            // until there's something to put on them.
+            ...pair('navActivitiesIdeaFactory', 'Activities: Idea Factory'),
+            ...pair('navActivitiesTaskForceAI', 'Activities: Task Force on AI'),
 
             ...pair('navPublications', 'Publications — menu heading'),
             ...pair('navPublicationsBooks', 'Publications: Books'),
@@ -120,6 +124,7 @@ export const SiteSettings: GlobalConfig = {
             ...pair('forumTypeRoundtable', 'Forum Type: Roundtable'),
             ...pair('forumTypeWorkshop', 'Forum Type: Workshop'),
             ...pair('forumTypeConference', 'Forum Type: Conference'),
+            ...pair('forumTypeEncounters', 'Forum Type: Encounters'),
             ...pair('projectsArea', 'Research Area Label'),
             ...pair('navMedia', 'Media Pages: Section Eyebrow'),
             ],

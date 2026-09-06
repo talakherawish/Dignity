@@ -121,6 +121,7 @@ const FORUM_TYPE_LABEL: Record<ForumType, { en: string; ar: string }> = {
   roundtable: { en: "Roundtable", ar: "طاولة مستديرة" },
   workshop: { en: "Workshop", ar: "ورشة عمل" },
   conference: { en: "Conference", ar: "مؤتمر" },
+  encounters: { en: "Encounters", ar: "حواريات" },
 };
 
 /**

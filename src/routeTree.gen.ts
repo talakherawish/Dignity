@@ -19,8 +19,10 @@ import { Route as AboutParticipantsRouteImport } from './routes/about.participan
 import { Route as AboutPartnersRouteImport } from './routes/about.partners'
 import { Route as ActivitiesConferencesRouteImport } from './routes/activities.conferences'
 import { Route as ActivitiesForumsRouteImport } from './routes/activities.forums'
+import { Route as ActivitiesIdeaFactoryRouteImport } from './routes/activities.idea-factory'
 import { Route as ActivitiesMeetingsRouteImport } from './routes/activities.meetings'
 import { Route as ActivitiesSeminarsRouteImport } from './routes/activities.seminars'
+import { Route as ActivitiesTaskForceAiRouteImport } from './routes/activities.task-force-ai'
 import { Route as ActivitiesWindsorBirzeitRouteImport } from './routes/activities.windsor-birzeit'
 import { Route as InformationDatabasesRouteImport } from './routes/information.databases'
 import { Route as InformationReadingsRouteImport } from './routes/information.readings'
@@ -89,6 +91,11 @@ const ActivitiesForumsRoute = ActivitiesForumsRouteImport.update({
   path: '/forums',
   getParentRoute: () => ActivitiesRoute,
 } as any)
+const ActivitiesIdeaFactoryRoute = ActivitiesIdeaFactoryRouteImport.update({
+  id: '/idea-factory',
+  path: '/idea-factory',
+  getParentRoute: () => ActivitiesRoute,
+} as any)
 const ActivitiesMeetingsRoute = ActivitiesMeetingsRouteImport.update({
   id: '/meetings',
   path: '/meetings',
@@ -97,6 +104,11 @@ const ActivitiesMeetingsRoute = ActivitiesMeetingsRouteImport.update({
 const ActivitiesSeminarsRoute = ActivitiesSeminarsRouteImport.update({
   id: '/seminars',
   path: '/seminars',
+  getParentRoute: () => ActivitiesRoute,
+} as any)
+const ActivitiesTaskForceAiRoute = ActivitiesTaskForceAiRouteImport.update({
+  id: '/task-force-ai',
+  path: '/task-force-ai',
   getParentRoute: () => ActivitiesRoute,
 } as any)
 const ActivitiesWindsorBirzeitRoute =
@@ -197,8 +209,10 @@ export interface FileRoutesByFullPath {
   '/about/partners': typeof AboutPartnersRoute
   '/activities/conferences': typeof ActivitiesConferencesRoute
   '/activities/forums': typeof ActivitiesForumsRoute
+  '/activities/idea-factory': typeof ActivitiesIdeaFactoryRoute
   '/activities/meetings': typeof ActivitiesMeetingsRoute
   '/activities/seminars': typeof ActivitiesSeminarsRoute
+  '/activities/task-force-ai': typeof ActivitiesTaskForceAiRoute
   '/activities/windsor-birzeit': typeof ActivitiesWindsorBirzeitRoute
   '/information/databases': typeof InformationDatabasesRoute
   '/information/readings': typeof InformationReadingsRoute
@@ -228,8 +242,10 @@ export interface FileRoutesByTo {
   '/about/partners': typeof AboutPartnersRoute
   '/activities/conferences': typeof ActivitiesConferencesRoute
   '/activities/forums': typeof ActivitiesForumsRoute
+  '/activities/idea-factory': typeof ActivitiesIdeaFactoryRoute
   '/activities/meetings': typeof ActivitiesMeetingsRoute
   '/activities/seminars': typeof ActivitiesSeminarsRoute
+  '/activities/task-force-ai': typeof ActivitiesTaskForceAiRoute
   '/activities/windsor-birzeit': typeof ActivitiesWindsorBirzeitRoute
   '/information/databases': typeof InformationDatabasesRoute
   '/information/readings': typeof InformationReadingsRoute
@@ -260,8 +276,10 @@ export interface FileRoutesById {
   '/about/partners': typeof AboutPartnersRoute
   '/activities/conferences': typeof ActivitiesConferencesRoute
   '/activities/forums': typeof ActivitiesForumsRoute
+  '/activities/idea-factory': typeof ActivitiesIdeaFactoryRoute
   '/activities/meetings': typeof ActivitiesMeetingsRoute
   '/activities/seminars': typeof ActivitiesSeminarsRoute
+  '/activities/task-force-ai': typeof ActivitiesTaskForceAiRoute
   '/activities/windsor-birzeit': typeof ActivitiesWindsorBirzeitRoute
   '/information/databases': typeof InformationDatabasesRoute
   '/information/readings': typeof InformationReadingsRoute
@@ -293,8 +311,10 @@ export interface FileRouteTypes {
     | '/about/partners'
     | '/activities/conferences'
     | '/activities/forums'
+    | '/activities/idea-factory'
     | '/activities/meetings'
     | '/activities/seminars'
+    | '/activities/task-force-ai'
     | '/activities/windsor-birzeit'
     | '/information/databases'
     | '/information/readings'
@@ -324,8 +344,10 @@ export interface FileRouteTypes {
     | '/about/partners'
     | '/activities/conferences'
     | '/activities/forums'
+    | '/activities/idea-factory'
     | '/activities/meetings'
     | '/activities/seminars'
+    | '/activities/task-force-ai'
     | '/activities/windsor-birzeit'
     | '/information/databases'
     | '/information/readings'
@@ -355,8 +377,10 @@ export interface FileRouteTypes {
     | '/about/partners'
     | '/activities/conferences'
     | '/activities/forums'
+    | '/activities/idea-factory'
     | '/activities/meetings'
     | '/activities/seminars'
+    | '/activities/task-force-ai'
     | '/activities/windsor-birzeit'
     | '/information/databases'
     | '/information/readings'
@@ -464,6 +488,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ActivitiesForumsRouteImport
       parentRoute: typeof ActivitiesRoute
     }
+    '/activities/idea-factory': {
+      id: '/activities/idea-factory'
+      path: '/idea-factory'
+      fullPath: '/activities/idea-factory'
+      preLoaderRoute: typeof ActivitiesIdeaFactoryRouteImport
+      parentRoute: typeof ActivitiesRoute
+    }
     '/activities/meetings': {
       id: '/activities/meetings'
       path: '/meetings'
@@ -476,6 +507,13 @@ declare module '@tanstack/react-router' {
       path: '/seminars'
       fullPath: '/activities/seminars'
       preLoaderRoute: typeof ActivitiesSeminarsRouteImport
+      parentRoute: typeof ActivitiesRoute
+    }
+    '/activities/task-force-ai': {
+      id: '/activities/task-force-ai'
+      path: '/task-force-ai'
+      fullPath: '/activities/task-force-ai'
+      preLoaderRoute: typeof ActivitiesTaskForceAiRouteImport
       parentRoute: typeof ActivitiesRoute
     }
     '/activities/windsor-birzeit': {
@@ -615,16 +653,20 @@ const AboutRouteWithChildren = AboutRoute._addFileChildren(AboutRouteChildren)
 interface ActivitiesRouteChildren {
   ActivitiesConferencesRoute: typeof ActivitiesConferencesRoute
   ActivitiesForumsRoute: typeof ActivitiesForumsRoute
+  ActivitiesIdeaFactoryRoute: typeof ActivitiesIdeaFactoryRoute
   ActivitiesMeetingsRoute: typeof ActivitiesMeetingsRoute
   ActivitiesSeminarsRoute: typeof ActivitiesSeminarsRoute
+  ActivitiesTaskForceAiRoute: typeof ActivitiesTaskForceAiRoute
   ActivitiesWindsorBirzeitRoute: typeof ActivitiesWindsorBirzeitRoute
 }
 
 const ActivitiesRouteChildren: ActivitiesRouteChildren = {
   ActivitiesConferencesRoute: ActivitiesConferencesRoute,
   ActivitiesForumsRoute: ActivitiesForumsRoute,
+  ActivitiesIdeaFactoryRoute: ActivitiesIdeaFactoryRoute,
   ActivitiesMeetingsRoute: ActivitiesMeetingsRoute,
   ActivitiesSeminarsRoute: ActivitiesSeminarsRoute,
+  ActivitiesTaskForceAiRoute: ActivitiesTaskForceAiRoute,
   ActivitiesWindsorBirzeitRoute: ActivitiesWindsorBirzeitRoute,
 }
 
