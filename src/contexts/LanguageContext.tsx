@@ -78,6 +78,8 @@ const translations = {
       "Readings, documents, and databases relevant to the Dignity initiative's research.",
     "information.empty": "No items available yet.",
     "information.visit": "Visit",
+    practicalSupport: "Practical Support",
+    "practicalSupport.interns": "Interns",
     // HOME
     "hero.eyebrow": "Academic Initiative",
     "hero.title": "Advancing scholarship in service of human dignity.",
@@ -269,6 +271,8 @@ const translations = {
     "information.page.desc": "قراءات ووثائق وقواعد معلومات ذات صلة بأبحاث مبادرة الكرامة.",
     "information.empty": "لا توجد عناصر متاحة حالياً.",
     "information.visit": "زيارة",
+    practicalSupport: "الدعم العملي",
+    "practicalSupport.interns": "متدربات ومتدربون",
     // HOME
     "hero.eyebrow": "مبادرة أكاديمية",
     "hero.title": "تعزيز المعرفة في خدمة الكرامة الإنسانية",
@@ -418,6 +422,9 @@ const SITE_SETTINGS_KEY_MAP: Partial<Record<TranslationKey, string>> = {
   information: "navInformation",
   "information.readings": "navInformationReadings",
   "information.databases": "navInformationDatabases",
+
+  practicalSupport: "navPracticalSupport",
+  "practicalSupport.interns": "navPracticalSupportInterns",
 
   // Not a menu label: the eyebrow above the news, announcements, photos and
   // clippings pages.

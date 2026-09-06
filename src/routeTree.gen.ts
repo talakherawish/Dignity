@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as ActivitiesRouteImport } from './routes/activities'
 import { Route as InformationRouteImport } from './routes/information'
+import { Route as PracticalSupportRouteImport } from './routes/practical-support'
 import { Route as PublicationsRouteImport } from './routes/publications'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as AboutParticipantsRouteImport } from './routes/about.participants'
@@ -31,6 +32,7 @@ import { Route as MediaClippingsRouteImport } from './routes/media.clippings'
 import { Route as MediaNewsRouteImport } from './routes/media.news'
 import { Route as MediaPhotosRouteImport } from './routes/media.photos'
 import { Route as MediaStickersRouteImport } from './routes/media.stickers'
+import { Route as PracticalSupportInternsRouteImport } from './routes/practical-support.interns'
 import { Route as PublicationsAudiovisualRouteImport } from './routes/publications.audiovisual'
 import { Route as PublicationsBooksRouteImport } from './routes/publications.books'
 import { Route as PublicationsBrochuresRouteImport } from './routes/publications.brochures'
@@ -60,6 +62,11 @@ const ActivitiesRoute = ActivitiesRouteImport.update({
 const InformationRoute = InformationRouteImport.update({
   id: '/information',
   path: '/information',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PracticalSupportRoute = PracticalSupportRouteImport.update({
+  id: '/practical-support',
+  path: '/practical-support',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PublicationsRoute = PublicationsRouteImport.update({
@@ -153,6 +160,11 @@ const MediaStickersRoute = MediaStickersRouteImport.update({
   path: '/media/stickers',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PracticalSupportInternsRoute = PracticalSupportInternsRouteImport.update({
+  id: '/interns',
+  path: '/interns',
+  getParentRoute: () => PracticalSupportRoute,
+} as any)
 const PublicationsAudiovisualRoute = PublicationsAudiovisualRouteImport.update({
   id: '/audiovisual',
   path: '/audiovisual',
@@ -209,6 +221,7 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRouteWithChildren
   '/activities': typeof ActivitiesRouteWithChildren
   '/information': typeof InformationRouteWithChildren
+  '/practical-support': typeof PracticalSupportRouteWithChildren
   '/publications': typeof PublicationsRouteWithChildren
   '/search': typeof SearchRoute
   '/about/participants': typeof AboutParticipantsRoute
@@ -227,6 +240,7 @@ export interface FileRoutesByFullPath {
   '/media/news': typeof MediaNewsRoute
   '/media/photos': typeof MediaPhotosRoute
   '/media/stickers': typeof MediaStickersRoute
+  '/practical-support/interns': typeof PracticalSupportInternsRoute
   '/publications/audiovisual': typeof PublicationsAudiovisualRoute
   '/publications/books': typeof PublicationsBooksRoute
   '/publications/brochures': typeof PublicationsBrochuresRoute
@@ -243,6 +257,7 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRouteWithChildren
   '/activities': typeof ActivitiesRouteWithChildren
   '/information': typeof InformationRouteWithChildren
+  '/practical-support': typeof PracticalSupportRouteWithChildren
   '/publications': typeof PublicationsRouteWithChildren
   '/search': typeof SearchRoute
   '/about/participants': typeof AboutParticipantsRoute
@@ -261,6 +276,7 @@ export interface FileRoutesByTo {
   '/media/news': typeof MediaNewsRoute
   '/media/photos': typeof MediaPhotosRoute
   '/media/stickers': typeof MediaStickersRoute
+  '/practical-support/interns': typeof PracticalSupportInternsRoute
   '/publications/audiovisual': typeof PublicationsAudiovisualRoute
   '/publications/books': typeof PublicationsBooksRoute
   '/publications/brochures': typeof PublicationsBrochuresRoute
@@ -278,6 +294,7 @@ export interface FileRoutesById {
   '/about': typeof AboutRouteWithChildren
   '/activities': typeof ActivitiesRouteWithChildren
   '/information': typeof InformationRouteWithChildren
+  '/practical-support': typeof PracticalSupportRouteWithChildren
   '/publications': typeof PublicationsRouteWithChildren
   '/search': typeof SearchRoute
   '/about/participants': typeof AboutParticipantsRoute
@@ -296,6 +313,7 @@ export interface FileRoutesById {
   '/media/news': typeof MediaNewsRoute
   '/media/photos': typeof MediaPhotosRoute
   '/media/stickers': typeof MediaStickersRoute
+  '/practical-support/interns': typeof PracticalSupportInternsRoute
   '/publications/audiovisual': typeof PublicationsAudiovisualRoute
   '/publications/books': typeof PublicationsBooksRoute
   '/publications/brochures': typeof PublicationsBrochuresRoute
@@ -314,6 +332,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/activities'
     | '/information'
+    | '/practical-support'
     | '/publications'
     | '/search'
     | '/about/participants'
@@ -332,6 +351,7 @@ export interface FileRouteTypes {
     | '/media/news'
     | '/media/photos'
     | '/media/stickers'
+    | '/practical-support/interns'
     | '/publications/audiovisual'
     | '/publications/books'
     | '/publications/brochures'
@@ -348,6 +368,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/activities'
     | '/information'
+    | '/practical-support'
     | '/publications'
     | '/search'
     | '/about/participants'
@@ -366,6 +387,7 @@ export interface FileRouteTypes {
     | '/media/news'
     | '/media/photos'
     | '/media/stickers'
+    | '/practical-support/interns'
     | '/publications/audiovisual'
     | '/publications/books'
     | '/publications/brochures'
@@ -382,6 +404,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/activities'
     | '/information'
+    | '/practical-support'
     | '/publications'
     | '/search'
     | '/about/participants'
@@ -400,6 +423,7 @@ export interface FileRouteTypes {
     | '/media/news'
     | '/media/photos'
     | '/media/stickers'
+    | '/practical-support/interns'
     | '/publications/audiovisual'
     | '/publications/books'
     | '/publications/brochures'
@@ -417,6 +441,7 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRouteWithChildren
   ActivitiesRoute: typeof ActivitiesRouteWithChildren
   InformationRoute: typeof InformationRouteWithChildren
+  PracticalSupportRoute: typeof PracticalSupportRouteWithChildren
   PublicationsRoute: typeof PublicationsRouteWithChildren
   SearchRoute: typeof SearchRoute
   MediaAnnouncementsRoute: typeof MediaAnnouncementsRoute
@@ -456,6 +481,13 @@ declare module '@tanstack/react-router' {
       path: '/information'
       fullPath: '/information'
       preLoaderRoute: typeof InformationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/practical-support': {
+      id: '/practical-support'
+      path: '/practical-support'
+      fullPath: '/practical-support'
+      preLoaderRoute: typeof PracticalSupportRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/publications': {
@@ -584,6 +616,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MediaStickersRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/practical-support/interns': {
+      id: '/practical-support/interns'
+      path: '/interns'
+      fullPath: '/practical-support/interns'
+      preLoaderRoute: typeof PracticalSupportInternsRouteImport
+      parentRoute: typeof PracticalSupportRoute
+    }
     '/publications/audiovisual': {
       id: '/publications/audiovisual'
       path: '/audiovisual'
@@ -707,6 +746,17 @@ const InformationRouteWithChildren = InformationRoute._addFileChildren(
   InformationRouteChildren,
 )
 
+interface PracticalSupportRouteChildren {
+  PracticalSupportInternsRoute: typeof PracticalSupportInternsRoute
+}
+
+const PracticalSupportRouteChildren: PracticalSupportRouteChildren = {
+  PracticalSupportInternsRoute: PracticalSupportInternsRoute,
+}
+
+const PracticalSupportRouteWithChildren =
+  PracticalSupportRoute._addFileChildren(PracticalSupportRouteChildren)
+
 interface PublicationsRouteChildren {
   PublicationsAudiovisualRoute: typeof PublicationsAudiovisualRoute
   PublicationsBooksRoute: typeof PublicationsBooksRoute
@@ -738,6 +788,7 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRouteWithChildren,
   ActivitiesRoute: ActivitiesRouteWithChildren,
   InformationRoute: InformationRouteWithChildren,
+  PracticalSupportRoute: PracticalSupportRouteWithChildren,
   PublicationsRoute: PublicationsRouteWithChildren,
   SearchRoute: SearchRoute,
   MediaAnnouncementsRoute: MediaAnnouncementsRoute,

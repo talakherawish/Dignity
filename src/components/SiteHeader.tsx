@@ -63,6 +63,12 @@ const NAV: Item[] = [
       { labelKey: "information.databases", to: "/information/databases" },
     ],
   },
+  {
+    labelKey: "practicalSupport",
+    to: "/practical-support",
+    color: SECTION_COLORS.practicalSupport,
+    children: [{ labelKey: "practicalSupport.interns", to: "/practical-support/interns" }],
+  },
 ];
 
 const LANG_OPTIONS: { code: Language; label: string; ariaLabel: string }[] = [

@@ -66,6 +66,9 @@ export const SiteSettings: GlobalConfig = {
             ...pair('navInformation', 'Information — menu heading'),
             ...pair('navInformationReadings', 'Information: Readings and Documents'),
             ...pair('navInformationDatabases', 'Information: Databases'),
+
+            ...pair('navPracticalSupport', 'Practical Support — menu heading'),
+            ...pair('navPracticalSupportInterns', 'Practical Support: Interns'),
             ],
         },
         {
