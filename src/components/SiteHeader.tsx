@@ -64,10 +64,13 @@ const NAV: Item[] = [
     ],
   },
   {
-    labelKey: "practicalSupport",
-    to: "/practical-support",
-    color: SECTION_COLORS.practicalSupport,
-    children: [{ labelKey: "practicalSupport.interns", to: "/practical-support/interns" }],
+    labelKey: "workingGroup",
+    to: "/working-group",
+    color: SECTION_COLORS.workingGroup,
+    children: [
+      { labelKey: "workingGroup.practicalSupport", to: "/working-group/practical-support" },
+      { labelKey: "workingGroup.interns", to: "/working-group/interns" },
+    ],
   },
 ];
 

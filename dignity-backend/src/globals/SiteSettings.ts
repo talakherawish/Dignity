@@ -67,8 +67,9 @@ export const SiteSettings: GlobalConfig = {
             ...pair('navInformationReadings', 'Information: Readings and Documents'),
             ...pair('navInformationDatabases', 'Information: Databases'),
 
-            ...pair('navPracticalSupport', 'Practical Support — menu heading'),
-            ...pair('navPracticalSupportInterns', 'Practical Support: Interns'),
+            ...pair('navWorkingGroup', 'Working Group — menu heading'),
+            ...pair('navWorkingGroupPracticalSupport', 'Working Group: Practical Support'),
+            ...pair('navWorkingGroupInterns', 'Working Group: Interns'),
             ],
         },
         {
