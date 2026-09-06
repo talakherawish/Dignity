@@ -72,6 +72,8 @@ export const Participants: CollectionConfig = {
         { label: 'Speaker', value: 'speaker' },
         { label: 'Author', value: 'author' },
         { label: 'Team Member', value: 'team_member' },
+        { label: 'Intern', value: 'intern' },
+        { label: 'Practical Support', value: 'practical_support' },
       ],
     },
     {

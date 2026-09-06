@@ -109,7 +109,15 @@ export type PayloadParticipant = {
   nameAr?: string;
   title?: string;
   titleAr?: string;
-  category: "researcher" | "visitor" | "student" | "speaker" | "author" | "team_member";
+  category:
+    | "researcher"
+    | "visitor"
+    | "student"
+    | "speaker"
+    | "author"
+    | "team_member"
+    | "intern"
+    | "practical_support";
   email?: string;
   bio?: string;
   bioAr?: string;
@@ -127,6 +135,8 @@ export const PARTICIPANT_ROLE_LABEL: Record<
   speaker: { en: "Speaker", ar: "متحدث" },
   author: { en: "Author", ar: "مؤلف" },
   team_member: { en: "Team Member", ar: "عضو الفريق" },
+  intern: { en: "Intern", ar: "متدرب" },
+  practical_support: { en: "Practical Support", ar: "الدعم العملي" },
 };
 
 /**

@@ -63,15 +63,6 @@ const NAV: Item[] = [
       { labelKey: "information.databases", to: "/information/databases" },
     ],
   },
-  {
-    labelKey: "workingGroup",
-    to: "/working-group",
-    color: SECTION_COLORS.workingGroup,
-    children: [
-      { labelKey: "workingGroup.practicalSupport", to: "/working-group/practical-support" },
-      { labelKey: "workingGroup.interns", to: "/working-group/interns" },
-    ],
-  },
 ];
 
 const LANG_OPTIONS: { code: Language; label: string; ariaLabel: string }[] = [

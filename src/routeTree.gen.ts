@@ -15,7 +15,6 @@ import { Route as ActivitiesRouteImport } from './routes/activities'
 import { Route as InformationRouteImport } from './routes/information'
 import { Route as PublicationsRouteImport } from './routes/publications'
 import { Route as SearchRouteImport } from './routes/search'
-import { Route as WorkingGroupRouteImport } from './routes/working-group'
 import { Route as AboutParticipantsRouteImport } from './routes/about.participants'
 import { Route as AboutPartnersRouteImport } from './routes/about.partners'
 import { Route as ActivitiesConferencesRouteImport } from './routes/activities.conferences'
@@ -40,8 +39,6 @@ import { Route as PublicationsPostersRouteImport } from './routes/publications.p
 import { Route as PublicationsReportsRouteImport } from './routes/publications.reports'
 import { Route as PublicationsStickersRouteImport } from './routes/publications.stickers'
 import { Route as PublicationsThesesRouteImport } from './routes/publications.theses'
-import { Route as WorkingGroupInternsRouteImport } from './routes/working-group.interns'
-import { Route as WorkingGroupPracticalSupportRouteImport } from './routes/working-group.practical-support'
 import { Route as ProjectsResearchIndexRouteImport } from './routes/projects.research.index'
 import { Route as ProjectsResearchSlugRouteImport } from './routes/projects.research.$slug'
 
@@ -73,11 +70,6 @@ const PublicationsRoute = PublicationsRouteImport.update({
 const SearchRoute = SearchRouteImport.update({
   id: '/search',
   path: '/search',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const WorkingGroupRoute = WorkingGroupRouteImport.update({
-  id: '/working-group',
-  path: '/working-group',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutParticipantsRoute = AboutParticipantsRouteImport.update({
@@ -201,17 +193,6 @@ const PublicationsThesesRoute = PublicationsThesesRouteImport.update({
   path: '/theses',
   getParentRoute: () => PublicationsRoute,
 } as any)
-const WorkingGroupInternsRoute = WorkingGroupInternsRouteImport.update({
-  id: '/interns',
-  path: '/interns',
-  getParentRoute: () => WorkingGroupRoute,
-} as any)
-const WorkingGroupPracticalSupportRoute =
-  WorkingGroupPracticalSupportRouteImport.update({
-    id: '/practical-support',
-    path: '/practical-support',
-    getParentRoute: () => WorkingGroupRoute,
-  } as any)
 const ProjectsResearchIndexRoute = ProjectsResearchIndexRouteImport.update({
   id: '/projects/research/',
   path: '/projects/research/',
@@ -230,7 +211,6 @@ export interface FileRoutesByFullPath {
   '/information': typeof InformationRouteWithChildren
   '/publications': typeof PublicationsRouteWithChildren
   '/search': typeof SearchRoute
-  '/working-group': typeof WorkingGroupRouteWithChildren
   '/about/participants': typeof AboutParticipantsRoute
   '/about/partners': typeof AboutPartnersRoute
   '/activities/conferences': typeof ActivitiesConferencesRoute
@@ -255,8 +235,6 @@ export interface FileRoutesByFullPath {
   '/publications/reports': typeof PublicationsReportsRoute
   '/publications/stickers': typeof PublicationsStickersRoute
   '/publications/theses': typeof PublicationsThesesRoute
-  '/working-group/interns': typeof WorkingGroupInternsRoute
-  '/working-group/practical-support': typeof WorkingGroupPracticalSupportRoute
   '/projects/research/$slug': typeof ProjectsResearchSlugRoute
   '/projects/research/': typeof ProjectsResearchIndexRoute
 }
@@ -267,7 +245,6 @@ export interface FileRoutesByTo {
   '/information': typeof InformationRouteWithChildren
   '/publications': typeof PublicationsRouteWithChildren
   '/search': typeof SearchRoute
-  '/working-group': typeof WorkingGroupRouteWithChildren
   '/about/participants': typeof AboutParticipantsRoute
   '/about/partners': typeof AboutPartnersRoute
   '/activities/conferences': typeof ActivitiesConferencesRoute
@@ -292,8 +269,6 @@ export interface FileRoutesByTo {
   '/publications/reports': typeof PublicationsReportsRoute
   '/publications/stickers': typeof PublicationsStickersRoute
   '/publications/theses': typeof PublicationsThesesRoute
-  '/working-group/interns': typeof WorkingGroupInternsRoute
-  '/working-group/practical-support': typeof WorkingGroupPracticalSupportRoute
   '/projects/research/$slug': typeof ProjectsResearchSlugRoute
   '/projects/research': typeof ProjectsResearchIndexRoute
 }
@@ -305,7 +280,6 @@ export interface FileRoutesById {
   '/information': typeof InformationRouteWithChildren
   '/publications': typeof PublicationsRouteWithChildren
   '/search': typeof SearchRoute
-  '/working-group': typeof WorkingGroupRouteWithChildren
   '/about/participants': typeof AboutParticipantsRoute
   '/about/partners': typeof AboutPartnersRoute
   '/activities/conferences': typeof ActivitiesConferencesRoute
@@ -330,8 +304,6 @@ export interface FileRoutesById {
   '/publications/reports': typeof PublicationsReportsRoute
   '/publications/stickers': typeof PublicationsStickersRoute
   '/publications/theses': typeof PublicationsThesesRoute
-  '/working-group/interns': typeof WorkingGroupInternsRoute
-  '/working-group/practical-support': typeof WorkingGroupPracticalSupportRoute
   '/projects/research/$slug': typeof ProjectsResearchSlugRoute
   '/projects/research/': typeof ProjectsResearchIndexRoute
 }
@@ -344,7 +316,6 @@ export interface FileRouteTypes {
     | '/information'
     | '/publications'
     | '/search'
-    | '/working-group'
     | '/about/participants'
     | '/about/partners'
     | '/activities/conferences'
@@ -369,8 +340,6 @@ export interface FileRouteTypes {
     | '/publications/reports'
     | '/publications/stickers'
     | '/publications/theses'
-    | '/working-group/interns'
-    | '/working-group/practical-support'
     | '/projects/research/$slug'
     | '/projects/research/'
   fileRoutesByTo: FileRoutesByTo
@@ -381,7 +350,6 @@ export interface FileRouteTypes {
     | '/information'
     | '/publications'
     | '/search'
-    | '/working-group'
     | '/about/participants'
     | '/about/partners'
     | '/activities/conferences'
@@ -406,8 +374,6 @@ export interface FileRouteTypes {
     | '/publications/reports'
     | '/publications/stickers'
     | '/publications/theses'
-    | '/working-group/interns'
-    | '/working-group/practical-support'
     | '/projects/research/$slug'
     | '/projects/research'
   id:
@@ -418,7 +384,6 @@ export interface FileRouteTypes {
     | '/information'
     | '/publications'
     | '/search'
-    | '/working-group'
     | '/about/participants'
     | '/about/partners'
     | '/activities/conferences'
@@ -443,8 +408,6 @@ export interface FileRouteTypes {
     | '/publications/reports'
     | '/publications/stickers'
     | '/publications/theses'
-    | '/working-group/interns'
-    | '/working-group/practical-support'
     | '/projects/research/$slug'
     | '/projects/research/'
   fileRoutesById: FileRoutesById
@@ -456,7 +419,6 @@ export interface RootRouteChildren {
   InformationRoute: typeof InformationRouteWithChildren
   PublicationsRoute: typeof PublicationsRouteWithChildren
   SearchRoute: typeof SearchRoute
-  WorkingGroupRoute: typeof WorkingGroupRouteWithChildren
   MediaAnnouncementsRoute: typeof MediaAnnouncementsRoute
   MediaClippingsRoute: typeof MediaClippingsRoute
   MediaNewsRoute: typeof MediaNewsRoute
@@ -508,13 +470,6 @@ declare module '@tanstack/react-router' {
       path: '/search'
       fullPath: '/search'
       preLoaderRoute: typeof SearchRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/working-group': {
-      id: '/working-group'
-      path: '/working-group'
-      fullPath: '/working-group'
-      preLoaderRoute: typeof WorkingGroupRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about/participants': {
@@ -685,20 +640,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicationsThesesRouteImport
       parentRoute: typeof PublicationsRoute
     }
-    '/working-group/interns': {
-      id: '/working-group/interns'
-      path: '/interns'
-      fullPath: '/working-group/interns'
-      preLoaderRoute: typeof WorkingGroupInternsRouteImport
-      parentRoute: typeof WorkingGroupRoute
-    }
-    '/working-group/practical-support': {
-      id: '/working-group/practical-support'
-      path: '/practical-support'
-      fullPath: '/working-group/practical-support'
-      preLoaderRoute: typeof WorkingGroupPracticalSupportRouteImport
-      parentRoute: typeof WorkingGroupRoute
-    }
     '/projects/research/': {
       id: '/projects/research/'
       path: '/projects/research'
@@ -792,20 +733,6 @@ const PublicationsRouteWithChildren = PublicationsRoute._addFileChildren(
   PublicationsRouteChildren,
 )
 
-interface WorkingGroupRouteChildren {
-  WorkingGroupInternsRoute: typeof WorkingGroupInternsRoute
-  WorkingGroupPracticalSupportRoute: typeof WorkingGroupPracticalSupportRoute
-}
-
-const WorkingGroupRouteChildren: WorkingGroupRouteChildren = {
-  WorkingGroupInternsRoute: WorkingGroupInternsRoute,
-  WorkingGroupPracticalSupportRoute: WorkingGroupPracticalSupportRoute,
-}
-
-const WorkingGroupRouteWithChildren = WorkingGroupRoute._addFileChildren(
-  WorkingGroupRouteChildren,
-)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRouteWithChildren,
@@ -813,7 +740,6 @@ const rootRouteChildren: RootRouteChildren = {
   InformationRoute: InformationRouteWithChildren,
   PublicationsRoute: PublicationsRouteWithChildren,
   SearchRoute: SearchRoute,
-  WorkingGroupRoute: WorkingGroupRouteWithChildren,
   MediaAnnouncementsRoute: MediaAnnouncementsRoute,
   MediaClippingsRoute: MediaClippingsRoute,
   MediaNewsRoute: MediaNewsRoute,

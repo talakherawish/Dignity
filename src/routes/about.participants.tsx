@@ -30,7 +30,15 @@ type Participant = {
   nameAr: string;
   title: string;
   titleAr: string;
-  category: "researcher" | "visitor" | "student" | "speaker" | "author" | "team_member";
+  category:
+    | "researcher"
+    | "visitor"
+    | "student"
+    | "speaker"
+    | "author"
+    | "team_member"
+    | "intern"
+    | "practical_support";
   email: string;
   bio: string;
   bioAr: string;
@@ -45,6 +53,8 @@ const CATEGORIES = [
   { value: "speaker", en: "Speakers", ar: "متحدثون" },
   { value: "author", en: "Authors", ar: "مؤلفون" },
   { value: "team_member", en: "Team Members", ar: "أعضاء الفريق" },
+  { value: "intern", en: "Interns", ar: "متدربات ومتدربون" },
+  { value: "practical_support", en: "Practical Support", ar: "الدعم العملي" },
 ];
 
 function mapPayloadParticipant(p: PayloadParticipant): Participant {

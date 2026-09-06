@@ -291,7 +291,8 @@ export interface Participant {
   id: string;
   name: string;
   nameAr: string;
-  category: 'researcher' | 'visitor' | 'student' | 'speaker' | 'author' | 'team_member';
+  category:
+    'researcher' | 'visitor' | 'student' | 'speaker' | 'author' | 'team_member' | 'intern' | 'practical_support';
   title?: string | null;
   titleAr?: string | null;
   email?: string | null;
@@ -1881,12 +1882,6 @@ export interface SiteSetting {
   navInformationReadingsAr?: string | null;
   navInformationDatabases?: string | null;
   navInformationDatabasesAr?: string | null;
-  navWorkingGroup?: string | null;
-  navWorkingGroupAr?: string | null;
-  navWorkingGroupPracticalSupport?: string | null;
-  navWorkingGroupPracticalSupportAr?: string | null;
-  navWorkingGroupInterns?: string | null;
-  navWorkingGroupInternsAr?: string | null;
   heroEyebrow?: string | null;
   heroEyebrowAr?: string | null;
   heroTitle?: string | null;
@@ -2043,12 +2038,6 @@ export interface SiteSettingsSelect<T extends boolean = true> {
   navInformationReadingsAr?: T;
   navInformationDatabases?: T;
   navInformationDatabasesAr?: T;
-  navWorkingGroup?: T;
-  navWorkingGroupAr?: T;
-  navWorkingGroupPracticalSupport?: T;
-  navWorkingGroupPracticalSupportAr?: T;
-  navWorkingGroupInterns?: T;
-  navWorkingGroupInternsAr?: T;
   heroEyebrow?: T;
   heroEyebrowAr?: T;
   heroTitle?: T;
