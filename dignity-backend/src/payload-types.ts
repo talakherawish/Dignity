@@ -926,7 +926,7 @@ export interface Clipping {
   _status?: ('draft' | 'published') | null;
 }
 /**
- * Shows on the website under About the Dignity Initiative → Stickers. Upload one sticker image per entry (click the Image field below to upload).
+ * Shows on the website under Publications → Stickers & Bookmarks. Upload one sticker or bookmark image per entry (click the Image field below to upload).
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "stickers".
@@ -1843,8 +1843,6 @@ export interface SiteSetting {
   navMediaPhotosAr?: string | null;
   navMediaClippings?: string | null;
   navMediaClippingsAr?: string | null;
-  navAboutStickers?: string | null;
-  navAboutStickersAr?: string | null;
   navAboutPartners?: string | null;
   navAboutPartnersAr?: string | null;
   navActivities?: string | null;
@@ -1855,6 +1853,10 @@ export interface SiteSetting {
   navActivitiesForumsAr?: string | null;
   navActivitiesWindsor?: string | null;
   navActivitiesWindsorAr?: string | null;
+  navActivitiesIdeaFactory?: string | null;
+  navActivitiesIdeaFactoryAr?: string | null;
+  navActivitiesTaskForceAI?: string | null;
+  navActivitiesTaskForceAIAr?: string | null;
   navPublications?: string | null;
   navPublicationsAr?: string | null;
   navPublicationsBooks?: string | null;
@@ -1871,6 +1873,8 @@ export interface SiteSetting {
   navPublicationsAudiovisualAr?: string | null;
   navPublicationsPosters?: string | null;
   navPublicationsPostersAr?: string | null;
+  navAboutStickers?: string | null;
+  navAboutStickersAr?: string | null;
   navInformation?: string | null;
   navInformationAr?: string | null;
   navInformationReadings?: string | null;
@@ -1995,8 +1999,6 @@ export interface SiteSettingsSelect<T extends boolean = true> {
   navMediaPhotosAr?: T;
   navMediaClippings?: T;
   navMediaClippingsAr?: T;
-  navAboutStickers?: T;
-  navAboutStickersAr?: T;
   navAboutPartners?: T;
   navAboutPartnersAr?: T;
   navActivities?: T;
@@ -2007,6 +2009,10 @@ export interface SiteSettingsSelect<T extends boolean = true> {
   navActivitiesForumsAr?: T;
   navActivitiesWindsor?: T;
   navActivitiesWindsorAr?: T;
+  navActivitiesIdeaFactory?: T;
+  navActivitiesIdeaFactoryAr?: T;
+  navActivitiesTaskForceAI?: T;
+  navActivitiesTaskForceAIAr?: T;
   navPublications?: T;
   navPublicationsAr?: T;
   navPublicationsBooks?: T;
@@ -2023,6 +2029,8 @@ export interface SiteSettingsSelect<T extends boolean = true> {
   navPublicationsAudiovisualAr?: T;
   navPublicationsPosters?: T;
   navPublicationsPostersAr?: T;
+  navAboutStickers?: T;
+  navAboutStickersAr?: T;
   navInformation?: T;
   navInformationAr?: T;
   navInformationReadings?: T;

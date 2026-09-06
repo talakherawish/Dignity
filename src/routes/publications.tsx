@@ -6,6 +6,7 @@ import {
   FileText,
   GraduationCap,
   Image,
+  Sticker,
   Video,
 } from "lucide-react";
 import { SectionHubPage, type SectionTile } from "@/components/SectionHub";
@@ -25,6 +26,7 @@ const TILES: SectionTile[] = [
   { labelKey: "publications.theses", to: "/publications/theses", icon: GraduationCap },
   { labelKey: "publications.audiovisual", to: "/publications/audiovisual", icon: Video },
   { labelKey: "publications.posters", to: "/publications/posters", icon: Image },
+  { labelKey: "publications.stickers", to: "/publications/stickers", icon: Sticker },
 ];
 
 // Having this file also makes it the layout route for every publications.*

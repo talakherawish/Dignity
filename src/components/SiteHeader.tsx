@@ -24,7 +24,6 @@ const NAV: Item[] = [
       { labelKey: "about.participants", to: "/about/participants" },
       { labelKey: "media.news", to: "/media/news" },
       { labelKey: "media.photos", to: "/media/photos" },
-      { labelKey: "about.stickers", to: "/media/stickers" },
       { labelKey: "about.partners", to: "/about/partners" },
     ],
   },
@@ -52,6 +51,7 @@ const NAV: Item[] = [
       { labelKey: "publications.theses", to: "/publications/theses" },
       { labelKey: "publications.audiovisual", to: "/publications/audiovisual" },
       { labelKey: "publications.posters", to: "/publications/posters" },
+      { labelKey: "publications.stickers", to: "/publications/stickers" },
     ],
   },
   {

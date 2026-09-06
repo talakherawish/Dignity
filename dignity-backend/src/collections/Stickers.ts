@@ -2,11 +2,12 @@ import type { CollectionConfig } from 'payload'
 
 export const Stickers: CollectionConfig = {
   slug: 'stickers',
+  labels: { singular: 'Sticker or Bookmark', plural: 'Stickers & Bookmarks' },
   admin: {
-    group: 'About the Dignity Initiative',
+    group: 'Publications',
     useAsTitle: 'title',
     defaultColumns: ['title', 'date', 'status'],
-    description: 'Shows on the website under About the Dignity Initiative → Stickers. Upload one sticker image per entry (click the Image field below to upload).',
+    description: 'Shows on the website under Publications → Stickers & Bookmarks. Upload one sticker or bookmark image per entry (click the Image field below to upload).',
   },
   versions: {
     drafts: true,

@@ -37,6 +37,7 @@ import { Route as PublicationsBrochuresRouteImport } from './routes/publications
 import { Route as PublicationsPapersRouteImport } from './routes/publications.papers'
 import { Route as PublicationsPostersRouteImport } from './routes/publications.posters'
 import { Route as PublicationsReportsRouteImport } from './routes/publications.reports'
+import { Route as PublicationsStickersRouteImport } from './routes/publications.stickers'
 import { Route as PublicationsThesesRouteImport } from './routes/publications.theses'
 import { Route as ProjectsResearchIndexRouteImport } from './routes/projects.research.index'
 import { Route as ProjectsResearchSlugRouteImport } from './routes/projects.research.$slug'
@@ -182,6 +183,11 @@ const PublicationsReportsRoute = PublicationsReportsRouteImport.update({
   path: '/reports',
   getParentRoute: () => PublicationsRoute,
 } as any)
+const PublicationsStickersRoute = PublicationsStickersRouteImport.update({
+  id: '/stickers',
+  path: '/stickers',
+  getParentRoute: () => PublicationsRoute,
+} as any)
 const PublicationsThesesRoute = PublicationsThesesRouteImport.update({
   id: '/theses',
   path: '/theses',
@@ -227,6 +233,7 @@ export interface FileRoutesByFullPath {
   '/publications/papers': typeof PublicationsPapersRoute
   '/publications/posters': typeof PublicationsPostersRoute
   '/publications/reports': typeof PublicationsReportsRoute
+  '/publications/stickers': typeof PublicationsStickersRoute
   '/publications/theses': typeof PublicationsThesesRoute
   '/projects/research/$slug': typeof ProjectsResearchSlugRoute
   '/projects/research/': typeof ProjectsResearchIndexRoute
@@ -260,6 +267,7 @@ export interface FileRoutesByTo {
   '/publications/papers': typeof PublicationsPapersRoute
   '/publications/posters': typeof PublicationsPostersRoute
   '/publications/reports': typeof PublicationsReportsRoute
+  '/publications/stickers': typeof PublicationsStickersRoute
   '/publications/theses': typeof PublicationsThesesRoute
   '/projects/research/$slug': typeof ProjectsResearchSlugRoute
   '/projects/research': typeof ProjectsResearchIndexRoute
@@ -294,6 +302,7 @@ export interface FileRoutesById {
   '/publications/papers': typeof PublicationsPapersRoute
   '/publications/posters': typeof PublicationsPostersRoute
   '/publications/reports': typeof PublicationsReportsRoute
+  '/publications/stickers': typeof PublicationsStickersRoute
   '/publications/theses': typeof PublicationsThesesRoute
   '/projects/research/$slug': typeof ProjectsResearchSlugRoute
   '/projects/research/': typeof ProjectsResearchIndexRoute
@@ -329,6 +338,7 @@ export interface FileRouteTypes {
     | '/publications/papers'
     | '/publications/posters'
     | '/publications/reports'
+    | '/publications/stickers'
     | '/publications/theses'
     | '/projects/research/$slug'
     | '/projects/research/'
@@ -362,6 +372,7 @@ export interface FileRouteTypes {
     | '/publications/papers'
     | '/publications/posters'
     | '/publications/reports'
+    | '/publications/stickers'
     | '/publications/theses'
     | '/projects/research/$slug'
     | '/projects/research'
@@ -395,6 +406,7 @@ export interface FileRouteTypes {
     | '/publications/papers'
     | '/publications/posters'
     | '/publications/reports'
+    | '/publications/stickers'
     | '/publications/theses'
     | '/projects/research/$slug'
     | '/projects/research/'
@@ -614,6 +626,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicationsReportsRouteImport
       parentRoute: typeof PublicationsRoute
     }
+    '/publications/stickers': {
+      id: '/publications/stickers'
+      path: '/stickers'
+      fullPath: '/publications/stickers'
+      preLoaderRoute: typeof PublicationsStickersRouteImport
+      parentRoute: typeof PublicationsRoute
+    }
     '/publications/theses': {
       id: '/publications/theses'
       path: '/theses'
@@ -695,6 +714,7 @@ interface PublicationsRouteChildren {
   PublicationsPapersRoute: typeof PublicationsPapersRoute
   PublicationsPostersRoute: typeof PublicationsPostersRoute
   PublicationsReportsRoute: typeof PublicationsReportsRoute
+  PublicationsStickersRoute: typeof PublicationsStickersRoute
   PublicationsThesesRoute: typeof PublicationsThesesRoute
 }
 
@@ -705,6 +725,7 @@ const PublicationsRouteChildren: PublicationsRouteChildren = {
   PublicationsPapersRoute: PublicationsPapersRoute,
   PublicationsPostersRoute: PublicationsPostersRoute,
   PublicationsReportsRoute: PublicationsReportsRoute,
+  PublicationsStickersRoute: PublicationsStickersRoute,
   PublicationsThesesRoute: PublicationsThesesRoute,
 }
 

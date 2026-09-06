@@ -33,7 +33,6 @@ export const SiteSettings: GlobalConfig = {
             ...pair('navMediaNews', 'About: News & Announcements'),
             ...pair('navMediaPhotos', 'About: Photos'),
             ...pair('navMediaClippings', 'About: Clippings'),
-            ...pair('navAboutStickers', 'About: Stickers'),
             ...pair('navAboutPartners', 'About: Partners'),
 
             ...pair('navActivities', 'Activities — menu heading'),
@@ -59,6 +58,10 @@ export const SiteSettings: GlobalConfig = {
             ...pair('navPublicationsTheses', 'Publications: Theses'),
             ...pair('navPublicationsAudiovisual', 'Publications: Audiovisual'),
             ...pair('navPublicationsPosters', 'Publications: Posters'),
+            // Still called navAboutStickers in Payload, from when this link sat
+            // under the About menu -- renaming the field would strand the
+            // wording already saved in the database.
+            ...pair('navAboutStickers', 'Publications: Stickers & Bookmarks'),
 
             ...pair('navInformation', 'Information — menu heading'),
             ...pair('navInformationReadings', 'Information: Readings and Documents'),
