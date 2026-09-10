@@ -199,7 +199,28 @@ function LatestNewsAndAnnouncements() {
     .filter((a) => a.displayMode === "withImage" && a.image)
     .slice(0, CAROUSEL_COUNT);
 
-  if (headlineArticles.length === 0 && carouselArticles.length === 0) return null;
+  const hasHeadlines = headlineArticles.length > 0;
+  const hasCarousel = carouselArticles.length > 0;
+  if (!hasHeadlines && !hasCarousel) return null;
+
+  // Split only once both sides actually have something to show -- otherwise
+  // the row is a single full-width block, so an empty side never sits there
+  // as wasted space (e.g. before any entry has been tagged textOnly, or if
+  // every current entry happens to have a cover image).
+  if (hasHeadlines && !hasCarousel) {
+    return (
+      <div className="overflow-hidden rounded-sm border border-border">
+        <HeadlineList articles={headlineArticles} />
+      </div>
+    );
+  }
+  if (hasCarousel && !hasHeadlines) {
+    return (
+      <div className="overflow-hidden rounded-sm border border-border">
+        <ImageCarousel articles={carouselArticles} />
+      </div>
+    );
+  }
 
   return (
     <div
@@ -406,10 +427,10 @@ function Home() {
            * Temporary centered layout with the office photo dropped, while a
            * proper homepage design is worked out -- not the final treatment.
            */}
-          <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-8 lg:pt-8 lg:pb-10 flex flex-col items-center text-center">
+          <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-6 lg:pt-5 lg:pb-7 flex flex-col items-center text-center">
             <div
               className={
-                "uppercase tracking-[0.22em] text-[color:var(--brand-magenta)] font-semibold mb-3 " +
+                "uppercase tracking-[0.22em] text-[color:var(--brand-magenta)] font-semibold mb-2 " +
                 (isArabic ? "text-[14px]" : "text-[12px]")
               }
             >
@@ -434,10 +455,10 @@ function Home() {
             >
               {t("hero.title")}
             </h1>
-            <p className="mt-5 text-base text-muted-foreground leading-relaxed max-w-lg whitespace-pre-line">
+            <p className="mt-4 text-base text-muted-foreground leading-relaxed max-w-2xl whitespace-pre-line">
               {t("hero.desc")}
             </p>
-            <div className="mt-7 flex flex-wrap justify-center gap-3">
+            <div className="mt-5 flex flex-wrap justify-center gap-3">
               <Link
                 to="/about"
                 className="inline-flex items-center px-5 py-2.5 rounded-full bg-[color:var(--brand-magenta)]/10 text-[color:var(--brand-magenta)] text-sm font-medium hover:bg-[color:var(--brand-magenta)]/20 transition-colors"
@@ -457,8 +478,8 @@ function Home() {
         {/* News & Announcements — visible without scrolling, right under the
             hero: this is why the hero above no longer fills the screen. */}
         <section className="bg-gradient-to-b from-secondary/5 to-transparent">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
-            <div className="flex items-center justify-between mb-5">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-10">
+            <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
                 <div
                   className="h-5 w-1.5 rounded-full"

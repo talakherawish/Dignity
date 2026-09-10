@@ -78,14 +78,19 @@ export const News: CollectionConfig = {
       name: 'displayMode',
       type: 'select',
       label: 'Homepage Display',
-      defaultValue: 'withImage',
+      // No defaultValue on purpose: Payload fills a field's defaultValue in
+      // for *every* existing document that doesn't have it stored, not just
+      // new ones -- so a static default here would have tagged every
+      // already-published entry (including ones with no cover image) as
+      // "withImage". Left blank, the frontend infers it per-item instead
+      // (has an image -> withImage, otherwise textOnly -- see mapPayloadNews).
       options: [
         { label: 'With Image (photo carousel)', value: 'withImage' },
         { label: 'Text Only (headline list)', value: 'textOnly' },
       ],
       admin: {
         description:
-          'Which side of the homepage News & Announcements section this appears in: the rotating photo carousel, or the plain headline list.',
+          'Which side of the homepage News & Announcements section this appears in: the rotating photo carousel, or the plain headline list. Leave blank to let it follow whether a Cover Image is set.',
       },
     },
   ],

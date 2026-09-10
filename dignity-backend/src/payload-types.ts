@@ -362,7 +362,7 @@ export interface News {
   } | null;
   image?: (string | null) | Media;
   /**
-   * Which side of the homepage News & Announcements section this appears in: the rotating photo carousel, or the plain headline list.
+   * Which side of the homepage News & Announcements section this appears in: the rotating photo carousel, or the plain headline list. Leave blank to let it follow whether a Cover Image is set.
    */
   displayMode?: ('withImage' | 'textOnly') | null;
   /**
