@@ -282,7 +282,7 @@ export interface AboutInitiative {
   _status?: ('draft' | 'published') | null;
 }
 /**
- * Shows on the website under About the Dignity Initiative → Participants. Add a new entry here for each person.
+ * Shows on the website under About the Dignity Initiative → Working Group. Add a new entry here for each person. Authors and Speakers are hidden from that page by default -- see the "Show on Working Group Page" field below.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "participants".
@@ -293,6 +293,10 @@ export interface Participant {
   nameAr: string;
   category:
     'researcher' | 'visitor' | 'student' | 'speaker' | 'author' | 'team_member' | 'intern' | 'practical_support';
+  /**
+   * Authors and Speakers are hidden from the public Working Group page by default. Check this to show this person there too. Their profile stays reachable from the publications/photos that credit them either way.
+   */
+  showOnWorkingGroupPage?: boolean | null;
   title?: string | null;
   titleAr?: string | null;
   email?: string | null;
@@ -565,6 +569,10 @@ export interface Book {
    * Pick existing people instead of typing a name above. When this is set, these are shown in place of the typed Author field, each linking to that person's profile under About → Participants.
    */
   authorParticipants?: (string | Participant)[] | null;
+  /**
+   * Pick people tagged as Speaker under About → Participants, if this item credits any.
+   */
+  speakerParticipants?: (string | Participant)[] | null;
   date?: string | null;
   description?: string | null;
   descriptionAr?: string | null;
@@ -616,6 +624,10 @@ export interface Paper {
    * Pick existing people instead of typing a name above. When this is set, these are shown in place of the typed Author field, each linking to that person's profile under About → Participants.
    */
   authorParticipants?: (string | Participant)[] | null;
+  /**
+   * Pick people tagged as Speaker under About → Participants, if this item credits any.
+   */
+  speakerParticipants?: (string | Participant)[] | null;
   date?: string | null;
   description?: string | null;
   descriptionAr?: string | null;
@@ -667,6 +679,10 @@ export interface Report {
    * Pick existing people instead of typing a name above. When this is set, these are shown in place of the typed Author field, each linking to that person's profile under About → Participants.
    */
   authorParticipants?: (string | Participant)[] | null;
+  /**
+   * Pick people tagged as Speaker under About → Participants, if this item credits any.
+   */
+  speakerParticipants?: (string | Participant)[] | null;
   date?: string | null;
   description?: string | null;
   descriptionAr?: string | null;
@@ -718,6 +734,10 @@ export interface Brochure {
    * Pick existing people instead of typing a name above. When this is set, these are shown in place of the typed Author field, each linking to that person's profile under About → Participants.
    */
   authorParticipants?: (string | Participant)[] | null;
+  /**
+   * Pick people tagged as Speaker under About → Participants, if this item credits any.
+   */
+  speakerParticipants?: (string | Participant)[] | null;
   date?: string | null;
   description?: string | null;
   descriptionAr?: string | null;
@@ -769,6 +789,10 @@ export interface Thesis {
    * Pick existing people instead of typing a name above. When this is set, these are shown in place of the typed Author field, each linking to that person's profile under About → Participants.
    */
   authorParticipants?: (string | Participant)[] | null;
+  /**
+   * Pick people tagged as Speaker under About → Participants, if this item credits any.
+   */
+  speakerParticipants?: (string | Participant)[] | null;
   date?: string | null;
   description?: string | null;
   descriptionAr?: string | null;
@@ -820,6 +844,10 @@ export interface Audiovisual {
    * Pick existing people instead of typing a name above. When this is set, these are shown in place of the typed Author field, each linking to that person's profile under About → Participants.
    */
   authorParticipants?: (string | Participant)[] | null;
+  /**
+   * Pick people tagged as Speaker under About → Participants, if this item credits any.
+   */
+  speakerParticipants?: (string | Participant)[] | null;
   date?: string | null;
   description?: string | null;
   descriptionAr?: string | null;
@@ -871,6 +899,10 @@ export interface Poster {
    * Pick existing people instead of typing a name above. When this is set, these are shown in place of the typed Author field, each linking to that person's profile under About → Participants.
    */
   authorParticipants?: (string | Participant)[] | null;
+  /**
+   * Pick people tagged as Speaker under About → Participants, if this item credits any.
+   */
+  speakerParticipants?: (string | Participant)[] | null;
   date?: string | null;
   description?: string | null;
   descriptionAr?: string | null;
@@ -1419,6 +1451,7 @@ export interface ParticipantsSelect<T extends boolean = true> {
   name?: T;
   nameAr?: T;
   category?: T;
+  showOnWorkingGroupPage?: T;
   title?: T;
   titleAr?: T;
   email?: T;
@@ -1595,6 +1628,7 @@ export interface BooksSelect<T extends boolean = true> {
   author?: T;
   authorAr?: T;
   authorParticipants?: T;
+  speakerParticipants?: T;
   date?: T;
   description?: T;
   descriptionAr?: T;
@@ -1619,6 +1653,7 @@ export interface PapersSelect<T extends boolean = true> {
   author?: T;
   authorAr?: T;
   authorParticipants?: T;
+  speakerParticipants?: T;
   date?: T;
   description?: T;
   descriptionAr?: T;
@@ -1643,6 +1678,7 @@ export interface ReportsSelect<T extends boolean = true> {
   author?: T;
   authorAr?: T;
   authorParticipants?: T;
+  speakerParticipants?: T;
   date?: T;
   description?: T;
   descriptionAr?: T;
@@ -1667,6 +1703,7 @@ export interface BrochuresSelect<T extends boolean = true> {
   author?: T;
   authorAr?: T;
   authorParticipants?: T;
+  speakerParticipants?: T;
   date?: T;
   description?: T;
   descriptionAr?: T;
@@ -1691,6 +1728,7 @@ export interface ThesesSelect<T extends boolean = true> {
   author?: T;
   authorAr?: T;
   authorParticipants?: T;
+  speakerParticipants?: T;
   date?: T;
   description?: T;
   descriptionAr?: T;
@@ -1715,6 +1753,7 @@ export interface AudiovisualSelect<T extends boolean = true> {
   author?: T;
   authorAr?: T;
   authorParticipants?: T;
+  speakerParticipants?: T;
   date?: T;
   description?: T;
   descriptionAr?: T;
@@ -1739,6 +1778,7 @@ export interface PostersSelect<T extends boolean = true> {
   author?: T;
   authorAr?: T;
   authorParticipants?: T;
+  speakerParticipants?: T;
   date?: T;
   description?: T;
   descriptionAr?: T;

@@ -124,6 +124,8 @@ export type PayloadParticipant = {
   bio?: string;
   bioAr?: string;
   photo?: PayloadMedia;
+  /** Authors/speakers are hidden from the public Working Group page unless this is set -- see mapPayloadParticipant on that page. */
+  showOnWorkingGroupPage?: boolean;
 };
 
 /** Shown under a participant's name in place of their title when the CMS entry leaves it blank. */

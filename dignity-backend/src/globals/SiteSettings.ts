@@ -29,7 +29,7 @@ export const SiteSettings: GlobalConfig = {
           fields: [
             ...pair('navAbout', 'About — menu heading'),
             ...pair('navAboutInitiative', 'About: About the Initiative'),
-            ...pair('navAboutFellows', 'About: Participants'),
+            ...pair('navAboutFellows', 'About: Working Group'),
             ...pair('navMediaNews', 'About: News & Announcements'),
             ...pair('navMediaPhotos', 'About: Photos'),
             ...pair('navMediaClippings', 'About: Clippings'),

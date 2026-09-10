@@ -45,17 +45,37 @@ type Participant = {
   photo?: string;
 };
 
+/**
+ * Speakers and Authors have their own toggle (see isVisible) and no pill of
+ * their own -- they're reachable from the publications/photos that credit
+ * them, not from browsing this page. Team Members has no pill either: those
+ * people show up under Practical Support instead (see matchesCategory).
+ */
 const CATEGORIES = [
   { value: "all", en: "All", ar: "الكل" },
   { value: "researcher", en: "Researchers", ar: "باحثون" },
   { value: "visitor", en: "Visitors", ar: "زائرون" },
   { value: "student", en: "Students", ar: "طلاب" },
-  { value: "speaker", en: "Speakers", ar: "متحدثون" },
-  { value: "author", en: "Authors", ar: "مؤلفون" },
-  { value: "team_member", en: "Team Members", ar: "أعضاء الفريق" },
   { value: "intern", en: "Interns", ar: "متدربات ومتدربون" },
   { value: "practical_support", en: "Practical Support", ar: "الدعم العملي" },
 ];
+
+/** Authors and Speakers are hidden unless the CMS entry opts back in. */
+function isVisible(p: PayloadParticipant): boolean {
+  if (p.category === "author" || p.category === "speaker") {
+    return p.showOnWorkingGroupPage === true;
+  }
+  return true;
+}
+
+/** Team Member counts as Practical Support here -- the two share one pill. */
+function matchesCategory(category: Participant["category"], activeCategory: string): boolean {
+  if (activeCategory === "all") return true;
+  if (activeCategory === "practical_support") {
+    return category === "practical_support" || category === "team_member";
+  }
+  return category === activeCategory;
+}
 
 function mapPayloadParticipant(p: PayloadParticipant): Participant {
   const role = PARTICIPANT_ROLE_LABEL[p.category];
@@ -211,13 +231,14 @@ function ParticipantsPage() {
   // that failed for any reason (wrong URL, CORS, the backend being down)
   // silently showed fake people instead of surfacing the problem, which is
   // exactly what made unpublishing someone look like it had no effect.
-  const participants: Participant[] = payloadParticipants.map(mapPayloadParticipant);
+  const participants: Participant[] = payloadParticipants
+    .filter(isVisible)
+    .map(mapPayloadParticipant);
 
   const q = search.toLowerCase();
   const filtered = participants.filter((f) => {
-    const matchesCategory = activeCategory === "all" || f.category === activeCategory;
     const matchesSearch = f.name.toLowerCase().includes(q) || f.nameAr.includes(search);
-    return matchesCategory && matchesSearch;
+    return matchesCategory(f.category, activeCategory) && matchesSearch;
   });
 
   return (
@@ -225,7 +246,7 @@ function ParticipantsPage() {
       <PageHero
         eyebrow={isArabic ? "عن مبادرة كرامة" : "About the Dignity Initiative"}
         eyebrowColor={SECTION_COLORS.about}
-        title={isArabic ? "المشاركون" : "Participants"}
+        title={isArabic ? "مجموعة العمل" : "Working Group"}
         description={
           isArabic
             ? "هؤلاء هم الأشخاص الذين أوصلونا إلى ما نحن عليه اليوم.\nباحثون وأكاديميون ومنتسبون يجمعهم الالتزام بخدمة الكرامة الإنسانية."

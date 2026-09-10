@@ -55,6 +55,19 @@ function publicationFields(): Field[] {
       },
     },
     {
+      name: 'speakerParticipants',
+      type: 'relationship',
+      relationTo: 'participants',
+      hasMany: true,
+      label: 'Speaker(s) from Participants',
+      filterOptions: {
+        category: { equals: 'speaker' },
+      },
+      admin: {
+        description: 'Pick people tagged as Speaker under About → Participants, if this item credits any.',
+      },
+    },
+    {
       name: 'date',
       type: 'date',
       label: 'Publication Date',

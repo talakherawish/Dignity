@@ -14,11 +14,15 @@ function validateWordCount(value: unknown): string | true {
 
 export const Participants: CollectionConfig = {
   slug: 'participants',
+  labels: {
+    singular: 'Participant',
+    plural: 'Working Group',
+  },
   admin: {
     group: 'About the Dignity Initiative',
     useAsTitle: 'name',
     defaultColumns: ['name', 'category', 'status'],
-    description: 'Shows on the website under About the Dignity Initiative → Participants. Add a new entry here for each person.',
+    description: 'Shows on the website under About the Dignity Initiative → Working Group. Add a new entry here for each person. Authors and Speakers are hidden from that page by default -- see the "Show on Working Group Page" field below.',
   },
   versions: {
     drafts: true,
@@ -75,6 +79,17 @@ export const Participants: CollectionConfig = {
         { label: 'Intern', value: 'intern' },
         { label: 'Practical Support', value: 'practical_support' },
       ],
+    },
+    {
+      name: 'showOnWorkingGroupPage',
+      type: 'checkbox',
+      label: 'Show on Working Group Page',
+      defaultValue: false,
+      admin: {
+        condition: (data) => data?.category === 'author' || data?.category === 'speaker',
+        description:
+          'Authors and Speakers are hidden from the public Working Group page by default. Check this to show this person there too. Their profile stays reachable from the publications/photos that credit them either way.',
+      },
     },
     {
       name: 'title',
