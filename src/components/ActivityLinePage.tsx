@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { ForumGrid, OutputSection, PublicationGrid } from "./OutputSection";
-import { PageLayout } from "./PageLayout";
+import { PageLayout, PageHero } from "./PageLayout";
 import { RichText } from "./RichText";
 import { TranslationNotice } from "./TranslationNotice";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -78,21 +78,14 @@ export function ActivityLinePage({
 
   return (
     <PageLayout>
+      <PageHero eyebrow={eyebrow} title={title} />
+
       <article
         className={
-          "max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 animate-fade-in" +
+          "max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-12 animate-fade-in" +
           (isArabic ? " text-right" : "")
         }
       >
-        {eyebrow && (
-          <div className="text-[11px] uppercase tracking-[0.22em] text-[color:var(--brand-magenta)] font-semibold mb-3">
-            {eyebrow}
-          </div>
-        )}
-        <h1 className="font-serif text-3xl md:text-4xl text-primary tracking-tight leading-tight">
-          {title}
-        </h1>
-
         {image && (
           <img
             src={image}
