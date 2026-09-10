@@ -138,5 +138,19 @@ export const Forums: CollectionConfig = {
         description: 'Which research line(s) this forum came out of. Shows up on that research line\'s page automatically.',
       },
     },
+    {
+      name: 'activityLines',
+      type: 'select',
+      hasMany: true,
+      label: 'Activity Line(s)',
+      options: [
+        { label: 'Task Force on AI', value: 'task-force-ai' },
+        { label: 'Idea Factory', value: 'idea-factory' },
+      ],
+      admin: {
+        position: 'sidebar',
+        description: 'Tag this to show it under that page\'s Activities section (Activities -> Task Force on AI / Idea Factory).',
+      },
+    },
   ],
 }

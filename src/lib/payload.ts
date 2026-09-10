@@ -54,6 +54,14 @@ export type PayloadGalleryItem = {
 /** The five sub-types shown as filter tabs on Activities -> Forums. */
 export type ForumType = "seminar" | "roundtable" | "workshop" | "conference" | "encounters";
 
+/**
+ * The two standalone Activities pages that pull tagged Forums/Publications
+ * items into their own Activities/Publications sections, rather than having
+ * content of their own the way a Research line does -- see
+ * fetchForumsByActivityLine / fetchPublicationsByActivityLine.
+ */
+export type ActivityLine = "task-force-ai" | "idea-factory";
+
 export type PayloadActivity = {
   id: string;
   title: string;
@@ -73,6 +81,8 @@ export type PayloadActivity = {
   contentAr?: unknown;
   image?: PayloadMedia;
   gallery?: PayloadGalleryItem[];
+  /** Which Activities-page Outputs section(s) this shows under, if any. */
+  activityLines?: ActivityLine[];
 };
 
 export type PayloadPhoto = {
@@ -171,6 +181,8 @@ export type PayloadPublication = {
   link?: string;
   /** Only set when the Arabic destination differs from `link`. */
   linkAr?: string;
+  /** Which Activities-page Outputs section(s) this shows under, if any. */
+  activityLines?: ActivityLine[];
 };
 
 /** The video id inside a YouTube watch/embed/short/youtu.be URL. */
@@ -611,6 +623,19 @@ export const fetchForums = () =>
   fetchCollection<PayloadActivity>("forums", { ...NEWEST_FIRST, depth: "2" });
 
 /**
+ * Forums tagged under one Activities-page Activities section (Task Force on
+ * AI, Idea Factory) -- see the `activityLines` field on the Forums
+ * collection. `in` matches a hasMany field that contains the given value,
+ * same as the rest of Payload's array-field filtering.
+ */
+export const fetchForumsByActivityLine = (line: ActivityLine) =>
+  fetchCollection<PayloadActivity>("forums", {
+    "where[activityLines][in]": line,
+    ...NEWEST_FIRST,
+    depth: "2",
+  });
+
+/**
  * Research areas, shown under Activities → Research.
  *
  * depth: 3 is what it takes to reach a preview image. The chain is research →
@@ -656,6 +681,39 @@ export const fetchPublications = (collection: PublicationCollection) =>
   // depth: 2 so item.image.thumbnail (the auto-generated PDF preview) resolves
   // to a full Media object, not just an id string.
   fetchCollection<PayloadPublication>(collection, { depth: "2", ...NEWEST_FIRST });
+
+const ALL_PUBLICATION_COLLECTIONS: PublicationCollection[] = [
+  "books",
+  "papers",
+  "reports",
+  "brochures",
+  "theses",
+  "audiovisual",
+  "posters",
+];
+
+/**
+ * Every publication tagged under one Activities-page Publications section
+ * (Task Force on AI, Idea Factory), across all seven publication
+ * collections combined -- see the `activityLines` field shared by all of
+ * them. Each collection is queried separately (they're separate Payload
+ * collections, not one with a `type` field) and the results merged back
+ * into a single newest-first list, since no single request can sort across
+ * seven distinct API calls.
+ */
+export async function fetchPublicationsForActivityLine(
+  line: ActivityLine,
+): Promise<PayloadPublication[]> {
+  const lists = await Promise.all(
+    ALL_PUBLICATION_COLLECTIONS.map((collection) =>
+      fetchCollection<PayloadPublication>(collection, {
+        "where[activityLines][in]": line,
+        depth: "2",
+      }),
+    ),
+  );
+  return lists.flat().sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
+}
 
 export const fetchInformation = (collection: InformationCollection) =>
   fetchCollection<PayloadInformationItem>(collection);

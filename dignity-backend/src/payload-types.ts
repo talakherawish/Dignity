@@ -472,6 +472,10 @@ export interface Forum {
    */
   researchLines?: (string | Research)[] | null;
   /**
+   * Tag this to show it under that page's Activities section (Activities -> Task Force on AI / Idea Factory).
+   */
+  activityLines?: ('task-force-ai' | 'idea-factory')[] | null;
+  /**
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
   publicationStatus?: string | null;
@@ -598,6 +602,10 @@ export interface Book {
    */
   researchLines?: (string | Research)[] | null;
   /**
+   * Tag this to show it under that page's Publications section (Activities -> Task Force on AI / Idea Factory).
+   */
+  activityLines?: ('task-force-ai' | 'idea-factory')[] | null;
+  /**
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
   publicationStatus?: string | null;
@@ -652,6 +660,10 @@ export interface Paper {
    * Which research line(s) this is an output of. Shows up on that research line's page automatically.
    */
   researchLines?: (string | Research)[] | null;
+  /**
+   * Tag this to show it under that page's Publications section (Activities -> Task Force on AI / Idea Factory).
+   */
+  activityLines?: ('task-force-ai' | 'idea-factory')[] | null;
   /**
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
@@ -708,6 +720,10 @@ export interface Report {
    */
   researchLines?: (string | Research)[] | null;
   /**
+   * Tag this to show it under that page's Publications section (Activities -> Task Force on AI / Idea Factory).
+   */
+  activityLines?: ('task-force-ai' | 'idea-factory')[] | null;
+  /**
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
   publicationStatus?: string | null;
@@ -762,6 +778,10 @@ export interface Brochure {
    * Which research line(s) this is an output of. Shows up on that research line's page automatically.
    */
   researchLines?: (string | Research)[] | null;
+  /**
+   * Tag this to show it under that page's Publications section (Activities -> Task Force on AI / Idea Factory).
+   */
+  activityLines?: ('task-force-ai' | 'idea-factory')[] | null;
   /**
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
@@ -818,6 +838,10 @@ export interface Thesis {
    */
   researchLines?: (string | Research)[] | null;
   /**
+   * Tag this to show it under that page's Publications section (Activities -> Task Force on AI / Idea Factory).
+   */
+  activityLines?: ('task-force-ai' | 'idea-factory')[] | null;
+  /**
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
   publicationStatus?: string | null;
@@ -873,6 +897,10 @@ export interface Audiovisual {
    */
   researchLines?: (string | Research)[] | null;
   /**
+   * Tag this to show it under that page's Publications section (Activities -> Task Force on AI / Idea Factory).
+   */
+  activityLines?: ('task-force-ai' | 'idea-factory')[] | null;
+  /**
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
   publicationStatus?: string | null;
@@ -927,6 +955,10 @@ export interface Poster {
    * Which research line(s) this is an output of. Shows up on that research line's page automatically.
    */
   researchLines?: (string | Research)[] | null;
+  /**
+   * Tag this to show it under that page's Publications section (Activities -> Task Force on AI / Idea Factory).
+   */
+  activityLines?: ('task-force-ai' | 'idea-factory')[] | null;
   /**
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
@@ -1595,6 +1627,7 @@ export interface ForumsSelect<T extends boolean = true> {
         id?: T;
       };
   researchLines?: T;
+  activityLines?: T;
   publicationStatus?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1638,6 +1671,7 @@ export interface BooksSelect<T extends boolean = true> {
   linkAr?: T;
   image?: T;
   researchLines?: T;
+  activityLines?: T;
   publicationStatus?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1663,6 +1697,7 @@ export interface PapersSelect<T extends boolean = true> {
   linkAr?: T;
   image?: T;
   researchLines?: T;
+  activityLines?: T;
   publicationStatus?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1688,6 +1723,7 @@ export interface ReportsSelect<T extends boolean = true> {
   linkAr?: T;
   image?: T;
   researchLines?: T;
+  activityLines?: T;
   publicationStatus?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1713,6 +1749,7 @@ export interface BrochuresSelect<T extends boolean = true> {
   linkAr?: T;
   image?: T;
   researchLines?: T;
+  activityLines?: T;
   publicationStatus?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1738,6 +1775,7 @@ export interface ThesesSelect<T extends boolean = true> {
   linkAr?: T;
   image?: T;
   researchLines?: T;
+  activityLines?: T;
   publicationStatus?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1763,6 +1801,7 @@ export interface AudiovisualSelect<T extends boolean = true> {
   linkAr?: T;
   image?: T;
   researchLines?: T;
+  activityLines?: T;
   publicationStatus?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1788,6 +1827,7 @@ export interface PostersSelect<T extends boolean = true> {
   linkAr?: T;
   image?: T;
   researchLines?: T;
+  activityLines?: T;
   publicationStatus?: T;
   updatedAt?: T;
   createdAt?: T;

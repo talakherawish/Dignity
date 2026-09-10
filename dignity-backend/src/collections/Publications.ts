@@ -138,6 +138,20 @@ function publicationFields(): Field[] {
         description: 'Which research line(s) this is an output of. Shows up on that research line\'s page automatically.',
       },
     },
+    {
+      name: 'activityLines',
+      type: 'select',
+      hasMany: true,
+      label: 'Activity Line(s)',
+      options: [
+        { label: 'Task Force on AI', value: 'task-force-ai' },
+        { label: 'Idea Factory', value: 'idea-factory' },
+      ],
+      admin: {
+        position: 'sidebar',
+        description: 'Tag this to show it under that page\'s Publications section (Activities -> Task Force on AI / Idea Factory).',
+      },
+    },
   ]
 }
 
