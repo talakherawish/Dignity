@@ -208,11 +208,7 @@ function LatestNewsAndAnnouncements() {
   // as wasted space (e.g. before any entry has been tagged textOnly, or if
   // every current entry happens to have a cover image).
   if (hasHeadlines && !hasCarousel) {
-    return (
-      <div className="overflow-hidden rounded-sm border border-border">
-        <HeadlineList articles={headlineArticles} />
-      </div>
-    );
+    return <HeadlineList articles={headlineArticles} />;
   }
   if (hasCarousel && !hasHeadlines) {
     return (
@@ -224,12 +220,10 @@ function LatestNewsAndAnnouncements() {
 
   return (
     <div
-      className="grid grid-cols-1 overflow-hidden rounded-sm border border-border md:min-h-[190px] md:grid-cols-2"
+      className="grid grid-cols-1 md:min-h-[190px] md:grid-cols-2"
       dir={isArabic ? "rtl" : "ltr"}
     >
-      <div className="border-b border-border md:border-b-0 md:border-e">
-        <HeadlineList articles={headlineArticles} />
-      </div>
+      <HeadlineList articles={headlineArticles} />
       <ImageCarousel articles={carouselArticles} />
     </div>
   );
@@ -458,20 +452,6 @@ function Home() {
             <p className="mt-4 text-base text-muted-foreground leading-relaxed max-w-2xl whitespace-pre-line">
               {t("hero.desc")}
             </p>
-            <div className="mt-5 flex flex-wrap justify-center gap-3">
-              <Link
-                to="/about"
-                className="inline-flex items-center px-5 py-2.5 rounded-full bg-[color:var(--brand-magenta)]/10 text-[color:var(--brand-magenta)] text-sm font-medium hover:bg-[color:var(--brand-magenta)]/20 transition-colors"
-              >
-                {t("hero.btn.about")}
-              </Link>
-              <Link
-                to="/projects/research"
-                className="inline-flex items-center px-5 py-2.5 rounded-full bg-[color:var(--brand-cyan)]/60 text-foreground text-sm font-medium hover:bg-[color:var(--brand-cyan)]/80 transition-colors"
-              >
-                {t("hero.btn.research")}
-              </Link>
-            </div>
           </div>
         </section>
 
