@@ -199,6 +199,8 @@ export type PayloadPublication = {
   link?: string;
   /** Only set when the Arabic destination differs from `link`. */
   linkAr?: string;
+  /** Which research line(s) this is an output of -- see the publications listing pages' group-by-research-line view. */
+  researchLines?: (PayloadResearchActivity | string)[];
 };
 
 /** The video id inside a YouTube watch/embed/short/youtu.be URL. */

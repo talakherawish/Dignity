@@ -13,10 +13,14 @@ import {
   populated,
   youtubeThumbnail,
   type PayloadParticipant,
+  type PayloadResearchActivity,
   type PublicationCollection,
   type PayloadPublication,
 } from "@/lib/payload";
 import { SECTION_COLORS } from "@/lib/sectionColors";
+
+/** Just enough of a research line to head a group and sort it -- see groupByResearchLine. */
+type ResearchLineRef = { id: string; title: string; titleAr?: string };
 
 /** Normalized shape both Payload docs and hardcoded fallback items get mapped into. */
 type DisplayPublication = {
@@ -39,7 +43,70 @@ type DisplayPublication = {
   /** External destination (YouTube) for items that aren't uploads. */
   linkUrl: string;
   linkUrlAr: string;
+  researchLines: ResearchLineRef[];
 };
+
+/** One research-line section of the page: its items, latest first (the order they arrive in). */
+type ResearchLineGroup = {
+  key: string;
+  title: string;
+  titleAr?: string;
+  items: DisplayPublication[];
+};
+
+/**
+ * Every item that carries a research line appears once per line it's tagged
+ * with -- the field is a multi-select, and a line's own page already treats
+ * an item as belonging to every line it lists, so a publication co-tagged
+ * under two lines showing up in both sections here is consistent with that,
+ * not a duplicate bug. Anything tagged with none goes in a trailing "Other"
+ * group instead of silently vanishing from the page.
+ *
+ * Groups sort alphabetically by name (locale-aware, so Arabic titles sort
+ * correctly in the Arabic UI); "Other" always sorts last regardless of its
+ * label. Items keep the order they arrived in -- fetchPublications already
+ * sorts newest-first, and grouping here doesn't reorder within a group.
+ */
+function groupByResearchLine(items: DisplayPublication[], isArabic: boolean): ResearchLineGroup[] {
+  const groups = new Map<string, ResearchLineGroup>();
+  const other: DisplayPublication[] = [];
+
+  for (const item of items) {
+    if (item.researchLines.length === 0) {
+      other.push(item);
+      continue;
+    }
+    for (const line of item.researchLines) {
+      const group = groups.get(line.id);
+      if (group) {
+        group.items.push(item);
+      } else {
+        groups.set(line.id, {
+          key: line.id,
+          title: line.title,
+          titleAr: line.titleAr,
+          items: [item],
+        });
+      }
+    }
+  }
+
+  const sorted = [...groups.values()].sort((a, b) => {
+    const nameOf = (g: ResearchLineGroup) => (isArabic ? (g.titleAr ?? g.title) : g.title);
+    return nameOf(a).localeCompare(nameOf(b), isArabic ? "ar" : "en");
+  });
+
+  if (other.length > 0) {
+    sorted.push({
+      key: "other",
+      title: "Other",
+      titleAr: "أخرى",
+      items: other,
+    });
+  }
+
+  return sorted;
+}
 
 function fromPayload(item: PayloadPublication): DisplayPublication {
   const imageIsPhoto = item.image?.mimeType?.startsWith("image/") ?? false;
@@ -75,7 +142,41 @@ function fromPayload(item: PayloadPublication): DisplayPublication {
     previewUrl,
     previewWidth: previewSource?.width,
     previewHeight: previewSource?.height,
+    researchLines: populated<PayloadResearchActivity>(item.researchLines).map((r) => ({
+      id: r.id,
+      title: r.title,
+      titleAr: r.titleAr,
+    })),
   };
+}
+
+function PublicationsGrid({ items }: { items: DisplayPublication[] }) {
+  return (
+    <PublicationCardGrid>
+      {items.map((item) => (
+        <PublicationCard
+          key={item.id}
+          title={item.title}
+          titleAr={item.titleAr}
+          author={item.author}
+          authorAr={item.authorAr}
+          authorParticipants={item.authorParticipants}
+          date={item.date}
+          previewUrl={item.previewUrl}
+          previewWidth={item.previewWidth}
+          previewHeight={item.previewHeight}
+          fileUrl={item.fileUrl}
+          fileMimeType={item.fileMimeType}
+          fileUrlAr={item.fileUrlAr}
+          fileMimeTypeAr={item.fileMimeTypeAr}
+          fileSize={item.fileSize}
+          fileSizeAr={item.fileSizeAr}
+          linkUrl={item.linkUrl}
+          linkUrlAr={item.linkUrlAr}
+        />
+      ))}
+    </PublicationCardGrid>
+  );
 }
 
 export function PublicationsPage({
@@ -87,7 +188,7 @@ export function PublicationsPage({
   titleKey: TranslationKey;
   breadcrumb?: string;
 }) {
-  const { t } = useLanguage();
+  const { t, isArabic } = useLanguage();
   // No staleTime: an editor publishing a change in the admin expects to see
   // it on the next load, not up to five minutes later.
   const { data: payloadItems = [], isLoading } = useQuery({
@@ -98,6 +199,7 @@ export function PublicationsPage({
   // Payload is the only source. A type with nothing published shows the empty
   // state below rather than a hardcoded stand-in nobody can edit.
   const items: DisplayPublication[] = payloadItems.map(fromPayload);
+  const groups = groupByResearchLine(items, isArabic);
 
   return (
     <PageLayout>
@@ -121,30 +223,16 @@ export function PublicationsPage({
             {t("publications.empty")}
           </p>
         ) : (
-          <PublicationCardGrid>
-            {items.map((item) => (
-              <PublicationCard
-                key={item.id}
-                title={item.title}
-                titleAr={item.titleAr}
-                author={item.author}
-                authorAr={item.authorAr}
-                authorParticipants={item.authorParticipants}
-                date={item.date}
-                previewUrl={item.previewUrl}
-                previewWidth={item.previewWidth}
-                previewHeight={item.previewHeight}
-                fileUrl={item.fileUrl}
-                fileMimeType={item.fileMimeType}
-                fileUrlAr={item.fileUrlAr}
-                fileMimeTypeAr={item.fileMimeTypeAr}
-                fileSize={item.fileSize}
-                fileSizeAr={item.fileSizeAr}
-                linkUrl={item.linkUrl}
-                linkUrlAr={item.linkUrlAr}
-              />
+          <div className="space-y-12">
+            {groups.map((group) => (
+              <div key={group.key}>
+                <h2 className="font-serif text-2xl text-primary mb-5 pb-3 border-b border-border/60">
+                  {isArabic ? (group.titleAr ?? group.title) : group.title}
+                </h2>
+                <PublicationsGrid items={group.items} />
+              </div>
             ))}
-          </PublicationCardGrid>
+          </div>
         )}
       </section>
     </PageLayout>
