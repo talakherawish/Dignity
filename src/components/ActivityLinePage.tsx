@@ -26,10 +26,12 @@ import {
 export function ActivityLinePage({
   activityLine,
   eyebrow,
+  eyebrowColor,
   fallbackTitle,
 }: {
   activityLine: ActivityLine;
   eyebrow?: string;
+  eyebrowColor?: string;
   fallbackTitle: string;
 }) {
   const { lang, isArabic } = useLanguage();
@@ -78,7 +80,7 @@ export function ActivityLinePage({
 
   return (
     <PageLayout>
-      <PageHero eyebrow={eyebrow} title={title} />
+      <PageHero eyebrow={eyebrow} eyebrowColor={eyebrowColor} title={title} />
 
       <article
         className={
