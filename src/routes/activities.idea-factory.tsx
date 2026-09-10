@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ActivityLinePage } from "@/components/ActivityLinePage";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { SECTION_COLORS } from "@/lib/sectionColors";
 
 export const Route = createFileRoute("/activities/idea-factory")({
   head: () => ({ meta: [{ title: "Idea Factory — Dignity" }] }),
@@ -15,8 +14,7 @@ function IdeaFactoryPage() {
     <ActivityLinePage
       activityLine="idea-factory"
       eyebrow={t("activities")}
-      eyebrowColor={SECTION_COLORS.activities}
-      title={t("activities.ideaFactory")}
+      fallbackTitle={t("activities.ideaFactory")}
     />
   );
 }

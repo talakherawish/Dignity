@@ -1,16 +1,33 @@
-import type { CollectionConfig, Field } from 'payload'
+import type { CollectionConfig, CollectionSlug, Field } from 'payload'
+import { mirrorLinksOnChange, mirrorLinksOnDelete } from '../hooks/syncResearchLinks'
 
 /**
- * Task Force on AI and Idea Factory each get their own collection here,
- * appearing as siblings of Research/Forums/The Windsor Birzeit Dignity
- * Initiative under Activities in the admin sidebar -- not a field bolted
- * onto Forums/Publications, which put nothing under either page's own name
- * in the admin at all.
+ * Task Force on AI and Idea Factory, each shaped like a Research line: a
+ * title and its own write-up, plus the real Forums/Publications items
+ * attached to it -- not freestanding items typed fresh under either page,
+ * and not a field buried inside Forums/Publications either. Each is its own
+ * collection (a sibling of Research/Forums under Activities in the admin,
+ * not an entry inside Research's own list), holding a single document the
+ * same way AboutPages.ts's two pages do -- edit the one that's there rather
+ * than adding another.
  *
- * Each item is tagged Activities or Publications via `parentCategory`; the
- * page for that activity line splits on that field into two collapsible
- * sections, both newest first.
+ * The outputs use the exact relationship+mirror pattern Research already
+ * uses for its own (see OUTPUT_LINKS in Research.ts and
+ * src/hooks/syncResearchLinks.ts), just collapsed into the two sections the
+ * page shows -- Activities (relatedForums) and Publications (the other
+ * seven combined) -- instead of Research's ten separate ones.
  */
+const ACTIVITY_LINE_OUTPUTS = [
+  { field: 'relatedForums', relationTo: 'forums' },
+  { field: 'relatedBooks', relationTo: 'books' },
+  { field: 'relatedPapers', relationTo: 'papers' },
+  { field: 'relatedReports', relationTo: 'reports' },
+  { field: 'relatedBrochures', relationTo: 'brochures' },
+  { field: 'relatedTheses', relationTo: 'theses' },
+  { field: 'relatedAudiovisual', relationTo: 'audiovisual' },
+  { field: 'relatedPosters', relationTo: 'posters' },
+] as const satisfies { field: string; relationTo: CollectionSlug }[]
+
 function activityLineFields(): Field[] {
   return [
     {
@@ -24,24 +41,6 @@ function activityLineFields(): Field[] {
       type: 'text',
       label: 'Title (Arabic / العنوان بالعربية)',
       admin: { rtl: true },
-    },
-    {
-      name: 'parentCategory',
-      type: 'select',
-      required: true,
-      label: 'Section',
-      options: [
-        { label: 'Activities', value: 'activities' },
-        { label: 'Publications', value: 'publications' },
-      ],
-      admin: {
-        description: 'Which collapsible section this item shows under on the page.',
-      },
-    },
-    {
-      name: 'date',
-      type: 'date',
-      required: true,
     },
     {
       name: 'description',
@@ -68,45 +67,86 @@ function activityLineFields(): Field[] {
       name: 'image',
       type: 'upload',
       relationTo: 'media',
-      label: 'Image (optional)',
+      label: 'Featured Image',
     },
+    // The outputs, shown on the page beneath the write-up. Each points at the
+    // collection that already holds those items, so nothing is duplicated --
+    // an item is uploaded once (under Forums or a Publications type) and
+    // attached here, same as Research's own related* fields.
     {
-      name: 'file',
-      type: 'upload',
-      relationTo: 'media',
-      label: 'PDF or File (optional)',
+      name: 'relatedForums',
+      type: 'relationship',
+      relationTo: 'forums',
+      hasMany: true,
+      label: 'Activities (Forums)',
       admin: {
-        description: 'For a Publications item with a document to download.',
+        description:
+          'Seminars, roundtables, workshops, and conferences related to this. Shown under this page\'s Activities section.',
       },
     },
     {
-      name: 'fileAr',
-      type: 'upload',
-      relationTo: 'media',
-      label: 'PDF or File (Arabic only, if different / نسخة عربية مختلفة)',
+      name: 'relatedBooks',
+      type: 'relationship',
+      relationTo: 'books',
+      hasMany: true,
+      label: 'Books',
     },
     {
-      name: 'link',
-      type: 'text',
-      label: 'External Link (e.g. YouTube video)',
-      admin: {
-        description: 'Use for items that live elsewhere rather than as an uploaded file.',
-      },
+      name: 'relatedPapers',
+      type: 'relationship',
+      relationTo: 'papers',
+      hasMany: true,
+      label: 'Papers',
     },
     {
-      name: 'linkAr',
-      type: 'text',
-      label: 'External Link (Arabic only, if different / رابط عربي مختلف)',
-      admin: { rtl: true },
+      name: 'relatedReports',
+      type: 'relationship',
+      relationTo: 'reports',
+      hasMany: true,
+      label: 'Reports',
+    },
+    {
+      name: 'relatedBrochures',
+      type: 'relationship',
+      relationTo: 'brochures',
+      hasMany: true,
+      label: 'Brochures',
+    },
+    {
+      name: 'relatedTheses',
+      type: 'relationship',
+      relationTo: 'theses',
+      hasMany: true,
+      label: 'Theses',
+    },
+    {
+      name: 'relatedAudiovisual',
+      type: 'relationship',
+      relationTo: 'audiovisual',
+      hasMany: true,
+      label: 'Audiovisual',
+    },
+    {
+      name: 'relatedPosters',
+      type: 'relationship',
+      relationTo: 'posters',
+      hasMany: true,
+      label: 'Posters',
     },
   ]
 }
 
+/**
+ * `mirrorField` is the field on Forums/Books/Papers/.../Posters that mirrors
+ * this collection's `related*` fields back -- see the matching field added
+ * to Forums.ts and to Publications.ts's shared field factory.
+ */
 function activityLineCollection(
   slug: string,
   singular: string,
   plural: string,
   description: string,
+  mirrorField: string,
 ): CollectionConfig {
   return {
     slug,
@@ -114,11 +154,19 @@ function activityLineCollection(
     admin: {
       group: 'Activities',
       useAsTitle: 'title',
-      defaultColumns: ['title', 'parentCategory', 'date', 'status'],
+      defaultColumns: ['title', 'status', 'updatedAt'],
       description,
     },
     versions: {
       drafts: true,
+    },
+    hooks: {
+      afterChange: ACTIVITY_LINE_OUTPUTS.map(({ field, relationTo }) =>
+        mirrorLinksOnChange({ field, relationTo, mirrorField }),
+      ),
+      afterDelete: ACTIVITY_LINE_OUTPUTS.map(({ relationTo }) =>
+        mirrorLinksOnDelete({ relationTo, mirrorField }),
+      ),
     },
     access: {
       read: ({ req }) => {
@@ -135,14 +183,16 @@ function activityLineCollection(
 
 export const TaskForceAI = activityLineCollection(
   'task-force-ai',
-  'Task Force on AI Item',
   'Task Force on AI',
-  'Shows on the website under Activities → Task Force on AI. The Section field below splits items into that page\'s Activities and Publications sections.',
+  'Task Force on AI',
+  'Shows on the website under Activities → Task Force on AI. Holds a single document -- edit the one that\'s there rather than adding another. The Forums/Publications selected below appear on its page, split into Activities and Publications.',
+  'taskForceAILines',
 )
 
 export const IdeaFactory = activityLineCollection(
   'idea-factory',
-  'Idea Factory Item',
   'Idea Factory',
-  'Shows on the website under Activities → Idea Factory. The Section field below splits items into that page\'s Activities and Publications sections.',
+  'Idea Factory',
+  'Shows on the website under Activities → Idea Factory. Holds a single document -- edit the one that\'s there rather than adding another. The Forums/Publications selected below appear on its page, split into Activities and Publications.',
+  'ideaFactoryLines',
 )

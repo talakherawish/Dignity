@@ -476,6 +476,14 @@ export interface Forum {
    */
   researchLines?: (string | Research)[] | null;
   /**
+   * Shows up under that page's Activities section automatically.
+   */
+  taskForceAILines?: (string | TaskForceAi)[] | null;
+  /**
+   * Shows up under that page's Activities section automatically.
+   */
+  ideaFactoryLines?: (string | IdeaFactory)[] | null;
+  /**
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
   publicationStatus?: string | null;
@@ -602,6 +610,76 @@ export interface Book {
    */
   researchLines?: (string | Research)[] | null;
   /**
+   * Shows up under that page's Publications section automatically.
+   */
+  taskForceAILines?: (string | TaskForceAi)[] | null;
+  /**
+   * Shows up under that page's Publications section automatically.
+   */
+  ideaFactoryLines?: (string | IdeaFactory)[] | null;
+  /**
+   * Read-only. Reflects the Publish / Save as Draft state above.
+   */
+  publicationStatus?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Shows on the website under Activities → Task Force on AI. Holds a single document -- edit the one that's there rather than adding another. The Forums/Publications selected below appear on its page, split into Activities and Publications.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "task-force-ai".
+ */
+export interface TaskForceAi {
+  id: string;
+  title: string;
+  titleAr: string;
+  description?: string | null;
+  descriptionAr?: string | null;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  contentAr?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  image?: (string | null) | Media;
+  /**
+   * Seminars, roundtables, workshops, and conferences related to this. Shown under this page's Activities section.
+   */
+  relatedForums?: (string | Forum)[] | null;
+  relatedBooks?: (string | Book)[] | null;
+  relatedPapers?: (string | Paper)[] | null;
+  relatedReports?: (string | Report)[] | null;
+  relatedBrochures?: (string | Brochure)[] | null;
+  relatedTheses?: (string | Thesis)[] | null;
+  relatedAudiovisual?: (string | Audiovisual)[] | null;
+  relatedPosters?: (string | Poster)[] | null;
+  /**
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
   publicationStatus?: string | null;
@@ -656,6 +734,76 @@ export interface Paper {
    * Which research line(s) this is an output of. Shows up on that research line's page automatically.
    */
   researchLines?: (string | Research)[] | null;
+  /**
+   * Shows up under that page's Publications section automatically.
+   */
+  taskForceAILines?: (string | TaskForceAi)[] | null;
+  /**
+   * Shows up under that page's Publications section automatically.
+   */
+  ideaFactoryLines?: (string | IdeaFactory)[] | null;
+  /**
+   * Read-only. Reflects the Publish / Save as Draft state above.
+   */
+  publicationStatus?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Shows on the website under Activities → Idea Factory. Holds a single document -- edit the one that's there rather than adding another. The Forums/Publications selected below appear on its page, split into Activities and Publications.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "idea-factory".
+ */
+export interface IdeaFactory {
+  id: string;
+  title: string;
+  titleAr: string;
+  description?: string | null;
+  descriptionAr?: string | null;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  contentAr?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  image?: (string | null) | Media;
+  /**
+   * Seminars, roundtables, workshops, and conferences related to this. Shown under this page's Activities section.
+   */
+  relatedForums?: (string | Forum)[] | null;
+  relatedBooks?: (string | Book)[] | null;
+  relatedPapers?: (string | Paper)[] | null;
+  relatedReports?: (string | Report)[] | null;
+  relatedBrochures?: (string | Brochure)[] | null;
+  relatedTheses?: (string | Thesis)[] | null;
+  relatedAudiovisual?: (string | Audiovisual)[] | null;
+  relatedPosters?: (string | Poster)[] | null;
   /**
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
@@ -712,6 +860,14 @@ export interface Report {
    */
   researchLines?: (string | Research)[] | null;
   /**
+   * Shows up under that page's Publications section automatically.
+   */
+  taskForceAILines?: (string | TaskForceAi)[] | null;
+  /**
+   * Shows up under that page's Publications section automatically.
+   */
+  ideaFactoryLines?: (string | IdeaFactory)[] | null;
+  /**
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
   publicationStatus?: string | null;
@@ -766,6 +922,14 @@ export interface Brochure {
    * Which research line(s) this is an output of. Shows up on that research line's page automatically.
    */
   researchLines?: (string | Research)[] | null;
+  /**
+   * Shows up under that page's Publications section automatically.
+   */
+  taskForceAILines?: (string | TaskForceAi)[] | null;
+  /**
+   * Shows up under that page's Publications section automatically.
+   */
+  ideaFactoryLines?: (string | IdeaFactory)[] | null;
   /**
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
@@ -822,6 +986,14 @@ export interface Thesis {
    */
   researchLines?: (string | Research)[] | null;
   /**
+   * Shows up under that page's Publications section automatically.
+   */
+  taskForceAILines?: (string | TaskForceAi)[] | null;
+  /**
+   * Shows up under that page's Publications section automatically.
+   */
+  ideaFactoryLines?: (string | IdeaFactory)[] | null;
+  /**
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
   publicationStatus?: string | null;
@@ -877,6 +1049,14 @@ export interface Audiovisual {
    */
   researchLines?: (string | Research)[] | null;
   /**
+   * Shows up under that page's Publications section automatically.
+   */
+  taskForceAILines?: (string | TaskForceAi)[] | null;
+  /**
+   * Shows up under that page's Publications section automatically.
+   */
+  ideaFactoryLines?: (string | IdeaFactory)[] | null;
+  /**
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
   publicationStatus?: string | null;
@@ -931,6 +1111,14 @@ export interface Poster {
    * Which research line(s) this is an output of. Shows up on that research line's page automatically.
    */
   researchLines?: (string | Research)[] | null;
+  /**
+   * Shows up under that page's Publications section automatically.
+   */
+  taskForceAILines?: (string | TaskForceAi)[] | null;
+  /**
+   * Shows up under that page's Publications section automatically.
+   */
+  ideaFactoryLines?: (string | IdeaFactory)[] | null;
   /**
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
@@ -1086,138 +1274,6 @@ export interface WindsorDignity {
     [k: string]: unknown;
   } | null;
   image?: (string | null) | Media;
-  /**
-   * Read-only. Reflects the Publish / Save as Draft state above.
-   */
-  publicationStatus?: string | null;
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
-}
-/**
- * Shows on the website under Activities → Idea Factory. The Section field below splits items into that page's Activities and Publications sections.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "idea-factory".
- */
-export interface IdeaFactory {
-  id: string;
-  title: string;
-  titleAr: string;
-  /**
-   * Which collapsible section this item shows under on the page.
-   */
-  parentCategory: 'activities' | 'publications';
-  date: string;
-  description?: string | null;
-  descriptionAr?: string | null;
-  content?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  contentAr?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  image?: (string | null) | Media;
-  /**
-   * For a Publications item with a document to download.
-   */
-  file?: (string | null) | Media;
-  fileAr?: (string | null) | Media;
-  /**
-   * Use for items that live elsewhere rather than as an uploaded file.
-   */
-  link?: string | null;
-  linkAr?: string | null;
-  /**
-   * Read-only. Reflects the Publish / Save as Draft state above.
-   */
-  publicationStatus?: string | null;
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
-}
-/**
- * Shows on the website under Activities → Task Force on AI. The Section field below splits items into that page's Activities and Publications sections.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "task-force-ai".
- */
-export interface TaskForceAi {
-  id: string;
-  title: string;
-  titleAr: string;
-  /**
-   * Which collapsible section this item shows under on the page.
-   */
-  parentCategory: 'activities' | 'publications';
-  date: string;
-  description?: string | null;
-  descriptionAr?: string | null;
-  content?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  contentAr?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  image?: (string | null) | Media;
-  /**
-   * For a Publications item with a document to download.
-   */
-  file?: (string | null) | Media;
-  fileAr?: (string | null) | Media;
-  /**
-   * Use for items that live elsewhere rather than as an uploaded file.
-   */
-  link?: string | null;
-  linkAr?: string | null;
   /**
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
@@ -1739,6 +1795,8 @@ export interface ForumsSelect<T extends boolean = true> {
         id?: T;
       };
   researchLines?: T;
+  taskForceAILines?: T;
+  ideaFactoryLines?: T;
   publicationStatus?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1769,17 +1827,19 @@ export interface WindsorDignitySelect<T extends boolean = true> {
 export interface IdeaFactorySelect<T extends boolean = true> {
   title?: T;
   titleAr?: T;
-  parentCategory?: T;
-  date?: T;
   description?: T;
   descriptionAr?: T;
   content?: T;
   contentAr?: T;
   image?: T;
-  file?: T;
-  fileAr?: T;
-  link?: T;
-  linkAr?: T;
+  relatedForums?: T;
+  relatedBooks?: T;
+  relatedPapers?: T;
+  relatedReports?: T;
+  relatedBrochures?: T;
+  relatedTheses?: T;
+  relatedAudiovisual?: T;
+  relatedPosters?: T;
   publicationStatus?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1792,17 +1852,19 @@ export interface IdeaFactorySelect<T extends boolean = true> {
 export interface TaskForceAiSelect<T extends boolean = true> {
   title?: T;
   titleAr?: T;
-  parentCategory?: T;
-  date?: T;
   description?: T;
   descriptionAr?: T;
   content?: T;
   contentAr?: T;
   image?: T;
-  file?: T;
-  fileAr?: T;
-  link?: T;
-  linkAr?: T;
+  relatedForums?: T;
+  relatedBooks?: T;
+  relatedPapers?: T;
+  relatedReports?: T;
+  relatedBrochures?: T;
+  relatedTheses?: T;
+  relatedAudiovisual?: T;
+  relatedPosters?: T;
   publicationStatus?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1828,6 +1890,8 @@ export interface BooksSelect<T extends boolean = true> {
   linkAr?: T;
   image?: T;
   researchLines?: T;
+  taskForceAILines?: T;
+  ideaFactoryLines?: T;
   publicationStatus?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1853,6 +1917,8 @@ export interface PapersSelect<T extends boolean = true> {
   linkAr?: T;
   image?: T;
   researchLines?: T;
+  taskForceAILines?: T;
+  ideaFactoryLines?: T;
   publicationStatus?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1878,6 +1944,8 @@ export interface ReportsSelect<T extends boolean = true> {
   linkAr?: T;
   image?: T;
   researchLines?: T;
+  taskForceAILines?: T;
+  ideaFactoryLines?: T;
   publicationStatus?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1903,6 +1971,8 @@ export interface BrochuresSelect<T extends boolean = true> {
   linkAr?: T;
   image?: T;
   researchLines?: T;
+  taskForceAILines?: T;
+  ideaFactoryLines?: T;
   publicationStatus?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1928,6 +1998,8 @@ export interface ThesesSelect<T extends boolean = true> {
   linkAr?: T;
   image?: T;
   researchLines?: T;
+  taskForceAILines?: T;
+  ideaFactoryLines?: T;
   publicationStatus?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1953,6 +2025,8 @@ export interface AudiovisualSelect<T extends boolean = true> {
   linkAr?: T;
   image?: T;
   researchLines?: T;
+  taskForceAILines?: T;
+  ideaFactoryLines?: T;
   publicationStatus?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1978,6 +2052,8 @@ export interface PostersSelect<T extends boolean = true> {
   linkAr?: T;
   image?: T;
   researchLines?: T;
+  taskForceAILines?: T;
+  ideaFactoryLines?: T;
   publicationStatus?: T;
   updatedAt?: T;
   createdAt?: T;

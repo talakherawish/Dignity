@@ -78,28 +78,29 @@ export type PayloadActivity = {
 /**
  * Task Force on AI and Idea Factory: each its own Payload collection (slug
  * doubles as the activity line's identity), a sibling of Research/Forums
- * under Activities rather than a field tucked inside Forums/Publications --
- * see fetchActivityLineItems.
+ * under Activities in the admin, holding a single document shaped like a
+ * Research line -- a title and write-up, plus the real Forums/Publications
+ * items attached to it. See fetchActivityLine.
  */
 export type ActivityLine = "task-force-ai" | "idea-factory";
 
-export type ActivityLineSection = "activities" | "publications";
-
-export type PayloadActivityLineItem = {
+export type PayloadActivityLine = {
   id: string;
   title: string;
   titleAr?: string;
-  parentCategory: ActivityLineSection;
-  date: string;
-  description?: string;
-  descriptionAr?: string;
+  description?: unknown;
+  descriptionAr?: unknown;
   content?: unknown;
   contentAr?: unknown;
   image?: PayloadMedia;
-  file?: PayloadMedia;
-  fileAr?: PayloadMedia;
-  link?: string;
-  linkAr?: string;
+  relatedForums?: (PayloadActivity | string)[];
+  relatedBooks?: (PayloadPublication | string)[];
+  relatedPapers?: (PayloadPublication | string)[];
+  relatedReports?: (PayloadPublication | string)[];
+  relatedBrochures?: (PayloadPublication | string)[];
+  relatedTheses?: (PayloadPublication | string)[];
+  relatedAudiovisual?: (PayloadPublication | string)[];
+  relatedPosters?: (PayloadPublication | string)[];
 };
 
 export type PayloadPhoto = {
@@ -638,14 +639,6 @@ export const fetchForums = () =>
   fetchCollection<PayloadActivity>("forums", { ...NEWEST_FIRST, depth: "2" });
 
 /**
- * Everything in one activity line's own collection (its slug is the
- * collection slug -- see ActivityLines.ts), newest first. The page splits
- * this single list into Activities/Publications by `parentCategory` itself.
- */
-export const fetchActivityLineItems = (line: ActivityLine) =>
-  fetchCollection<PayloadActivityLineItem>(line, { depth: "2", ...NEWEST_FIRST });
-
-/**
  * Research areas, shown under Activities → Research.
  *
  * depth: 3 is what it takes to reach a preview image. The chain is research →
@@ -665,6 +658,21 @@ export async function fetchResearchBySlug(
 ): Promise<PayloadResearchActivity | undefined> {
   const docs = await fetchCollection<PayloadResearchActivity>("research", {
     "where[slug][equals]": slug,
+    depth: RESEARCH_DEPTH,
+    limit: "1",
+  });
+  return docs[0];
+}
+
+/**
+ * The one document in an activity line's own collection (its slug is the
+ * collection slug -- see ActivityLines.ts). Same depth as Research, for the
+ * same reason: its related* fields reach into publications' file thumbnails.
+ */
+export async function fetchActivityLine(
+  line: ActivityLine,
+): Promise<PayloadActivityLine | undefined> {
+  const docs = await fetchCollection<PayloadActivityLine>(line, {
     depth: RESEARCH_DEPTH,
     limit: "1",
   });

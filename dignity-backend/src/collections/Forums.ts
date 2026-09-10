@@ -14,8 +14,16 @@ export const Forums: CollectionConfig = {
     drafts: true,
   },
   hooks: {
-    afterChange: [mirrorLinksOnChange({ field: 'researchLines', relationTo: 'research', mirrorField: 'relatedForums' })],
-    afterDelete: [mirrorLinksOnDelete({ relationTo: 'research', mirrorField: 'relatedForums' })],
+    afterChange: [
+      mirrorLinksOnChange({ field: 'researchLines', relationTo: 'research', mirrorField: 'relatedForums' }),
+      mirrorLinksOnChange({ field: 'taskForceAILines', relationTo: 'task-force-ai', mirrorField: 'relatedForums' }),
+      mirrorLinksOnChange({ field: 'ideaFactoryLines', relationTo: 'idea-factory', mirrorField: 'relatedForums' }),
+    ],
+    afterDelete: [
+      mirrorLinksOnDelete({ relationTo: 'research', mirrorField: 'relatedForums' }),
+      mirrorLinksOnDelete({ relationTo: 'task-force-ai', mirrorField: 'relatedForums' }),
+      mirrorLinksOnDelete({ relationTo: 'idea-factory', mirrorField: 'relatedForums' }),
+    ],
   },
   access: {
     read: ({ req }) => {
@@ -136,6 +144,28 @@ export const Forums: CollectionConfig = {
       admin: {
         position: 'sidebar',
         description: 'Which research line(s) this forum came out of. Shows up on that research line\'s page automatically.',
+      },
+    },
+    {
+      name: 'taskForceAILines',
+      type: 'relationship',
+      relationTo: 'task-force-ai',
+      hasMany: true,
+      label: 'Task Force on AI',
+      admin: {
+        position: 'sidebar',
+        description: 'Shows up under that page\'s Activities section automatically.',
+      },
+    },
+    {
+      name: 'ideaFactoryLines',
+      type: 'relationship',
+      relationTo: 'idea-factory',
+      hasMany: true,
+      label: 'Idea Factory',
+      admin: {
+        position: 'sidebar',
+        description: 'Shows up under that page\'s Activities section automatically.',
       },
     },
   ],

@@ -138,21 +138,46 @@ function publicationFields(): Field[] {
         description: 'Which research line(s) this is an output of. Shows up on that research line\'s page automatically.',
       },
     },
+    {
+      name: 'taskForceAILines',
+      type: 'relationship',
+      relationTo: 'task-force-ai',
+      hasMany: true,
+      label: 'Task Force on AI',
+      admin: {
+        position: 'sidebar',
+        description: 'Shows up under that page\'s Publications section automatically.',
+      },
+    },
+    {
+      name: 'ideaFactoryLines',
+      type: 'relationship',
+      relationTo: 'idea-factory',
+      hasMany: true,
+      label: 'Idea Factory',
+      admin: {
+        position: 'sidebar',
+        description: 'Shows up under that page\'s Publications section automatically.',
+      },
+    },
   ]
 }
 
 /**
- * `researchField` is the matching `related*` field back on Research (see
- * OUTPUT_LINKS in Research.ts) -- it's what this collection's `researchLines`
- * field stays mirrored against, so an editor can attach the link from either
- * side. See src/hooks/syncResearchLinks.ts.
+ * `relatedField` is the matching `related*` field back on Research/Task
+ * Force on AI/Idea Factory (see OUTPUT_LINKS in Research.ts and
+ * ACTIVITY_LINE_OUTPUTS in ActivityLines.ts) -- all three name their own
+ * `related*` field for a given type identically (e.g. `relatedBooks`), so
+ * the one string mirrors this collection's `researchLines`, `taskForceAILines`
+ * and `ideaFactoryLines` fields against all three. An editor can attach the
+ * link from either side. See src/hooks/syncResearchLinks.ts.
  */
 function publicationCollection(
   slug: CollectionSlug,
   singular: string,
   plural: string,
   description: string,
-  researchField: string,
+  relatedField: string,
 ): CollectionConfig {
   return {
     slug,
@@ -167,8 +192,16 @@ function publicationCollection(
       drafts: true,
     },
     hooks: {
-      afterChange: [mirrorLinksOnChange({ field: 'researchLines', relationTo: 'research', mirrorField: researchField })],
-      afterDelete: [mirrorLinksOnDelete({ relationTo: 'research', mirrorField: researchField })],
+      afterChange: [
+        mirrorLinksOnChange({ field: 'researchLines', relationTo: 'research', mirrorField: relatedField }),
+        mirrorLinksOnChange({ field: 'taskForceAILines', relationTo: 'task-force-ai', mirrorField: relatedField }),
+        mirrorLinksOnChange({ field: 'ideaFactoryLines', relationTo: 'idea-factory', mirrorField: relatedField }),
+      ],
+      afterDelete: [
+        mirrorLinksOnDelete({ relationTo: 'research', mirrorField: relatedField }),
+        mirrorLinksOnDelete({ relationTo: 'task-force-ai', mirrorField: relatedField }),
+        mirrorLinksOnDelete({ relationTo: 'idea-factory', mirrorField: relatedField }),
+      ],
     },
     access: {
       read: ({ req }) => {
