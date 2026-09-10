@@ -36,6 +36,7 @@ import { Stickers } from './collections/Stickers'
 import { Research } from './collections/Research'
 import { Forums } from './collections/Forums'
 import { WindsorDignity } from './collections/WindsorDignity'
+import { IdeaFactory, TaskForceAI } from './collections/ActivityLines'
 import {
   Books,
   Papers,
@@ -96,6 +97,8 @@ export default buildConfig({
     // their old names; nothing was deleted, just no longer wired in here.
     Forums,
     WindsorDignity,
+    IdeaFactory,
+    TaskForceAI,
 
     // Publications
     Books,
