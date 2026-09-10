@@ -83,7 +83,7 @@ function mapPayloadToTeamPerson(p: PayloadParticipant): TeamPerson {
  * `displayMode: "textOnly"`). Nothing here rotates -- it's a plain index, not
  * a slideshow.
  */
-const HEADLINE_COUNT = 5;
+const HEADLINE_COUNT = 4;
 
 /** RIGHT half: the entries with a cover image, cycling on their own clock. */
 const CAROUSEL_COUNT = 6;
@@ -110,7 +110,7 @@ function HeadlineList({ articles }: { articles: Article[] }) {
           <Link
             to="/media/news"
             search={{ id: article.id }}
-            className="group flex gap-4 px-6 py-4 transition-colors hover:bg-secondary/30"
+            className="group flex gap-4 px-5 py-2.5 transition-colors hover:bg-secondary/30"
           >
             <span className="font-serif text-sm tabular-nums text-muted-foreground/70">
               {ordinal(index, isArabic)}
@@ -158,7 +158,7 @@ function ImageCarousel({ articles }: { articles: Article[] }) {
       search={{ id: article.id }}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
-      className="group relative block h-full min-h-[260px] overflow-hidden"
+      className="group relative block h-full min-h-[190px] overflow-hidden"
     >
       <img
         key={article.id}
@@ -170,11 +170,11 @@ function ImageCarousel({ articles }: { articles: Article[] }) {
         aria-hidden="true"
         className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent"
       />
-      <div className="absolute inset-x-0 bottom-0 p-6" dir={isArabic ? "rtl" : "ltr"}>
+      <div className="absolute inset-x-0 bottom-0 p-4" dir={isArabic ? "rtl" : "ltr"}>
         <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/70">
           {getField(article, "date", lang)}
         </p>
-        <h3 className="mt-1.5 font-serif text-lg leading-snug text-white md:text-xl">
+        <h3 className="mt-1 font-serif text-base leading-snug text-white md:text-lg">
           {withItalicQuotes(getField(article, "title", lang))}
         </h3>
       </div>
@@ -224,7 +224,7 @@ function LatestNewsAndAnnouncements() {
 
   return (
     <div
-      className="grid grid-cols-1 overflow-hidden rounded-sm border border-border md:min-h-[320px] md:grid-cols-2"
+      className="grid grid-cols-1 overflow-hidden rounded-sm border border-border md:min-h-[190px] md:grid-cols-2"
       dir={isArabic ? "rtl" : "ltr"}
     >
       <div className="border-b border-border md:border-b-0 md:border-e">
@@ -427,7 +427,7 @@ function Home() {
            * Temporary centered layout with the office photo dropped, while a
            * proper homepage design is worked out -- not the final treatment.
            */}
-          <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-6 lg:pt-5 lg:pb-7 flex flex-col items-center text-center">
+          <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-3 pb-4 lg:pt-4 lg:pb-5 flex flex-col items-center text-center">
             <div
               className={
                 "uppercase tracking-[0.22em] text-[color:var(--brand-magenta)] font-semibold mb-2 " +
@@ -478,8 +478,8 @@ function Home() {
         {/* News & Announcements — visible without scrolling, right under the
             hero: this is why the hero above no longer fills the screen. */}
         <section className="bg-gradient-to-b from-secondary/5 to-transparent">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-10">
-            <div className="flex items-center justify-between mb-4">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-6">
+            <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-3">
                 <div
                   className="h-5 w-1.5 rounded-full"
