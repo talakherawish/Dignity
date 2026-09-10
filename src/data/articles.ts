@@ -11,13 +11,16 @@ export type Article = {
   title: Record<ArticleLang, string>;
   excerpt: Record<ArticleLang, string>;
   body: Record<ArticleLang, string[]>;
+  /** Which side of the homepage split this belongs in. */
+  displayMode: "withImage" | "textOnly";
 };
 
 /** Adapt a Payload news entry to the local Article shape the homepage carousel and the news listing render. */
 export function mapPayloadNews(pa: PayloadNews): Article {
+  const image = mediaUrl(pa.image) || "";
   return {
     id: pa.id,
-    image: mediaUrl(pa.image) || "",
+    image,
     date: { en: formatDate(pa.date, "en"), ar: formatDate(pa.date, "ar") },
     title: { en: pa.title, ar: pa.titleAr ?? pa.title },
     excerpt: { en: pa.excerpt ?? "", ar: pa.excerptAr ?? pa.excerpt ?? "" },
@@ -28,6 +31,9 @@ export function mapPayloadNews(pa: PayloadNews): Article {
       en: extractText(pa.content),
       ar: extractText(pa.contentAr),
     },
+    // Entries saved before the field existed have no displayMode -- fall back
+    // to whether an image was uploaded, which is what the field replaces.
+    displayMode: pa.displayMode ?? (image ? "withImage" : "textOnly"),
   };
 }
 

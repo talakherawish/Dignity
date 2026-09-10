@@ -40,6 +40,8 @@ export type PayloadNews = {
   content?: unknown;
   contentAr?: unknown;
   image?: PayloadMedia;
+  /** Which side of the homepage split this appears in -- see mapPayloadNews. */
+  displayMode?: "withImage" | "textOnly";
 };
 
 export type PayloadGalleryItem = {

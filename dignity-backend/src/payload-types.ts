@@ -358,6 +358,10 @@ export interface News {
   } | null;
   image?: (string | null) | Media;
   /**
+   * Which side of the homepage News & Announcements section this appears in: the rotating photo carousel, or the plain headline list.
+   */
+  displayMode?: ('withImage' | 'textOnly') | null;
+  /**
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
   publicationStatus?: string | null;
@@ -1439,6 +1443,7 @@ export interface NewsSelect<T extends boolean = true> {
   content?: T;
   contentAr?: T;
   image?: T;
+  displayMode?: T;
   publicationStatus?: T;
   updatedAt?: T;
   createdAt?: T;

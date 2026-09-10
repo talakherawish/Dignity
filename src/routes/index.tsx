@@ -1,11 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { ChevronLeft, ChevronRight, X, Mail } from "lucide-react";
+import { X, Mail } from "lucide-react";
 import { PageLayout } from "@/components/PageLayout";
-import { TranslationNotice } from "@/components/TranslationNotice";
 import { useLanguage, type TranslationKey } from "@/contexts/LanguageContext";
-import { excerptUntranslated, getBody, getField, mapPayloadNews, type Article } from "@/data/articles";
+import { getField, mapPayloadNews, type Article } from "@/data/articles";
 import { withItalicQuotes } from "@/lib/text";
 import {
   fetchNews,
@@ -78,163 +77,108 @@ function mapPayloadToTeamPerson(p: PayloadParticipant): TeamPerson {
   };
 }
 
-// ── Latest news and announcements: an auto-advancing carousel of slots ────
-/** Enough for a handful of slots without turning the teaser into the archive. */
-const QUEUE_SIZE = 6;
-
-/** Within the "every ~5-6s" the design calls for. */
-const SLOT_INTERVAL_MS = 5500;
-
+// ── Latest news and announcements: two independent halves ─────────────────
 /**
- * A slot is one 2-column row of the carousel. An item with its own image
- * fills a slot by itself, image on one side and its own text on the other.
- * Two imageless items sit side by side sharing a slot -- both text-only, same
- * treatment either would get alone -- and a leftover imageless item with no
- * imageless neighbour spans the row alone rather than leaving a column empty.
+ * LEFT half: a static, numbered list of the imageless entries (Payload's
+ * `displayMode: "textOnly"`). Nothing here rotates -- it's a plain index, not
+ * a slideshow.
  */
-type Slot =
-  | { kind: "image"; article: Article }
-  | { kind: "pair"; a: Article; b: Article }
-  | { kind: "wide"; article: Article };
+const HEADLINE_COUNT = 5;
 
-/**
- * Pairing only ever looks at the very next item in the queue -- not the next
- * imageless item however far off -- so a slot never reaches past an image
- * item to grab a partner from further down the list, which would reorder the
- * feed out of its latest-first order.
- */
-function buildSlots(articles: Article[]): Slot[] {
-  const slots: Slot[] = [];
-  let i = 0;
-  while (i < articles.length) {
-    const article = articles[i];
-    if (article.image) {
-      slots.push({ kind: "image", article });
-      i += 1;
-      continue;
-    }
-    const next = articles[i + 1];
-    if (next && !next.image) {
-      slots.push({ kind: "pair", a: article, b: next });
-      i += 2;
-    } else {
-      slots.push({ kind: "wide", article });
-      i += 1;
-    }
-  }
-  return slots;
+/** RIGHT half: the entries with a cover image, cycling on their own clock. */
+const CAROUSEL_COUNT = 6;
+const CAROUSEL_INTERVAL_MS = 5000;
+
+/** Numbers as 01, 02, ... in Western digits even beside Arabic text -- the
+ * client asked not to use ar-EG's default Arabic-Indic numerals (١٢٣٤). */
+function ordinal(index: number, isArabic: boolean): string {
+  return (index + 1).toLocaleString(isArabic ? "ar-EG" : "en-US", {
+    minimumIntegerDigits: 2,
+    numberingSystem: "latn",
+  });
 }
 
-/** The text half of a slot: date, title, excerpt (or a notice standing in for it). */
-function NewsSlotCard({ article, className = "" }: { article: Article; className?: string }) {
+function HeadlineList({ articles }: { articles: Article[] }) {
   const { lang, isArabic } = useLanguage();
-  const excerpt = getField(article, "excerpt", lang);
+
+  if (articles.length === 0) return null;
+
+  return (
+    <ul className="divide-y divide-border" dir={isArabic ? "rtl" : "ltr"}>
+      {articles.map((article, index) => (
+        <li key={article.id}>
+          <Link
+            to="/media/news"
+            search={{ id: article.id }}
+            className="group flex gap-4 px-6 py-4 transition-colors hover:bg-secondary/30"
+          >
+            <span className="font-serif text-sm tabular-nums text-muted-foreground/70">
+              {ordinal(index, isArabic)}
+            </span>
+            <span className="min-w-0">
+              <span className="block font-serif text-[15px] leading-snug text-primary transition-colors group-hover:text-[color:var(--brand-magenta)]">
+                {withItalicQuotes(getField(article, "title", lang))}
+              </span>
+              <span className="mt-1.5 block text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
+                {getField(article, "date", lang)}
+              </span>
+            </span>
+          </Link>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+/**
+ * Own timer, own index -- nothing ties this to the headline list beside it.
+ * Fades between covers rather than sliding, so a portrait next to a landscape
+ * cover doesn't lurch the frame sideways as it changes.
+ */
+function ImageCarousel({ articles }: { articles: Article[] }) {
+  const { lang, isArabic } = useLanguage();
+  const [index, setIndex] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const safeIndex = articles.length > 0 ? index % articles.length : 0;
+
+  useEffect(() => {
+    if (paused || articles.length <= 1) return;
+    const id = setTimeout(() => {
+      setIndex((i) => (i + 1) % articles.length);
+    }, CAROUSEL_INTERVAL_MS);
+    return () => clearTimeout(id);
+  }, [index, paused, articles.length]);
+
+  if (articles.length === 0) return null;
+  const article = articles[safeIndex];
 
   return (
     <Link
       to="/media/news"
       search={{ id: article.id }}
-      className={
-        "group flex h-[240px] flex-col justify-center overflow-hidden rounded-sm border border-border bg-card p-6 transition-colors hover:border-accent/30 hover:shadow-sm " +
-        className
-      }
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+      className="group relative block h-full min-h-[260px] overflow-hidden"
     >
-      <p
-        className={
-          "font-semibold uppercase tracking-[0.18em] text-[color:var(--brand-magenta)] " +
-          (isArabic ? "text-[13px]" : "text-[11px]")
-        }
-      >
-        {getField(article, "date", lang)}
-      </p>
-      <h3
-        className={
-          "mt-2 line-clamp-3 font-serif text-lg leading-snug text-primary transition-colors group-hover:text-accent " +
-          (isArabic ? "md:text-[21px]" : "md:text-xl")
-        }
-      >
-        {withItalicQuotes(getField(article, "title", lang))}
-      </h3>
-      {excerpt ? (
-        <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-muted-foreground">{excerpt}</p>
-      ) : (
-        excerptUntranslated(article, lang) && <TranslationNotice compact className="mt-2" />
-      )}
-    </Link>
-  );
-}
-
-/**
- * The "other side" of a wide slot: a lone imageless item has no picture to
- * pair its text with, so this stands in with a few lines pulled from the
- * article's own full content and an explicit link into the archive -- the
- * same destination a click on the text side already goes to.
- */
-function NewsSlotPreview({ article }: { article: Article }) {
-  const { t, lang, isArabic } = useLanguage();
-  const paragraphs = getBody(article, lang);
-  const preview = paragraphs.join(" ");
-  const untranslated =
-    paragraphs.length === 0 && getBody(article, isArabic ? "en" : "ar").length > 0;
-
-  return (
-    <div className="flex h-[240px] flex-col justify-center overflow-hidden rounded-sm border border-border bg-card p-6">
-      {preview ? (
-        <p className="line-clamp-5 font-serif text-[15px] leading-relaxed text-foreground/80">
-          {preview}
+      <img
+        key={article.id}
+        src={article.image}
+        alt={getField(article, "title", lang)}
+        className="absolute inset-0 h-full w-full animate-[fadeIn_0.5s_ease-out] object-cover transition-transform duration-[900ms] ease-out group-hover:scale-[1.03]"
+      />
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent"
+      />
+      <div className="absolute inset-x-0 bottom-0 p-6" dir={isArabic ? "rtl" : "ltr"}>
+        <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/70">
+          {getField(article, "date", lang)}
         </p>
-      ) : (
-        untranslated && <TranslationNotice compact />
-      )}
-      <Link
-        to="/media/news"
-        search={{ id: article.id }}
-        className={
-          "mt-4 inline-block w-fit font-semibold uppercase tracking-[0.18em] text-muted-foreground transition-colors hover:text-[color:var(--brand-magenta)] " +
-          (isArabic ? "text-[12px]" : "text-[10px]")
-        }
-      >
-        {t("news.readMore")}
-      </Link>
-    </div>
-  );
-}
-
-function NewsSlot({ slot }: { slot: Slot }) {
-  const { lang, isArabic } = useLanguage();
-
-  if (slot.kind === "wide") {
-    return (
-      <div className="grid gap-5 sm:grid-cols-2" dir={isArabic ? "rtl" : "ltr"}>
-        <NewsSlotCard article={slot.article} />
-        <NewsSlotPreview article={slot.article} />
+        <h3 className="mt-1.5 font-serif text-lg leading-snug text-white md:text-xl">
+          {withItalicQuotes(getField(article, "title", lang))}
+        </h3>
       </div>
-    );
-  }
-
-  return (
-    <div className="grid gap-5 sm:grid-cols-2" dir={isArabic ? "rtl" : "ltr"}>
-      {slot.kind === "image" ? (
-        <>
-          <NewsSlotCard article={slot.article} />
-          {/* Only ever the item's own image -- a slot is built around having
-              one, so there is never a stand-in photo needing a caveat. */}
-          <div className="overflow-hidden rounded-sm border border-border">
-            <img
-              src={slot.article.image}
-              alt={getField(slot.article, "title", lang)}
-              loading="lazy"
-              className="h-48 w-full object-cover sm:h-[240px]"
-            />
-          </div>
-        </>
-      ) : (
-        <>
-          <NewsSlotCard article={slot.a} />
-          <NewsSlotCard article={slot.b} />
-        </>
-      )}
-    </div>
+    </Link>
   );
 }
 
@@ -247,79 +191,25 @@ function LatestNewsAndAnnouncements() {
     queryKey: ["news"],
     queryFn: fetchNews,
   });
-  const articles = payloadNews.map(mapPayloadNews).slice(0, QUEUE_SIZE);
-  const slots = buildSlots(articles);
+  const articles = payloadNews.map(mapPayloadNews);
+  const headlineArticles = articles
+    .filter((a) => a.displayMode === "textOnly")
+    .slice(0, HEADLINE_COUNT);
+  const carouselArticles = articles
+    .filter((a) => a.displayMode === "withImage" && a.image)
+    .slice(0, CAROUSEL_COUNT);
 
-  const [index, setIndex] = useState(0);
-  const [paused, setPaused] = useState(false);
-  const safeIndex = slots.length > 0 ? index % slots.length : 0;
-
-  // Restarts on every slide change, whether that came from this timeout or
-  // from a manual dot/arrow click, and stops while paused -- so hovering
-  // away and back simply gives the new slide a fresh full interval rather
-  // than resuming a partial one.
-  useEffect(() => {
-    if (paused || slots.length <= 1) return;
-    const id = setTimeout(() => {
-      setIndex((i) => (i + 1) % slots.length);
-    }, SLOT_INTERVAL_MS);
-    return () => clearTimeout(id);
-  }, [index, paused, slots.length]);
-
-  if (slots.length === 0) return null;
-
-  const step = (delta: number) => setIndex((i) => (i + delta + slots.length) % slots.length);
+  if (headlineArticles.length === 0 && carouselArticles.length === 0) return null;
 
   return (
     <div
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
-      onFocus={() => setPaused(true)}
-      onBlur={() => setPaused(false)}
+      className="grid grid-cols-1 overflow-hidden rounded-sm border border-border md:min-h-[320px] md:grid-cols-2"
+      dir={isArabic ? "rtl" : "ltr"}
     >
-      <div key={safeIndex} className="animate-[fadeIn_0.5s_ease-out]">
-        <NewsSlot slot={slots[safeIndex]} />
+      <div className="border-b border-border md:border-b-0 md:border-e">
+        <HeadlineList articles={headlineArticles} />
       </div>
-
-      {slots.length > 1 && (
-        <div className="mt-6 flex items-center justify-center gap-3" dir={isArabic ? "rtl" : "ltr"}>
-          <button
-            type="button"
-            onClick={() => step(-1)}
-            aria-label={isArabic ? "السابق" : "Previous"}
-            className="inline-flex h-7 w-7 items-center justify-center rounded-full text-muted-foreground transition-colors hover:text-accent"
-          >
-            <ChevronLeft className={"h-4 w-4" + (isArabic ? " rotate-180" : "")} />
-          </button>
-
-          <div className="flex items-center gap-2">
-            {slots.map((_, i) => (
-              <button
-                key={i}
-                type="button"
-                onClick={() => setIndex(i)}
-                aria-label={isArabic ? `الانتقال إلى الشريحة ${i + 1}` : `Go to slide ${i + 1}`}
-                aria-current={i === safeIndex}
-                className={
-                  "h-1.5 rounded-full transition-all " +
-                  (i === safeIndex
-                    ? "w-7 bg-[color:var(--brand-magenta)]"
-                    : "w-1.5 bg-border hover:bg-muted-foreground/40")
-                }
-              />
-            ))}
-          </div>
-
-          <button
-            type="button"
-            onClick={() => step(1)}
-            aria-label={isArabic ? "التالي" : "Next"}
-            className="inline-flex h-7 w-7 items-center justify-center rounded-full text-muted-foreground transition-colors hover:text-accent"
-          >
-            <ChevronRight className={"h-4 w-4" + (isArabic ? " rotate-180" : "")} />
-          </button>
-        </div>
-      )}
+      <ImageCarousel articles={carouselArticles} />
     </div>
   );
 }
@@ -508,20 +398,18 @@ function Home() {
           style={{ background: "var(--brand-magenta)" }}
         />
 
-        {/* Hero — fills the rest of the first screen (100vh minus the sticky
-            header, whose height changes at each breakpoint: 4px gradient bar +
-            60/80/101px row) so this is the only thing visible on first load,
-            whatever the copy length, and the content is centered in what's
-            actually visible rather than in a box that runs past the fold. */}
-        <section className="relative flex items-center min-h-[calc(100vh-64px)] sm:min-h-[calc(100vh-84px)] lg:min-h-[calc(100vh-105px)]">
+        {/* Hero — kept short on purpose: the news section right below it
+            needs to be visible without scrolling, so this no longer claims
+            the whole first screen the way it used to. */}
+        <section className="relative">
           {/*
            * Temporary centered layout with the office photo dropped, while a
            * proper homepage design is worked out -- not the final treatment.
            */}
-          <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-14 flex flex-col items-center text-center">
+          <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-8 lg:pt-8 lg:pb-10 flex flex-col items-center text-center">
             <div
               className={
-                "uppercase tracking-[0.22em] text-[color:var(--brand-magenta)] font-semibold mb-4 " +
+                "uppercase tracking-[0.22em] text-[color:var(--brand-magenta)] font-semibold mb-3 " +
                 (isArabic ? "text-[14px]" : "text-[12px]")
               }
             >
@@ -566,19 +454,20 @@ function Home() {
           </div>
         </section>
 
-        {/* Latest News — prominently featured */}
+        {/* News & Announcements — visible without scrolling, right under the
+            hero: this is why the hero above no longer fills the screen. */}
         <section className="bg-gradient-to-b from-secondary/5 to-transparent">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-            <div className="flex items-center justify-between mb-8">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+            <div className="flex items-center justify-between mb-5">
               <div className="flex items-center gap-3">
                 <div
-                  className="h-6 w-1.5 rounded-full"
+                  className="h-5 w-1.5 rounded-full"
                   style={{ background: "var(--brand-cyan)" }}
                 />
                 <div>
                   <div
                     className={
-                      "uppercase tracking-[0.22em] text-[color:var(--brand-cyan)] font-semibold mb-1 " +
+                      "uppercase tracking-[0.22em] text-[color:var(--brand-cyan)] font-semibold mb-0.5 " +
                       (isArabic ? "text-[14px]" : "text-[12px]")
                     }
                   >
@@ -586,8 +475,8 @@ function Home() {
                   </div>
                   <h2
                     className={
-                      "font-serif text-3xl text-primary " +
-                      (isArabic ? "lg:text-[2.65rem]" : "lg:text-[2.5rem]")
+                      "font-serif text-2xl text-primary " +
+                      (isArabic ? "lg:text-[2rem]" : "lg:text-[1.9rem]")
                     }
                   >
                     {t("news.title")}

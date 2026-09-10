@@ -80,7 +80,7 @@ const translations = {
     "information.visit": "Visit",
     // HOME
     "hero.eyebrow": "Academic Initiative",
-    "hero.title": "Advancing scholarship in service of human dignity.",
+    "hero.title": "Advancing scholarship in service of human dignity",
     "hero.desc":
       "Dignity brings together faculty, researchers, students, and partners to pursue rigorous inquiry, foster dialogue, and produce work of lasting public value.",
     "hero.btn.about": "About the Initiative",

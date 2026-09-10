@@ -74,5 +74,19 @@ export const News: CollectionConfig = {
       relationTo: 'media',
       label: 'Cover Image',
     },
+    {
+      name: 'displayMode',
+      type: 'select',
+      label: 'Homepage Display',
+      defaultValue: 'withImage',
+      options: [
+        { label: 'With Image (photo carousel)', value: 'withImage' },
+        { label: 'Text Only (headline list)', value: 'textOnly' },
+      ],
+      admin: {
+        description:
+          'Which side of the homepage News & Announcements section this appears in: the rotating photo carousel, or the plain headline list.',
+      },
+    },
   ],
 }
