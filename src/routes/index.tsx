@@ -192,12 +192,18 @@ function LatestNewsAndAnnouncements() {
     queryFn: fetchNews,
   });
   const articles = payloadNews.map(mapPayloadNews);
-  const headlineArticles = articles
-    .filter((a) => a.displayMode === "textOnly")
-    .slice(0, HEADLINE_COUNT);
+  const textOnlyArticles = articles.filter((a) => a.displayMode === "textOnly");
   const carouselArticles = articles
     .filter((a) => a.displayMode === "withImage" && a.image)
     .slice(0, CAROUSEL_COUNT);
+  // The left column prefers dedicated text-only entries, but a handful of
+  // those next to a full CAROUSEL_COUNT carousel reads as broken, not sparse
+  // -- so once those run out, pad with whatever's left (image entries too,
+  // shown here without their image) up to HEADLINE_COUNT.
+  const headlineArticles = [
+    ...textOnlyArticles,
+    ...articles.filter((a) => !textOnlyArticles.includes(a)),
+  ].slice(0, HEADLINE_COUNT);
 
   const hasHeadlines = headlineArticles.length > 0;
   const hasCarousel = carouselArticles.length > 0;
@@ -459,7 +465,7 @@ function Home() {
             hero: this is why the hero above no longer fills the screen. */}
         <section className="bg-gradient-to-b from-secondary/5 to-transparent">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-6">
-            <div className="flex items-center justify-between mb-3">
+            <div className="flex items-start justify-between mb-3">
               <div className="flex items-center gap-3">
                 <div
                   className="h-5 w-1.5 rounded-full"
@@ -468,7 +474,7 @@ function Home() {
                 <div>
                   <div
                     className={
-                      "uppercase tracking-[0.22em] text-[color:var(--brand-cyan)] font-semibold mb-0.5 " +
+                      "uppercase tracking-[0.22em] text-[color:var(--brand-cyan)] font-semibold mb-1.5 " +
                       (isArabic ? "text-[14px]" : "text-[12px]")
                     }
                   >
