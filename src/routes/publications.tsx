@@ -1,12 +1,12 @@
 import { createFileRoute, Outlet, useLocation } from "@tanstack/react-router";
 import {
+  Bookmark,
   BookOpen,
+  BookOpenText,
   ClipboardList,
-  FileStack,
   FileText,
   GraduationCap,
   Image,
-  Sticker,
   Video,
 } from "lucide-react";
 import { SectionHubPage, type SectionTile } from "@/components/SectionHub";
@@ -22,11 +22,11 @@ const TILES: SectionTile[] = [
   { labelKey: "publications.books", to: "/publications/books", icon: BookOpen },
   { labelKey: "publications.papers", to: "/publications/papers", icon: FileText },
   { labelKey: "publications.reports", to: "/publications/reports", icon: ClipboardList },
-  { labelKey: "publications.brochures", to: "/publications/brochures", icon: FileStack },
+  { labelKey: "publications.brochures", to: "/publications/brochures", icon: BookOpenText },
   { labelKey: "publications.theses", to: "/publications/theses", icon: GraduationCap },
   { labelKey: "publications.audiovisual", to: "/publications/audiovisual", icon: Video },
   { labelKey: "publications.posters", to: "/publications/posters", icon: Image },
-  { labelKey: "publications.stickers", to: "/publications/stickers", icon: Sticker },
+  { labelKey: "publications.stickers", to: "/publications/stickers", icon: Bookmark },
 ];
 
 // Having this file also makes it the layout route for every publications.*

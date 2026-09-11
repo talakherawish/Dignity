@@ -1,5 +1,5 @@
 import { createFileRoute, Outlet, useLocation } from "@tanstack/react-router";
-import { Bot, FlaskConical, Globe2, Lightbulb, Presentation } from "lucide-react";
+import { Bot, Globe2, Lightbulb, Search, Users } from "lucide-react";
 import { SectionHubPage, type SectionTile } from "@/components/SectionHub";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { SECTION_COLORS } from "@/lib/sectionColors";
@@ -20,8 +20,8 @@ export const Route = createFileRoute("/activities")({
 // activities.idea-factory.tsx and activities.task-force-ai.tsx -- until
 // their content shape is decided.
 const TILES: SectionTile[] = [
-  { labelKey: "activities.research", to: "/projects/research", icon: FlaskConical },
-  { labelKey: "activities.forums", to: "/activities/forums", icon: Presentation },
+  { labelKey: "activities.research", to: "/projects/research", icon: Search },
+  { labelKey: "activities.forums", to: "/activities/forums", icon: Users },
   { labelKey: "activities.windsor", to: "/activities/windsor-birzeit", icon: Globe2 },
   { labelKey: "activities.ideaFactory", to: "/activities/idea-factory", icon: Lightbulb },
   { labelKey: "activities.taskForceAI", to: "/activities/task-force-ai", icon: Bot },
