@@ -106,45 +106,47 @@ export function SiteFooter() {
           <h4 className="text-[11px] uppercase tracking-[0.18em] font-semibold text-white/35 mb-3">
             {t("footer.contact")}
           </h4>
-          <address className="not-italic space-y-1 text-xs text-white/60">
+          <address className="not-italic text-xs text-white/60 flex flex-wrap gap-x-10 gap-y-1">
             <a
               href={ADDRESS_MAP_LINK}
               target="_blank"
               rel="noopener noreferrer"
-              className="block hover:text-[color:var(--brand-magenta)] transition-colors"
+              className="block space-y-1 hover:text-[color:var(--brand-magenta)] transition-colors"
             >
               <p className="font-semibold text-white/75">{t("footer.university")}</p>
               <p>{t("footer.pobox")}</p>
               <p>{t("footer.zip")}</p>
             </a>
-            {/* Phone + fax share a row — they're short, and it keeps the block compact */}
-            <p className="flex flex-wrap gap-x-3">
+            <div className="space-y-1">
+              {/* Phone + fax share a row — they're short, and it keeps the block compact */}
+              <p className="flex flex-wrap gap-x-3">
+                <a
+                  href={PHONE_TEL_HREF}
+                  className="hover:text-[color:var(--brand-magenta)] transition-colors"
+                >
+                  {t("footer.phone")}
+                </a>
+                <span>{t("footer.fax")}</span>
+              </p>
               <a
-                href={PHONE_TEL_HREF}
-                className="hover:text-[color:var(--brand-magenta)] transition-colors"
+                href="mailto:Dignity@birzeit.edu"
+                className="block hover:text-[color:var(--brand-magenta)] transition-colors"
               >
-                {t("footer.phone")}
+                {t("footer.email")}
               </a>
-              <span>{t("footer.fax")}</span>
-            </p>
-            <a
-              href="mailto:Dignity@birzeit.edu"
-              className="block hover:text-[color:var(--brand-magenta)] transition-colors"
-            >
-              {t("footer.email")}
-            </a>
+            </div>
           </address>
         </div>
 
         {/* Stay in touch — subscribe + socials */}
-        <div className="flex items-start justify-between gap-6">
-          <div>
-            <h4 className="text-[11px] uppercase tracking-[0.18em] font-semibold text-white/35 mb-3">
-              {t("footer.subscribe")}
-            </h4>
-            <p className="text-xs text-white/55 leading-relaxed max-w-xs mb-3">
-              {t("footer.subscribe.desc")}
-            </p>
+        <div>
+          <h4 className="text-[11px] uppercase tracking-[0.18em] font-semibold text-white/35 mb-3">
+            {t("footer.subscribe")}
+          </h4>
+          <p className="text-xs text-white/55 leading-relaxed max-w-xs mb-3">
+            {t("footer.subscribe.desc")}
+          </p>
+          <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-2">
               {[
                 {
@@ -172,15 +174,15 @@ export function SiteFooter() {
                 </a>
               ))}
             </div>
+            <button
+              type="button"
+              onClick={() => setSubscribeOpen(true)}
+              className="shrink-0 inline-flex items-center gap-2 h-9 px-4 rounded-sm bg-[color:var(--brand-magenta)] text-white text-xs font-medium hover:bg-[color:var(--brand-magenta)]/80 transition-colors"
+            >
+              <Send className="h-3.5 w-3.5" />
+              {t("footer.subscribe.btn")}
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={() => setSubscribeOpen(true)}
-            className="self-center shrink-0 inline-flex items-center gap-2 h-9 px-4 rounded-sm bg-[color:var(--brand-magenta)] text-white text-xs font-medium hover:bg-[color:var(--brand-magenta)]/80 transition-colors"
-          >
-            <Send className="h-3.5 w-3.5" />
-            {t("footer.subscribe.btn")}
-          </button>
         </div>
       </div>
 
