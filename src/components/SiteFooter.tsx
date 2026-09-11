@@ -60,10 +60,12 @@ export function SiteFooter() {
         }}
       />
 
-      {/* Resources bar */}
+      {/* Top bar: copyright | resources | disclaimer & privacy */}
       <div className="border-b border-white/10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-          <div className="flex flex-wrap items-center justify-center gap-2">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-wrap items-center justify-between gap-3">
+          <p className="text-[12px] text-white/35 shrink-0">{t("footer.copyright")}</p>
+
+          <div className="flex flex-1 flex-wrap items-center justify-center gap-2 min-w-[220px]">
             <span className="text-[12px] uppercase tracking-[0.18em] text-white/35 font-semibold me-2">
               {t("footer.resources")}
             </span>
@@ -80,6 +82,21 @@ export function SiteFooter() {
               </a>
             ))}
           </div>
+
+          <nav className="flex items-center gap-4 shrink-0">
+            {[
+              { key: "footer.disclaimer" as const, href: "#" },
+              { key: "footer.privacy" as const, href: "#" },
+            ].map(({ key, href }) => (
+              <a
+                key={key}
+                href={href}
+                className="text-[12px] text-white/35 hover:text-white/60 transition-colors"
+              >
+                {t(key)}
+              </a>
+            ))}
+          </nav>
         </div>
       </div>
 
@@ -120,70 +137,50 @@ export function SiteFooter() {
         </div>
 
         {/* Stay in touch — subscribe + socials */}
-        <div>
-          <h4 className="text-[11px] uppercase tracking-[0.18em] font-semibold text-white/35 mb-3">
-            {t("footer.subscribe")}
-          </h4>
-          <p className="text-xs text-white/55 leading-relaxed max-w-xs mb-3">
-            {t("footer.subscribe.desc")}
-          </p>
+        <div className="flex items-start justify-between gap-6">
+          <div>
+            <h4 className="text-[11px] uppercase tracking-[0.18em] font-semibold text-white/35 mb-3">
+              {t("footer.subscribe")}
+            </h4>
+            <p className="text-xs text-white/55 leading-relaxed max-w-xs mb-3">
+              {t("footer.subscribe.desc")}
+            </p>
+            <div className="flex items-center gap-2">
+              {[
+                {
+                  Icon: Facebook,
+                  label: "Facebook",
+                  href: "https://www.facebook.com/dignity.initiative.bzu",
+                },
+                {
+                  Icon: Youtube,
+                  label: "YouTube",
+                  href: "https://www.youtube.com/@bzu-dignityinitiative6199",
+                },
+                { Icon: Mail, label: "Contact", href: "mailto:Dignity@birzeit.edu" },
+              ].map(({ Icon, label, href }) => (
+                <a
+                  key={label}
+                  href={href}
+                  aria-label={label}
+                  {...(href.startsWith("http")
+                    ? { target: "_blank", rel: "noopener noreferrer" }
+                    : {})}
+                  className="flex h-8 w-8 items-center justify-center rounded-full border border-white/15 text-white/45 hover:text-white hover:border-white/35 transition-all"
+                >
+                  <Icon className="h-3.5 w-3.5" />
+                </a>
+              ))}
+            </div>
+          </div>
           <button
             type="button"
             onClick={() => setSubscribeOpen(true)}
-            className="inline-flex items-center gap-2 h-9 px-4 rounded-sm bg-[color:var(--brand-magenta)] text-white text-xs font-medium hover:bg-[color:var(--brand-magenta)]/80 transition-colors"
+            className="self-center shrink-0 inline-flex items-center gap-2 h-9 px-4 rounded-sm bg-[color:var(--brand-magenta)] text-white text-xs font-medium hover:bg-[color:var(--brand-magenta)]/80 transition-colors"
           >
             <Send className="h-3.5 w-3.5" />
             {t("footer.subscribe.btn")}
           </button>
-
-          <div className="mt-4 flex items-center gap-2">
-            {[
-              {
-                Icon: Facebook,
-                label: "Facebook",
-                href: "https://www.facebook.com/dignity.initiative.bzu",
-              },
-              {
-                Icon: Youtube,
-                label: "YouTube",
-                href: "https://www.youtube.com/@bzu-dignityinitiative6199",
-              },
-              { Icon: Mail, label: "Contact", href: "mailto:Dignity@birzeit.edu" },
-            ].map(({ Icon, label, href }) => (
-              <a
-                key={label}
-                href={href}
-                aria-label={label}
-                {...(href.startsWith("http")
-                  ? { target: "_blank", rel: "noopener noreferrer" }
-                  : {})}
-                className="flex h-8 w-8 items-center justify-center rounded-full border border-white/15 text-white/45 hover:text-white hover:border-white/35 transition-all"
-              >
-                <Icon className="h-3.5 w-3.5" />
-              </a>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Copyright */}
-      <div className="border-t border-white/10 bg-black/20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-col sm:flex-row items-center justify-between gap-2">
-          <p className="text-[12px] text-white/35">{t("footer.copyright")}</p>
-          <nav className="flex items-center gap-4">
-            {[
-              { key: "footer.disclaimer" as const, href: "#" },
-              { key: "footer.privacy" as const, href: "#" },
-            ].map(({ key, href }) => (
-              <a
-                key={key}
-                href={href}
-                className="text-[12px] text-white/35 hover:text-white/60 transition-colors"
-              >
-                {t(key)}
-              </a>
-            ))}
-          </nav>
         </div>
       </div>
 
