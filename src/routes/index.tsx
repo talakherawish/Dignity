@@ -83,7 +83,7 @@ function mapPayloadToTeamPerson(p: PayloadParticipant): TeamPerson {
  * `displayMode: "textOnly"`). Nothing here rotates -- it's a plain index, not
  * a slideshow.
  */
-const HEADLINE_COUNT = 4;
+const HEADLINE_COUNT = 3;
 
 /** RIGHT half: the entries with a cover image, cycling on their own clock. */
 const CAROUSEL_COUNT = 6;
@@ -110,16 +110,16 @@ function HeadlineList({ articles }: { articles: Article[] }) {
           <Link
             to="/media/news"
             search={{ id: article.id }}
-            className="group flex gap-4 px-5 py-2.5 transition-colors hover:bg-secondary/30"
+            className="group flex gap-4 px-5 py-4 transition-colors hover:bg-secondary/30"
           >
-            <span className="font-serif text-sm tabular-nums text-muted-foreground/70">
+            <span className="font-serif text-base tabular-nums text-muted-foreground/70">
               {ordinal(index, isArabic)}
             </span>
             <span className="min-w-0">
-              <span className="block font-serif text-[15px] leading-snug text-primary transition-colors group-hover:text-[color:var(--brand-magenta)]">
+              <span className="block font-serif text-lg leading-snug text-primary transition-colors group-hover:text-[color:var(--brand-magenta)]">
                 {withItalicQuotes(getField(article, "title", lang))}
               </span>
-              <span className="mt-1.5 block text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
+              <span className="mt-2 block text-[11px] uppercase tracking-[0.16em] text-muted-foreground">
                 {getField(article, "date", lang)}
               </span>
             </span>
