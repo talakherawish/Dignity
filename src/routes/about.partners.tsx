@@ -6,7 +6,6 @@ import { extractText, fetchPartners } from "@/lib/payload";
 import { SECTION_COLORS } from "@/lib/sectionColors";
 
 export const Route = createFileRoute("/about/partners")({
-  head: () => ({ meta: [{ title: "Partners — Dignity" }] }),
   component: PartnersPage,
 });
 

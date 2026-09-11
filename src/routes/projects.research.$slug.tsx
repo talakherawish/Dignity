@@ -21,7 +21,6 @@ import {
 } from "@/lib/payload";
 
 export const Route = createFileRoute("/projects/research/$slug")({
-  head: () => ({ meta: [{ title: "Research — Dignity" }] }),
   component: ResearchDetailPage,
 });
 

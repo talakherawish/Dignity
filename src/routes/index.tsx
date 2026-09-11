@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { X, Mail } from "lucide-react";
 import { PageLayout } from "@/components/PageLayout";
+import { Reveal } from "@/components/Reveal";
 import { useLanguage, type TranslationKey } from "@/contexts/LanguageContext";
 import { getField, mapPayloadNews, type Article } from "@/data/articles";
 import { withItalicQuotes } from "@/lib/text";
@@ -17,7 +18,6 @@ import {
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Dignity — Academic Initiative" },
       {
         name: "description",
         content:
@@ -403,8 +403,12 @@ function Home() {
           fixed pixels, since the sections below are variable height. */}
       <div className="relative overflow-hidden">
         <div
-          className="absolute -top-24 -right-24 h-72 w-72 rounded-full opacity-20 blur-3xl pointer-events-none"
+          className="absolute -top-32 -right-32 h-96 w-96 rounded-full opacity-25 blur-3xl pointer-events-none"
           style={{ background: "var(--brand-cyan)" }}
+        />
+        <div
+          className="absolute top-4 -left-20 h-56 w-56 rounded-full opacity-15 blur-3xl pointer-events-none"
+          style={{ background: "var(--brand-magenta)" }}
         />
         <div
           className="absolute top-[60vh] -left-24 h-64 w-64 rounded-full opacity-15 blur-3xl pointer-events-none"
@@ -494,21 +498,27 @@ function Home() {
         {/* Pillars */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="grid gap-8 md:grid-cols-3">
-            {PILLARS.map((p) => (
-              <Link key={p.titleKey} to={p.to} className="group block">
-                <div className="border-t-2 pt-5" style={{ borderColor: p.color }}>
-                  <h3 className="font-serif text-xl text-primary mb-2 group-hover:text-accent transition-colors">
-                    {t(p.titleKey)}
-                  </h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{t(p.descKey)}</p>
-                </div>
-              </Link>
+            {PILLARS.map((p, idx) => (
+              <Reveal key={p.titleKey} delay={idx * 100}>
+                <Link to={p.to} className="group block">
+                  <div className="border-t-2 pt-5" style={{ borderColor: p.color }}>
+                    <h3 className="font-serif text-xl text-primary mb-2 group-hover:text-accent transition-colors">
+                      {t(p.titleKey)}
+                    </h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      {t(p.descKey)}
+                    </p>
+                  </div>
+                </Link>
+              </Reveal>
             ))}
           </div>
         </section>
 
         {/* Meet the Team */}
-        <TeamSection />
+        <Reveal>
+          <TeamSection />
+        </Reveal>
       </div>
     </PageLayout>
   );

@@ -7,7 +7,6 @@ import { fetchStickers, mediaUrl, type PayloadSticker } from "@/lib/payload";
 import { SECTION_COLORS } from "@/lib/sectionColors";
 
 export const Route = createFileRoute("/publications/stickers")({
-  head: () => ({ meta: [{ title: "Stickers & Bookmarks — Dignity" }] }),
   component: StickersPage,
 });
 

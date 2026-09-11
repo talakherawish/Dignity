@@ -5,7 +5,6 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { fetchWindsorDignity, formatDate, type PayloadActivity } from "@/lib/payload";
 import { SECTION_COLORS } from "@/lib/sectionColors";
 export const Route = createFileRoute("/activities/windsor-birzeit")({
-  head: () => ({ meta: [{ title: "The Windsor Birzeit Dignity Initiative — Dignity" }] }),
   component: WindsorPage,
 });
 

@@ -4,7 +4,6 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { SECTION_COLORS } from "@/lib/sectionColors";
 
 export const Route = createFileRoute("/activities/task-force-ai")({
-  head: () => ({ meta: [{ title: "Task Force on AI — Dignity" }] }),
   component: TaskForceAIPage,
 });
 

@@ -11,7 +11,6 @@ import { fetchClippings, mediaUrl, type PayloadClipping } from "@/lib/payload";
 import { SECTION_COLORS } from "@/lib/sectionColors";
 
 export const Route = createFileRoute("/media/clippings")({
-  head: () => ({ meta: [{ title: "Clippings — Dignity" }] }),
   component: ClippingsPage,
 });
 

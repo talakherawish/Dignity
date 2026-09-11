@@ -12,7 +12,6 @@ import { withItalicQuotes } from "@/lib/text";
 type NewsSearch = { id?: string };
 
 export const Route = createFileRoute("/media/news")({
-  head: () => ({ meta: [{ title: "News — Dignity" }] }),
   validateSearch: (search: Record<string, unknown>): NewsSearch => ({
     id: typeof search.id === "string" ? search.id : undefined,
   }),

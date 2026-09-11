@@ -7,7 +7,6 @@ import { fetchPhotos } from "@/lib/payload";
 import { SECTION_COLORS } from "@/lib/sectionColors";
 
 export const Route = createFileRoute("/media/photos")({
-  head: () => ({ meta: [{ title: "Photos — Dignity" }] }),
   component: PhotosPage,
 });
 

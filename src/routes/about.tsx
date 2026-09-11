@@ -6,7 +6,6 @@ import { extractListItems, extractText, fetchAboutInitiative } from "@/lib/paylo
 import { SECTION_COLORS } from "@/lib/sectionColors";
 
 export const Route = createFileRoute("/about")({
-  head: () => ({ meta: [{ title: "The Dignity Research Initiative — Dignity" }] }),
   component: AboutLayout,
 });
 

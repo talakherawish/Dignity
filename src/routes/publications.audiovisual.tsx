@@ -2,6 +2,5 @@ import { createFileRoute } from "@tanstack/react-router";
 import { PublicationsPage } from "@/components/PublicationsPage";
 
 export const Route = createFileRoute("/publications/audiovisual")({
-  head: () => ({ meta: [{ title: "Audiovisual — Dignity" }] }),
   component: () => <PublicationsPage type="audiovisual" titleKey="publications.audiovisual" />,
 });

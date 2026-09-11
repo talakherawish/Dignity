@@ -12,7 +12,6 @@ import {
 } from "@/lib/payload";
 import { SECTION_COLORS } from "@/lib/sectionColors";
 export const Route = createFileRoute("/projects/research/")({
-  head: () => ({ meta: [{ title: "Research — Dignity" }] }),
   component: ResearchPage,
 });
 

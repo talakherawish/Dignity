@@ -5,7 +5,6 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { SECTION_COLORS } from "@/lib/sectionColors";
 
 export const Route = createFileRoute("/activities")({
-  head: () => ({ meta: [{ title: "Activities — Dignity" }] }),
   component: ActivitiesLayout,
 });
 

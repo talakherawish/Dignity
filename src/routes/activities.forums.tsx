@@ -19,7 +19,6 @@ type FilterValue = "all" | ForumType;
 type ForumsSearch = { type?: FilterValue; open?: string };
 
 export const Route = createFileRoute("/activities/forums")({
-  head: () => ({ meta: [{ title: "Forums — Dignity" }] }),
   validateSearch: (search: Record<string, unknown>): ForumsSearch => {
     const forumTypes: readonly string[] = ["seminar", "roundtable", "workshop", "conference", "encounters"];
     return {
