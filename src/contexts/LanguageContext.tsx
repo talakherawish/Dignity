@@ -94,7 +94,6 @@ const translations = {
     "pillar.partnership": "Partnership",
     "pillar.partnership.desc":
       "Collaboration with institutions worldwide, including The Windsor Birzeit Dignity Initiative.",
-    "news.eyebrow": "Latest News",
     "news.title": "Latest News and Announcements",
     "news.viewAll": "View all →",
     "news.prev": "Previous",
@@ -283,7 +282,6 @@ const translations = {
     "pillar.dialogue.desc": "ندوات ومؤتمرات واجتماعات تجمع العلماء والممارسين.",
     "pillar.partnership": "الشراكة",
     "pillar.partnership.desc": "تعاون مع مؤسسات عالمية، بما فيها مبادرة وندسور بيرزيت للكرامة.",
-    "news.eyebrow": "آخر الأخبار",
     "news.title": "آخر الأخبار والإعلانات",
     "news.viewAll": "← عرض الكل",
     "news.prev": "السابق",

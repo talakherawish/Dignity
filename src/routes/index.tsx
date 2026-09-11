@@ -427,7 +427,7 @@ function Home() {
            * Temporary centered layout with the office photo dropped, while a
            * proper homepage design is worked out -- not the final treatment.
            */}
-          <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-3 pb-4 lg:pt-4 lg:pb-5 flex flex-col items-center text-center">
+          <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-3 pb-2 lg:pt-4 lg:pb-3 flex flex-col items-center text-center">
             <div
               className={
                 "uppercase tracking-[0.22em] text-[color:var(--brand-magenta)] font-semibold mb-2 " +
@@ -465,30 +465,20 @@ function Home() {
             hero: this is why the hero above no longer fills the screen. */}
         <section className="bg-gradient-to-b from-secondary/5 to-transparent">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-6">
-            <div className="flex items-start justify-between mb-3">
+            <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-3">
                 <div
                   className="h-5 w-1.5 rounded-full"
                   style={{ background: "var(--brand-cyan)" }}
                 />
-                <div>
-                  <div
-                    className={
-                      "uppercase tracking-[0.22em] text-[color:var(--brand-cyan)] font-semibold mb-1.5 " +
-                      (isArabic ? "text-[14px]" : "text-[12px]")
-                    }
-                  >
-                    {t("news.eyebrow")}
-                  </div>
-                  <h2
-                    className={
-                      "font-serif text-2xl text-primary " +
-                      (isArabic ? "lg:text-[2rem]" : "lg:text-[1.9rem]")
-                    }
-                  >
-                    {t("news.title")}
-                  </h2>
-                </div>
+                <h2
+                  className={
+                    "font-serif text-2xl text-primary " +
+                    (isArabic ? "lg:text-[2rem]" : "lg:text-[1.9rem]")
+                  }
+                >
+                  {t("news.title")}
+                </h2>
               </div>
               <Link
                 to="/media/news"
