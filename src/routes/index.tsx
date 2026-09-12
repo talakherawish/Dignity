@@ -118,7 +118,7 @@ function HeadlineList({ articles }: { articles: Article[] }) {
   if (articles.length === 0) return null;
 
   return (
-    <div className="flex h-full flex-col justify-center" dir={isArabic ? "rtl" : "ltr"}>
+    <div className="flex h-full min-h-0 flex-col justify-center" dir={isArabic ? "rtl" : "ltr"}>
       <ul className="divide-y divide-border">
         {articles.map((article, index) => (
           <li key={article.id}>
@@ -250,7 +250,7 @@ function LatestNewsAndAnnouncements() {
   // on the physical left under LTR) -- both in one layout, no per-language
   // branch needed.
   return (
-    <div className="grid h-full grid-cols-1 gap-8 md:grid-cols-2 md:gap-12" dir={isArabic ? "rtl" : "ltr"}>
+    <div className="grid h-full min-h-0 grid-cols-1 gap-8 md:grid-cols-2 md:gap-12" dir={isArabic ? "rtl" : "ltr"}>
       <ImageCarousel articles={carouselArticles} />
       <HeadlineList articles={headlineArticles} />
     </div>
@@ -467,73 +467,84 @@ function PostersShowcase() {
     // content that could need more room -- a hard cap is safe, and it has
     // to be the same reduced height as the hero and News, not a flat
     // 100dvh, or this section reads as taller than both of them.
-    <section className={`flex w-full flex-col justify-center bg-[#4b5563] py-6 md:py-8 ${FULL_SCREEN_SECTION}`}>
-      <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col justify-center px-4 sm:px-6 lg:px-8">
-        <div className="mb-4 flex shrink-0 flex-col items-center text-center md:mb-6">
-          <p className="mb-2 text-[12px] font-semibold uppercase tracking-[0.22em] text-white/80">
-            {t("posters.eyebrow")}
-          </p>
-          <h2 className="mb-4 font-serif text-2xl text-white md:text-3xl">{t("posters.title")}</h2>
-          <Link
-            to="/publications/posters"
-            className="inline-flex items-center gap-1.5 rounded-full border border-white/40 px-3.5 py-2 text-xs font-medium text-white transition-colors hover:bg-white/10"
-          >
-            {t("posters.viewAll")} <span aria-hidden>{isArabic ? "←" : "→"}</span>
-          </Link>
+    <section className={`flex w-full flex-col overflow-hidden bg-[#4b5563] py-6 md:py-8 ${FULL_SCREEN_SECTION}`}>
+      {/* Heading stays in a readable centered column like every other
+          section's text; the row below it deliberately breaks out of that
+          same max-w-7xl column to run full-bleed, edge to edge like the
+          hero video -- that contrast (boxed text, full-width media) is the
+          same pattern News & Announcements uses right above it. */}
+      <div className="mx-auto mb-4 flex w-full max-w-7xl shrink-0 flex-col items-center px-4 text-center sm:px-6 md:mb-6 lg:px-8">
+        <p className="mb-2 text-[12px] font-semibold uppercase tracking-[0.22em] text-white/80">
+          {t("posters.eyebrow")}
+        </p>
+        <h2 className="mb-4 font-serif text-2xl text-white md:text-3xl">{t("posters.title")}</h2>
+        <Link
+          to="/publications/posters"
+          className="inline-flex items-center gap-1.5 rounded-full border border-white/40 px-3.5 py-2 text-xs font-medium text-white transition-colors hover:bg-white/10"
+        >
+          {t("posters.viewAll")} <span aria-hidden>{isArabic ? "←" : "→"}</span>
+        </Link>
+      </div>
+
+      {/* min-h-0 is load-bearing, not decorative: without it, a flex child's
+          default min-height:auto refuses to shrink below its own content's
+          size -- and since the cards inside are sized off *this* box's
+          height, that turns into a feedback loop where the row inflates to
+          the posters' raw upload dimensions (hundreds of px taller than the
+          section), and the section's own layout has nowhere to put that
+          extra height except overflow above and below it. This exact bug is
+          what a user report of "posters are huge, overriding above and
+          below the grey background" traced back to. */}
+      <div className="relative min-h-0 w-full flex-1">
+        <div
+          ref={scrollerRef}
+          className="scrollbar-none flex h-full snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 sm:px-6 md:gap-6 lg:px-8"
+          dir={isArabic ? "rtl" : "ltr"}
+        >
+          {posters.map((poster) => (
+            <a
+              key={poster.id}
+              href={poster.fileUrl || poster.image}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group block h-full shrink-0 snap-start"
+            >
+              <div className="h-full aspect-[3/4] overflow-hidden rounded-2xl shadow-xl">
+                <img
+                  src={poster.image}
+                  alt={isArabic ? (poster.titleAr ?? poster.title) : poster.title}
+                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+              </div>
+            </a>
+          ))}
         </div>
 
-        {/* min-h-0 lets this shrink inside the fixed-height section instead
-            of forcing it taller; the cards below are sized off its height,
-            not off their own column width, so they can never overflow it. */}
-        <div className="relative min-h-0 flex-1">
-          <div
-            ref={scrollerRef}
-            className="scrollbar-none flex h-full snap-x snap-mandatory gap-5 overflow-x-auto pb-2 md:gap-6"
-            dir={isArabic ? "rtl" : "ltr"}
-          >
-            {posters.map((poster) => (
-              <a
-                key={poster.id}
-                href={poster.fileUrl || poster.image}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group block h-full shrink-0 snap-start"
-              >
-                <div className="h-full aspect-[3/4] overflow-hidden rounded-2xl shadow-xl">
-                  <img
-                    src={poster.image}
-                    alt={isArabic ? (poster.titleAr ?? poster.title) : poster.title}
-                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                </div>
-              </a>
-            ))}
-          </div>
-
-          {/* Discoverability nudge for pointer users who might not notice
-              the row scrolls -- touch/trackpad/shift+wheel already work
-              without these. */}
-          {posters.length > 1 && (
-            <>
-              <button
-                type="button"
-                onClick={() => nudge(-320)}
-                aria-label="Previous"
-                className="absolute -left-4 top-1/2 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white text-foreground shadow-lg transition-transform hover:scale-105 md:flex"
-              >
-                <ChevronLeft className="h-5 w-5" />
-              </button>
-              <button
-                type="button"
-                onClick={() => nudge(320)}
-                aria-label="Next"
-                className="absolute -right-4 top-1/2 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white text-foreground shadow-lg transition-transform hover:scale-105 md:flex"
-              >
-                <ChevronRight className="h-5 w-5" />
-              </button>
-            </>
-          )}
-        </div>
+        {/* Discoverability nudge for pointer users who might not notice
+            the row scrolls -- touch/trackpad/shift+wheel already work
+            without these. Inset (not offset outside the row) now that the
+            row itself runs to the screen edge -- there's no longer any
+            margin outside it to sit in. */}
+        {posters.length > 1 && (
+          <>
+            <button
+              type="button"
+              onClick={() => nudge(-320)}
+              aria-label="Previous"
+              className="absolute left-2 top-1/2 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white text-foreground shadow-lg transition-transform hover:scale-105 md:flex md:left-4"
+            >
+              <ChevronLeft className="h-5 w-5" />
+            </button>
+            <button
+              type="button"
+              onClick={() => nudge(320)}
+              aria-label="Next"
+              className="absolute right-2 top-1/2 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white text-foreground shadow-lg transition-transform hover:scale-105 md:right-4 md:flex"
+            >
+              <ChevronRight className="h-5 w-5" />
+            </button>
+          </>
+        )}
       </div>
     </section>
   );
@@ -656,32 +667,39 @@ function Home() {
         <section
           className={`flex w-full flex-col overflow-hidden bg-gradient-to-b from-secondary/5 to-transparent ${FULL_SCREEN_SECTION}`}
         >
-          <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col px-4 py-6 sm:px-6 md:py-8 lg:px-8">
-            <div className="mb-4 flex shrink-0 items-center justify-between md:mb-6">
-              <div className="flex items-center gap-3">
-                <div
-                  className="h-5 w-1.5 rounded-full"
-                  style={{ background: "var(--brand-cyan)" }}
-                />
-                <h2
-                  className={
-                    "font-serif text-2xl text-primary " +
-                    (isArabic ? "lg:text-[2rem]" : "lg:text-[1.9rem]")
-                  }
-                >
-                  {t("news.title")}
-                </h2>
-              </div>
-              <Link
-                to="/media/news"
-                className="text-xs font-medium text-muted-foreground hover:text-accent transition-colors tracking-wide"
+          {/* Heading in a readable centered column, same as the site's other
+              section headers; the row below breaks out of that column to
+              run full-bleed like the hero video and the Posters row below
+              it -- see this section's own py-6 wrapper for why. */}
+          <div className="mx-auto mb-4 flex w-full max-w-7xl shrink-0 items-center justify-between px-4 pt-6 sm:px-6 md:mb-6 md:pt-8 lg:px-8">
+            <div className="flex items-center gap-3">
+              <div
+                className="h-5 w-1.5 rounded-full"
+                style={{ background: "var(--brand-cyan)" }}
+              />
+              <h2
+                className={
+                  "font-serif text-2xl text-primary " +
+                  (isArabic ? "lg:text-[2rem]" : "lg:text-[1.9rem]")
+                }
               >
-                {t("news.viewAll")}
-              </Link>
+                {t("news.title")}
+              </h2>
             </div>
-            <div className="min-h-0 flex-1">
-              <LatestNewsAndAnnouncements />
-            </div>
+            <Link
+              to="/media/news"
+              className="text-xs font-medium text-muted-foreground hover:text-accent transition-colors tracking-wide"
+            >
+              {t("news.viewAll")}
+            </Link>
+          </div>
+          {/* min-h-0 is load-bearing here too -- see the identical comment
+              on the Posters section below. Without it, this flex child
+              refuses to shrink below the image carousel's own content
+              size, which is what let the whole row (and the section around
+              it) balloon well past one screen. */}
+          <div className="min-h-0 w-full flex-1 px-4 pb-6 sm:px-6 md:pb-8 lg:px-8">
+            <LatestNewsAndAnnouncements />
           </div>
         </section>
 
