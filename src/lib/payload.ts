@@ -118,10 +118,10 @@ export type PayloadPhoto = {
 
 export type PayloadClipping = {
   id: string;
-  title: string;
+  title?: string;
   titleAr?: string;
-  date: string;
-  image?: PayloadMedia;
+  date?: string;
+  image: PayloadMedia;
 };
 
 export type PayloadSticker = {

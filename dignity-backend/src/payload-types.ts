@@ -1136,12 +1136,12 @@ export interface Poster {
 export interface Clipping {
   id: string;
   /**
-   * The headline or name of the publication this clipping is from.
+   * Optional — the headline or name of the publication this clipping is from. Not shown on the site; only used to identify the clipping here in the admin.
    */
-  title: string;
-  titleAr: string;
-  date: string;
-  image?: (string | null) | Media;
+  title?: string | null;
+  titleAr?: string | null;
+  date?: string | null;
+  image: string | Media;
   /**
    * Which research line(s) this clipping is about. Shows up on that research line's page automatically.
    */

@@ -29,10 +29,9 @@ export const Clippings: CollectionConfig = {
     {
       name: 'title',
       type: 'text',
-      required: true,
       label: 'Title (English)',
       admin: {
-        description: 'The headline or name of the publication this clipping is from.',
+        description: 'Optional — the headline or name of the publication this clipping is from. Not shown on the site; only used to identify the clipping here in the admin.',
       },
     },
     {
@@ -44,12 +43,12 @@ export const Clippings: CollectionConfig = {
     {
       name: 'date',
       type: 'date',
-      required: true,
     },
     {
       name: 'image',
       type: 'upload',
       relationTo: 'media',
+      required: true,
       label: 'Scanned Image',
     },
     {

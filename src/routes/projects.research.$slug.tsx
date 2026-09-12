@@ -227,7 +227,7 @@ function ResearchDetailPage() {
                         <PublicationCard
                           key={c.id}
                           as="h4"
-                          title={c.title}
+                          title={c.title || (isArabic ? "قصاصة صحفية" : "Press clipping")}
                           titleAr={c.titleAr}
                           date={c.date}
                           previewUrl={mediaUrl(previewSource)}
