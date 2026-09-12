@@ -60,12 +60,21 @@ export function SiteFooter() {
         }}
       />
 
-      {/* Top bar: copyright | resources | disclaimer & privacy */}
+      {/* Top bar: copyright | resources | disclaimer & privacy.
+          Stacked in a single centered column on mobile -- three flex-wrap
+          items with justify-between look tidy at desktop widths, but once
+          the middle (resources) block is forced to its own wrapped line by
+          min-w-[220px], the other two land on opposite ends of a line that
+          no longer has a middle item to justify against, reading as
+          scattered rather than stacked. Row layout (and the resources
+          block's own flex-1 growth within it) only kicks back in at sm:. */}
       <div className="border-b border-white/10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-wrap items-center justify-between gap-3">
-          <p className="text-[12px] text-white/35 shrink-0">{t("footer.copyright")}</p>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-3 flex flex-col items-center gap-3 text-center sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:text-start">
+          <p className="text-[12px] text-white/35 shrink-0 order-3 sm:order-none">
+            {t("footer.copyright")}
+          </p>
 
-          <div className="flex flex-1 flex-wrap items-center justify-center gap-2 min-w-[220px]">
+          <div className="flex flex-wrap items-center justify-center gap-2 min-w-[220px] sm:flex-1">
             <span className="text-[12px] uppercase tracking-[0.18em] text-white/35 font-semibold me-2">
               {t("footer.resources")}
             </span>

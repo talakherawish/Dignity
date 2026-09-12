@@ -21,12 +21,13 @@ import {
  * Shared by every "one screen" section on this page: the hero, News &
  * Announcements, and Posters. The header is sticky and sits in normal flow
  * above whichever of these comes first -- it never overlaps them -- so
- * every one of these sections needs the same reduced height (100dvh minus
+ * every one of these sections needs the same reduced height (100svh minus
  * the header's own height at each breakpoint) to actually look like "one
  * screen" consistently, rather than the hero being shorter than the ones
  * that follow it by exactly the header's height.
  */
-const FULL_SCREEN_SECTION = "h-[calc(100dvh-62px)] sm:h-[calc(100dvh-82px)] lg:h-[calc(100dvh-103px)]";
+const FULL_SCREEN_SECTION =
+  "h-[calc(100svh-62px)] sm:h-[calc(100svh-82px)] lg:h-[calc(100svh-103px)]";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -348,14 +349,18 @@ function TeamSection() {
             {t("team.title")}
           </h2>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-2xl mx-auto">
+          {/* grid-cols-3 at every width, not just sm: and up -- a member
+              per row reads as a long vertical list on mobile, when three
+              small cards side by side (shrunk below sm:) fit the same
+              information in a fraction of the scroll. */}
+          <div className="grid grid-cols-3 gap-3 sm:gap-8 max-w-2xl mx-auto">
             {members.map((person, idx) => (
               <button
                 key={idx}
                 onClick={() => setSelected(person)}
                 className="group flex flex-col items-center text-center"
               >
-                <div className="h-28 w-28 rounded-full overflow-hidden bg-secondary shadow-sm ring-1 ring-border group-hover:ring-accent/40 transition-all duration-200">
+                <div className="h-16 w-16 sm:h-28 sm:w-28 rounded-full overflow-hidden bg-secondary shadow-sm ring-1 ring-border group-hover:ring-accent/40 transition-all duration-200">
                   {person.photo ? (
                     <img
                       src={person.photo}
@@ -363,18 +368,18 @@ function TeamSection() {
                       className="h-full w-full object-cover"
                     />
                   ) : (
-                    <div className="flex h-full w-full items-center justify-center font-serif text-2xl text-muted-foreground">
+                    <div className="flex h-full w-full items-center justify-center font-serif text-base sm:text-2xl text-muted-foreground">
                       {(lang === "ar" ? person.nameAr : person.name).charAt(0)}
                     </div>
                   )}
                 </div>
-                <div className="font-semibold text-sm text-primary mt-4 group-hover:text-accent transition-colors">
+                <div className="font-semibold text-xs sm:text-sm text-primary mt-2 sm:mt-4 group-hover:text-accent transition-colors">
                   {lang === "ar" ? person.nameAr : person.name}
                 </div>
-                <div className="text-xs text-muted-foreground mt-0.5">
+                <div className="text-[11px] sm:text-xs text-muted-foreground mt-0.5">
                   {lang === "ar" ? person.titleAr : person.title}
                 </div>
-                <div className="text-[11px] font-medium text-green-600 mt-1 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                <div className="hidden sm:block text-[11px] font-medium text-green-600 mt-1 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                   {isArabic ? "اضغط لقراءة المزيد" : "Click to read more"}
                 </div>
               </button>
@@ -450,12 +455,14 @@ function PostersShowcase() {
   };
 
   return (
-    // FULL_SCREEN_SECTION, not h-dvh: everything in this section is fixed
+    // FULL_SCREEN_SECTION, not h-svh: everything in this section is fixed
     // copy this component wrote itself, so there's no variable-length
     // content that could need more room -- a hard cap is safe, and it has
     // to be the same reduced height as the hero and News, not a flat
-    // 100dvh, or this section reads as taller than both of them.
-    <section className={`mt-8 flex w-full flex-col overflow-hidden bg-[#4b5563] py-6 md:mt-14 md:py-8 ${FULL_SCREEN_SECTION}`}>
+    // 100svh, or this section reads as taller than both of them.
+    <section
+      className={`mt-8 flex w-full flex-col overflow-hidden bg-[#4b5563] py-6 md:mt-14 md:py-8 ${FULL_SCREEN_SECTION}`}
+    >
       {/* Heading stays in a readable centered column like every other
           section's text; the row below it deliberately breaks out of that
           same max-w-7xl column to run full-bleed, edge to edge like the
@@ -464,7 +471,7 @@ function PostersShowcase() {
       <div className="mx-auto mb-4 flex w-full max-w-7xl shrink-0 flex-col items-center px-4 text-center sm:px-6 md:mb-6 lg:px-8">
         <h2 className="mb-4 font-serif text-2xl text-white md:text-3xl">{t("posters.title")}</h2>
         <Link
-          to="/publications/posters"
+          to="/publications"
           className="inline-flex items-center gap-1.5 rounded-full border border-white/40 px-3.5 py-2 text-xs font-medium text-white transition-colors hover:bg-white/10"
         >
           {t("posters.viewAll")} <span aria-hidden>{isArabic ? "←" : "→"}</span>
@@ -480,7 +487,13 @@ function PostersShowcase() {
           extra height except overflow above and below it. This exact bug is
           what a user report of "posters are huge, overriding above and
           below the grey background" traced back to. */}
-      <div className="relative min-h-0 w-full flex-1">
+      {/* max-h caps how tall (and by extension, since cards are h-full
+          aspect-[3/4], how wide) each poster card gets on mobile -- without
+          it, a card fills this row's full flex-1 height, which is most of
+          FULL_SCREEN_SECTION, making each card wider than a phone screen and
+          forcing a full scroll-and-a-half just to see one poster. Capped
+          only below sm: desktop already showed a sane size before this. */}
+      <div className="relative min-h-0 w-full flex-1 max-h-[42svh] sm:max-h-none">
         <div
           ref={scrollerRef}
           className="scrollbar-none flex h-full snap-x snap-mandatory gap-6 overflow-x-auto px-4 pb-2 sm:px-6 md:gap-8 lg:px-8"
@@ -537,11 +550,18 @@ function PostersShowcase() {
 
 // ── Hero: full-viewport looping video with text overlay ───────────────────
 /**
- * dvh, not vh: on mobile, 100vh includes the space behind the browser's
+ * svh, not vh: on mobile, 100vh includes the space behind the browser's
  * address bar, so a 100vh section is taller than what's actually visible and
- * the page loads pre-scrolled. dvh ("dynamic viewport height") tracks the
- * real visible area on every device -- it's what makes "one full screen"
- * mean the same thing on a phone as it does on a laptop.
+ * the page loads pre-scrolled. svh ("small viewport height") is pinned to
+ * the visible area with the address bar showing -- the smallest it ever is
+ * -- so the section never exceeds what's actually on screen.
+ *
+ * Not dvh: dvh tracks the address bar live, so it recalculates (and every
+ * dvh-sized section resizes with it -- video included) as the bar
+ * shows/hides mid-scroll on iOS/Android, which reads as the page jumping or
+ * the hero video "zooming". svh is fixed for the session, so nothing moves
+ * once it's laid out, at the one-time cost of a sliver of unused space below
+ * the fold once the address bar auto-hides.
  *
  * The header is sticky, not overlaid on top of the hero, so it still takes
  * up its own space above it (60px / 80px / 101px, plus its 1px accent bar
@@ -663,10 +683,7 @@ function Home() {
               it -- see this section's own py-6 wrapper for why. */}
           <div className="mx-auto mb-4 flex w-full max-w-7xl shrink-0 items-center justify-between px-4 pt-6 sm:px-6 md:mb-6 md:pt-8 lg:px-8">
             <div className="flex items-center gap-3">
-              <div
-                className="h-5 w-1.5 rounded-full"
-                style={{ background: "var(--brand-cyan)" }}
-              />
+              <div className="h-5 w-1.5 rounded-full" style={{ background: "var(--brand-cyan)" }} />
               <h2
                 className={
                   "font-serif text-2xl text-primary " +
