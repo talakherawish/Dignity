@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { ChevronLeft, ChevronRight, X, Mail } from "lucide-react";
 import { PageLayout } from "@/components/PageLayout";
 import { Reveal } from "@/components/Reveal";
-import { useLanguage, type TranslationKey } from "@/contexts/LanguageContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { getField, mapPayloadNews, type Article } from "@/data/articles";
 import { withItalicQuotes } from "@/lib/text";
 import {
@@ -40,28 +40,6 @@ export const Route = createFileRoute("/")({
   }),
   component: Home,
 });
-
-type PillarItem = { titleKey: TranslationKey; descKey: TranslationKey; to: string; color: string };
-const PILLARS: PillarItem[] = [
-  {
-    titleKey: "pillar.research",
-    descKey: "pillar.research.desc",
-    to: "/projects/research",
-    color: "var(--brand-cyan)",
-  },
-  {
-    titleKey: "pillar.dialogue",
-    descKey: "pillar.dialogue.desc",
-    to: "/activities/forums",
-    color: "var(--brand-magenta)",
-  },
-  {
-    titleKey: "pillar.partnership",
-    descKey: "pillar.partnership.desc",
-    to: "/about/partners",
-    color: "oklch(0.18 0.01 270)",
-  },
-];
 
 type TeamPerson = {
   name: string;
@@ -251,7 +229,7 @@ function LatestNewsAndAnnouncements() {
   // branch needed.
   return (
     <div
-      className="grid h-full min-h-0 grid-cols-1 gap-8 md:grid-cols-[3fr_2fr] md:gap-12"
+      className="grid h-full min-h-0 grid-cols-1 gap-8 md:grid-cols-[2fr_3fr] md:gap-12"
       dir={isArabic ? "rtl" : "ltr"}
     >
       <ImageCarousel articles={carouselArticles} />
@@ -712,26 +690,6 @@ function Home() {
               it) balloon well past one screen. */}
           <div className="min-h-0 w-full flex-1 px-4 pb-6 sm:px-6 md:pb-8 lg:px-8">
             <LatestNewsAndAnnouncements />
-          </div>
-        </section>
-
-        {/* Pillars */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="grid gap-8 md:grid-cols-3">
-            {PILLARS.map((p, idx) => (
-              <Reveal key={p.titleKey} delay={idx * 100}>
-                <Link to={p.to} className="group block">
-                  <div className="border-t-2 pt-5" style={{ borderColor: p.color }}>
-                    <h3 className="font-serif text-xl text-primary mb-2 group-hover:text-accent transition-colors">
-                      {t(p.titleKey)}
-                    </h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
-                      {t(p.descKey)}
-                    </p>
-                  </div>
-                </Link>
-              </Reveal>
-            ))}
           </div>
         </section>
 
