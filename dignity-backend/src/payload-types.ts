@@ -205,9 +205,10 @@ export interface Media {
   id: string;
   alt: string;
   /**
-   * Auto-generated preview image (page 1) for PDF uploads. Left empty for non-PDF files.
+   * Preview image shown on the site for PDF uploads (auto-generated from page 1). Left empty for non-PDF files. Pick a different image here to override the auto-generated one.
    */
   thumbnail?: (string | null) | Media;
+  thumbnailIsAuto?: boolean | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -1603,6 +1604,7 @@ export interface UsersSelect<T extends boolean = true> {
 export interface MediaSelect<T extends boolean = true> {
   alt?: T;
   thumbnail?: T;
+  thumbnailIsAuto?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;

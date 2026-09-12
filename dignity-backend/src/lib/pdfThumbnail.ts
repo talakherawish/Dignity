@@ -1,6 +1,6 @@
 import { after } from 'next/server'
 import sharp from 'sharp'
-import type { BasePayload, CollectionAfterChangeHook } from 'payload'
+import type { BasePayload, CollectionAfterChangeHook, CollectionBeforeChangeHook } from 'payload'
 
 // `pdf-to-img` is imported lazily (inside generateThumbnailForPdf) rather than
 // at module top-level. This file is pulled in by Media.ts -> payload.config.ts,
@@ -165,10 +165,49 @@ export async function generateThumbnailForPdf(
     id,
     data: {
       thumbnail: thumbnailDoc.id,
+      thumbnailIsAuto: true,
     },
+    // Marks this as our own programmatic write so trackManualThumbnail (the
+    // beforeChange hook on Media, below) doesn't see the `thumbnail` field
+    // changing and flip thumbnailIsAuto back to false.
+    context: { autoThumbnail: true },
   })
 
   return { thumbnailId: thumbnailDoc.id }
+}
+
+/**
+ * Marks a PDF's thumbnail as manually chosen the moment an editor sets it to
+ * anything other than what generateThumbnailForPdf itself just wrote — so
+ * that a later re-upload of the same PDF (see generatePdfThumbnail below)
+ * knows to leave it alone instead of silently replacing the editor's choice.
+ *
+ * Guarded by the `autoThumbnail` context flag: generateThumbnailForPdf's own
+ * `thumbnail` update also passes through this hook (same field, same
+ * collection), and without the guard it would immediately relabel its own
+ * auto-generated thumbnail as manual.
+ */
+export const trackManualThumbnail: CollectionBeforeChangeHook = ({
+  data,
+  operation,
+  originalDoc,
+  context,
+}) => {
+  if (operation !== 'update' || context?.autoThumbnail) return data
+  if (!('thumbnail' in data)) return data
+
+  const idOf = (value: unknown): string | undefined => {
+    if (!value) return undefined
+    return typeof value === 'object' && 'id' in (value as Record<string, unknown>)
+      ? String((value as { id: unknown }).id)
+      : String(value)
+  }
+
+  if (idOf(data.thumbnail) !== idOf(originalDoc?.thumbnail)) {
+    data.thumbnailIsAuto = false
+  }
+
+  return data
 }
 
 /**
@@ -239,6 +278,16 @@ export const generatePdfThumbnail: CollectionAfterChangeHook = async ({ doc, req
   // `payload.create` is filtered earlier by the mimeType check.)
   const sourceFileBuffer = req.file?.data
   if (!sourceFileBuffer) return doc
+
+  // An editor's manually-chosen thumbnail (see trackManualThumbnail above)
+  // sticks even when the PDF itself is later replaced — only a thumbnail
+  // this hook generated itself is fair game to silently swap out.
+  if (operation === 'update' && previousDoc?.thumbnail && previousDoc?.thumbnailIsAuto === false) {
+    req.payload.logger.info(
+      `Skipping PDF thumbnail regeneration for "${doc.filename}": a manually chosen thumbnail is set.`,
+    )
+    return doc
+  }
 
   // The thumbnail being replaced, so it can be cleaned up once its
   // replacement exists — otherwise every re-upload would strand an orphaned
