@@ -1,6 +1,6 @@
 # Dignity Initiative — Progress Report
-**Updated:** 2026-09-11  
-**Reporting period:** 2026-08-08 to 2026-09-11
+**Updated:** 2026-09-12  
+**Reporting period:** 2026-08-08 to 2026-09-12
 
 ---
 
@@ -40,6 +40,18 @@ Practical Support and Interns went through two wrong shapes before landing on th
 3. **Both undone.** Interns and Practical Support aren't sections of the site at all — they're roles a person can have, same as Researcher or Student. **They're now two more values in the Participants collection's `category` field** (`intern`, `practical_support`), matching the existing pattern exactly: a filter button on `/about/participants` (Interns / متدربات ومتدربون, Practical Support / الدعم العملي), a role-label fallback for a blank title (`PARTICIPANT_ROLE_LABEL`), and nothing added to the header nav at all. No new hub page, no new placeholder page, no new section color — all of that scaffolding from steps 1 and 2 was removed.
 
 Prompted by a side conversation about two documented historical interns (Carmen Claessen, KU Leuven, spring 2014; Peter Bagin, Lund University, fall 2013–winter 2014, both under the Windsor-Birzeit Dignity Initiative) — natural first entries once someone adds them as Participants with `category: intern`. Their source documents contain personal data (a Swedish personal ID number, personal email/phone) that should not go on the public site.
+
+---
+
+## Website work — 2026-09-12
+
+**Homepage hero replaced with a full-viewport looping background video.** The short text-only hero (in place since 2026-08-27, explicitly called "temporary... pending a proper homepage design" at the time) is gone, replaced with `/landing.mp4` — autoplaying, muted, looped, `playsInline`, and carrying no `controls` attribute at all, so there's no play/pause/progress bar to suppress in the first place rather than one that's merely hidden. A dark gradient overlay keeps the existing bilingual title/subtitle (now white) readable regardless of which video frame happens to be showing.
+
+**Section height made consistent across devices** — the actual problem behind "I can't find the standard height of a web page": `100vh` on mobile includes the space behind the browser's address bar, so a flat `100vh` hero loads pre-scrolled by a few dozen pixels. Switched to `dvh` (dynamic viewport height), which tracks the real visible area on any device. Second correction: the site header is sticky, not overlaid on top of the hero, so it still occupies its own space above it (60px/80px/101px at mobile/sm/lg, plus its 1px accent bar and 1px border) — the hero's height is `calc(100dvh - <header height>)` at each of those three breakpoints, so "header + hero" lands on exactly one screen instead of one screen plus a sliver.
+
+News & Announcements, no longer needing to fit above the fold, got its padding back (`py-14 md:py-20`); global `scroll-behavior: smooth` was added for the section-to-section feel. No sample/placeholder news items were hardcoded for this — the section already pulls real News entries from Payload, consistent with this site's standing "no fake fallback content" rule (see *2026-08-27*, Bug fixes, above).
+
+**Not yet addressed:** `landing.mp4` is 4.1MB and loads/loops on every homepage visit — fine for now, worth compressing if load time becomes a complaint.
 
 ---
 
@@ -508,7 +520,8 @@ echo "✓ Frontend deployed!"
 - **2026-09-10 05:49 → 09:15:** ~4 hours (raw commit span 3h26m; some commits recorded a +0800 local timezone instead of the usual +0300, converted here for a continuous timeline) — Task Force on AI/Idea Factory rebuilt three times before landing on a real Research-line-style content model with its own Payload collections; every Publications listing page grouped by research line; the Participants page renamed to Working Group with Authors/Speakers hidden by default; the homepage news split into a headline list and carousel, including a same-morning fix for a default value that had emptied the headline list. Extra time reflects three full schema rebuilds, each regenerating `payload-types.ts`.
 - **2026-09-11 10:06 → 13:20:** ~3½ hours — footer restructured into a new copyright/resources/legal plus contact/subscribe layout against a visual reference (three quick follow-up fixes the same session), homepage headline count and spacing tuned twice more, five section hub icons swapped, hero blur blobs and scroll-reveal added, and every page's browser tab unified to read just "Dignity".
 - **2026-09-11 17:29 → 17:31:** ~5 min (two admin-panel media uploads, auto-committed by the server the same way every upload is: Peter Bratsis's profile photo replaced a second time, and one new, unlabeled image added to the media library)
+- **2026-09-12:** ~1 hour, estimated (a single session, no multi-commit span to anchor) — homepage hero replaced with a full-viewport looping background video; height corrected to account for `dvh` vs `vh` and the sticky header's own height, so header+hero land on exactly one screen; News & Announcements padding restored now that it no longer needs to fit above the fold; global smooth-scroll added.
 
-**Total project time to date: at least ~148¼ hours.** `PROGRESS.md` logs ~80 hours for sessions 1–14 (2026-05-31 → 2026-08-03); this file adds ~68¼ hours for 2026-08-08 → 2026-09-11, now that the 08-09/08-10/08-11-daytime gaps are estimated from the work recorded above instead of left blank. The two logs are reconciled into this one master total.
+**Total project time to date: at least ~149¼ hours.** `PROGRESS.md` logs ~80 hours for sessions 1–14 (2026-05-31 → 2026-08-03); this file adds ~69¼ hours for 2026-08-08 → 2026-09-12, now that the 08-09/08-10/08-11-daytime gaps are estimated from the work recorded above instead of left blank. The two logs are reconciled into this one master total.
 
-**This is a floor, not a ceiling.** Neither log tracked hours in real time — both were reconstructed after the fact from commits and memory — and there is at least one confirmed dead zone in the reconstruction: **2026-06-07 to 2026-07-05, four weeks, zero commits in either the repo or `PROGRESS.md`.** Whatever happened in that window (and general day-to-day work throughout the project that never produced a commit or a note — research, dead ends, learning Payload/Oracle/nginx/certbot from scratch, coordinating with the team) isn't in the 148¼. The real number is higher; 148¼ is what's actually documented and traceable, not a cap on what was worked.
+**This is a floor, not a ceiling.** Neither log tracked hours in real time — both were reconstructed after the fact from commits and memory — and there is at least one confirmed dead zone in the reconstruction: **2026-06-07 to 2026-07-05, four weeks, zero commits in either the repo or `PROGRESS.md`.** Whatever happened in that window (and general day-to-day work throughout the project that never produced a commit or a note — research, dead ends, learning Payload/Oracle/nginx/certbot from scratch, coordinating with the team) isn't in the 149¼. The real number is higher; 149¼ is what's actually documented and traceable, not a cap on what was worked.
