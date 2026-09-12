@@ -7,7 +7,6 @@ import { Reveal } from "@/components/Reveal";
 import { useLanguage, type TranslationKey } from "@/contexts/LanguageContext";
 import { getField, mapPayloadNews, type Article } from "@/data/articles";
 import { withItalicQuotes } from "@/lib/text";
-import { SECTION_COLORS } from "@/lib/sectionColors";
 import {
   fetchNews,
   fetchParticipants,
@@ -115,16 +114,16 @@ function HeadlineList({ articles }: { articles: Article[] }) {
             <Link
               to="/media/news"
               search={{ id: article.id }}
-              className="group flex gap-5 px-2 py-6 transition-colors hover:bg-secondary/30 md:py-7"
+              className="group flex gap-4 px-2 py-3 transition-colors hover:bg-secondary/30 md:py-4"
             >
-              <span className="font-serif text-lg tabular-nums text-muted-foreground/70">
+              <span className="font-serif text-base tabular-nums text-muted-foreground/70">
                 {ordinal(index, isArabic)}
               </span>
               <span className="min-w-0">
-                <span className="block font-serif text-xl leading-snug text-primary transition-colors group-hover:text-[color:var(--brand-magenta)] md:text-2xl">
+                <span className="block font-serif text-lg leading-snug text-primary transition-colors group-hover:text-[color:var(--brand-magenta)] md:text-xl">
                   {withItalicQuotes(getField(article, "title", lang))}
                 </span>
-                <span className="mt-2 block text-xs uppercase tracking-[0.16em] text-muted-foreground">
+                <span className="mt-1.5 block text-[11px] uppercase tracking-[0.16em] text-muted-foreground">
                   {getField(article, "date", lang)}
                 </span>
               </span>
@@ -452,13 +451,18 @@ function PostersShowcase() {
   };
 
   return (
-    <section className="py-16 md:py-20" style={{ background: SECTION_COLORS.publications }}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="mb-10 flex flex-col items-center text-center">
+    // h-dvh, not min-h-dvh: unlike News's article titles, everything in
+    // this section is fixed copy this component wrote itself, so there's
+    // no variable-length content that could need more than one screen --
+    // a hard cap is safe here and is what keeps the whole section visible
+    // without scrolling.
+    <section className="flex h-dvh w-full flex-col justify-center bg-[#4b5563] py-6 md:py-8">
+      <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col justify-center px-4 sm:px-6 lg:px-8">
+        <div className="mb-4 flex shrink-0 flex-col items-center text-center md:mb-6">
           <p className="mb-2 text-[12px] font-semibold uppercase tracking-[0.22em] text-white/80">
             {t("posters.eyebrow")}
           </p>
-          <h2 className="mb-5 font-serif text-2xl text-white md:text-3xl">{t("posters.title")}</h2>
+          <h2 className="mb-4 font-serif text-2xl text-white md:text-3xl">{t("posters.title")}</h2>
           <Link
             to="/publications/posters"
             className="inline-flex items-center gap-1.5 rounded-full border border-white/40 px-3.5 py-2 text-xs font-medium text-white transition-colors hover:bg-white/10"
@@ -467,10 +471,13 @@ function PostersShowcase() {
           </Link>
         </div>
 
-        <div className="relative">
+        {/* min-h-0 lets this shrink inside the fixed-height section instead
+            of forcing it taller; the cards below are sized off its height,
+            not off their own column width, so they can never overflow it. */}
+        <div className="relative min-h-0 flex-1">
           <div
             ref={scrollerRef}
-            className="scrollbar-none flex snap-x snap-mandatory gap-5 overflow-x-auto pb-2 md:gap-6"
+            className="scrollbar-none flex h-full snap-x snap-mandatory gap-5 overflow-x-auto pb-2 md:gap-6"
             dir={isArabic ? "rtl" : "ltr"}
           >
             {posters.map((poster) => (
@@ -479,9 +486,9 @@ function PostersShowcase() {
                 href={poster.fileUrl || poster.image}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group block w-[70%] shrink-0 snap-start sm:w-[45%] md:w-[30%] lg:w-[23%]"
+                className="group block h-full shrink-0 snap-start"
               >
-                <div className="aspect-[3/4] overflow-hidden rounded-2xl shadow-xl">
+                <div className="h-full aspect-[3/4] overflow-hidden rounded-2xl shadow-xl">
                   <img
                     src={poster.image}
                     alt={isArabic ? (poster.titleAr ?? poster.title) : poster.title}
@@ -625,14 +632,15 @@ function Home() {
         />
 
         {/* News & Announcements — its own full-screen section right after
-            the hero video, sized to match it (min-h-dvh rather than a hard
-            h-dvh: this content is variable-length editorial text, so it can
-            grow past one screen on a very short viewport instead of
-            clipping) on a white background with the site's usual
-            cyan/magenta accents. */}
-        <section className="flex min-h-dvh w-full flex-col bg-gradient-to-b from-secondary/5 to-transparent">
-          <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col px-4 py-10 sm:px-6 md:py-14 lg:px-8">
-            <div className="mb-6 flex shrink-0 items-center justify-between md:mb-10">
+            the hero video, sized to match it. h-dvh is a hard cap (same
+            reasoning as the Posters section below): overflow-hidden is the
+            backstop in case a real editor-typed headline is ever long
+            enough to want more room than that -- it loses a sliver of
+            padding on the very last row rather than pushing the section,
+            and everything after it, past one screen. */}
+        <section className="flex h-dvh w-full flex-col overflow-hidden bg-gradient-to-b from-secondary/5 to-transparent">
+          <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col px-4 py-6 sm:px-6 md:py-8 lg:px-8">
+            <div className="mb-4 flex shrink-0 items-center justify-between md:mb-6">
               <div className="flex items-center gap-3">
                 <div
                   className="h-5 w-1.5 rounded-full"
