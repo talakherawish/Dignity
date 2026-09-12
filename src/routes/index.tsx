@@ -423,12 +423,6 @@ function HeroVideo() {
         controlsList="nodownload noremoteplayback nofullscreen"
         aria-hidden="true"
       />
-      {/* Darkens the video enough for white text to stay readable regardless
-          of what frame is showing, without hiding the footage entirely. */}
-      <div
-        aria-hidden="true"
-        className="absolute inset-0 bg-gradient-to-b from-black/55 via-black/25 to-black/60"
-      />
       <div className="relative z-10 flex h-full flex-col items-center justify-center px-4 text-center">
         <p className="uppercase tracking-[0.22em] text-white/90 font-semibold mb-3 text-[12px] md:text-[13px]">
           {t("hero.eyebrow")}
