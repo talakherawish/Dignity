@@ -17,6 +17,17 @@ import {
   type PayloadPublication,
 } from "@/lib/payload";
 
+/**
+ * Shared by every "one screen" section on this page: the hero, News &
+ * Announcements, and Posters. The header is sticky and sits in normal flow
+ * above whichever of these comes first -- it never overlaps them -- so
+ * every one of these sections needs the same reduced height (100dvh minus
+ * the header's own height at each breakpoint) to actually look like "one
+ * screen" consistently, rather than the hero being shorter than the ones
+ * that follow it by exactly the header's height.
+ */
+const FULL_SCREEN_SECTION = "h-[calc(100dvh-62px)] sm:h-[calc(100dvh-82px)] lg:h-[calc(100dvh-103px)]";
+
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
@@ -451,12 +462,12 @@ function PostersShowcase() {
   };
 
   return (
-    // h-dvh, not min-h-dvh: unlike News's article titles, everything in
-    // this section is fixed copy this component wrote itself, so there's
-    // no variable-length content that could need more than one screen --
-    // a hard cap is safe here and is what keeps the whole section visible
-    // without scrolling.
-    <section className="flex h-dvh w-full flex-col justify-center bg-[#4b5563] py-6 md:py-8">
+    // FULL_SCREEN_SECTION, not h-dvh: everything in this section is fixed
+    // copy this component wrote itself, so there's no variable-length
+    // content that could need more room -- a hard cap is safe, and it has
+    // to be the same reduced height as the hero and News, not a flat
+    // 100dvh, or this section reads as taller than both of them.
+    <section className={`flex w-full flex-col justify-center bg-[#4b5563] py-6 md:py-8 ${FULL_SCREEN_SECTION}`}>
       <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col justify-center px-4 sm:px-6 lg:px-8">
         <div className="mb-4 flex shrink-0 flex-col items-center text-center md:mb-6">
           <p className="mb-2 text-[12px] font-semibold uppercase tracking-[0.22em] text-white/80">
@@ -542,12 +553,15 @@ function PostersShowcase() {
  * Subtracting that from the hero's height is what makes "header + hero"
  * land on exactly one screen instead of one screen plus a sliver -- without
  * it, every page load would open with the hero already cut off by a few
- * dozen pixels.
+ * dozen pixels. Every other "one screen" section on this page (News,
+ * Posters) shares this same FULL_SCREEN_SECTION height for exactly that
+ * reason -- they'd otherwise end up taller than the hero by the header's
+ * height, since only the hero sits directly under it.
  */
 function HeroVideo() {
   const { t, isArabic } = useLanguage();
   return (
-    <section className="relative h-[calc(100dvh-62px)] sm:h-[calc(100dvh-82px)] lg:h-[calc(100dvh-103px)] w-full overflow-hidden bg-black">
+    <section className={`relative w-full overflow-hidden bg-black ${FULL_SCREEN_SECTION}`}>
       <video
         className="absolute inset-0 h-full w-full object-cover"
         src="/landing.mp4"
@@ -632,13 +646,16 @@ function Home() {
         />
 
         {/* News & Announcements — its own full-screen section right after
-            the hero video, sized to match it. h-dvh is a hard cap (same
-            reasoning as the Posters section below): overflow-hidden is the
-            backstop in case a real editor-typed headline is ever long
-            enough to want more room than that -- it loses a sliver of
+            the hero video, sized to match it exactly (FULL_SCREEN_SECTION,
+            the same reduced height the hero uses, not a flat 100dvh -- see
+            that constant's own comment). It's a hard cap: overflow-hidden
+            is the backstop in case a real editor-typed headline is ever
+            long enough to want more room than that -- it loses a sliver of
             padding on the very last row rather than pushing the section,
             and everything after it, past one screen. */}
-        <section className="flex h-dvh w-full flex-col overflow-hidden bg-gradient-to-b from-secondary/5 to-transparent">
+        <section
+          className={`flex w-full flex-col overflow-hidden bg-gradient-to-b from-secondary/5 to-transparent ${FULL_SCREEN_SECTION}`}
+        >
           <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col px-4 py-6 sm:px-6 md:py-8 lg:px-8">
             <div className="mb-4 flex shrink-0 items-center justify-between md:mb-6">
               <div className="flex items-center gap-3">
