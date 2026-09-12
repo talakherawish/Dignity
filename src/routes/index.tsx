@@ -18,16 +18,26 @@ import {
 } from "@/lib/payload";
 
 /**
- * Shared by every "one screen" section on this page: the hero, News &
- * Announcements, and Posters. The header is sticky and sits in normal flow
- * above whichever of these comes first -- it never overlaps them -- so
- * every one of these sections needs the same reduced height (100svh minus
- * the header's own height at each breakpoint) to actually look like "one
- * screen" consistently, rather than the hero being shorter than the ones
- * that follow it by exactly the header's height.
+ * Shared by every "one screen" section on this page: the hero and News &
+ * Announcements. The header is sticky and sits in normal flow above
+ * whichever of these comes first -- it never overlaps them -- so both
+ * sections need the same reduced height (100svh minus the header's own
+ * height at each breakpoint) to actually look like "one screen"
+ * consistently, rather than the hero being shorter than News by exactly
+ * the header's height.
  */
 const FULL_SCREEN_SECTION =
   "h-[calc(100svh-62px)] sm:h-[calc(100svh-82px)] lg:h-[calc(100svh-103px)]";
+
+/**
+ * Posters used to share FULL_SCREEN_SECTION too, forcing a full screen of
+ * height on mobile even after the cards themselves were capped much
+ * shorter (see the max-h comment below) -- leaving a slab of dead grey
+ * space under the row. It only needs to match the hero/News height from
+ * sm: up, where the cards are sized to fill it; on mobile it's auto,
+ * content-sized by the heading and the (now short) card row.
+ */
+const POSTERS_SECTION_HEIGHT = "sm:h-[calc(100svh-82px)] lg:h-[calc(100svh-103px)]";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -228,21 +238,27 @@ function LatestNewsAndAnnouncements() {
   // on the physical right under RTL) and on the left in English (col 1 sits
   // on the physical left under LTR) -- both in one layout, no per-language
   // branch needed.
-  // grid-rows-2 (not the grid-cols-1 default of two auto rows) is load-
-  // bearing on mobile: ImageCarousel's every child is absolutely
-  // positioned, so it has no in-flow content to size an "auto" row against
-  // -- its own h-full then resolves to ~0, and the whole card collapses to
-  // a sliver showing only the caption text peeking out. Splitting the
-  // stack into two explicit 1fr rows gives it a real height to fill.
-  // md:grid-rows-1 is a no-op today (the 2-column layout only ever had one
-  // row) but keeps that resolved rather than implicit.
+  // flex-col on mobile, not a grid-rows-2 stack: ImageCarousel's every
+  // child is absolutely positioned, so it has no in-flow content to size a
+  // row against. A CSS grid track (even an explicit 1fr one) sizing a
+  // percentage-height child with no intrinsic content is exactly the kind
+  // of case browsers disagree on -- Safari was letting the image ignore
+  // its row and spill into the headline list below it. Two flex children
+  // with flex-1 min-h-0 get an unambiguous, well-supported 50/50 split
+  // instead. md: switches back to the original grid (a single row, two
+  // columns), where flex-1 has no effect and every child's h-full instead
+  // resolves against that row like before.
   return (
     <div
-      className="grid h-full min-h-0 grid-cols-1 grid-rows-2 gap-8 md:grid-cols-[2fr_3fr] md:grid-rows-1 md:gap-12"
+      className="flex h-full min-h-0 flex-col gap-8 md:grid md:grid-cols-[2fr_3fr] md:gap-12"
       dir={isArabic ? "rtl" : "ltr"}
     >
-      <ImageCarousel articles={carouselArticles} />
-      <HeadlineList articles={headlineArticles} />
+      <div className="min-h-0 flex-1 md:contents">
+        <ImageCarousel articles={carouselArticles} />
+      </div>
+      <div className="min-h-0 flex-1 md:contents">
+        <HeadlineList articles={headlineArticles} />
+      </div>
     </div>
   );
 }
@@ -463,13 +479,14 @@ function PostersShowcase() {
   };
 
   return (
-    // FULL_SCREEN_SECTION, not h-svh: everything in this section is fixed
-    // copy this component wrote itself, so there's no variable-length
-    // content that could need more room -- a hard cap is safe, and it has
-    // to be the same reduced height as the hero and News, not a flat
-    // 100svh, or this section reads as taller than both of them.
+    // POSTERS_SECTION_HEIGHT, not FULL_SCREEN_SECTION: from sm: up this
+    // still matches the hero/News height exactly, since the cards there
+    // are sized to fill it. On mobile the cards are capped well short of a
+    // full screen (see the max-h comment below), so forcing the section
+    // itself to a full screen would just leave dead space beneath them --
+    // auto lets it size to its own (short) content instead.
     <section
-      className={`mt-8 flex w-full flex-col overflow-hidden bg-[#4b5563] py-6 md:mt-14 md:py-8 ${FULL_SCREEN_SECTION}`}
+      className={`mt-8 flex w-full flex-col overflow-hidden bg-[#4b5563] py-6 md:mt-14 md:py-8 ${POSTERS_SECTION_HEIGHT}`}
     >
       {/* Heading stays in a readable centered column like every other
           section's text; the row below it deliberately breaks out of that
@@ -586,11 +603,29 @@ function PostersShowcase() {
  */
 function HeroVideo() {
   const { t, isArabic } = useLanguage();
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  // Belt-and-suspenders alongside the autoPlay attribute: some mobile
+  // browsers (and some webviews) don't honor autoPlay reliably even for a
+  // muted video, but do accept an explicit play() call once the element has
+  // mounted. This can't do anything about iOS Low Power Mode specifically --
+  // that's an OS-level "no auto-playing video" policy the page has no way
+  // to override, and the native play button it shows instead is WebKit's
+  // own UI, not ours. The .catch is there because play() rejects in exactly
+  // that case, and an unhandled rejection would otherwise be noise in the
+  // console for every visitor who has it on.
+  useEffect(() => {
+    videoRef.current?.play().catch(() => {});
+  }, []);
+
   return (
     <section className={`relative w-full overflow-hidden bg-black ${FULL_SCREEN_SECTION}`}>
       <video
+        ref={videoRef}
         className="absolute inset-0 h-full w-full object-cover"
         src="/landing.mp4"
+        poster="/landing-poster.jpg"
+        preload="auto"
         autoPlay
         muted
         loop

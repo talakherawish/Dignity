@@ -74,18 +74,23 @@ export function SiteFooter() {
             {t("footer.copyright")}
           </p>
 
-          <div className="flex flex-wrap items-center justify-center gap-2 min-w-[220px] sm:flex-1">
-            <span className="text-[12px] uppercase tracking-[0.18em] text-white/35 font-semibold me-2">
+          {/* Plain text links on mobile -- same footprint as Disclaimer /
+              Privacy beside them, so this stays a compact single row
+              instead of two chunky icon-buttons forcing a wrap. The
+              bordered pill-with-icon treatment only kicks in from sm: up,
+              where there's room for it. */}
+          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 sm:gap-2 min-w-[220px] sm:flex-1">
+            <span className="text-[11px] sm:text-[12px] uppercase tracking-[0.18em] text-white/35 font-semibold sm:me-2">
               {t("footer.resources")}
             </span>
             {RESOURCES.map(({ key, Icon }) => (
               <a
                 key={key}
                 href="#"
-                className="group flex items-center gap-2 px-3.5 py-2 rounded-sm bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all duration-200"
+                className="group flex items-center gap-1.5 rounded-sm text-white/60 transition-all duration-200 hover:text-white/90 sm:gap-2 sm:border sm:border-white/10 sm:bg-white/5 sm:px-3.5 sm:py-2 sm:hover:border-white/20 sm:hover:bg-white/10"
               >
-                <Icon className="h-3.5 w-3.5 text-white/55 group-hover:text-[color:var(--brand-magenta)] transition-colors shrink-0" />
-                <span className="text-xs font-medium text-white/60 group-hover:text-white/90 transition-colors whitespace-nowrap">
+                <Icon className="hidden h-3.5 w-3.5 shrink-0 text-white/55 transition-colors group-hover:text-[color:var(--brand-magenta)] sm:block" />
+                <span className="text-[12px] font-medium transition-colors whitespace-nowrap sm:text-xs">
                   {t(key)}
                 </span>
               </a>
