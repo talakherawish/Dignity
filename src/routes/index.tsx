@@ -1,18 +1,21 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { X, Mail } from "lucide-react";
+import { ChevronLeft, ChevronRight, X, Mail } from "lucide-react";
 import { PageLayout } from "@/components/PageLayout";
 import { Reveal } from "@/components/Reveal";
 import { useLanguage, type TranslationKey } from "@/contexts/LanguageContext";
 import { getField, mapPayloadNews, type Article } from "@/data/articles";
 import { withItalicQuotes } from "@/lib/text";
+import { SECTION_COLORS } from "@/lib/sectionColors";
 import {
   fetchNews,
   fetchParticipants,
+  fetchPublications,
   mediaUrl,
   PARTICIPANT_ROLE_LABEL,
   type PayloadParticipant,
+  type PayloadPublication,
 } from "@/lib/payload";
 
 export const Route = createFileRoute("/")({
@@ -79,13 +82,14 @@ function mapPayloadToTeamPerson(p: PayloadParticipant): TeamPerson {
 
 // ── Latest news and announcements: two independent halves ─────────────────
 /**
- * LEFT half: a static, numbered list of the imageless entries (Payload's
+ * The text list: a static, numbered list of the imageless entries (Payload's
  * `displayMode: "textOnly"`). Nothing here rotates -- it's a plain index, not
- * a slideshow.
+ * a slideshow. Which physical side it renders on depends on language --
+ * see LatestNewsAndAnnouncements below.
  */
-const HEADLINE_COUNT = 3;
+const HEADLINE_COUNT = 4;
 
-/** RIGHT half: the entries with a cover image, cycling on their own clock. */
+/** The other half: the entries with a cover image, cycling on their own clock. */
 const CAROUSEL_COUNT = 6;
 const CAROUSEL_INTERVAL_MS = 5000;
 
@@ -104,29 +108,31 @@ function HeadlineList({ articles }: { articles: Article[] }) {
   if (articles.length === 0) return null;
 
   return (
-    <ul className="divide-y divide-border" dir={isArabic ? "rtl" : "ltr"}>
-      {articles.map((article, index) => (
-        <li key={article.id}>
-          <Link
-            to="/media/news"
-            search={{ id: article.id }}
-            className="group flex gap-4 px-5 py-4 transition-colors hover:bg-secondary/30"
-          >
-            <span className="font-serif text-base tabular-nums text-muted-foreground/70">
-              {ordinal(index, isArabic)}
-            </span>
-            <span className="min-w-0">
-              <span className="block font-serif text-lg leading-snug text-primary transition-colors group-hover:text-[color:var(--brand-magenta)]">
-                {withItalicQuotes(getField(article, "title", lang))}
+    <div className="flex h-full flex-col justify-center" dir={isArabic ? "rtl" : "ltr"}>
+      <ul className="divide-y divide-border">
+        {articles.map((article, index) => (
+          <li key={article.id}>
+            <Link
+              to="/media/news"
+              search={{ id: article.id }}
+              className="group flex gap-5 px-2 py-6 transition-colors hover:bg-secondary/30 md:py-7"
+            >
+              <span className="font-serif text-lg tabular-nums text-muted-foreground/70">
+                {ordinal(index, isArabic)}
               </span>
-              <span className="mt-2 block text-[11px] uppercase tracking-[0.16em] text-muted-foreground">
-                {getField(article, "date", lang)}
+              <span className="min-w-0">
+                <span className="block font-serif text-xl leading-snug text-primary transition-colors group-hover:text-[color:var(--brand-magenta)] md:text-2xl">
+                  {withItalicQuotes(getField(article, "title", lang))}
+                </span>
+                <span className="mt-2 block text-xs uppercase tracking-[0.16em] text-muted-foreground">
+                  {getField(article, "date", lang)}
+                </span>
               </span>
-            </span>
-          </Link>
-        </li>
-      ))}
-    </ul>
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
 
@@ -158,7 +164,7 @@ function ImageCarousel({ articles }: { articles: Article[] }) {
       search={{ id: article.id }}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
-      className="group relative block h-full min-h-[190px] overflow-hidden"
+      className="group relative block h-full overflow-hidden"
     >
       <img
         key={article.id}
@@ -218,19 +224,25 @@ function LatestNewsAndAnnouncements() {
   }
   if (hasCarousel && !hasHeadlines) {
     return (
-      <div className="overflow-hidden rounded-sm border border-border">
+      <div className="h-full overflow-hidden rounded-sm border border-border">
         <ImageCarousel articles={carouselArticles} />
       </div>
     );
   }
 
+  // The image and the text list are meant to sit on fixed physical sides
+  // per the client's request -- image on the right / text on the left in
+  // Arabic, mirrored in English -- rather than following whichever side
+  // "comes first" in the reading direction. A CSS grid under dir="rtl"
+  // already mirrors column order on its own, so putting the image first in
+  // source order here is what lands it on the right in Arabic (col 1 sits
+  // on the physical right under RTL) and on the left in English (col 1 sits
+  // on the physical left under LTR) -- both in one layout, no per-language
+  // branch needed.
   return (
-    <div
-      className="grid grid-cols-1 md:min-h-[190px] md:grid-cols-2"
-      dir={isArabic ? "rtl" : "ltr"}
-    >
-      <HeadlineList articles={headlineArticles} />
+    <div className="grid h-full grid-cols-1 gap-8 md:grid-cols-2 md:gap-12" dir={isArabic ? "rtl" : "ltr"}>
       <ImageCarousel articles={carouselArticles} />
+      <HeadlineList articles={headlineArticles} />
     </div>
   );
 }
@@ -392,6 +404,123 @@ function TeamSection() {
   );
 }
 
+// ── Posters showcase: a horizontally-scrollable teaser for /publications/posters
+const POSTER_COUNT = 10;
+
+/** Same preview-source fallback PublicationsPage uses: a real image if the
+ * upload is one, otherwise the auto-generated PDF page-1 thumbnail. */
+function posterPreviewUrl(item: PayloadPublication): string {
+  const imageIsPhoto = item.image?.mimeType?.startsWith("image/") ?? false;
+  const previewSource = imageIsPhoto ? item.image : (item.image?.thumbnail ?? item.file?.thumbnail);
+  return previewSource ? mediaUrl(previewSource) : "";
+}
+
+function PostersShowcase() {
+  const { t, isArabic } = useLanguage();
+  const scrollerRef = useRef<HTMLDivElement>(null);
+
+  // No staleTime: same reasoning as every other homepage query -- a newly
+  // published poster should show up here on the next load, not later.
+  const { data: payloadPosters = [] } = useQuery({
+    queryKey: ["publications", "posters"],
+    queryFn: () => fetchPublications("posters"),
+  });
+
+  const posters = payloadPosters
+    .map((item) => ({
+      id: item.id,
+      title: item.title,
+      titleAr: item.titleAr,
+      image: posterPreviewUrl(item),
+      fileUrl: mediaUrl(item.file),
+    }))
+    .filter((p) => p.image)
+    .slice(0, POSTER_COUNT);
+
+  // Payload is the only source, same as everywhere else on this page -- no
+  // posters published yet means no section, not a row of empty frames.
+  if (posters.length === 0) return null;
+
+  // Physical, not logical: "left" always nudges the viewport toward lower
+  // scrollLeft values and "right" toward higher ones, regardless of
+  // language. That's the correct thing to bind two fixed-position buttons
+  // to either way, and it sidesteps the well-known cross-browser
+  // inconsistency in what a *positive* scrollLeft means inside a
+  // dir="rtl" container.
+  const nudge = (pixels: number) => {
+    scrollerRef.current?.scrollBy({ left: pixels, behavior: "smooth" });
+  };
+
+  return (
+    <section className="py-16 md:py-20" style={{ background: SECTION_COLORS.publications }}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="mb-10 flex flex-col items-center text-center">
+          <p className="mb-2 text-[12px] font-semibold uppercase tracking-[0.22em] text-white/80">
+            {t("posters.eyebrow")}
+          </p>
+          <h2 className="mb-5 font-serif text-2xl text-white md:text-3xl">{t("posters.title")}</h2>
+          <Link
+            to="/publications/posters"
+            className="inline-flex items-center gap-1.5 rounded-full border border-white/40 px-3.5 py-2 text-xs font-medium text-white transition-colors hover:bg-white/10"
+          >
+            {t("posters.viewAll")} <span aria-hidden>{isArabic ? "←" : "→"}</span>
+          </Link>
+        </div>
+
+        <div className="relative">
+          <div
+            ref={scrollerRef}
+            className="scrollbar-none flex snap-x snap-mandatory gap-5 overflow-x-auto pb-2 md:gap-6"
+            dir={isArabic ? "rtl" : "ltr"}
+          >
+            {posters.map((poster) => (
+              <a
+                key={poster.id}
+                href={poster.fileUrl || poster.image}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group block w-[70%] shrink-0 snap-start sm:w-[45%] md:w-[30%] lg:w-[23%]"
+              >
+                <div className="aspect-[3/4] overflow-hidden rounded-2xl shadow-xl">
+                  <img
+                    src={poster.image}
+                    alt={isArabic ? (poster.titleAr ?? poster.title) : poster.title}
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                </div>
+              </a>
+            ))}
+          </div>
+
+          {/* Discoverability nudge for pointer users who might not notice
+              the row scrolls -- touch/trackpad/shift+wheel already work
+              without these. */}
+          {posters.length > 1 && (
+            <>
+              <button
+                type="button"
+                onClick={() => nudge(-320)}
+                aria-label="Previous"
+                className="absolute -left-4 top-1/2 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white text-foreground shadow-lg transition-transform hover:scale-105 md:flex"
+              >
+                <ChevronLeft className="h-5 w-5" />
+              </button>
+              <button
+                type="button"
+                onClick={() => nudge(320)}
+                aria-label="Next"
+                className="absolute -right-4 top-1/2 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white text-foreground shadow-lg transition-transform hover:scale-105 md:flex"
+              >
+                <ChevronRight className="h-5 w-5" />
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 // ── Hero: full-viewport looping video with text overlay ───────────────────
 /**
  * dvh, not vh: on mobile, 100vh includes the space behind the browser's
@@ -409,7 +538,7 @@ function TeamSection() {
  * dozen pixels.
  */
 function HeroVideo() {
-  const { t } = useLanguage();
+  const { t, isArabic } = useLanguage();
   return (
     <section className="relative h-[calc(100dvh-62px)] sm:h-[calc(100dvh-82px)] lg:h-[calc(100dvh-103px)] w-full overflow-hidden bg-black">
       <video
@@ -424,22 +553,39 @@ function HeroVideo() {
         aria-hidden="true"
       />
       <div className="relative z-10 flex h-full flex-col items-center justify-center px-4 text-center">
-        <p className="uppercase tracking-[0.22em] text-white/90 font-semibold mb-3 text-[12px] md:text-[13px]">
-          {t("hero.eyebrow")}
-        </p>
-        {/*
-         * whitespace-pre-line so a line break typed into the Hero Title or
-         * Hero Description in Site Settings is the line break shown here.
-         * Both are textarea fields, so the newline was always stored -- it
-         * was HTML that collapsed it into a space, which made pressing
-         * Enter in the admin look like it did nothing.
-         */}
-        <h1 className="font-serif text-4xl md:text-6xl text-white tracking-tight leading-[1.1] whitespace-pre-line max-w-4xl">
-          {t("hero.title")}
-        </h1>
-        <p className="mt-5 text-base md:text-lg text-white/85 leading-relaxed max-w-2xl whitespace-pre-line">
-          {t("hero.desc")}
-        </p>
+        {/* Reveal is the same fade-up-on-appear wrapper used for Pillars and
+            Team below -- here it's already in view on page load, so it
+            simply fades the whole text block in as soon as the video mounts
+            rather than waiting for a scroll. */}
+        <Reveal className="flex flex-col items-center">
+          <p className="uppercase tracking-[0.22em] text-white/90 font-semibold mb-3 text-[12px] md:text-[13px]">
+            {t("hero.eyebrow")}
+          </p>
+          {/*
+           * whitespace-pre-line so a line break typed into the Hero Title or
+           * Hero Description in Site Settings is the line break shown here.
+           * Both are textarea fields, so the newline was always stored -- it
+           * was HTML that collapsed it into a space, which made pressing
+           * Enter in the admin look like it did nothing.
+           *
+           * lg:whitespace-nowrap forces the title onto one line at desktop
+           * widths, same as the previous hero did -- font metrics for the
+           * Arabic serif fallback vary enough across systems that a
+           * width-based fit can't be guaranteed, so the two languages get
+           * separately-tuned sizes rather than one shared one.
+           */}
+          <h1
+            className={
+              "font-serif text-4xl md:text-5xl text-white tracking-tight leading-[1.1] whitespace-pre-line lg:whitespace-nowrap " +
+              (isArabic ? "lg:text-[3.75rem]" : "lg:text-[3.6rem]")
+            }
+          >
+            {t("hero.title")}
+          </h1>
+          <p className="mt-5 text-base md:text-lg text-white/85 leading-relaxed max-w-2xl whitespace-pre-line">
+            {t("hero.desc")}
+          </p>
+        </Reveal>
       </div>
     </section>
   );
@@ -478,11 +624,15 @@ function Home() {
           style={{ background: "var(--brand-magenta)" }}
         />
 
-        {/* News & Announcements — its own white section right after the
-            hero video, with the site's usual cyan/magenta accents. */}
-        <section className="bg-gradient-to-b from-secondary/5 to-transparent">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 md:py-20">
-            <div className="flex items-center justify-between mb-6">
+        {/* News & Announcements — its own full-screen section right after
+            the hero video, sized to match it (min-h-dvh rather than a hard
+            h-dvh: this content is variable-length editorial text, so it can
+            grow past one screen on a very short viewport instead of
+            clipping) on a white background with the site's usual
+            cyan/magenta accents. */}
+        <section className="flex min-h-dvh w-full flex-col bg-gradient-to-b from-secondary/5 to-transparent">
+          <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col px-4 py-10 sm:px-6 md:py-14 lg:px-8">
+            <div className="mb-6 flex shrink-0 items-center justify-between md:mb-10">
               <div className="flex items-center gap-3">
                 <div
                   className="h-5 w-1.5 rounded-full"
@@ -504,7 +654,9 @@ function Home() {
                 {t("news.viewAll")}
               </Link>
             </div>
-            <LatestNewsAndAnnouncements />
+            <div className="min-h-0 flex-1">
+              <LatestNewsAndAnnouncements />
+            </div>
           </div>
         </section>
 
@@ -527,6 +679,9 @@ function Home() {
             ))}
           </div>
         </section>
+
+        {/* Posters */}
+        <PostersShowcase />
 
         {/* Meet the Team */}
         <Reveal>
