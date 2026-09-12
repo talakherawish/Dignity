@@ -349,56 +349,63 @@ function TeamSection() {
   return (
     <>
       <section>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-          <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-8 items-center">
-            <div>
-              <div
-                className={
-                  "uppercase tracking-[0.22em] text-[color:var(--brand-magenta)] font-semibold mb-2 " +
-                  (isArabic ? "text-[14px]" : "text-[12px]")
-                }
-              >
-                {t("team.eyebrow")}
-              </div>
-              <h2
-                className={
-                  "font-serif text-2xl text-primary leading-tight mb-5 " +
-                  (isArabic ? "lg:text-[2.125rem]" : "lg:text-[2rem]")
-                }
-              >
-                {t("team.title")}
-              </h2>
-              <Link
-                to="/about/participants"
-                className="inline-flex items-center gap-1.5 text-xs font-medium text-foreground border border-border px-3.5 py-2 rounded-sm hover:bg-secondary transition-colors"
-              >
-                {t("team.btn")} <span aria-hidden>{isArabic ? "←" : "→"}</span>
-              </Link>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              {members.map((person, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => setSelected(person)}
-                  className="group flex items-start gap-3.5 p-4 border border-border rounded-sm bg-card hover:border-accent/30 hover:shadow-sm transition-all duration-200 text-left w-full"
-                >
-                  {/* The list never shows a photo, even when one exists — it
-                      only appears in the modal once someone clicks through. */}
-                  <div className={"min-w-0 pt-0.5" + (isArabic ? " text-right" : "")}>
-                    <div className="font-semibold text-sm text-primary leading-tight group-hover:text-accent transition-colors">
-                      {lang === "ar" ? person.nameAr : person.name}
-                    </div>
-                    <div className="text-xs text-muted-foreground mt-0.5 leading-snug">
-                      {lang === "ar" ? person.titleAr : person.title}
-                    </div>
-                    <div className="text-[11px] font-medium text-green-600 mt-1 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                      {isArabic ? "اضغط لقراءة المزيد" : "Click to read more"}
-                    </div>
-                  </div>
-                </button>
-              ))}
-            </div>
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-14 text-center">
+          <div
+            className={
+              "uppercase tracking-[0.22em] text-[color:var(--brand-magenta)] font-semibold mb-2 " +
+              (isArabic ? "text-[14px]" : "text-[12px]")
+            }
+          >
+            {t("team.eyebrow")}
           </div>
+          <h2
+            className={
+              "font-serif text-2xl text-primary leading-tight mb-10 " +
+              (isArabic ? "lg:text-[2.125rem]" : "lg:text-[2rem]")
+            }
+          >
+            {t("team.title")}
+          </h2>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-2xl mx-auto">
+            {members.map((person, idx) => (
+              <button
+                key={idx}
+                onClick={() => setSelected(person)}
+                className="group flex flex-col items-center text-center"
+              >
+                <div className="h-28 w-28 rounded-full overflow-hidden bg-secondary shadow-sm ring-1 ring-border group-hover:ring-accent/40 transition-all duration-200">
+                  {person.photo ? (
+                    <img
+                      src={person.photo}
+                      alt={person.name}
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center font-serif text-2xl text-muted-foreground">
+                      {(lang === "ar" ? person.nameAr : person.name).charAt(0)}
+                    </div>
+                  )}
+                </div>
+                <div className="font-semibold text-sm text-primary mt-4 group-hover:text-accent transition-colors">
+                  {lang === "ar" ? person.nameAr : person.name}
+                </div>
+                <div className="text-xs text-muted-foreground mt-0.5">
+                  {lang === "ar" ? person.titleAr : person.title}
+                </div>
+                <div className="text-[11px] font-medium text-green-600 mt-1 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                  {isArabic ? "اضغط لقراءة المزيد" : "Click to read more"}
+                </div>
+              </button>
+            ))}
+          </div>
+
+          <Link
+            to="/about/participants"
+            className="inline-flex items-center gap-1.5 text-xs font-medium text-foreground border border-border px-5 py-2.5 rounded-full hover:bg-secondary transition-colors mt-10"
+          >
+            {t("team.btn")} <span aria-hidden>{isArabic ? "←" : "→"}</span>
+          </Link>
         </div>
       </section>
 

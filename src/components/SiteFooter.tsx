@@ -50,7 +50,7 @@ export function SiteFooter() {
   )}`;
 
   return (
-    <footer className="border-t border-border bg-primary text-primary-foreground">
+    <footer className="border-t border-border bg-[oklch(0.35_0.01_270)] text-primary-foreground">
       {/* Accent bar */}
       <div
         className="h-1"
