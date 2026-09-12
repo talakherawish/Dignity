@@ -228,9 +228,17 @@ function LatestNewsAndAnnouncements() {
   // on the physical right under RTL) and on the left in English (col 1 sits
   // on the physical left under LTR) -- both in one layout, no per-language
   // branch needed.
+  // grid-rows-2 (not the grid-cols-1 default of two auto rows) is load-
+  // bearing on mobile: ImageCarousel's every child is absolutely
+  // positioned, so it has no in-flow content to size an "auto" row against
+  // -- its own h-full then resolves to ~0, and the whole card collapses to
+  // a sliver showing only the caption text peeking out. Splitting the
+  // stack into two explicit 1fr rows gives it a real height to fill.
+  // md:grid-rows-1 is a no-op today (the 2-column layout only ever had one
+  // row) but keeps that resolved rather than implicit.
   return (
     <div
-      className="grid h-full min-h-0 grid-cols-1 gap-8 md:grid-cols-[2fr_3fr] md:gap-12"
+      className="grid h-full min-h-0 grid-cols-1 grid-rows-2 gap-8 md:grid-cols-[2fr_3fr] md:grid-rows-1 md:gap-12"
       dir={isArabic ? "rtl" : "ltr"}
     >
       <ImageCarousel articles={carouselArticles} />
@@ -491,9 +499,11 @@ function PostersShowcase() {
           aspect-[3/4], how wide) each poster card gets on mobile -- without
           it, a card fills this row's full flex-1 height, which is most of
           FULL_SCREEN_SECTION, making each card wider than a phone screen and
-          forcing a full scroll-and-a-half just to see one poster. Capped
-          only below sm: desktop already showed a sane size before this. */}
-      <div className="relative min-h-0 w-full flex-1 max-h-[42svh] sm:max-h-none">
+          forcing a full scroll-and-a-half just to see one poster. 30svh
+          keeps a card at roughly half the screen width, so the next one
+          visibly peeks in as a scroll hint. Capped only below sm: desktop
+          already showed a sane size before this. */}
+      <div className="relative min-h-0 w-full flex-1 max-h-[30svh] sm:max-h-none">
         <div
           ref={scrollerRef}
           className="scrollbar-none flex h-full snap-x snap-mandatory gap-6 overflow-x-auto px-4 pb-2 sm:px-6 md:gap-8 lg:px-8"
