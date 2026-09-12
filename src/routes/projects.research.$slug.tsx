@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft } from "lucide-react";
 import { OutputSection, PublicationGrid, ForumGrid } from "@/components/OutputSection";
-import { PageLayout } from "@/components/PageLayout";
+import { PageLayout, PageHero } from "@/components/PageLayout";
 import { PhotoGallery, toGalleryPhoto } from "@/components/PhotoGallery";
 import { PublicationCard, PublicationCardGrid } from "@/components/PublicationCard";
 import { RichText } from "@/components/RichText";
@@ -19,6 +19,7 @@ import {
   type PayloadPhoto,
   type PayloadPublication,
 } from "@/lib/payload";
+import { SECTION_COLORS } from "@/lib/sectionColors";
 
 export const Route = createFileRoute("/projects/research/$slug")({
   component: ResearchDetailPage,
@@ -156,21 +157,20 @@ function ResearchDetailPage() {
 
   return (
     <PageLayout>
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">{backLink}</div>
+
+      <PageHero
+        eyebrow={isArabic ? "نشاطات — المشاريع البحثية" : "Activities — Research Projects"}
+        eyebrowColor={SECTION_COLORS.activities}
+        title={title}
+      />
+
       <article
         className={
-          "max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 animate-fade-in" +
+          "max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-12 animate-fade-in" +
           (isArabic ? " text-right" : "")
         }
       >
-        {backLink}
-
-        <div className="text-[11px] uppercase tracking-[0.22em] text-[color:var(--brand-magenta)] font-semibold mt-8 mb-3">
-          {isArabic ? "نشاطات — المشاريع البحثية" : "Activities — Research Projects"}
-        </div>
-        <h1 className="font-serif text-3xl md:text-4xl text-primary tracking-tight leading-tight">
-          {title}
-        </h1>
-
         {image && (
           <img
             src={image}
