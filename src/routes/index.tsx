@@ -392,22 +392,83 @@ function TeamSection() {
   );
 }
 
+// ── Hero: full-viewport looping video with text overlay ───────────────────
+/**
+ * dvh, not vh: on mobile, 100vh includes the space behind the browser's
+ * address bar, so a 100vh section is taller than what's actually visible and
+ * the page loads pre-scrolled. dvh ("dynamic viewport height") tracks the
+ * real visible area on every device -- it's what makes "one full screen"
+ * mean the same thing on a phone as it does on a laptop.
+ *
+ * The header is sticky, not overlaid on top of the hero, so it still takes
+ * up its own space above it (60px / 80px / 101px, plus its 1px accent bar
+ * and 1px border, at the same mobile/sm/lg breakpoints SiteHeader uses).
+ * Subtracting that from the hero's height is what makes "header + hero"
+ * land on exactly one screen instead of one screen plus a sliver -- without
+ * it, every page load would open with the hero already cut off by a few
+ * dozen pixels.
+ */
+function HeroVideo() {
+  const { t } = useLanguage();
+  return (
+    <section className="relative h-[calc(100dvh-62px)] sm:h-[calc(100dvh-82px)] lg:h-[calc(100dvh-103px)] w-full overflow-hidden bg-black">
+      <video
+        className="absolute inset-0 h-full w-full object-cover"
+        src="/landing.mp4"
+        autoPlay
+        muted
+        loop
+        playsInline
+        disablePictureInPicture
+        controlsList="nodownload noremoteplayback nofullscreen"
+        aria-hidden="true"
+      />
+      {/* Darkens the video enough for white text to stay readable regardless
+          of what frame is showing, without hiding the footage entirely. */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 bg-gradient-to-b from-black/55 via-black/25 to-black/60"
+      />
+      <div className="relative z-10 flex h-full flex-col items-center justify-center px-4 text-center">
+        <p className="uppercase tracking-[0.22em] text-white/90 font-semibold mb-3 text-[12px] md:text-[13px]">
+          {t("hero.eyebrow")}
+        </p>
+        {/*
+         * whitespace-pre-line so a line break typed into the Hero Title or
+         * Hero Description in Site Settings is the line break shown here.
+         * Both are textarea fields, so the newline was always stored -- it
+         * was HTML that collapsed it into a space, which made pressing
+         * Enter in the admin look like it did nothing.
+         */}
+        <h1 className="font-serif text-4xl md:text-6xl text-white tracking-tight leading-[1.1] whitespace-pre-line max-w-4xl">
+          {t("hero.title")}
+        </h1>
+        <p className="mt-5 text-base md:text-lg text-white/85 leading-relaxed max-w-2xl whitespace-pre-line">
+          {t("hero.desc")}
+        </p>
+      </div>
+    </section>
+  );
+}
+
 // ── Home page ─────────────────────────────────────────────────────────────
 function Home() {
   const { t, isArabic } = useLanguage();
   return (
     <PageLayout>
-      {/* Shared backdrop for the whole page: soft cyan/magenta blobs staggered
-          down the full scroll length, so the color motif carries past the
-          hero instead of stopping at its edge. vh-based offsets rather than
-          fixed pixels, since the sections below are variable height. */}
+      <HeroVideo />
+
+      {/* Shared backdrop for everything below the hero: soft cyan/magenta
+          blobs staggered down the scroll length, so the color motif carries
+          through the page. vh-based offsets rather than fixed pixels, since
+          the sections below are variable height. */}
       <div className="relative overflow-hidden">
         <div
-          className="absolute -top-32 -right-32 h-96 w-96 rounded-full opacity-25 blur-3xl pointer-events-none"
+          className="absolute -top-16 -right-32 h-96 w-96 rounded-full opacity-25 blur-3xl pointer-events-none"
           style={{ background: "var(--brand-cyan)" }}
         />
         <div
-          className="absolute top-4 -left-20 h-56 w-56 rounded-full opacity-15 blur-3xl pointer-events-none"
+          className="absolute top-16 -left-20 h-56 w-56 rounded-full opacity-15 blur-3xl pointer-events-none"
           style={{ background: "var(--brand-magenta)" }}
         />
         <div
@@ -423,53 +484,11 @@ function Home() {
           style={{ background: "var(--brand-magenta)" }}
         />
 
-        {/* Hero — kept short on purpose: the news section right below it
-            needs to be visible without scrolling, so this no longer claims
-            the whole first screen the way it used to. */}
-        <section className="relative">
-          {/*
-           * Temporary centered layout with the office photo dropped, while a
-           * proper homepage design is worked out -- not the final treatment.
-           */}
-          <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-3 pb-2 lg:pt-4 lg:pb-3 flex flex-col items-center text-center">
-            <div
-              className={
-                "uppercase tracking-[0.22em] text-[color:var(--brand-magenta)] font-semibold mb-2 " +
-                (isArabic ? "text-[14px]" : "text-[12px]")
-              }
-            >
-              {t("hero.eyebrow")}
-            </div>
-            {/*
-             * whitespace-pre-line so a line break typed into the Hero Title or
-             * Hero Description in Site Settings is the line break shown here.
-             * Both are textarea fields, so the newline was always stored -- it
-             * was HTML that collapsed it into a space, which made pressing
-             * Enter in the admin look like it did nothing.
-             *
-             * lg:whitespace-nowrap forces the title onto one line at desktop
-             * widths -- font metrics for the Arabic serif fallback vary enough
-             * across systems that a width-based fit can't be guaranteed.
-             */}
-            <h1
-              className={
-                "font-serif text-4xl md:text-5xl text-primary tracking-tight leading-[1.07] whitespace-pre-line lg:whitespace-nowrap " +
-                (isArabic ? "lg:text-[3.75rem]" : "lg:text-[3.6rem]")
-              }
-            >
-              {t("hero.title")}
-            </h1>
-            <p className="mt-4 text-base text-muted-foreground leading-relaxed max-w-2xl whitespace-pre-line">
-              {t("hero.desc")}
-            </p>
-          </div>
-        </section>
-
-        {/* News & Announcements — visible without scrolling, right under the
-            hero: this is why the hero above no longer fills the screen. */}
+        {/* News & Announcements — its own white section right after the
+            hero video, with the site's usual cyan/magenta accents. */}
         <section className="bg-gradient-to-b from-secondary/5 to-transparent">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-6">
-            <div className="flex items-center justify-between mb-2">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 md:py-20">
+            <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
                 <div
                   className="h-5 w-1.5 rounded-full"
