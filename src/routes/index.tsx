@@ -512,15 +512,19 @@ function PostersShowcase() {
           extra height except overflow above and below it. This exact bug is
           what a user report of "posters are huge, overriding above and
           below the grey background" traced back to. */}
-      {/* max-h caps how tall (and by extension, since cards are h-full
-          aspect-[3/4], how wide) each poster card gets on mobile -- without
-          it, a card fills this row's full flex-1 height, which is most of
-          FULL_SCREEN_SECTION, making each card wider than a phone screen and
-          forcing a full scroll-and-a-half just to see one poster. 30svh
-          keeps a card at roughly half the screen width, so the next one
-          visibly peeks in as a scroll hint. Capped only below sm: desktop
-          already showed a sane size before this. */}
-      <div className="relative min-h-0 w-full flex-1 max-h-[30svh] sm:max-h-none">
+      {/* h-[30svh] (a real height, not flex-1 capped by max-h) is load-
+          bearing: max-height on a flex-grown item clamps the box you see,
+          but browsers don't reliably treat that clamped size as *definite*
+          for descendants resolving h-full against it -- the wrapper
+          rendered at the capped height while everything inside it (the
+          scroller, then each h-full aspect-[3/4] card) ignored it and
+          sized off the section's full flex-1 space anyway, right back to
+          a card wider than the phone screen. An explicit height has no
+          such ambiguity. 30svh keeps a card at roughly half the screen
+          width, so the next one visibly peeks in as a scroll hint. Only
+          below sm: -- desktop already showed a sane size before this, via
+          the flex-1/min-h-0 pairing restored there. */}
+      <div className="relative w-full h-[30svh] sm:h-auto sm:min-h-0 sm:flex-1">
         <div
           ref={scrollerRef}
           className="scrollbar-none flex h-full snap-x snap-mandatory gap-6 overflow-x-auto px-4 pb-2 sm:px-6 md:gap-8 lg:px-8"
