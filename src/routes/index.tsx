@@ -127,11 +127,11 @@ function HeadlineList({ articles }: { articles: Article[] }) {
               search={{ id: article.id }}
               className="group flex gap-4 px-2 py-3 transition-colors hover:bg-secondary/30 md:py-4"
             >
-              <span className="font-serif text-base tabular-nums text-muted-foreground/70">
+              <span className="font-serif text-sm tabular-nums text-muted-foreground/70">
                 {ordinal(index, isArabic)}
               </span>
               <span className="min-w-0">
-                <span className="block font-serif text-lg leading-snug text-primary transition-colors group-hover:text-[color:var(--brand-magenta)] md:text-xl">
+                <span className="block font-serif text-base leading-snug text-primary transition-colors group-hover:text-[color:var(--brand-magenta)] md:text-lg">
                   {withItalicQuotes(getField(article, "title", lang))}
                 </span>
                 <span className="mt-1.5 block text-[11px] uppercase tracking-[0.16em] text-muted-foreground">
@@ -250,7 +250,10 @@ function LatestNewsAndAnnouncements() {
   // on the physical left under LTR) -- both in one layout, no per-language
   // branch needed.
   return (
-    <div className="grid h-full min-h-0 grid-cols-1 gap-8 md:grid-cols-2 md:gap-12" dir={isArabic ? "rtl" : "ltr"}>
+    <div
+      className="grid h-full min-h-0 grid-cols-1 gap-8 md:grid-cols-[3fr_2fr] md:gap-12"
+      dir={isArabic ? "rtl" : "ltr"}
+    >
       <ImageCarousel articles={carouselArticles} />
       <HeadlineList articles={headlineArticles} />
     </div>
@@ -474,16 +477,13 @@ function PostersShowcase() {
     // content that could need more room -- a hard cap is safe, and it has
     // to be the same reduced height as the hero and News, not a flat
     // 100dvh, or this section reads as taller than both of them.
-    <section className={`flex w-full flex-col overflow-hidden bg-[#4b5563] py-6 md:py-8 ${FULL_SCREEN_SECTION}`}>
+    <section className={`mt-8 flex w-full flex-col overflow-hidden bg-[#4b5563] py-6 md:mt-14 md:py-8 ${FULL_SCREEN_SECTION}`}>
       {/* Heading stays in a readable centered column like every other
           section's text; the row below it deliberately breaks out of that
           same max-w-7xl column to run full-bleed, edge to edge like the
           hero video -- that contrast (boxed text, full-width media) is the
           same pattern News & Announcements uses right above it. */}
       <div className="mx-auto mb-4 flex w-full max-w-7xl shrink-0 flex-col items-center px-4 text-center sm:px-6 md:mb-6 lg:px-8">
-        <p className="mb-2 text-[12px] font-semibold uppercase tracking-[0.22em] text-white/80">
-          {t("posters.eyebrow")}
-        </p>
         <h2 className="mb-4 font-serif text-2xl text-white md:text-3xl">{t("posters.title")}</h2>
         <Link
           to="/publications/posters"
@@ -505,7 +505,7 @@ function PostersShowcase() {
       <div className="relative min-h-0 w-full flex-1">
         <div
           ref={scrollerRef}
-          className="scrollbar-none flex h-full snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 sm:px-6 md:gap-6 lg:px-8"
+          className="scrollbar-none flex h-full snap-x snap-mandatory gap-6 overflow-x-auto px-4 pb-2 sm:px-6 md:gap-8 lg:px-8"
           dir={isArabic ? "rtl" : "ltr"}
         >
           {posters.map((poster) => (
@@ -597,7 +597,12 @@ function HeroVideo() {
             simply fades the whole text block in as soon as the video mounts
             rather than waiting for a scroll. */}
         <Reveal className="flex flex-col items-center">
-          <p className="uppercase tracking-[0.22em] text-white/90 font-semibold mb-3 text-[12px] md:text-[13px]">
+          <p
+            className={
+              "uppercase tracking-[0.22em] text-white/90 font-semibold mb-3 " +
+              (isArabic ? "text-[14px] md:text-[15px]" : "text-[12px] md:text-[13px]")
+            }
+          >
             {t("hero.eyebrow")}
           </p>
           {/*

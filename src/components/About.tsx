@@ -117,7 +117,10 @@ export function AboutPage({
               <Reveal>
                 {eyebrow && (
                   <div
-                    className="text-[12px] uppercase tracking-[0.22em] font-semibold mb-3"
+                    className={
+                      "uppercase tracking-[0.22em] font-semibold mb-3 " +
+                      (isArabic ? "text-[14px]" : "text-[12px]")
+                    }
                     style={{ color: eyebrowColor ?? "var(--brand-magenta)" }}
                   >
                     {eyebrow}
