@@ -282,61 +282,59 @@ function TeamModal({
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      {/* Avatar floating on top, everything below it centered -- a
-          side-by-side photo/text layout was tried here and rejected as
-          looking off. max-w-2xl (was max-w-md) is what actually fixes a
-          long bio (up to MAX_BIO_WORDS -- 350, see Participants.ts) reading
-          as one long vertical scroll: more width to wrap into, same
-          centered layout otherwise. Matches ParticipantModal on
-          /about/participants. */}
+      {/* Everything -- avatar included -- lives inside this one
+          overflow-y-auto box now, instead of a floating avatar positioned
+          outside it via a padding-top hack. That floating version had no
+          height limit of its own: a long bio (up to MAX_BIO_WORDS -- 350,
+          see Participants.ts) could push the avatar+card combination taller
+          than the viewport and break the page's own layout/scroll instead
+          of just scrolling inside the modal. max-w-3xl (was max-w-2xl)
+          gives the bio still more width to wrap into fewer lines, and email
+          is an icon next to Close instead of a full pill under the title --
+          together they mean less height is needed in the first place.
+          Matches ParticipantModal on /about/participants. */}
       <div
-        className="relative w-full max-w-2xl"
-        style={{ paddingTop: person.photo ? "112px" : "0px" }}
+        className={
+          "relative w-full max-w-3xl bg-card border border-border rounded-lg shadow-2xl overflow-y-auto max-h-[90vh]" +
+          (isArabic ? " text-right" : "")
+        }
       >
-        {/* Floating avatar */}
-        {person.photo && (
-          <div className="absolute left-1/2 top-0 -translate-x-1/2 z-10">
-            <div className="h-56 w-56 rounded-full overflow-hidden shadow-2xl bg-secondary flex items-center justify-center">
-              <img src={person.photo} alt={person.name} className="w-full h-full object-cover" />
-            </div>
-          </div>
-        )}
-        {/* Card */}
-        <div
-          className={
-            "relative bg-card border border-border rounded-lg shadow-2xl overflow-y-auto max-h-[85vh]" +
-            (isArabic ? " text-right" : "")
-          }
-        >
+        <div className="absolute top-4 right-4 z-10 flex items-center gap-1">
+          {person.email && (
+            <a
+              href={"mailto:" + person.email}
+              title={person.email}
+              aria-label={person.email}
+              className="p-1.5 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
+            >
+              <Mail className="h-4 w-4" />
+            </a>
+          )}
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 p-1.5 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors z-10"
+            className="p-1.5 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
             aria-label="Close"
           >
             <X className="h-4 w-4" />
           </button>
-          <div className="px-8 pb-8" style={{ paddingTop: person.photo ? "116px" : "48px" }}>
-            <h2 className="font-serif text-2xl text-primary text-center">
-              {lang === "ar" ? person.nameAr : person.name}
-            </h2>
-            <p className="text-muted-foreground text-sm text-center mt-1">
-              {lang === "ar" ? person.titleAr : person.title}
+        </div>
+        <div className="flex flex-col items-center px-8 pb-8 pt-12 text-center">
+          {person.photo && (
+            <div className="mb-4 h-40 w-40 sm:h-48 sm:w-48 rounded-full overflow-hidden shadow-lg bg-secondary">
+              <img src={person.photo} alt={person.name} className="w-full h-full object-cover" />
+            </div>
+          )}
+          <h2 className="font-serif text-2xl text-primary">
+            {lang === "ar" ? person.nameAr : person.name}
+          </h2>
+          <p className="text-muted-foreground text-sm mt-1">
+            {lang === "ar" ? person.titleAr : person.title}
+          </p>
+          {(person.bio || person.bioAr) && (
+            <p className="mt-6 text-sm text-muted-foreground leading-relaxed">
+              {lang === "ar" ? person.bioAr : person.bio}
             </p>
-            {person.email && (
-              <a
-                href={"mailto:" + person.email}
-                className="mt-4 flex items-center justify-center gap-2 bg-secondary border border-border text-foreground/70 text-sm px-4 py-2.5 rounded-full hover:text-foreground hover:border-foreground/30 transition-colors w-fit mx-auto"
-              >
-                <Mail className="h-3.5 w-3.5 shrink-0" />
-                {person.email}
-              </a>
-            )}
-            {(person.bio || person.bioAr) && (
-              <p className="mt-6 text-sm text-muted-foreground leading-relaxed text-center">
-                {lang === "ar" ? person.bioAr : person.bio}
-              </p>
-            )}
-          </div>
+          )}
         </div>
       </div>
     </div>
