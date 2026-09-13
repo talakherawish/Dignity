@@ -44,7 +44,6 @@ const translations = {
     "forums.type.conference": "Conference",
     "forums.type.encounters": "Encounters",
     "forums.empty": "No forum events published yet.",
-    media: "Media & Updates",
     "media.news": "News & Announcements",
     "media.photos": "Photos",
     "media.clippings": "Clippings",
@@ -83,8 +82,6 @@ const translations = {
     "hero.title": "Advancing scholarship in service of human dignity",
     "hero.desc":
       "Dignity brings together faculty, researchers, students, and partners to pursue rigorous inquiry, foster dialogue, and produce work of lasting public value.",
-    "hero.btn.about": "About the Initiative",
-    "hero.btn.research": "Our Research",
     "posters.title": "A look at our publications",
     "posters.viewAll": "View All",
     "news.title": "Latest News and Announcements",
@@ -146,12 +143,10 @@ const translations = {
     "participants.intro.visitors":
       "Placeholder introduction describing the visitors who participate in the Dignity initiative.",
     // PROJECTS
-    "projects.area": "Research Area",
     "projects.placeholder.title": "Project Title Placeholder",
     "projects.placeholder.desc":
       "A short description of the project, its objectives, methodology, and expected outcomes will be added here.",
     // FOOTER
-    "footer.about": "An academic initiative dedicated to research, dialogue, and human dignity.",
     "footer.contact": "Contact",
     "footer.university": "Birzeit University",
     "footer.pobox": "Room 5, Graduate Studies Building",
@@ -175,7 +170,6 @@ const translations = {
     "footer.subscribe.mailtoFallback": "Email us directly instead",
     "footer.disclaimer": "Disclaimer",
     "footer.privacy": "Privacy Policy",
-    "footer.sitemap": "Sitemap",
     "footer.copyright": "Copyright © Muwatin Institute for Democracy and Human Rights, 2019–2026.",
     "footer.resources": "Resources",
     "footer.studying": "Studying Materials",
@@ -228,7 +222,6 @@ const translations = {
     "forums.type.conference": "مؤتمر",
     "forums.type.encounters": "حواريات",
     "forums.empty": "لا توجد فعاليات منتدى منشورة حالياً.",
-    media: "الإعلام والتحديثات",
     "media.news": "الأخبار والإعلانات",
     "media.photos": "صور",
     "media.clippings": "قصاصات",
@@ -266,8 +259,6 @@ const translations = {
     "hero.title": "تعزيز المعرفة في خدمة الكرامة الإنسانية",
     "hero.desc":
       "تجمع مبادرة الكرامة أعضاء هيئة التدريس والباحثين والطلاب والشركاء لمتابعة البحث الصارم وتعزيز الحوار وإنتاج أعمال ذات قيمة عامة دائمة.",
-    "hero.btn.about": "حول المبادرة",
-    "hero.btn.research": "أبحاثنا",
     "posters.title": "لمحة عن منشوراتنا",
     "posters.viewAll": "عرض الكل",
     "news.title": "آخر الأخبار والإعلانات",
@@ -312,11 +303,9 @@ const translations = {
     "participants.intro.students": "نبذة تعريفية للطلاب المشاركين في مبادرة الكرامة.",
     "participants.intro.visitors": "نبذة تعريفية للزوار المشاركين في مبادرة الكرامة.",
     // PROJECTS
-    "projects.area": "مجال البحث",
     "projects.placeholder.title": "عنوان المشروع",
     "projects.placeholder.desc": "سيُضاف هنا وصف مختصر للمشروع وأهدافه ومنهجيته والنتائج المتوقعة.",
     // FOOTER
-    "footer.about": "مبادرة أكاديمية مكرسة للبحث والحوار والكرامة الإنسانية.",
     "footer.contact": "اتصل بنا",
     "footer.university": "جامعة بيرزيت",
     "footer.pobox": "غرفة 5، مبنى الدراسات العليا",
@@ -341,7 +330,6 @@ const translations = {
     "footer.subscribe.mailtoFallback": "راسلنا مباشرة بدلاً من ذلك",
     "footer.disclaimer": "إخلاء المسؤولية",
     "footer.privacy": "سياسة الخصوصية",
-    "footer.sitemap": "خريطة الموقع",
     "footer.copyright": "حقوق النشر © معهد مواطن للديمقراطية وحقوق الإنسان، 2019–2026.",
     "footer.resources": "الموارد",
     "footer.studying": "المواد الدراسية",
@@ -405,18 +393,10 @@ const SITE_SETTINGS_KEY_MAP: Partial<Record<TranslationKey, string>> = {
   "information.readings": "navInformationReadings",
   "information.databases": "navInformationDatabases",
 
-  // Not a menu label: the eyebrow above the news, announcements, photos and
-  // clippings pages.
-  media: "navMedia",
-
   "hero.eyebrow": "heroEyebrow",
   "hero.title": "heroTitle",
   "hero.desc": "heroDesc",
-  "hero.btn.about": "heroBtnAbout",
-  "hero.btn.research": "heroBtnResearch",
   "news.viewAll": "newsViewAll",
-  "news.prev": "newsPrev",
-  "news.next": "newsNext",
   "news.readMore": "newsReadMore",
   "news.collapse": "newsCollapse",
   "content.untranslated": "contentUntranslated",
@@ -427,7 +407,6 @@ const SITE_SETTINGS_KEY_MAP: Partial<Record<TranslationKey, string>> = {
   "forums.type.conference": "forumTypeConference",
   "forums.type.encounters": "forumTypeEncounters",
 
-  "footer.about": "footerAbout",
   "footer.contact": "footerContact",
   "footer.university": "footerUniversity",
   "footer.pobox": "footerPobox",
@@ -440,7 +419,6 @@ const SITE_SETTINGS_KEY_MAP: Partial<Record<TranslationKey, string>> = {
   "footer.subscribe.btn": "footerSubscribeBtn",
   "footer.disclaimer": "footerDisclaimer",
   "footer.privacy": "footerPrivacy",
-  "footer.sitemap": "footerSitemap",
   "footer.copyright": "footerCopyright",
   "footer.resources": "footerResources",
   "footer.studying": "footerStudying",
@@ -450,8 +428,6 @@ const SITE_SETTINGS_KEY_MAP: Partial<Record<TranslationKey, string>> = {
   "team.eyebrow": "teamEyebrow",
   "team.title": "teamTitle",
   "team.btn": "teamBtn",
-
-  "projects.area": "projectsArea",
 };
 
 const LanguageContext = createContext<LanguageContextValue>({} as LanguageContextValue);

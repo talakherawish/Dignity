@@ -332,8 +332,16 @@ export type PayloadPage = {
   bodyAr?: unknown;
 };
 
-/** All fields on the Site Settings global -- every EN key has a matching key+Ar. */
-export type PayloadSiteSettings = Record<string, string | undefined>;
+/**
+ * All fields on the Site Settings global -- every EN key has a matching key+Ar,
+ * plus `featuredParticipants`: the up-to-3 people an editor picked to show in
+ * the homepage "Meet the Participants" row (see TeamSection in routes/index.tsx).
+ * A dangling reference (the participant was deleted, or is unpublished and this
+ * request is anonymous) comes back as a bare id string -- read it through `populated()`.
+ */
+export type PayloadSiteSettings = Record<string, string | undefined> & {
+  featuredParticipants?: (PayloadParticipant | string)[];
+};
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
@@ -720,10 +728,17 @@ export const fetchAboutInitiative = () => fetchSinglePage("about-initiative");
 
 export const fetchPartners = () => fetchSinglePage("partners");
 
-/** Fetch the Site Settings global (nav labels, hero, footer, small UI labels). Returns null if unreachable. */
+/**
+ * Fetch the Site Settings global (nav labels, hero, footer, small UI labels,
+ * featured homepage participants). Returns null if unreachable.
+ *
+ * depth: 2, not the 0 every other field here would be happy with --
+ * featuredParticipants needs it to reach a participant's photo (site-settings
+ * -> participant (1) -> photo (2)) as a media object rather than a bare id.
+ */
 export async function fetchSiteSettings(): Promise<PayloadSiteSettings | null> {
   try {
-    const res = await fetch(`${PAYLOAD_URL}/api/globals/site-settings?depth=0`, {
+    const res = await fetch(`${PAYLOAD_URL}/api/globals/site-settings?depth=2`, {
       headers: { "Content-Type": "application/json" },
     });
     if (!res.ok) return null;

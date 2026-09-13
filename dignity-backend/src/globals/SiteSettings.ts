@@ -1,5 +1,7 @@
 import type { GlobalConfig, Field } from 'payload'
 
+const MAX_FEATURED_PARTICIPANTS = 3
+
 function pair(name: string, label: string, textarea?: boolean): Field[] {
   const type = textarea ? 'textarea' : 'text'
   return [
@@ -74,16 +76,28 @@ export const SiteSettings: GlobalConfig = {
             ...pair('heroEyebrow', 'Hero Eyebrow Label'),
             ...pair('heroTitle', 'Hero Title', true),
             ...pair('heroDesc', 'Hero Description', true),
-            ...pair('heroBtnAbout', 'Hero Button: About'),
-            ...pair('heroBtnResearch', 'Hero Button: Research'),
-            ...pair('pillarResearch', 'Pillar: Research Title'),
-            ...pair('pillarResearchDesc', 'Pillar: Research Description', true),
-            ...pair('pillarDialogue', 'Pillar: Dialogue Title'),
-            ...pair('pillarDialogueDesc', 'Pillar: Dialogue Description', true),
-            ...pair('pillarPartnership', 'Pillar: Partnership Title'),
-            ...pair('pillarPartnershipDesc', 'Pillar: Partnership Description', true),
             ...pair('teamEyebrow', 'Team Section Eyebrow'),
             ...pair('teamTitle', 'Team Section Title'),
+            {
+              name: 'featuredParticipants',
+              type: 'relationship',
+              relationTo: 'participants',
+              hasMany: true,
+              label: `Featured on Homepage (up to ${MAX_FEATURED_PARTICIPANTS})`,
+              filterOptions: {
+                _status: { equals: 'published' },
+              },
+              admin: {
+                description:
+                  `Who shows in the "Meet the Participants" row on the homepage. Pick up to ${MAX_FEATURED_PARTICIPANTS} people from the Working Group -- drag to reorder, or remove one and add another to swap them out. Leave empty and the homepage falls back to the first ${MAX_FEATURED_PARTICIPANTS} people in the Working Group automatically.`,
+              },
+              validate: (value: unknown) => {
+                if (Array.isArray(value) && value.length > MAX_FEATURED_PARTICIPANTS) {
+                  return `Choose at most ${MAX_FEATURED_PARTICIPANTS} people to feature on the homepage.`
+                }
+                return true
+              },
+            },
             ...pair('teamBtn', 'Team Section Button'),
             ...pair('newsViewAll', 'View All Link Text'),
             ],
@@ -91,9 +105,6 @@ export const SiteSettings: GlobalConfig = {
         {
           label: 'Footer',
           fields: [
-            ...pair('footerAbout', 'About Blurb', true),
-            ...pair('footerExplore', 'Explore Heading'),
-            ...pair('footerParticipants', 'Participants Link'),
             ...pair('footerContact', 'Contact Heading'),
             ...pair('footerUniversity', 'University Name'),
             ...pair('footerPobox', 'P.O. Box Line'),
@@ -106,7 +117,6 @@ export const SiteSettings: GlobalConfig = {
             ...pair('footerSubscribeBtn', 'Subscribe Button'),
             ...pair('footerDisclaimer', 'Disclaimer Link'),
             ...pair('footerPrivacy', 'Privacy Policy Link'),
-            ...pair('footerSitemap', 'Sitemap Link'),
             ...pair('footerCopyright', 'Copyright Line'),
             ...pair('footerResources', 'Resources Heading'),
             ...pair('footerStudying', 'Studying Materials Link'),
@@ -117,8 +127,6 @@ export const SiteSettings: GlobalConfig = {
         {
           label: 'Small UI Labels',
           fields: [
-            ...pair('newsPrev', 'Carousel: Previous'),
-            ...pair('newsNext', 'Carousel: Next'),
             ...pair('newsReadMore', 'Read More Label'),
             ...pair('newsCollapse', 'Collapse Label'),
             ...pair('contentUntranslated', 'Notice: Body Not Translated Yet'),
@@ -128,8 +136,6 @@ export const SiteSettings: GlobalConfig = {
             ...pair('forumTypeWorkshop', 'Forum Type: Workshop'),
             ...pair('forumTypeConference', 'Forum Type: Conference'),
             ...pair('forumTypeEncounters', 'Forum Type: Encounters'),
-            ...pair('projectsArea', 'Research Area Label'),
-            ...pair('navMedia', 'Media Pages: Section Eyebrow'),
             ],
         },
         ],

@@ -11,7 +11,9 @@ import {
   fetchNews,
   fetchParticipants,
   fetchPublications,
+  fetchSiteSettings,
   mediaUrl,
+  populated,
   PARTICIPANT_ROLE_LABEL,
   type PayloadParticipant,
   type PayloadPublication,
@@ -349,8 +351,22 @@ function TeamSection() {
     queryKey: ["participants"],
     queryFn: fetchParticipants,
   });
+  const { data: siteSettings } = useQuery({
+    queryKey: ["site-settings"],
+    queryFn: fetchSiteSettings,
+  });
 
-  const members: TeamPerson[] = payloadParticipants.map(mapPayloadToTeamPerson).slice(0, 3);
+  // An editor's picks in Site Settings -> Homepage -> "Featured on Homepage"
+  // win when there are any; `populated()` drops a dangling reference (the
+  // person was deleted, or is unpublished and this is an anonymous request)
+  // rather than crashing on the bare id string Payload leaves in its place.
+  // No picks yet (a fresh site, or every pick fell through) falls back to the
+  // first three people in the Working Group, same as before this setting
+  // existed.
+  const featured = populated(siteSettings?.featuredParticipants).slice(0, 3);
+  const members: TeamPerson[] = (
+    featured.length > 0 ? featured : payloadParticipants.slice(0, 3)
+  ).map(mapPayloadToTeamPerson);
 
   return (
     <>
