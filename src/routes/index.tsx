@@ -277,59 +277,63 @@ function TeamModal({
   isArabic: boolean;
   lang: string;
 }) {
+  const hasPhoto = Boolean(person.photo);
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      {/* Sized to match ParticipantModal on /about/participants — the two are
-          the same card and should stay in step. No photo means no avatar at
-          all, rather than an empty placeholder circle, so both paddings
-          collapse the same way ParticipantModal's do. */}
+      {/* Wider than ParticipantModal on /about/participants, and laid out
+          side-by-side (photo, then text) instead of that page's single
+          narrow column with a floating avatar on top -- a full ~200-word
+          bio in that narrow shape reads as one long vertical scroll. This
+          is homepage-only, for just the 3 featured people here;
+          /about/participants (everyone) keeps the narrower card. */}
       <div
-        className="relative w-full max-w-md"
-        style={{ paddingTop: person.photo ? "112px" : "0px" }}
+        className={
+          "relative w-full max-w-2xl bg-card border border-border rounded-lg shadow-2xl overflow-y-auto max-h-[85vh]" +
+          (isArabic ? " text-right" : "")
+        }
       >
-        {/* Floating avatar */}
-        {person.photo && (
-          <div className="absolute left-1/2 top-0 -translate-x-1/2 z-10">
-            <div className="h-56 w-56 rounded-full overflow-hidden shadow-2xl bg-secondary flex items-center justify-center">
-              <img src={person.photo} alt={person.name} className="w-full h-full object-cover" />
-            </div>
-          </div>
-        )}
-        {/* Card */}
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 p-1.5 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors z-10"
+          aria-label="Close"
+        >
+          <X className="h-4 w-4" />
+        </button>
         <div
           className={
-            "relative bg-card border border-border rounded-lg shadow-2xl overflow-y-auto max-h-[80vh]" +
-            (isArabic ? " text-right" : "")
+            "flex flex-col gap-6 p-8 " +
+            (hasPhoto ? "sm:flex-row sm:items-start" : "items-center text-center")
           }
         >
-          <button
-            onClick={onClose}
-            className="absolute top-4 right-4 p-1.5 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors z-10"
-            aria-label="Close"
-          >
-            <X className="h-4 w-4" />
-          </button>
-          <div className="px-8 pb-8" style={{ paddingTop: person.photo ? "116px" : "48px" }}>
-            <h2 className="font-serif text-2xl text-primary text-center">
+          {hasPhoto && (
+            <div className="mx-auto h-36 w-36 shrink-0 overflow-hidden rounded-full bg-secondary shadow-lg sm:mx-0">
+              <img src={person.photo} alt={person.name} className="h-full w-full object-cover" />
+            </div>
+          )}
+          <div className={"min-w-0 flex-1 " + (hasPhoto ? "text-center sm:text-start" : "")}>
+            <h2 className="font-serif text-2xl text-primary">
               {lang === "ar" ? person.nameAr : person.name}
             </h2>
-            <p className="text-muted-foreground text-sm text-center mt-1">
+            <p className="text-muted-foreground text-sm mt-1">
               {lang === "ar" ? person.titleAr : person.title}
             </p>
             {person.email && (
               <a
                 href={"mailto:" + person.email}
-                className="mt-4 flex items-center justify-center gap-2 bg-secondary border border-border text-foreground/70 text-sm px-4 py-2.5 rounded-full hover:text-foreground hover:border-foreground/30 transition-colors w-fit mx-auto"
+                className={
+                  "mt-4 inline-flex items-center gap-2 bg-secondary border border-border text-foreground/70 text-sm px-4 py-2.5 rounded-full hover:text-foreground hover:border-foreground/30 transition-colors " +
+                  (hasPhoto ? "mx-auto sm:mx-0" : "mx-auto")
+                }
               >
                 <Mail className="h-3.5 w-3.5 shrink-0" />
                 {person.email}
               </a>
             )}
             {(person.bio || person.bioAr) && (
-              <p className="mt-6 text-sm text-muted-foreground leading-relaxed">
+              <p className="mt-4 text-sm text-muted-foreground leading-relaxed">
                 {lang === "ar" ? person.bioAr : person.bio}
               </p>
             )}
