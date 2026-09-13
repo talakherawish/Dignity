@@ -404,7 +404,7 @@ function TeamSection() {
                 onClick={() => setSelected(person)}
                 className="group flex flex-col items-center text-center"
               >
-                <div className="h-16 w-16 sm:h-28 sm:w-28 rounded-full overflow-hidden bg-secondary shadow-sm ring-1 ring-border group-hover:ring-accent/40 transition-all duration-200">
+                <div className="h-20 w-20 sm:h-36 sm:w-36 lg:h-40 lg:w-40 rounded-full overflow-hidden bg-secondary shadow-sm ring-1 ring-border group-hover:ring-accent/40 transition-all duration-200">
                   {person.photo ? (
                     <img
                       src={person.photo}
@@ -412,7 +412,7 @@ function TeamSection() {
                       className="h-full w-full object-cover"
                     />
                   ) : (
-                    <div className="flex h-full w-full items-center justify-center font-serif text-base sm:text-2xl text-muted-foreground">
+                    <div className="flex h-full w-full items-center justify-center font-serif text-xl sm:text-3xl text-muted-foreground">
                       {(lang === "ar" ? person.nameAr : person.name).charAt(0)}
                     </div>
                   )}
