@@ -104,67 +104,63 @@ function ParticipantModal({
   isArabic: boolean;
   lang: string;
 }) {
-  const hasPhoto = Boolean(participant.photo);
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      {/* Wide, photo-then-text side by side, rather than a single narrow
-          column with a floating avatar on top -- bios can run up to
-          MAX_BIO_WORDS (350, see Participants.ts) and read as one long
-          vertical scroll at the old width. The extra width lets the text
-          wrap into far fewer lines instead. Matches TeamModal on the
-          homepage, which the same problem was fixed on first. */}
+      {/* Avatar floating on top, everything below it centered -- a
+          side-by-side photo/text layout was tried here and rejected as
+          looking off. max-w-2xl (was max-w-md) is what actually fixes a
+          long bio (up to MAX_BIO_WORDS -- 350, see Participants.ts) reading
+          as one long vertical scroll: more width to wrap into, same
+          centered layout otherwise. Matches TeamModal on the homepage. */}
       <div
-        className={
-          "relative w-full max-w-2xl bg-card border border-border rounded-lg shadow-2xl overflow-y-auto max-h-[85vh]" +
-          (isArabic ? " text-right" : "")
-        }
+        className="relative w-full max-w-2xl"
+        style={{ paddingTop: participant.photo ? "112px" : "0px" }}
       >
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 p-1.5 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors z-10"
-          aria-label="Close"
-        >
-          <X className="h-4 w-4" />
-        </button>
-        <div
-          className={
-            "flex flex-col gap-6 p-8 " +
-            (hasPhoto ? "sm:flex-row sm:items-start" : "items-center text-center")
-          }
-        >
-          {hasPhoto && (
-            <div className="mx-auto h-36 w-36 shrink-0 overflow-hidden rounded-full bg-secondary shadow-lg sm:mx-0">
+        {participant.photo && (
+          <div className="absolute left-1/2 top-0 -translate-x-1/2 z-10">
+            <div className="h-56 w-56 rounded-full overflow-hidden shadow-2xl bg-secondary flex items-center justify-center">
               <img
                 src={participant.photo}
                 alt={participant.name}
-                className="h-full w-full object-cover"
+                className="w-full h-full object-cover"
               />
             </div>
-          )}
-          <div className={"min-w-0 flex-1 " + (hasPhoto ? "text-center sm:text-start" : "")}>
-            <h2 className="font-serif text-2xl text-primary">
+          </div>
+        )}
+        <div
+          className={
+            "relative bg-card border border-border rounded-lg shadow-2xl overflow-y-auto max-h-[85vh]" +
+            (isArabic ? " text-right" : "")
+          }
+        >
+          <button
+            onClick={onClose}
+            className="absolute top-4 right-4 p-1.5 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors z-10"
+            aria-label="Close"
+          >
+            <X className="h-4 w-4" />
+          </button>
+          <div className="px-8 pb-8" style={{ paddingTop: participant.photo ? "116px" : "48px" }}>
+            <h2 className="font-serif text-2xl text-primary text-center">
               {lang === "ar" ? participant.nameAr : participant.name}
             </h2>
-            <p className="text-muted-foreground text-sm mt-1">
+            <p className="text-muted-foreground text-sm text-center mt-1">
               {lang === "ar" ? participant.titleAr : participant.title}
             </p>
             {participant.email && (
               <a
                 href={"mailto:" + participant.email}
-                className={
-                  "mt-4 inline-flex items-center gap-2 bg-secondary border border-border text-foreground/70 text-sm px-4 py-2.5 rounded-full hover:text-foreground hover:border-foreground/30 transition-colors " +
-                  (hasPhoto ? "mx-auto sm:mx-0" : "mx-auto")
-                }
+                className="mt-4 flex items-center justify-center gap-2 bg-secondary border border-border text-foreground/70 text-sm px-4 py-2.5 rounded-full hover:text-foreground hover:border-foreground/30 transition-colors w-fit mx-auto"
               >
                 <Mail className="h-3.5 w-3.5 shrink-0" />
                 {participant.email}
               </a>
             )}
             {(participant.bio || participant.bioAr) && (
-              <p className="mt-4 text-sm text-muted-foreground leading-relaxed">
+              <p className="mt-6 text-sm text-muted-foreground leading-relaxed text-center">
                 {lang === "ar" ? participant.bioAr : participant.bio}
               </p>
             )}
