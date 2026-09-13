@@ -554,11 +554,15 @@ function PostersShowcase() {
               rel="noopener noreferrer"
               className="group block h-full shrink-0 snap-start"
             >
-              <div className="h-full aspect-[3/4] overflow-hidden rounded-2xl shadow-xl">
+              {/* The card itself grows on hover, not the picture inside it --
+                  scaling the frame (not the img) means the image is never
+                  zoomed/cropped tighter against its own rounded edge, it just
+                  gets bigger as one piece along with the frame around it. */}
+              <div className="h-full aspect-[3/4] overflow-hidden rounded-2xl shadow-xl transition-transform duration-500 group-hover:scale-105">
                 <img
                   src={poster.image}
                   alt={isArabic ? (poster.titleAr ?? poster.title) : poster.title}
-                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  className="h-full w-full object-cover"
                 />
               </div>
             </a>
