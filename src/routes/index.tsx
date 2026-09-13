@@ -283,12 +283,12 @@ function TeamModal({
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      {/* Wider than ParticipantModal on /about/participants, and laid out
-          side-by-side (photo, then text) instead of that page's single
-          narrow column with a floating avatar on top -- a full ~200-word
-          bio in that narrow shape reads as one long vertical scroll. This
-          is homepage-only, for just the 3 featured people here;
-          /about/participants (everyone) keeps the narrower card. */}
+      {/* Wide, photo-then-text side by side, rather than a single narrow
+          column with a floating avatar on top -- bios can run up to
+          MAX_BIO_WORDS (350, see Participants.ts) and read as one long
+          vertical scroll at the old width. Matches ParticipantModal on
+          /about/participants, which has the same layout for the same
+          reason. */}
       <div
         className={
           "relative w-full max-w-2xl bg-card border border-border rounded-lg shadow-2xl overflow-y-auto max-h-[85vh]" +

@@ -1,7 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
 /** Bio fields are free prose, but the card/modal on the site assumes a short paragraph. */
-const MAX_BIO_WORDS = 200
+const MAX_BIO_WORDS = 350
 
 function validateWordCount(value: unknown): string | true {
   if (typeof value !== 'string' || value.trim() === '') return true
