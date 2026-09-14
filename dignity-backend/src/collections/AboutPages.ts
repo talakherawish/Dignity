@@ -1,4 +1,5 @@
 import type { CollectionConfig, Field } from 'payload'
+import { singletonCreateAccess, singletonListView } from '../lib/singleton'
 
 /**
  * The two standalone pages under About the Dignity Initiative — the initiative's
@@ -14,8 +15,9 @@ import type { CollectionConfig, Field } from 'payload'
  * collection within a group, so a global could not sit above Participants where
  * the website's menu puts it.
  *
- * Each holds a single document, so edit the entry that is already there rather
- * than adding another; the website reads the first one.
+ * Each holds a single document -- singletonListView sends the admin straight
+ * to it (or to the create form, the first time) instead of the normal list
+ * view, and singletonCreateAccess blocks a second one from being created.
  */
 
 function pageFields(): Field[] {
@@ -32,25 +34,14 @@ function pageFields(): Field[] {
       admin: { rtl: true },
     },
     {
-      name: 'description',
-      type: 'textarea',
-      label: 'Short Intro Shown Under the Title (English)',
-    },
-    {
-      name: 'descriptionAr',
-      type: 'textarea',
-      label: 'Short Intro Shown Under the Title (Arabic)',
-      admin: { rtl: true },
-    },
-    {
       name: 'body',
       type: 'richText',
-      label: 'Full Page Content (English)',
+      label: 'Page Content (English)',
     },
     {
       name: 'bodyAr',
       type: 'richText',
-      label: 'Full Page Content (Arabic)',
+      label: 'Page Content (Arabic)',
     },
   ]
 }
@@ -69,6 +60,7 @@ function pageCollection(
       useAsTitle: 'title',
       defaultColumns: ['title', 'updatedAt'],
       description,
+      components: { views: { list: singletonListView } },
     },
     versions: {
       drafts: true,
@@ -78,7 +70,7 @@ function pageCollection(
         if (req.user) return true
         return { _status: { equals: 'published' } }
       },
-      create: ({ req }) => !!req.user,
+      create: singletonCreateAccess(slug),
       update: ({ req }) => !!req.user,
       delete: ({ req }) => !!req.user,
     },

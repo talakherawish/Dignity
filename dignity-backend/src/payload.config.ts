@@ -35,8 +35,7 @@ import { Clippings } from './collections/Clippings'
 import { Stickers } from './collections/Stickers'
 import { Research } from './collections/Research'
 import { Forums } from './collections/Forums'
-import { WindsorDignity } from './collections/WindsorDignity'
-import { IdeaFactory, TaskForceAI } from './collections/ActivityLines'
+import { IdeaFactory, TaskForceAI, WindsorBirzeit } from './collections/ActivityLines'
 import {
   Books,
   Papers,
@@ -96,7 +95,7 @@ export default buildConfig({
     // The three old collections' raw data still exists in MongoDB under
     // their old names; nothing was deleted, just no longer wired in here.
     Forums,
-    WindsorDignity,
+    WindsorBirzeit,
     IdeaFactory,
     TaskForceAI,
 

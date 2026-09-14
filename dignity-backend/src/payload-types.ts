@@ -79,7 +79,7 @@ export interface Config {
     partners: Partner;
     research: Research;
     forums: Forum;
-    'windsor-dignity': WindsorDignity;
+    'windsor-birzeit': WindsorBirzeit;
     'idea-factory': IdeaFactory;
     'task-force-ai': TaskForceAi;
     books: Book;
@@ -110,7 +110,7 @@ export interface Config {
     partners: PartnersSelect<false> | PartnersSelect<true>;
     research: ResearchSelect<false> | ResearchSelect<true>;
     forums: ForumsSelect<false> | ForumsSelect<true>;
-    'windsor-dignity': WindsorDignitySelect<false> | WindsorDignitySelect<true>;
+    'windsor-birzeit': WindsorBirzeitSelect<false> | WindsorBirzeitSelect<true>;
     'idea-factory': IdeaFactorySelect<false> | IdeaFactorySelect<true>;
     'task-force-ai': TaskForceAiSelect<false> | TaskForceAiSelect<true>;
     books: BooksSelect<false> | BooksSelect<true>;
@@ -246,8 +246,6 @@ export interface AboutInitiative {
   id: string;
   title?: string | null;
   titleAr?: string | null;
-  description?: string | null;
-  descriptionAr?: string | null;
   body?: {
     root: {
       type: string;
@@ -306,11 +304,11 @@ export interface Participant {
   titleAr?: string | null;
   email?: string | null;
   /**
-   * Up to 200 words.
+   * Up to 350 words.
    */
   bio?: string | null;
   /**
-   * Up to 200 words.
+   * Up to 350 words.
    */
   bioAr?: string | null;
   photo?: (string | null) | Media;
@@ -428,8 +426,6 @@ export interface Forum {
   titleAr: string;
   date: string;
   forumType?: ('seminar' | 'roundtable' | 'workshop' | 'conference' | 'encounters') | null;
-  description?: string | null;
-  descriptionAr?: string | null;
   content?: {
     root: {
       type: string;
@@ -485,6 +481,10 @@ export interface Forum {
    */
   ideaFactoryLines?: (string | IdeaFactory)[] | null;
   /**
+   * Shows up under that page's Activities section automatically.
+   */
+  windsorBirzeitLines?: (string | WindsorBirzeit)[] | null;
+  /**
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
   publicationStatus?: string | null;
@@ -502,8 +502,6 @@ export interface Research {
   id: string;
   title: string;
   titleAr: string;
-  description?: string | null;
-  descriptionAr?: string | null;
   content?: {
     root: {
       type: string;
@@ -636,8 +634,6 @@ export interface TaskForceAi {
   id: string;
   title: string;
   titleAr: string;
-  description?: string | null;
-  descriptionAr?: string | null;
   content?: {
     root: {
       type: string;
@@ -761,8 +757,6 @@ export interface IdeaFactory {
   id: string;
   title: string;
   titleAr: string;
-  description?: string | null;
-  descriptionAr?: string | null;
   content?: {
     root: {
       type: string;
@@ -1156,6 +1150,66 @@ export interface Clipping {
   _status?: ('draft' | 'published') | null;
 }
 /**
+ * Shows on the website under Activities → The Windsor Birzeit Dignity Initiative. Holds a single document -- edit the one that's there rather than adding another. The Title field here is the page's own heading; the Forums/Publications selected below appear on its page, split into Activities and Publications.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "windsor-birzeit".
+ */
+export interface WindsorBirzeit {
+  id: string;
+  title: string;
+  titleAr: string;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  contentAr?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  image?: (string | null) | Media;
+  /**
+   * Seminars, roundtables, workshops, and conferences related to this. Shown under this page's Activities section.
+   */
+  relatedForums?: (string | Forum)[] | null;
+  relatedBooks?: (string | Book)[] | null;
+  relatedPapers?: (string | Paper)[] | null;
+  relatedReports?: (string | Report)[] | null;
+  relatedBrochures?: (string | Brochure)[] | null;
+  relatedTheses?: (string | Thesis)[] | null;
+  relatedAudiovisual?: (string | Audiovisual)[] | null;
+  relatedPosters?: (string | Poster)[] | null;
+  /**
+   * Read-only. Reflects the Publish / Save as Draft state above.
+   */
+  publicationStatus?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
  * Shows on the website under Publications → Stickers & Bookmarks. Upload one sticker or bookmark image per entry (click the Image field below to upload).
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1191,8 +1245,6 @@ export interface Partner {
   id: string;
   title?: string | null;
   titleAr?: string | null;
-  description?: string | null;
-  descriptionAr?: string | null;
   body?: {
     root: {
       type: string;
@@ -1223,58 +1275,6 @@ export interface Partner {
     };
     [k: string]: unknown;
   } | null;
-  /**
-   * Read-only. Reflects the Publish / Save as Draft state above.
-   */
-  publicationStatus?: string | null;
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
-}
-/**
- * Windsor Birzeit Dignity Initiative events, activities, and information.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "windsor-dignity".
- */
-export interface WindsorDignity {
-  id: string;
-  title: string;
-  titleAr: string;
-  date?: string | null;
-  description?: string | null;
-  descriptionAr?: string | null;
-  content?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  contentAr?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  image?: (string | null) | Media;
   /**
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
@@ -1484,8 +1484,8 @@ export interface PayloadLockedDocument {
         value: string | Forum;
       } | null)
     | ({
-        relationTo: 'windsor-dignity';
-        value: string | WindsorDignity;
+        relationTo: 'windsor-birzeit';
+        value: string | WindsorBirzeit;
       } | null)
     | ({
         relationTo: 'idea-factory';
@@ -1636,8 +1636,6 @@ export interface RecipientsSelect<T extends boolean = true> {
 export interface AboutInitiativeSelect<T extends boolean = true> {
   title?: T;
   titleAr?: T;
-  description?: T;
-  descriptionAr?: T;
   body?: T;
   bodyAr?: T;
   publicationStatus?: T;
@@ -1737,8 +1735,6 @@ export interface StickersSelect<T extends boolean = true> {
 export interface PartnersSelect<T extends boolean = true> {
   title?: T;
   titleAr?: T;
-  description?: T;
-  descriptionAr?: T;
   body?: T;
   bodyAr?: T;
   publicationStatus?: T;
@@ -1753,8 +1749,6 @@ export interface PartnersSelect<T extends boolean = true> {
 export interface ResearchSelect<T extends boolean = true> {
   title?: T;
   titleAr?: T;
-  description?: T;
-  descriptionAr?: T;
   content?: T;
   contentAr?: T;
   image?: T;
@@ -1783,8 +1777,6 @@ export interface ForumsSelect<T extends boolean = true> {
   titleAr?: T;
   date?: T;
   forumType?: T;
-  description?: T;
-  descriptionAr?: T;
   content?: T;
   contentAr?: T;
   image?: T;
@@ -1799,6 +1791,7 @@ export interface ForumsSelect<T extends boolean = true> {
   researchLines?: T;
   taskForceAILines?: T;
   ideaFactoryLines?: T;
+  windsorBirzeitLines?: T;
   publicationStatus?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1806,17 +1799,22 @@ export interface ForumsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "windsor-dignity_select".
+ * via the `definition` "windsor-birzeit_select".
  */
-export interface WindsorDignitySelect<T extends boolean = true> {
+export interface WindsorBirzeitSelect<T extends boolean = true> {
   title?: T;
   titleAr?: T;
-  date?: T;
-  description?: T;
-  descriptionAr?: T;
   content?: T;
   contentAr?: T;
   image?: T;
+  relatedForums?: T;
+  relatedBooks?: T;
+  relatedPapers?: T;
+  relatedReports?: T;
+  relatedBrochures?: T;
+  relatedTheses?: T;
+  relatedAudiovisual?: T;
+  relatedPosters?: T;
   publicationStatus?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1829,8 +1827,6 @@ export interface WindsorDignitySelect<T extends boolean = true> {
 export interface IdeaFactorySelect<T extends boolean = true> {
   title?: T;
   titleAr?: T;
-  description?: T;
-  descriptionAr?: T;
   content?: T;
   contentAr?: T;
   image?: T;
@@ -1854,8 +1850,6 @@ export interface IdeaFactorySelect<T extends boolean = true> {
 export interface TaskForceAiSelect<T extends boolean = true> {
   title?: T;
   titleAr?: T;
-  description?: T;
-  descriptionAr?: T;
   content?: T;
   contentAr?: T;
   image?: T;

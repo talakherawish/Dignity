@@ -10,7 +10,6 @@ import {
   fetchPartners,
   fetchPublications,
   fetchResearch,
-  fetchWindsorDignity,
   populated,
   type PayloadParticipant,
   type PublicationCollection,
@@ -101,7 +100,6 @@ export async function buildSearchIndex(): Promise<SearchResult[]> {
   const [
     news,
     forums,
-    windsor,
     research,
     participants,
     clippings,
@@ -113,7 +111,6 @@ export async function buildSearchIndex(): Promise<SearchResult[]> {
   ] = await Promise.all([
     fetchNews(),
     fetchForums(),
-    fetchWindsorDignity(),
     fetchResearch(),
     fetchParticipants(),
     fetchClippings(),
@@ -144,21 +141,9 @@ export async function buildSearchIndex(): Promise<SearchResult[]> {
         typeKey: "activities.forums",
         title: item.title,
         titleAr: item.titleAr,
-        display: [item.description, item.content],
-        displayAr: [item.descriptionAr, item.contentAr],
+        display: [item.content],
+        displayAr: [item.contentAr],
         to: "/activities/forums",
-      }),
-    );
-
-  for (const item of windsor)
-    results.push(
-      makeResult({
-        typeKey: "activities.windsor",
-        title: item.title,
-        titleAr: item.titleAr,
-        display: [item.description, item.content],
-        displayAr: [item.descriptionAr, item.contentAr],
-        to: "/activities/windsor-birzeit",
       }),
     );
 
@@ -168,8 +153,8 @@ export async function buildSearchIndex(): Promise<SearchResult[]> {
         typeKey: "projects.research",
         title: item.title,
         titleAr: item.titleAr,
-        display: [item.description, item.content],
-        displayAr: [item.descriptionAr, item.contentAr],
+        display: [item.content],
+        displayAr: [item.contentAr],
         to: item.slug ? `/projects/research/${item.slug}` : "/projects/research",
       }),
     );
@@ -242,8 +227,8 @@ export async function buildSearchIndex(): Promise<SearchResult[]> {
         typeKey: "about.initiative",
         title: aboutInitiative.title,
         titleAr: aboutInitiative.titleAr,
-        display: [aboutInitiative.description, aboutInitiative.body],
-        displayAr: [aboutInitiative.descriptionAr, aboutInitiative.bodyAr],
+        display: [aboutInitiative.body],
+        displayAr: [aboutInitiative.bodyAr],
         to: "/about",
       }),
     );
@@ -254,8 +239,8 @@ export async function buildSearchIndex(): Promise<SearchResult[]> {
         typeKey: "about.partners",
         title: partners.title,
         titleAr: partners.titleAr,
-        display: [partners.description, partners.body],
-        displayAr: [partners.descriptionAr, partners.bodyAr],
+        display: [partners.body],
+        displayAr: [partners.bodyAr],
         to: "/about/partners",
       }),
     );

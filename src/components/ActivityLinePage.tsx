@@ -57,15 +57,11 @@ export function ActivityLinePage({
 
   const title = item ? (lang === "ar" ? (item.titleAr ?? item.title) : item.title) : fallbackTitle;
   const image = mediaUrl(item?.image);
-  // Full write-up if there is one, otherwise the short description -- in the
-  // visitor's own language only, matching how a Research area's page reads.
-  const fullContent = lang === "ar" ? item?.contentAr : item?.content;
-  const shortDescription = lang === "ar" ? item?.descriptionAr : item?.description;
-  const body = hasProse(fullContent) ? fullContent : shortDescription;
-  const untranslated =
-    !hasProse(body) &&
-    (hasProse(lang === "ar" ? item?.content : item?.contentAr) ||
-      hasProse(lang === "ar" ? item?.description : item?.descriptionAr));
+  // The visitor's own language only, matching how a Research area's page
+  // reads: an entry written up only in the other language is announced as
+  // untranslated rather than silently served in it.
+  const body = lang === "ar" ? item?.contentAr : item?.content;
+  const untranslated = !hasProse(body) && hasProse(lang === "ar" ? item?.content : item?.contentAr);
 
   const forums = populated<PayloadActivity>(item?.relatedForums);
   const publications = [
@@ -100,7 +96,7 @@ export function ActivityLinePage({
         {hasProse(body) ? (
           <RichText
             value={body}
-            className="mt-8 space-y-5 text-base leading-[1.85] text-foreground/90 opacity-0 animate-[fadeIn_0.8s_ease-in-out_0.3s_forwards]"
+            className="mt-8 space-y-5 text-sm text-muted-foreground leading-relaxed opacity-0 animate-[fadeIn_0.8s_ease-in-out_0.3s_forwards]"
           />
         ) : untranslated ? (
           <TranslationNotice className="mt-8" />

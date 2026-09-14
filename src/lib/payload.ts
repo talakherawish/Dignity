@@ -67,8 +67,6 @@ export type PayloadActivity = {
    * their type -- so still optional here until every one of those is tagged.
    */
   forumType?: ForumType;
-  description?: unknown;
-  descriptionAr?: unknown;
   content?: unknown;
   contentAr?: unknown;
   image?: PayloadMedia;
@@ -76,20 +74,18 @@ export type PayloadActivity = {
 };
 
 /**
- * Task Force on AI and Idea Factory: each its own Payload collection (slug
- * doubles as the activity line's identity), a sibling of Research/Forums
- * under Activities in the admin, holding a single document shaped like a
- * Research line -- a title and write-up, plus the real Forums/Publications
- * items attached to it. See fetchActivityLine.
+ * Task Force on AI, Idea Factory, and Windsor-Birzeit: each its own Payload
+ * collection (slug doubles as the activity line's identity), a sibling of
+ * Research/Forums under Activities in the admin, holding a single document
+ * shaped like a Research line -- a title and write-up, plus the real
+ * Forums/Publications items attached to it. See fetchActivityLine.
  */
-export type ActivityLine = "task-force-ai" | "idea-factory";
+export type ActivityLine = "task-force-ai" | "idea-factory" | "windsor-birzeit";
 
 export type PayloadActivityLine = {
   id: string;
   title: string;
   titleAr?: string;
-  description?: unknown;
-  descriptionAr?: unknown;
   content?: unknown;
   contentAr?: unknown;
   image?: PayloadMedia;
@@ -280,8 +276,6 @@ export type PayloadResearchActivity = {
   slug?: string;
   title: string;
   titleAr?: string;
-  description?: unknown;
-  descriptionAr?: unknown;
   content?: unknown;
   contentAr?: unknown;
   image?: PayloadMedia;
@@ -321,13 +315,11 @@ export function populated<T>(items: (T | string)[] | undefined): T[] {
   return items.filter((item): item is T => typeof item === "object" && item !== null);
 }
 
-/** A standalone page — its heading, its intro line, and its prose. */
+/** A standalone page — its heading and its prose. */
 export type PayloadPage = {
   id: string;
   title?: string;
   titleAr?: string;
-  description?: string;
-  descriptionAr?: string;
   body?: unknown;
   bodyAr?: unknown;
 };
@@ -348,14 +340,9 @@ export type PayloadSiteSettings = Record<string, string | undefined> & {
 /**
  * Extract paragraph strings from a Payload field that holds prose.
  *
- * Collections are not consistent about how they store it: the page/news
- * bodies are Lexical richText, while the per-activity collections
- * (seminars, conferences, meetings, research, windsor-dignity) declare
- * `description` as a plain textarea. Callers render both through this, and a
- * string used to fall straight through the `typeof !== 'object'` guard and
- * return `[]` — which is why a seminar with a full write-up displayed as a
- * bare headline. Handle both shapes, splitting plain text on blank lines the
- * way the textarea presents it.
+ * Every prose field is Lexical richText, but this also accepts a plain
+ * string (split on blank lines) for anything read before it was one --
+ * cheaper than chasing down every caller to confirm none still can be.
  */
 export function extractText(lexical: unknown): string[] {
   if (typeof lexical === "string") {
@@ -392,12 +379,9 @@ export function extractText(lexical: unknown): string[] {
 }
 
 /**
- * True when a prose field holds something worth rendering.
- *
- * Callers fall back from a full write-up to a short description, so they need
- * to know whether the first one is empty before choosing. Handles both shapes
- * the CMS produces — Lexical richText and a plain textarea string — for the
- * same reason `extractText` does.
+ * True when a prose field holds something worth rendering -- used to decide
+ * whether to show a write-up, an "untranslated" notice, or nothing. Handles
+ * a plain string for the same reason `extractText` does.
  */
 export function hasProse(value: unknown): boolean {
   if (typeof value === "string") return value.trim().length > 0;
@@ -688,9 +672,6 @@ export async function fetchActivityLine(
   });
   return docs[0];
 }
-
-export const fetchWindsorDignity = () =>
-  fetchCollection<PayloadActivity>("windsor-dignity", NEWEST_FIRST);
 
 export const fetchPhotos = () => fetchCollection<PayloadPhoto>("photos", NEWEST_FIRST);
 

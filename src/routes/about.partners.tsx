@@ -27,7 +27,6 @@ function PartnersPage() {
       eyebrow={t("about")}
       eyebrowColor={SECTION_COLORS.about}
       title={(isArabic ? page?.titleAr : page?.title) || t("about.partners")}
-      description={(isArabic ? page?.descriptionAr : page?.description) || t("partners.page.desc")}
       body={body.length > 0 ? body : undefined}
     />
   );

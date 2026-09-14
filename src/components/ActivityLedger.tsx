@@ -31,9 +31,8 @@ const FORUM_TYPE_LABEL_KEY: Record<ForumType, TranslationKey> = {
  * pressing a row opens it in place.
  *
  * Everything except the date and the title lives inside the row. An entry may
- * carry a description, a write-up, photographs, or none of those, and hoisting
- * any of it into the list would leave the rows as ragged as the entries are
- * uneven.
+ * carry a write-up, photographs, or neither, and hoisting any of it into the
+ * list would leave the rows as ragged as the entries are uneven.
  */
 
 type Lang = "en" | "ar";
@@ -140,7 +139,6 @@ function ActivityEntry({
   // back, because every entry has one and a row cannot be blank -- but handing
   // an Arabic reader a paragraph of English, unannounced, is worse than
   // telling them the translation is coming.
-  const lead = isArabic ? item.descriptionAr : item.description;
   const body = isArabic ? item.contentAr : item.content;
   const figures = figuresOf(item, lang);
   const parts = dateParts(item.date, lang);
@@ -149,11 +147,8 @@ function ActivityEntry({
   // here rather than guessing.
   const typeLabel = item.forumType ? t(FORUM_TYPE_LABEL_KEY[item.forumType]) : null;
 
-  const prose = hasProse(lead) || hasProse(body);
-  const untranslated =
-    !prose &&
-    (hasProse(isArabic ? item.description : item.descriptionAr) ||
-      hasProse(isArabic ? item.content : item.contentAr));
+  const prose = hasProse(body);
+  const untranslated = !prose && hasProse(isArabic ? item.content : item.contentAr);
 
   // An entry with nothing behind it is a line of text, not a control: no
   // toggle, no pointer, nothing to press that would then do nothing. An entry
@@ -295,17 +290,8 @@ function ActivityEntry({
                   ))}
                 </div>
               )}
-              {hasProse(lead) && (
-                <RichText
-                  value={lead}
-                  className="font-serif text-[15px] leading-relaxed text-foreground/80 md:text-lg"
-                />
-              )}
               {hasProse(body) && (
-                <RichText
-                  value={body}
-                  className="mt-5 space-y-4 text-sm leading-7 text-foreground/70 md:text-[15px]"
-                />
+                <RichText value={body} className="space-y-4 text-sm leading-relaxed text-foreground/80" />
               )}
               {untranslated && <TranslationNotice />}
             </div>

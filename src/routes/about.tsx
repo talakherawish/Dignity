@@ -31,7 +31,6 @@ function AboutLayout() {
         eyebrow={t("about")}
         eyebrowColor={SECTION_COLORS.about}
         title={(isArabic ? page?.titleAr : page?.title) || t("about.initiative")}
-        description={(isArabic ? page?.descriptionAr : page?.description) || t("about.page.desc")}
         paragraphs={extractText(body)}
         items={extractListItems(body)}
       />

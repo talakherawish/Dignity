@@ -80,25 +80,14 @@ export const Research: CollectionConfig = {
       admin: { rtl: true },
     },
     {
-      name: 'description',
-      type: 'textarea',
-      label: 'Short Description (English)',
-    },
-    {
-      name: 'descriptionAr',
-      type: 'textarea',
-      label: 'Short Description (Arabic / الوصف بالعربية)',
-      admin: { rtl: true },
-    },
-    {
       name: 'content',
       type: 'richText',
-      label: 'Full Content (English)',
+      label: 'Content (English)',
     },
     {
       name: 'contentAr',
       type: 'richText',
-      label: 'Full Content (Arabic / المحتوى بالعربية)',
+      label: 'Content (Arabic / المحتوى بالعربية)',
     },
     {
       name: 'image',

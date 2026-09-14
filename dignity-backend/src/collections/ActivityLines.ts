@@ -1,15 +1,16 @@
 import type { CollectionConfig, CollectionSlug, Field } from 'payload'
 import { mirrorLinksOnChange, mirrorLinksOnDelete } from '../hooks/syncResearchLinks'
+import { singletonCreateAccess, singletonListView } from '../lib/singleton'
 
 /**
- * Task Force on AI and Idea Factory, each shaped like a Research line: a
- * title and its own write-up, plus the real Forums/Publications items
- * attached to it -- not freestanding items typed fresh under either page,
- * and not a field buried inside Forums/Publications either. Each is its own
- * collection (a sibling of Research/Forums under Activities in the admin,
- * not an entry inside Research's own list), holding a single document the
- * same way AboutPages.ts's two pages do -- edit the one that's there rather
- * than adding another.
+ * Task Force on AI, Idea Factory, and Windsor-Birzeit, each shaped like a
+ * Research line: a title and its own write-up, plus the real
+ * Forums/Publications items attached to it -- not freestanding items typed
+ * fresh under either page, and not a field buried inside Forums/Publications
+ * either. Each is its own collection (a sibling of Research/Forums under
+ * Activities in the admin, not an entry inside Research's own list), holding
+ * a single document the same way AboutPages.ts's two pages do -- edit the
+ * one that's there rather than adding another.
  *
  * The outputs use the exact relationship+mirror pattern Research already
  * uses for its own (see OUTPUT_LINKS in Research.ts and
@@ -43,25 +44,14 @@ function activityLineFields(): Field[] {
       admin: { rtl: true },
     },
     {
-      name: 'description',
-      type: 'textarea',
-      label: 'Short Description (English)',
-    },
-    {
-      name: 'descriptionAr',
-      type: 'textarea',
-      label: 'Short Description (Arabic / الوصف بالعربية)',
-      admin: { rtl: true },
-    },
-    {
       name: 'content',
       type: 'richText',
-      label: 'Full Content (English)',
+      label: 'Content (English)',
     },
     {
       name: 'contentAr',
       type: 'richText',
-      label: 'Full Content (Arabic / المحتوى بالعربية)',
+      label: 'Content (Arabic / المحتوى بالعربية)',
     },
     {
       name: 'image',
@@ -156,6 +146,7 @@ function activityLineCollection(
       useAsTitle: 'title',
       defaultColumns: ['title', 'status', 'updatedAt'],
       description,
+      components: { views: { list: singletonListView } },
     },
     versions: {
       drafts: true,
@@ -173,7 +164,7 @@ function activityLineCollection(
         if (req.user) return true
         return { _status: { equals: 'published' } }
       },
-      create: ({ req }) => !!req.user,
+      create: singletonCreateAccess(slug),
       update: ({ req }) => !!req.user,
       delete: ({ req }) => !!req.user,
     },
@@ -195,4 +186,12 @@ export const IdeaFactory = activityLineCollection(
   'Idea Factory',
   'Shows on the website under Activities → Idea Factory. Holds a single document -- edit the one that\'s there rather than adding another. The Forums/Publications selected below appear on its page, split into Activities and Publications.',
   'ideaFactoryLines',
+)
+
+export const WindsorBirzeit = activityLineCollection(
+  'windsor-birzeit',
+  'The Windsor Birzeit Dignity Initiative',
+  'The Windsor Birzeit Dignity Initiative',
+  'Shows on the website under Activities → The Windsor Birzeit Dignity Initiative. Holds a single document -- edit the one that\'s there rather than adding another. The Title field here is the page\'s own heading; the Forums/Publications selected below appear on its page, split into Activities and Publications.',
+  'windsorBirzeitLines',
 )

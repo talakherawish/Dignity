@@ -80,11 +80,7 @@ function ResearchPage() {
           <div className="grid gap-5 sm:grid-cols-2" dir={isArabic ? "rtl" : "ltr"}>
             {items.map((item) => {
               const title = lang === "ar" ? (item.titleAr ?? item.title) : item.title;
-              // description is a plain textarea on this collection, but extractText
-              // handles both that and richText — see its guard.
-              const desc = extractText(
-                lang === "ar" ? (item.descriptionAr ?? item.description) : item.description,
-              )[0];
+              const desc = extractText(lang === "ar" ? item.contentAr : item.content)[0];
               const image = mediaUrl(item.image);
               const outputs = outputCount(item);
               return (

@@ -5,14 +5,12 @@ export function SimplePage({
   eyebrow,
   eyebrowColor,
   title,
-  description,
   body,
   withImage = true,
 }: {
   eyebrow?: string;
   eyebrowColor?: string;
   title: string;
-  description?: string;
   body?: string[];
   withImage?: boolean;
 }) {
@@ -20,14 +18,12 @@ export function SimplePage({
   const paragraphs = body ?? [t("page.placeholder"), t("page.placeholder2")];
   return (
     <PageLayout>
-      <PageHero
-        eyebrow={eyebrow}
-        eyebrowColor={eyebrowColor}
-        title={title}
-        description={description}
-      />
+      <PageHero eyebrow={eyebrow} eyebrowColor={eyebrowColor} title={title} />
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 grid gap-12 lg:grid-cols-3">
-        <div className="lg:col-span-2 space-y-5 text-foreground/85 leading-relaxed">
+        {/* Same font size/weight as a page's short description elsewhere
+            (see PageHero) -- this is one merged CMS entry now, not a short
+            description plus a separately-styled write-up. */}
+        <div className="lg:col-span-2 space-y-5 text-sm text-muted-foreground leading-relaxed">
           {paragraphs.map((p, i) => (
             <p key={i}>{p}</p>
           ))}

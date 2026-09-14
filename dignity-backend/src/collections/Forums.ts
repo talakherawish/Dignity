@@ -18,11 +18,13 @@ export const Forums: CollectionConfig = {
       mirrorLinksOnChange({ field: 'researchLines', relationTo: 'research', mirrorField: 'relatedForums' }),
       mirrorLinksOnChange({ field: 'taskForceAILines', relationTo: 'task-force-ai', mirrorField: 'relatedForums' }),
       mirrorLinksOnChange({ field: 'ideaFactoryLines', relationTo: 'idea-factory', mirrorField: 'relatedForums' }),
+      mirrorLinksOnChange({ field: 'windsorBirzeitLines', relationTo: 'windsor-birzeit', mirrorField: 'relatedForums' }),
     ],
     afterDelete: [
       mirrorLinksOnDelete({ relationTo: 'research', mirrorField: 'relatedForums' }),
       mirrorLinksOnDelete({ relationTo: 'task-force-ai', mirrorField: 'relatedForums' }),
       mirrorLinksOnDelete({ relationTo: 'idea-factory', mirrorField: 'relatedForums' }),
+      mirrorLinksOnDelete({ relationTo: 'windsor-birzeit', mirrorField: 'relatedForums' }),
     ],
   },
   access: {
@@ -74,25 +76,14 @@ export const Forums: CollectionConfig = {
       ],
     },
     {
-      name: 'description',
-      type: 'textarea',
-      label: 'Short Description (English)',
-    },
-    {
-      name: 'descriptionAr',
-      type: 'textarea',
-      label: 'Short Description (Arabic / الوصف بالعربية)',
-      admin: { rtl: true },
-    },
-    {
       name: 'content',
       type: 'richText',
-      label: 'Full Content (English)',
+      label: 'Content (English)',
     },
     {
       name: 'contentAr',
       type: 'richText',
-      label: 'Full Content (Arabic / المحتوى بالعربية)',
+      label: 'Content (Arabic / المحتوى بالعربية)',
     },
     {
       name: 'image',
@@ -163,6 +154,17 @@ export const Forums: CollectionConfig = {
       relationTo: 'idea-factory',
       hasMany: true,
       label: 'Idea Factory',
+      admin: {
+        position: 'sidebar',
+        description: 'Shows up under that page\'s Activities section automatically.',
+      },
+    },
+    {
+      name: 'windsorBirzeitLines',
+      type: 'relationship',
+      relationTo: 'windsor-birzeit',
+      hasMany: true,
+      label: 'Windsor-Birzeit',
       admin: {
         position: 'sidebar',
         description: 'Shows up under that page\'s Activities section automatically.',

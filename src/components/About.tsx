@@ -66,14 +66,12 @@ export function AboutPage({
   eyebrow,
   eyebrowColor,
   title,
-  description,
   paragraphs,
   items,
 }: {
   eyebrow?: string;
   eyebrowColor?: string;
   title: string;
-  description?: string;
   paragraphs?: string[];
   items?: string[];
 }) {
@@ -130,31 +128,21 @@ export function AboutPage({
                 <h1 className="font-serif text-3xl md:text-4xl text-primary tracking-tight">
                   {title}
                 </h1>
-                {description && (
-                  <p className="mt-3 max-w-2xl mx-auto text-[17px] text-muted-foreground leading-relaxed whitespace-pre-line">
-                    {description}
-                  </p>
-                )}
               </Reveal>
             </div>
           </section>
 
-          {/* Intro prose */}
+          {/* Intro prose -- same font size/weight as a page's short
+              description elsewhere (see PageHero), now that the CMS holds
+              this as one entry instead of a separate short description plus
+              a heavier-styled write-up. */}
           <section className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
             <div
-              className={`space-y-5 text-[19px] leading-[1.85] text-foreground/90 ${isArabic ? "text-right" : ""}`}
+              className={`space-y-5 text-sm text-muted-foreground leading-relaxed ${isArabic ? "text-right" : ""}`}
             >
               {introParagraphs.map((p, i) => (
                 <Reveal key={i} delay={i * 90}>
-                  <p
-                    className={
-                      i === 0
-                        ? `text-lg md:text-xl font-medium text-foreground leading-[1.7] ${isArabic ? "" : "first-letter:font-serif first-letter:text-4xl first-letter:text-primary first-letter:leading-none first-letter:me-1 first-letter:font-normal"}`
-                        : ""
-                    }
-                  >
-                    {p}
-                  </p>
+                  <p>{p}</p>
                 </Reveal>
               ))}
             </div>
