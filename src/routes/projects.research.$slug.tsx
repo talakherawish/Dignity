@@ -152,8 +152,6 @@ function ResearchDetailPage() {
 
   return (
     <PageLayout>
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">{backLink}</div>
-
       <PageHero
         eyebrow={isArabic ? "نشاطات — المشاريع البحثية" : "Activities — Research Projects"}
         eyebrowColor={SECTION_COLORS.activities}
