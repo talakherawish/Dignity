@@ -176,6 +176,14 @@ export interface User {
    * Only a Content Manager can change this. Editors can do everything else — including editing other users' profiles — except add or remove accounts.
    */
   role: 'content-manager' | 'editor';
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  updatedBy?: (string | null) | User;
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  createdBy?: (string | null) | User;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -209,6 +217,14 @@ export interface Media {
    */
   thumbnail?: (string | null) | Media;
   thumbnailIsAuto?: boolean | null;
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  updatedBy?: (string | null) | User;
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  createdBy?: (string | null) | User;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -233,6 +249,14 @@ export interface Recipient {
   lastName: string;
   email: string;
   phone: string;
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  updatedBy?: (string | null) | User;
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  createdBy?: (string | null) | User;
   updatedAt: string;
   createdAt: string;
 }
@@ -280,6 +304,14 @@ export interface AboutInitiative {
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
   publicationStatus?: string | null;
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  updatedBy?: (string | null) | User;
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  createdBy?: (string | null) | User;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -316,6 +348,14 @@ export interface Participant {
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
   publicationStatus?: string | null;
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  updatedBy?: (string | null) | User;
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  createdBy?: (string | null) | User;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -372,6 +412,14 @@ export interface News {
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
   publicationStatus?: string | null;
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  updatedBy?: (string | null) | User;
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  createdBy?: (string | null) | User;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -410,6 +458,14 @@ export interface Photo {
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
   publicationStatus?: string | null;
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  updatedBy?: (string | null) | User;
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  createdBy?: (string | null) | User;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -488,6 +544,14 @@ export interface Forum {
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
   publicationStatus?: string | null;
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  updatedBy?: (string | null) | User;
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  createdBy?: (string | null) | User;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -557,6 +621,14 @@ export interface Research {
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
   publicationStatus?: string | null;
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  updatedBy?: (string | null) | User;
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  createdBy?: (string | null) | User;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -620,6 +692,14 @@ export interface Book {
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
   publicationStatus?: string | null;
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  updatedBy?: (string | null) | User;
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  createdBy?: (string | null) | User;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -680,6 +760,14 @@ export interface TaskForceAi {
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
   publicationStatus?: string | null;
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  updatedBy?: (string | null) | User;
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  createdBy?: (string | null) | User;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -743,6 +831,14 @@ export interface Paper {
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
   publicationStatus?: string | null;
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  updatedBy?: (string | null) | User;
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  createdBy?: (string | null) | User;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -803,6 +899,14 @@ export interface IdeaFactory {
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
   publicationStatus?: string | null;
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  updatedBy?: (string | null) | User;
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  createdBy?: (string | null) | User;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -866,6 +970,14 @@ export interface Report {
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
   publicationStatus?: string | null;
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  updatedBy?: (string | null) | User;
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  createdBy?: (string | null) | User;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -929,6 +1041,14 @@ export interface Brochure {
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
   publicationStatus?: string | null;
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  updatedBy?: (string | null) | User;
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  createdBy?: (string | null) | User;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -992,6 +1112,14 @@ export interface Thesis {
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
   publicationStatus?: string | null;
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  updatedBy?: (string | null) | User;
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  createdBy?: (string | null) | User;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -1055,6 +1183,14 @@ export interface Audiovisual {
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
   publicationStatus?: string | null;
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  updatedBy?: (string | null) | User;
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  createdBy?: (string | null) | User;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -1118,6 +1254,14 @@ export interface Poster {
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
   publicationStatus?: string | null;
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  updatedBy?: (string | null) | User;
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  createdBy?: (string | null) | User;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -1145,6 +1289,14 @@ export interface Clipping {
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
   publicationStatus?: string | null;
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  updatedBy?: (string | null) | User;
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  createdBy?: (string | null) | User;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -1205,6 +1357,14 @@ export interface WindsorBirzeit {
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
   publicationStatus?: string | null;
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  updatedBy?: (string | null) | User;
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  createdBy?: (string | null) | User;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -1231,6 +1391,14 @@ export interface Sticker {
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
   publicationStatus?: string | null;
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  updatedBy?: (string | null) | User;
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  createdBy?: (string | null) | User;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -1279,6 +1447,14 @@ export interface Partner {
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
   publicationStatus?: string | null;
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  updatedBy?: (string | null) | User;
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  createdBy?: (string | null) | User;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -1343,6 +1519,14 @@ export interface ReadingsDocument {
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
   publicationStatus?: string | null;
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  updatedBy?: (string | null) | User;
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  createdBy?: (string | null) | User;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -1407,6 +1591,14 @@ export interface Database {
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
   publicationStatus?: string | null;
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  updatedBy?: (string | null) | User;
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  createdBy?: (string | null) | User;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -1580,6 +1772,8 @@ export interface PayloadMigration {
 export interface UsersSelect<T extends boolean = true> {
   name?: T;
   role?: T;
+  updatedBy?: T;
+  createdBy?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -1605,6 +1799,8 @@ export interface MediaSelect<T extends boolean = true> {
   alt?: T;
   thumbnail?: T;
   thumbnailIsAuto?: T;
+  updatedBy?: T;
+  createdBy?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -1626,6 +1822,8 @@ export interface RecipientsSelect<T extends boolean = true> {
   lastName?: T;
   email?: T;
   phone?: T;
+  updatedBy?: T;
+  createdBy?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1639,6 +1837,8 @@ export interface AboutInitiativeSelect<T extends boolean = true> {
   body?: T;
   bodyAr?: T;
   publicationStatus?: T;
+  updatedBy?: T;
+  createdBy?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -1659,6 +1859,8 @@ export interface ParticipantsSelect<T extends boolean = true> {
   bioAr?: T;
   photo?: T;
   publicationStatus?: T;
+  updatedBy?: T;
+  createdBy?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -1678,6 +1880,8 @@ export interface NewsSelect<T extends boolean = true> {
   image?: T;
   displayMode?: T;
   publicationStatus?: T;
+  updatedBy?: T;
+  createdBy?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -1695,6 +1899,8 @@ export interface PhotosSelect<T extends boolean = true> {
   taggedParticipants?: T;
   researchLines?: T;
   publicationStatus?: T;
+  updatedBy?: T;
+  createdBy?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -1710,6 +1916,8 @@ export interface ClippingsSelect<T extends boolean = true> {
   image?: T;
   researchLines?: T;
   publicationStatus?: T;
+  updatedBy?: T;
+  createdBy?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -1724,6 +1932,8 @@ export interface StickersSelect<T extends boolean = true> {
   date?: T;
   image?: T;
   publicationStatus?: T;
+  updatedBy?: T;
+  createdBy?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -1738,6 +1948,8 @@ export interface PartnersSelect<T extends boolean = true> {
   body?: T;
   bodyAr?: T;
   publicationStatus?: T;
+  updatedBy?: T;
+  createdBy?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -1764,6 +1976,8 @@ export interface ResearchSelect<T extends boolean = true> {
   relatedPhotos?: T;
   relatedForums?: T;
   publicationStatus?: T;
+  updatedBy?: T;
+  createdBy?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -1793,6 +2007,8 @@ export interface ForumsSelect<T extends boolean = true> {
   ideaFactoryLines?: T;
   windsorBirzeitLines?: T;
   publicationStatus?: T;
+  updatedBy?: T;
+  createdBy?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -1816,6 +2032,8 @@ export interface WindsorBirzeitSelect<T extends boolean = true> {
   relatedAudiovisual?: T;
   relatedPosters?: T;
   publicationStatus?: T;
+  updatedBy?: T;
+  createdBy?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -1839,6 +2057,8 @@ export interface IdeaFactorySelect<T extends boolean = true> {
   relatedAudiovisual?: T;
   relatedPosters?: T;
   publicationStatus?: T;
+  updatedBy?: T;
+  createdBy?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -1862,6 +2082,8 @@ export interface TaskForceAiSelect<T extends boolean = true> {
   relatedAudiovisual?: T;
   relatedPosters?: T;
   publicationStatus?: T;
+  updatedBy?: T;
+  createdBy?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -1889,6 +2111,8 @@ export interface BooksSelect<T extends boolean = true> {
   taskForceAILines?: T;
   ideaFactoryLines?: T;
   publicationStatus?: T;
+  updatedBy?: T;
+  createdBy?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -1916,6 +2140,8 @@ export interface PapersSelect<T extends boolean = true> {
   taskForceAILines?: T;
   ideaFactoryLines?: T;
   publicationStatus?: T;
+  updatedBy?: T;
+  createdBy?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -1943,6 +2169,8 @@ export interface ReportsSelect<T extends boolean = true> {
   taskForceAILines?: T;
   ideaFactoryLines?: T;
   publicationStatus?: T;
+  updatedBy?: T;
+  createdBy?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -1970,6 +2198,8 @@ export interface BrochuresSelect<T extends boolean = true> {
   taskForceAILines?: T;
   ideaFactoryLines?: T;
   publicationStatus?: T;
+  updatedBy?: T;
+  createdBy?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -1997,6 +2227,8 @@ export interface ThesesSelect<T extends boolean = true> {
   taskForceAILines?: T;
   ideaFactoryLines?: T;
   publicationStatus?: T;
+  updatedBy?: T;
+  createdBy?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -2024,6 +2256,8 @@ export interface AudiovisualSelect<T extends boolean = true> {
   taskForceAILines?: T;
   ideaFactoryLines?: T;
   publicationStatus?: T;
+  updatedBy?: T;
+  createdBy?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -2051,6 +2285,8 @@ export interface PostersSelect<T extends boolean = true> {
   taskForceAILines?: T;
   ideaFactoryLines?: T;
   publicationStatus?: T;
+  updatedBy?: T;
+  createdBy?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -2069,6 +2305,8 @@ export interface ReadingsDocumentsSelect<T extends boolean = true> {
   file?: T;
   fileAr?: T;
   publicationStatus?: T;
+  updatedBy?: T;
+  createdBy?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -2087,6 +2325,8 @@ export interface DatabasesSelect<T extends boolean = true> {
   file?: T;
   fileAr?: T;
   publicationStatus?: T;
+  updatedBy?: T;
+  createdBy?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -2259,6 +2499,10 @@ export interface SiteSetting {
   forumTypeConferenceAr?: string | null;
   forumTypeEncounters?: string | null;
   forumTypeEncountersAr?: string | null;
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  updatedBy?: (string | null) | User;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -2384,6 +2628,7 @@ export interface SiteSettingsSelect<T extends boolean = true> {
   forumTypeConferenceAr?: T;
   forumTypeEncounters?: T;
   forumTypeEncountersAr?: T;
+  updatedBy?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

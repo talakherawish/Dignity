@@ -10,6 +10,7 @@ import sharp from 'sharp'
 import { createGithubStorageAdapter } from './lib/githubStorageAdapter'
 import { enforceBilingual, enforceBilingualGlobal } from './lib/bilingual'
 import { withPublicationStatus } from './lib/publicationStatus'
+import { withEditTracking, withEditTrackingGlobal } from './lib/editTracking'
 import { resolveGithubStorageConfig } from './lib/storageConfig'
 import { resolveEmailConfig } from './lib/emailConfig'
 
@@ -71,8 +72,10 @@ export default buildConfig({
   // languages before a document can be published — see src/lib/bilingual.ts.
   // Also wrapped in withPublicationStatus(), which adds an explicit
   // "Published?" field to every collection with a draft/publish workflow —
-  // see src/lib/publicationStatus.ts. Wrapping both centrally means new
-  // collections are covered automatically.
+  // see src/lib/publicationStatus.ts. And withEditTracking(), which adds
+  // "Last Edited By" / "Created By" sidebar fields set automatically from
+  // whoever's logged in — see src/lib/editTracking.ts. Wrapping all three
+  // centrally means new collections are covered automatically.
   collections: [
     // Admin
     Users,
@@ -113,8 +116,9 @@ export default buildConfig({
     Databases,
   ]
     .map(withPublicationStatus)
-    .map(enforceBilingual),
-  globals: [SiteSettings].map(enforceBilingualGlobal),
+    .map(enforceBilingual)
+    .map(withEditTracking),
+  globals: [SiteSettings].map(enforceBilingualGlobal).map(withEditTrackingGlobal),
   editor: lexicalEditor(),
   cors: process.env.CORS_ORIGINS
   ? process.env.CORS_ORIGINS.split(',').map((s) => s.trim())
