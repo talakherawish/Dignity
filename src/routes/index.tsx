@@ -252,7 +252,7 @@ function LatestNewsAndAnnouncements() {
   // resolves against that row like before.
   return (
     <div
-      className="flex h-full min-h-0 flex-col gap-8 md:grid md:grid-cols-[2fr_3fr] md:gap-12"
+      className="flex h-full min-h-0 flex-col gap-8 md:grid md:grid-cols-[1fr_1fr] md:gap-12"
       dir={isArabic ? "rtl" : "ltr"}
     >
       <div className="min-h-0 flex-1 md:contents">

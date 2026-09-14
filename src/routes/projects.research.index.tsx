@@ -3,13 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { ArrowRight } from "lucide-react";
 import { PageLayout, PageHero } from "@/components/PageLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
-import {
-  fetchResearch,
-  extractText,
-  mediaUrl,
-  populated,
-  type PayloadResearchActivity,
-} from "@/lib/payload";
+import { fetchResearch, mediaUrl, populated, type PayloadResearchActivity } from "@/lib/payload";
 import { SECTION_COLORS } from "@/lib/sectionColors";
 export const Route = createFileRoute("/projects/research/")({
   component: ResearchPage,
@@ -80,7 +74,6 @@ function ResearchPage() {
           <div className="grid gap-5 sm:grid-cols-2" dir={isArabic ? "rtl" : "ltr"}>
             {items.map((item) => {
               const title = lang === "ar" ? (item.titleAr ?? item.title) : item.title;
-              const desc = extractText(lang === "ar" ? item.contentAr : item.content)[0];
               const image = mediaUrl(item.image);
               const outputs = outputCount(item);
               return (
@@ -106,14 +99,9 @@ function ResearchPage() {
                     </div>
                   )}
                   <div className="p-6 flex-1 flex flex-col">
-                    <h2 className="font-serif text-lg text-primary leading-snug group-hover:text-accent transition-colors">
+                    <h2 className="font-serif text-lg text-primary leading-snug group-hover:text-accent transition-colors flex-1">
                       {title}
                     </h2>
-                    {desc && (
-                      <p className="text-sm text-muted-foreground leading-relaxed mt-2 flex-1">
-                        {desc}
-                      </p>
-                    )}
                     <div
                       className={
                         "mt-4 flex items-center gap-1.5 text-xs font-medium text-muted-foreground group-hover:text-accent transition-colors" +
