@@ -138,7 +138,7 @@ export function AboutPage({
               a heavier-styled write-up. */}
           <section className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
             <div
-              className={`space-y-5 text-sm text-muted-foreground leading-relaxed ${isArabic ? "text-right" : ""}`}
+              className={`space-y-5 text-sm text-foreground leading-relaxed ${isArabic ? "text-right" : ""}`}
             >
               {introParagraphs.map((p, i) => (
                 <Reveal key={i} delay={i * 90}>

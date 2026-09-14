@@ -291,7 +291,7 @@ function ActivityEntry({
                 </div>
               )}
               {hasProse(body) && (
-                <RichText value={body} className="space-y-4 text-sm leading-relaxed text-foreground/80" />
+                <RichText value={body} className="space-y-4 text-sm leading-relaxed text-foreground" />
               )}
               {untranslated && <TranslationNotice />}
             </div>

@@ -23,7 +23,7 @@ export function SimplePage({
         {/* Same font size/weight as a page's short description elsewhere
             (see PageHero) -- this is one merged CMS entry now, not a short
             description plus a separately-styled write-up. */}
-        <div className="lg:col-span-2 space-y-5 text-sm text-muted-foreground leading-relaxed">
+        <div className="lg:col-span-2 space-y-5 text-sm text-foreground leading-relaxed">
           {paragraphs.map((p, i) => (
             <p key={i}>{p}</p>
           ))}

@@ -178,7 +178,7 @@ function ResearchDetailPage() {
         {hasProse(body) ? (
           <RichText
             value={body}
-            className="mt-8 space-y-5 text-sm text-muted-foreground leading-relaxed opacity-0 animate-[fadeIn_0.8s_ease-in-out_0.3s_forwards]"
+            className="mt-8 space-y-5 text-sm text-foreground leading-relaxed opacity-0 animate-[fadeIn_0.8s_ease-in-out_0.3s_forwards]"
           />
         ) : untranslated ? (
           <TranslationNotice className="mt-8" />
