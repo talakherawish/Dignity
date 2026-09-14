@@ -1,6 +1,6 @@
 # Dignity Initiative — Progress Report
-**Updated:** 2026-09-12  
-**Reporting period:** 2026-08-08 to 2026-09-12
+**Updated:** 2026-09-14  
+**Reporting period:** 2026-08-08 to 2026-09-14
 
 ---
 
@@ -13,6 +13,33 @@ Infrastructure work is finished. HTTPS renews itself, backups run nightly and ha
 **Oracle is the permanent home.** The university has no hosting capacity; they will only map a domain to this IP. Backups, uptime and deployment are therefore ours to own.
 
 **Engineering didn't stop after that.** 2026-08-17 to 2026-08-28 added a real content-model consolidation (Seminars/Conferences/Meetings merged into one "Forums" collection, Announcements folded into News), a homepage and navigation redesign, and several new features — mailing-list signup, bidirectional research-to-output linking, photo tagging. See *Website work — 2026-08-17 to 2026-08-28*, below. **Two migration scripts from that work still need to run against production**, and one schema change has no migration at all yet — both flagged at the top of that section, and worth resolving before treating this as settled history.
+
+---
+
+## Website work — 2026-09-14 (~3¼ hrs, 05:20–08:19)
+
+Profile-card polish first, then a content-model change spanning six collections, a structural rebuild of one page, and several rounds of same-morning client feedback.
+
+- **Profile card avatars restored to overlapping the card's top edge.** The round photo now floats above the card with its vertical center on the card's own top border — the design from before af82dac reverted it to fix a long-bio overflow bug. This time the wrapper is a flex column capped at `max-h-[90vh]`, with the card itself (not the whole wrapper) as the scrollable piece, so a long bio can no longer push the avatar or the modal past the viewport the way it did before. Applied to both the homepage `TeamModal` and `/about/participants`' `ParticipantModal`.
+
+**Short description + full write-up merged into one field, across About Initiative, Partners, Task Force on AI, Idea Factory, Research, and Forums.** The client wanted one CMS entry instead of two, displayed the way the short description used to look.
+
+- **Data migrated, not discarded.** A script (`dignity-backend/scripts/merge-description-into-content.ts`) read every document's short description and write-up, wrote a full backup of anything about to change to a local JSON file *before* writing anything, then prepended the description's text as opening paragraph(s) of the write-up's Lexical richText field. Of the collections touched, only About Initiative, Partners, and 3 Forums entries actually had data in both fields; Research's short descriptions were all empty.
+- **A real bug, caught and fixed the same session:** the collection schema files were edited (removing the now-redundant `description` field) while the migration script was still starting up in the background. A race condition meant the script loaded the *new* schema for Research/Forums/Task Force on AI/Idea Factory/Windsor before it ran, silently making their `description` field invisible to it — it skipped documents it should have merged, including Forums' real content. Caught by re-inspecting the data afterward rather than assuming success, the schema changes were reverted, the migration re-run properly (waiting for full completion before touching any file this time), confirmed correct, then the schema fields were removed for real.
+- **Every place this text renders was restyled** to the smaller, muted "short description" look instead of the old heavier one (About's drop-cap first paragraph, Research/Idea Factory's larger body text, Forums' two-tier lead+body) — then, after a follow-up client note, recolored from muted gray to plain black, keeping the same size.
+
+**Windsor-Birzeit rebuilt as a proper Activity Line.** A client screenshot showed the page's title being edited in the admin as a *new list entry* instead of the actual page heading — because the old `windsor-dignity` collection was a freestanding ledger (title/date/content per entry) with no way to set the page's own heading at all. Rebuilt to match Task Force on AI / Idea Factory exactly: a singleton page whose Title field *is* the heading, with activities added by attaching Forums entries to it rather than typed fresh. The old collection (and the one empty stray document created while testing) was deleted after confirming with the client. **Windsor-Birzeit's page itself has no content yet** — it's an empty singleton waiting for a title/write-up and any Forums entries to attach.
+
+**Singleton admin UX added**, for the five collections meant to hold exactly one document (About Initiative, Partners, Task Force on AI, Idea Factory, Windsor-Birzeit): opening the collection in the admin now goes straight to that one document (or its create form, if empty) instead of the list-with-a-Create-New-button screen the client found confusing, and creating a second document is now blocked at the access-control level, not just discouraged by convention. New: `dignity-backend/src/lib/singleton.ts`, `dignity-backend/src/components/admin/SingletonListView.tsx`.
+
+**"Last Edited By" / "Created By" added, site-wide.** Payload's version history already tracks *when* a document changed but not *who* — real (non-virtual) sidebar fields now record the logged-in user on every save, applied centrally to every collection and global the same way bilingual enforcement and the publication-status column already are, so new collections pick it up automatically. Admin-only read access, so the public website's own API responses don't expose which staff member last touched a document. New: `dignity-backend/src/lib/editTracking.ts`.
+
+**Same-morning follow-up fixes, from live-site feedback:**
+- Homepage "Latest News" image/list split changed from 2fr/3fr (40/60) to an even 1fr/1fr.
+- The Research listing page's card excerpt (added as part of the merge above) removed — one research area's write-up wasn't split into short paragraphs, so its entire body rendered inside the grid card instead of a short preview, breaking the layout. Body content now shows only on a research area's own page, same as before.
+- The "All research →" back-link removed from the top of a research project's own page (still shown on the not-found state).
+
+**Not verified in the browser this session** — the admin-UX and edit-tracking changes were checked by type-checking cleanly and a clean dev-server boot with no console errors, but not clicked through end-to-end in the live admin (no login credentials on hand, and per standing instruction this gets left to manual verification). Worth a manual pass through the singleton redirect on all five collections and a check that "Last Edited By" actually populates on a real save.
 
 ---
 
@@ -405,6 +432,8 @@ Considered moving MongoDB onto the Oracle instance for single-vendor tidiness. *
 16. **Add Carmen Claessen and Peter Bagin as Participants** (`category: intern`) — the bilingual field values were worked out 2026-09-06 in conversation, just not yet entered into the admin. Do not publish Peter Bagin's Swedish personal ID number or the personal email/phone from his internship agreement.
 17. **Check whether `navAboutFellows` already has a saved override in Site Settings.** The code default for the About-menu label was renamed from "Participants" to "Working Group" on 2026-09-10, but Site Settings values win over code defaults (same class of issue as item 15, the Posters label) — if an editor ever saved custom text for that key, the live About dropdown may still read "Participants" until it's edited by hand.
 18. Optional: confirm what `image.png` (uploaded to the media library 2026-09-11, 309KB) is actually attached to — the admin-triggered commit that added it carries no other context.
+19. **Fill in Windsor-Birzeit's own page.** Rebuilt 2026-09-14 as a singleton (see that section), but the document itself is empty — needs a Title/write-up and any Forums entries attached as its activities.
+20. **Manually verify the 2026-09-14 admin changes in the live admin** — the singleton redirect (About Initiative, Partners, Task Force on AI, Idea Factory, Windsor-Birzeit) and the new "Last Edited By"/"Created By" fields were type-checked and boot-tested but not clicked through end-to-end.
 
 ---
 
