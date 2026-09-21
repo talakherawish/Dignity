@@ -689,6 +689,10 @@ export interface Book {
    */
   ideaFactoryLines?: (string | IdeaFactory)[] | null;
   /**
+   * Shows up under that page's Publications section automatically.
+   */
+  windsorBirzeitLines?: (string | WindsorBirzeit)[] | null;
+  /**
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
   publicationStatus?: string | null;
@@ -827,6 +831,10 @@ export interface Paper {
    * Shows up under that page's Publications section automatically.
    */
   ideaFactoryLines?: (string | IdeaFactory)[] | null;
+  /**
+   * Shows up under that page's Publications section automatically.
+   */
+  windsorBirzeitLines?: (string | WindsorBirzeit)[] | null;
   /**
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
@@ -967,6 +975,78 @@ export interface Report {
    */
   ideaFactoryLines?: (string | IdeaFactory)[] | null;
   /**
+   * Shows up under that page's Publications section automatically.
+   */
+  windsorBirzeitLines?: (string | WindsorBirzeit)[] | null;
+  /**
+   * Read-only. Reflects the Publish / Save as Draft state above.
+   */
+  publicationStatus?: string | null;
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  updatedBy?: (string | null) | User;
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  createdBy?: (string | null) | User;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Shows on the website under Activities → The Windsor Birzeit Dignity Initiative. Holds a single document -- edit the one that's there rather than adding another. The Title field here is the page's own heading; the Forums/Publications selected below appear on its page, split into Activities and Publications.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "windsor-birzeit".
+ */
+export interface WindsorBirzeit {
+  id: string;
+  title: string;
+  titleAr: string;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  contentAr?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  image?: (string | null) | Media;
+  /**
+   * Seminars, roundtables, workshops, and conferences related to this. Shown under this page's Activities section.
+   */
+  relatedForums?: (string | Forum)[] | null;
+  relatedBooks?: (string | Book)[] | null;
+  relatedPapers?: (string | Paper)[] | null;
+  relatedReports?: (string | Report)[] | null;
+  relatedBrochures?: (string | Brochure)[] | null;
+  relatedTheses?: (string | Thesis)[] | null;
+  relatedAudiovisual?: (string | Audiovisual)[] | null;
+  relatedPosters?: (string | Poster)[] | null;
+  /**
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
   publicationStatus?: string | null;
@@ -1037,6 +1117,10 @@ export interface Brochure {
    * Shows up under that page's Publications section automatically.
    */
   ideaFactoryLines?: (string | IdeaFactory)[] | null;
+  /**
+   * Shows up under that page's Publications section automatically.
+   */
+  windsorBirzeitLines?: (string | WindsorBirzeit)[] | null;
   /**
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
@@ -1109,6 +1193,10 @@ export interface Thesis {
    */
   ideaFactoryLines?: (string | IdeaFactory)[] | null;
   /**
+   * Shows up under that page's Publications section automatically.
+   */
+  windsorBirzeitLines?: (string | WindsorBirzeit)[] | null;
+  /**
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
   publicationStatus?: string | null;
@@ -1179,6 +1267,10 @@ export interface Audiovisual {
    * Shows up under that page's Publications section automatically.
    */
   ideaFactoryLines?: (string | IdeaFactory)[] | null;
+  /**
+   * Shows up under that page's Publications section automatically.
+   */
+  windsorBirzeitLines?: (string | WindsorBirzeit)[] | null;
   /**
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
@@ -1251,6 +1343,10 @@ export interface Poster {
    */
   ideaFactoryLines?: (string | IdeaFactory)[] | null;
   /**
+   * Shows up under that page's Publications section automatically.
+   */
+  windsorBirzeitLines?: (string | WindsorBirzeit)[] | null;
+  /**
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
   publicationStatus?: string | null;
@@ -1285,74 +1381,6 @@ export interface Clipping {
    * Which research line(s) this clipping is about. Shows up on that research line's page automatically.
    */
   researchLines?: (string | Research)[] | null;
-  /**
-   * Read-only. Reflects the Publish / Save as Draft state above.
-   */
-  publicationStatus?: string | null;
-  /**
-   * Set automatically -- not editable by hand.
-   */
-  updatedBy?: (string | null) | User;
-  /**
-   * Set automatically -- not editable by hand.
-   */
-  createdBy?: (string | null) | User;
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
-}
-/**
- * Shows on the website under Activities → The Windsor Birzeit Dignity Initiative. Holds a single document -- edit the one that's there rather than adding another. The Title field here is the page's own heading; the Forums/Publications selected below appear on its page, split into Activities and Publications.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "windsor-birzeit".
- */
-export interface WindsorBirzeit {
-  id: string;
-  title: string;
-  titleAr: string;
-  content?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  contentAr?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  image?: (string | null) | Media;
-  /**
-   * Seminars, roundtables, workshops, and conferences related to this. Shown under this page's Activities section.
-   */
-  relatedForums?: (string | Forum)[] | null;
-  relatedBooks?: (string | Book)[] | null;
-  relatedPapers?: (string | Paper)[] | null;
-  relatedReports?: (string | Report)[] | null;
-  relatedBrochures?: (string | Brochure)[] | null;
-  relatedTheses?: (string | Thesis)[] | null;
-  relatedAudiovisual?: (string | Audiovisual)[] | null;
-  relatedPosters?: (string | Poster)[] | null;
   /**
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
@@ -2110,6 +2138,7 @@ export interface BooksSelect<T extends boolean = true> {
   researchLines?: T;
   taskForceAILines?: T;
   ideaFactoryLines?: T;
+  windsorBirzeitLines?: T;
   publicationStatus?: T;
   updatedBy?: T;
   createdBy?: T;
@@ -2139,6 +2168,7 @@ export interface PapersSelect<T extends boolean = true> {
   researchLines?: T;
   taskForceAILines?: T;
   ideaFactoryLines?: T;
+  windsorBirzeitLines?: T;
   publicationStatus?: T;
   updatedBy?: T;
   createdBy?: T;
@@ -2168,6 +2198,7 @@ export interface ReportsSelect<T extends boolean = true> {
   researchLines?: T;
   taskForceAILines?: T;
   ideaFactoryLines?: T;
+  windsorBirzeitLines?: T;
   publicationStatus?: T;
   updatedBy?: T;
   createdBy?: T;
@@ -2197,6 +2228,7 @@ export interface BrochuresSelect<T extends boolean = true> {
   researchLines?: T;
   taskForceAILines?: T;
   ideaFactoryLines?: T;
+  windsorBirzeitLines?: T;
   publicationStatus?: T;
   updatedBy?: T;
   createdBy?: T;
@@ -2226,6 +2258,7 @@ export interface ThesesSelect<T extends boolean = true> {
   researchLines?: T;
   taskForceAILines?: T;
   ideaFactoryLines?: T;
+  windsorBirzeitLines?: T;
   publicationStatus?: T;
   updatedBy?: T;
   createdBy?: T;
@@ -2255,6 +2288,7 @@ export interface AudiovisualSelect<T extends boolean = true> {
   researchLines?: T;
   taskForceAILines?: T;
   ideaFactoryLines?: T;
+  windsorBirzeitLines?: T;
   publicationStatus?: T;
   updatedBy?: T;
   createdBy?: T;
@@ -2284,6 +2318,7 @@ export interface PostersSelect<T extends boolean = true> {
   researchLines?: T;
   taskForceAILines?: T;
   ideaFactoryLines?: T;
+  windsorBirzeitLines?: T;
   publicationStatus?: T;
   updatedBy?: T;
   createdBy?: T;

@@ -160,17 +160,29 @@ function publicationFields(): Field[] {
         description: 'Shows up under that page\'s Publications section automatically.',
       },
     },
+    {
+      name: 'windsorBirzeitLines',
+      type: 'relationship',
+      relationTo: 'windsor-birzeit',
+      hasMany: true,
+      label: 'Windsor-Birzeit',
+      admin: {
+        position: 'sidebar',
+        description: 'Shows up under that page\'s Publications section automatically.',
+      },
+    },
   ]
 }
 
 /**
  * `relatedField` is the matching `related*` field back on Research/Task
- * Force on AI/Idea Factory (see OUTPUT_LINKS in Research.ts and
- * ACTIVITY_LINE_OUTPUTS in ActivityLines.ts) -- all three name their own
+ * Force on AI/Idea Factory/Windsor-Birzeit (see OUTPUT_LINKS in Research.ts
+ * and ACTIVITY_LINE_OUTPUTS in ActivityLines.ts) -- all four name their own
  * `related*` field for a given type identically (e.g. `relatedBooks`), so
- * the one string mirrors this collection's `researchLines`, `taskForceAILines`
- * and `ideaFactoryLines` fields against all three. An editor can attach the
- * link from either side. See src/hooks/syncResearchLinks.ts.
+ * the one string mirrors this collection's `researchLines`, `taskForceAILines`,
+ * `ideaFactoryLines` and `windsorBirzeitLines` fields against all four. An
+ * editor can attach the link from either side. See
+ * src/hooks/syncResearchLinks.ts.
  */
 function publicationCollection(
   slug: CollectionSlug,
@@ -196,11 +208,13 @@ function publicationCollection(
         mirrorLinksOnChange({ field: 'researchLines', relationTo: 'research', mirrorField: relatedField }),
         mirrorLinksOnChange({ field: 'taskForceAILines', relationTo: 'task-force-ai', mirrorField: relatedField }),
         mirrorLinksOnChange({ field: 'ideaFactoryLines', relationTo: 'idea-factory', mirrorField: relatedField }),
+        mirrorLinksOnChange({ field: 'windsorBirzeitLines', relationTo: 'windsor-birzeit', mirrorField: relatedField }),
       ],
       afterDelete: [
         mirrorLinksOnDelete({ relationTo: 'research', mirrorField: relatedField }),
         mirrorLinksOnDelete({ relationTo: 'task-force-ai', mirrorField: relatedField }),
         mirrorLinksOnDelete({ relationTo: 'idea-factory', mirrorField: relatedField }),
+        mirrorLinksOnDelete({ relationTo: 'windsor-birzeit', mirrorField: relatedField }),
       ],
     },
     access: {
