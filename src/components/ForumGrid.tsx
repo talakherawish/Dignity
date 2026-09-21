@@ -14,15 +14,14 @@ import {
 } from "@/lib/payload";
 
 /**
- * The poster wall for Forums attached to a Research area, Task Force on AI,
- * Idea Factory, or Windsor-Birzeit.
+ * The poster wall every Forum is shown in: the Forums page itself, and the
+ * Forums attached to a Research area, Task Force on AI, Idea Factory, or
+ * Windsor-Birzeit. One component so they can't drift into separate looks.
  *
- * Each card used to be a link out to /activities/forums, which is a dated
- * ledger -- a different page, and a plainer one, than the posters that made
- * someone want to click. Pressing a poster now opens that same card in place:
- * it grows to the full width of the wall, showing the whole poster (a card
- * crops it, and the poster's own lettering carries the date and title), the
- * write-up and the photographs, and pressing it again shrinks it back.
+ * Pressing a poster opens that same card in place: it grows to the full width
+ * of the wall, showing the whole poster (a card crops it, and the poster's own
+ * lettering carries the date and title), the write-up and the photographs, and
+ * pressing it again shrinks it back.
  *
  * Cards take the shape of their image: a wide poster makes a wide card, an
  * upright one a tall card, so nothing is cropped into a box it doesn't fit.
@@ -345,10 +344,12 @@ function ForumCardOpen({
   item,
   onToggle,
   cardRef,
+  showForumsLink,
 }: {
   item: PayloadActivity;
   onToggle: () => void;
   cardRef: (el: HTMLElement | null) => void;
+  showForumsLink: boolean;
 }) {
   const { lang, isArabic } = useLanguage();
   const title = lang === "ar" ? (item.titleAr ?? item.title) : item.title;
@@ -362,8 +363,8 @@ function ForumCardOpen({
   const wide = isWide(item);
   const beside = Boolean(poster) && !wide;
 
-  // Prose is the visitor's own language only, matching the ledger: an entry
-  // written up only in the other language says so rather than serving it.
+  // Prose is the visitor's own language only: an entry written up only in the
+  // other language says so rather than serving it, unannounced, in that one.
   const body = lang === "ar" ? item.contentAr : item.content;
   const untranslated = !hasProse(body) && hasProse(lang === "ar" ? item.content : item.contentAr);
   const gallery = galleryOf(item, isArabic);
@@ -473,14 +474,16 @@ function ForumCardOpen({
               </div>
             )}
 
-            <Link
-              to="/activities/forums"
-              search={{ type: item.forumType, open: item.id }}
-              className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground transition-colors hover:text-[color:var(--brand-magenta)]"
-            >
-              {isArabic ? "افتح في المنتديات" : "Open in Forums"}
-              <ArrowRight className="h-3.5 w-3.5 rtl:rotate-180" />
-            </Link>
+            {showForumsLink && (
+              <Link
+                to="/activities/forums"
+                search={{ type: item.forumType, open: item.id }}
+                className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground transition-colors hover:text-[color:var(--brand-magenta)]"
+              >
+                {isArabic ? "افتح في المنتديات" : "Open in Forums"}
+                <ArrowRight className="h-3.5 w-3.5 rtl:rotate-180" />
+              </Link>
+            )}
           </div>
         </div>
       </div>
@@ -488,11 +491,49 @@ function ForumCardOpen({
   );
 }
 
-export function ForumGrid({ items }: { items: PayloadActivity[] }) {
+export function ForumGrid({
+  items,
+  initialOpenId,
+  showForumsLink = true,
+}: {
+  items: PayloadActivity[];
+  /**
+   * Deep-linked from elsewhere (a photo tagged with the activity it's from --
+   * see PhotoGallery's "Enter" link) -- opened and scrolled into view once
+   * `items` holds it. Applied once; closing the card afterward doesn't reopen
+   * it.
+   */
+  initialOpenId?: string;
+  /**
+   * The "Open in Forums" link at the foot of an open card. Pointless on the
+   * Forums page itself, where it would lead back to the card already open.
+   */
+  showForumsLink?: boolean;
+}) {
   const { isArabic } = useLanguage();
   const columns = useGridColumns();
   const [openIds, setOpenIds] = useState<Set<string>>(new Set());
   const cardElements = useRef(new Map<string, HTMLElement>());
+  const appliedInitialOpen = useRef(false);
+
+  useEffect(() => {
+    if (!initialOpenId || appliedInitialOpen.current) return;
+    const target = items.find((item) => item.id === initialOpenId);
+    if (!target) return;
+    appliedInitialOpen.current = true;
+    // A card with nothing behind it has no open form to show.
+    if (!isExpandable(target)) return;
+    setOpenIds((current) => new Set(current).add(initialOpenId));
+    // Two frames: the open card has to have been laid out before it can be
+    // scrolled to.
+    requestAnimationFrame(() =>
+      requestAnimationFrame(() =>
+        cardElements.current
+          .get(initialOpenId)
+          ?.scrollIntoView({ behavior: "smooth", block: "start" }),
+      ),
+    );
+  }, [initialOpenId, items]);
 
   const toggle = (id: string) => {
     const opening = !openIds.has(id);
@@ -539,7 +580,11 @@ export function ForumGrid({ items }: { items: PayloadActivity[] }) {
     <div className="flex flex-col gap-6" dir={isArabic ? "rtl" : "ltr"}>
       {buildLines(rows, openIds).map((line) =>
         line.open ? (
-          <ForumCardOpen key={line.key} {...cardProps(line.items[0])} />
+          <ForumCardOpen
+            key={line.key}
+            {...cardProps(line.items[0])}
+            showForumsLink={showForumsLink}
+          />
         ) : (
           <div
             key={line.key}
