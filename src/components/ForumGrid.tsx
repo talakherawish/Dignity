@@ -1,8 +1,7 @@
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { flushSync } from "react-dom";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, Plus, X } from "lucide-react";
-import { PublicationCardGrid } from "./PublicationCard";
 import { RichText } from "./RichText";
 import { TranslationNotice } from "./TranslationNotice";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -29,6 +28,8 @@ import {
  * upright one a tall card, so nothing is cropped into a box it doesn't fit.
  * Any number can be open at once -- opening one never closes another, so the
  * card under the visitor's finger doesn't move because of a different one.
+ * Nothing changes places either: an open card stays where it is in the order,
+ * and the cards after it in its row drop below it.
  */
 
 const FORUM_TYPE_LABEL: Record<ForumType, { en: string; ar: string }> = {
@@ -104,32 +105,24 @@ function isWide(item: PayloadActivity): boolean {
 }
 
 /**
- * The cards in the order they are laid out. The wall is a wrapping row, so a
- * card that doesn't fit the space left on its row drops to the next one and
- * leaves the row short -- and an open card, which takes a whole row, would do
- * the same to whatever came before it. Both are avoided by changing the order
- * a little rather than leaving holes:
+ * The cards split into rows of `columns`, wide ones counting as two. A wide
+ * card that doesn't fit the space left on its row waits, and the next cards
+ * that do fit close the row first, so no row is left short with a hole in the
+ * middle of the wall. With nothing wide this is just the order the cards came
+ * in.
  *
- * - an open card goes ahead of the row that is still being filled, so it sits
- *   where its row would have started;
- * - a wide card that doesn't fit waits, and the next cards that do fit close
- *   the row first.
- *
- * With nothing open and nothing wide this is the order the cards came in.
+ * Depends only on the cards themselves, never on which are open: opening a
+ * card must not change where any card is in the order.
  */
-function arrangeCards(
-  items: PayloadActivity[],
-  columns: number,
-  openIds: Set<string>,
-): PayloadActivity[] {
+function packRows(items: PayloadActivity[], columns: number): PayloadActivity[][] {
   const queue = [...items];
-  const arranged: PayloadActivity[] = [];
+  const rows: PayloadActivity[][] = [];
   let row: PayloadActivity[] = [];
   let filled = 0;
   let waiting: PayloadActivity[] = [];
 
   const closeRow = () => {
-    arranged.push(...row);
+    if (row.length > 0) rows.push(row);
     row = [];
     filled = 0;
     // What was left waiting starts the next row.
@@ -143,10 +136,6 @@ function arrangeCards(
       closeRow();
       continue;
     }
-    if (openIds.has(item.id)) {
-      arranged.push(item);
-      continue;
-    }
     const span = isWide(item) ? Math.min(2, columns) : 1;
     if (filled + span > columns) {
       waiting.push(item);
@@ -157,7 +146,50 @@ function arrangeCards(
     if (filled === columns) closeRow();
   }
 
-  return arranged;
+  return rows;
+}
+
+/** One line of the wall: a run of closed cards, or a single open card. */
+type Line = { key: string; items: PayloadActivity[]; open: boolean; centered: boolean };
+
+/**
+ * Lines the wall is drawn in. An open card takes the whole width, so it cuts
+ * its row in three: the cards before it, itself on a line of its own, and the
+ * cards after it. Every card keeps its place in the order -- the ones after
+ * it just drop below.
+ *
+ * Each line is its own row, left-aligned, so the cards before an open one stay
+ * in the same columns they were in. Only the last row of the wall is centred
+ * when it isn't full (a section with two entries would otherwise sit alone in
+ * the first two of four columns), and not once an open card has cut it up.
+ */
+function buildLines(rows: PayloadActivity[][], openIds: Set<string>): Line[] {
+  const lines: Line[] = [];
+
+  rows.forEach((row, index) => {
+    const start = lines.length;
+    let run: PayloadActivity[] = [];
+    const endRun = () => {
+      if (run.length === 0) return;
+      lines.push({ key: run[0].id, items: run, open: false, centered: false });
+      run = [];
+    };
+
+    for (const item of row) {
+      if (openIds.has(item.id)) {
+        endRun();
+        lines.push({ key: item.id, items: [item], open: true, centered: false });
+      } else {
+        run.push(item);
+      }
+    }
+    endRun();
+
+    const uncut = lines.length - start === 1 && !lines[start].open;
+    if (index === rows.length - 1 && uncut) lines[start].centered = true;
+  });
+
+  return lines;
 }
 
 /**
@@ -457,6 +489,7 @@ function ForumCardOpen({
 }
 
 export function ForumGrid({ items }: { items: PayloadActivity[] }) {
+  const { isArabic } = useLanguage();
   const columns = useGridColumns();
   const [openIds, setOpenIds] = useState<Set<string>>(new Set());
   const cardElements = useRef(new Map<string, HTMLElement>());
@@ -476,8 +509,8 @@ export function ForumGrid({ items }: { items: PayloadActivity[] }) {
       // to be handed across or it would be left on a node that is gone.
       cardElements.current.get(id)?.focus({ preventScroll: true });
     }).then(() => {
-      // An opened card can land below the fold, or move to the start of its
-      // row, where pressing a card would appear to do nothing.
+      // An opened card grows downward, so it can end up below the fold, where
+      // pressing a card would appear to do nothing.
       if (!opening) return;
       const element = cardElements.current.get(id);
       if (!element) return;
@@ -491,23 +524,35 @@ export function ForumGrid({ items }: { items: PayloadActivity[] }) {
     });
   };
 
+  const rows = useMemo(() => packRows(items, columns), [items, columns]);
+
+  const cardProps = (item: PayloadActivity) => ({
+    item,
+    onToggle: () => toggle(item.id),
+    cardRef: (el: HTMLElement | null) => {
+      if (el) cardElements.current.set(item.id, el);
+      else cardElements.current.delete(item.id);
+    },
+  });
+
   return (
-    <PublicationCardGrid>
-      {arrangeCards(items, columns, openIds).map((item) => {
-        const props = {
-          item,
-          onToggle: () => toggle(item.id),
-          cardRef: (el: HTMLElement | null) => {
-            if (el) cardElements.current.set(item.id, el);
-            else cardElements.current.delete(item.id);
-          },
-        };
-        return openIds.has(item.id) ? (
-          <ForumCardOpen key={item.id} {...props} />
+    <div className="flex flex-col gap-6" dir={isArabic ? "rtl" : "ltr"}>
+      {buildLines(rows, openIds).map((line) =>
+        line.open ? (
+          <ForumCardOpen key={line.key} {...cardProps(line.items[0])} />
         ) : (
-          <ForumCardClosed key={item.id} {...props} />
-        );
-      })}
-    </PublicationCardGrid>
+          <div
+            key={line.key}
+            className={
+              "flex flex-wrap items-start gap-6 " + (line.centered ? "justify-center" : "")
+            }
+          >
+            {line.items.map((item) => (
+              <ForumCardClosed key={item.id} {...cardProps(item)} />
+            ))}
+          </div>
+        ),
+      )}
+    </div>
   );
 }
