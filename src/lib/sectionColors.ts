@@ -9,5 +9,3 @@ export const SECTION_COLORS = {
   publications: "#009340",
   information: "#000000",
 } as const;
-
-export type Section = keyof typeof SECTION_COLORS;
