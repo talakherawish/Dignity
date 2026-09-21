@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { useQuery } from "@tanstack/react-query";
 import { ChevronLeft, ChevronRight, X, Mail } from "lucide-react";
 import { PageLayout } from "@/components/PageLayout";
@@ -47,6 +48,17 @@ const STICK_BELOW_HEADER = "top-[62px] sm:top-[82px] lg:top-[103px]";
  * content-sized by the heading and the (now short) card row.
  */
 const POSTERS_SECTION_HEIGHT = "sm:h-[calc(100svh-82px)] lg:h-[calc(100svh-103px)]";
+
+/**
+ * News & Announcements is only a fixed one screen from md: up, where the image
+ * and the headline list sit side by side. On a phone they stack: a wrapping
+ * two-line section title, a cover image and four multi-line headlines add up
+ * to well more than one screen, so a fixed height there just makes the list
+ * overflow its box (centred, so it spilled up underneath the image and off
+ * the bottom). Below md the section is auto height and simply as tall as its
+ * content.
+ */
+const NEWS_SECTION_HEIGHT = "md:h-[calc(100svh-82px)] lg:h-[calc(100svh-103px)]";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -232,7 +244,7 @@ function LatestNewsAndAnnouncements() {
   }
   if (hasCarousel && !hasHeadlines) {
     return (
-      <div className="h-full overflow-hidden rounded-sm border border-border">
+      <div className="h-72 overflow-hidden rounded-sm border border-border sm:h-96 md:h-full">
         <ImageCarousel articles={carouselArticles} />
       </div>
     );
@@ -252,20 +264,24 @@ function LatestNewsAndAnnouncements() {
   // row against. A CSS grid track (even an explicit 1fr one) sizing a
   // percentage-height child with no intrinsic content is exactly the kind
   // of case browsers disagree on -- Safari was letting the image ignore
-  // its row and spill into the headline list below it. Two flex children
-  // with flex-1 min-h-0 get an unambiguous, well-supported 50/50 split
-  // instead. md: switches back to the original grid (a single row, two
-  // columns), where flex-1 has no effect and every child's h-full instead
-  // resolves against that row like before.
+  // its row and spill into the headline list below it.
+  //
+  // Below md the section is auto height (see NEWS_SECTION_HEIGHT), so there
+  // is no fixed box to split 50/50 any more: the image wrapper gets its own
+  // explicit height (a real one, so the carousel's h-full resolves against
+  // it) and the list just flows beneath it at whatever height it needs.
+  // md: switches to a grid (a single row, two columns) filling the section's
+  // fixed height, where the wrappers vanish (contents) and every child's
+  // h-full resolves against that row.
   return (
     <div
-      className="flex h-full min-h-0 flex-col gap-8 md:grid md:grid-cols-[1fr_1fr] md:gap-12"
+      className="flex flex-col gap-8 md:grid md:h-full md:min-h-0 md:grid-cols-[1fr_1fr] md:gap-12"
       dir={isArabic ? "rtl" : "ltr"}
     >
-      <div className="min-h-0 flex-1 md:contents">
+      <div className="h-72 shrink-0 sm:h-96 md:contents">
         <ImageCarousel articles={carouselArticles} />
       </div>
-      <div className="min-h-0 flex-1 md:contents">
+      <div className="md:contents">
         <HeadlineList articles={headlineArticles} />
       </div>
     </div>
@@ -284,7 +300,17 @@ function TeamModal({
   isArabic: boolean;
   lang: string;
 }) {
-  return (
+  // Portaled to <body>, not rendered where TeamSection sits. That section
+  // is wrapped in <Reveal>, whose translate-y-0 stays applied after the
+  // fade-in, and any element with a CSS transform/translate becomes the
+  // containing block for its position:fixed descendants -- so a "fixed
+  // inset-0" overlay in here covered only the team section (not the screen),
+  // was clipped by the page wrapper's overflow-hidden, and slid under the
+  // footer. It also sits under the z-10 wrapper that carries the page over
+  // the hero video, which would put it beneath the z-40 header. On <body> it
+  // is above everything. Only ever mounted after a click, so `document`
+  // always exists here (no SSR concern).
+  return createPortal(
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
       onClick={(e) => e.target === e.currentTarget && onClose()}
@@ -296,15 +322,17 @@ function TeamModal({
           there; the card's matching pt-24/sm:pt-28 leaves the same amount
           of clearance inside so its bottom half doesn't sit under the name.
           Unlike the earlier version of this layout (see git history), the
-          whole wrapper is capped at max-h-[90vh] via flex-col + flex-1
+          whole wrapper is capped at max-h-[90svh] via flex-col + flex-1
           min-h-0 on the card, so only the card scrolls internally -- a long
           bio can't push the avatar or the modal itself past the viewport.
-          Matches ParticipantModal on /about/participants. */}
-      <div className="relative w-full max-w-3xl max-h-[90vh] flex flex-col">
+          svh rather than the /about/participants modal's vh: on a phone, vh
+          is the height with the browser toolbars collapsed, so a 90vh card
+          can run down behind the toolbar. */}
+      <div className="relative w-full max-w-3xl max-h-[90svh] flex flex-col">
         {person.photo && <div className="h-20 sm:h-24 shrink-0" aria-hidden />}
         <div
           className={
-            "relative flex-1 min-h-0 bg-card border border-border rounded-lg shadow-2xl overflow-y-auto" +
+            "relative flex-1 min-h-0 bg-card border border-border rounded-lg shadow-2xl overflow-y-auto overscroll-contain" +
             (isArabic ? " text-right" : "")
           }
         >
@@ -352,7 +380,8 @@ function TeamModal({
           </div>
         )}
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 
@@ -562,7 +591,7 @@ function PostersShowcase() {
       <div className="relative w-full h-[30svh] sm:h-auto sm:min-h-0 sm:flex-1">
         <div
           ref={scrollerRef}
-          className="scrollbar-none flex h-full snap-x snap-mandatory gap-6 overflow-x-auto px-4 pb-2 sm:px-6 md:gap-8 lg:px-8"
+          className="scrollbar-none flex h-full snap-x snap-mandatory scroll-px-4 gap-6 overflow-x-auto px-4 pb-2 sm:scroll-px-6 sm:px-6 md:gap-8 lg:scroll-px-8 lg:px-8"
           dir={isArabic ? "rtl" : "ltr"}
         >
           {posters.map((poster) => (
@@ -571,16 +600,30 @@ function PostersShowcase() {
               href={poster.fileUrl || poster.image}
               target="_blank"
               rel="noopener noreferrer"
-              className="group block h-full shrink-0 snap-start"
+              className="group block h-full aspect-[3/4] shrink-0 snap-start"
             >
               {/* The card itself grows on hover, not the picture inside it --
                   scaling the frame (not the img) means the image is never
                   zoomed/cropped tighter against its own rounded edge, it just
-                  gets bigger as one piece along with the frame around it. */}
-              <div className="h-full aspect-[3/4] overflow-hidden rounded-2xl shadow-xl transition-transform duration-500 group-hover:scale-105">
+                  gets bigger as one piece along with the frame around it.
+
+                  The 3:4 ratio lives on the <a> above, not on this div: a
+                  flex item with a definite height and an aspect ratio gets its
+                  width straight from that, whereas a shrink-to-fit <a> around
+                  a child with a percentage height and its own ratio leaves the
+                  width to the browser's intrinsic-size guess, which is not
+                  something to rely on across mobile browsers.
+
+                  bg-white/10 is the frame you see while the poster downloads.
+                  The uploads are large (each thumbnail is a few hundred KB, ten
+                  of them), so on a phone connection cards used to be invisible
+                  -- transparent over the dark band -- until their image
+                  arrived, which read as a row with one poster and then nothing. */}
+              <div className="h-full w-full overflow-hidden rounded-2xl bg-white/10 shadow-xl transition-transform duration-500 group-hover:scale-105">
                 <img
                   src={poster.image}
                   alt={isArabic ? (poster.titleAr ?? poster.title) : poster.title}
+                  decoding="async"
                   className="h-full w-full object-cover"
                 />
               </div>
@@ -765,16 +808,18 @@ function Home() {
           style={{ background: "var(--brand-magenta)" }}
         />
 
-        {/* News & Announcements — its own full-screen section right after
-            the hero video, sized to match it exactly (FULL_SCREEN_SECTION,
-            the same reduced height the hero uses, not a flat 100dvh -- see
-            that constant's own comment). It's a hard cap: overflow-hidden
-            is the backstop in case a real editor-typed headline is ever
-            long enough to want more room than that -- it loses a sliver of
-            padding on the very last row rather than pushing the section,
-            and everything after it, past one screen. */}
+        {/* News & Announcements — from md: up, its own full-screen section
+            right after the hero video, sized to match it exactly
+            (NEWS_SECTION_HEIGHT, the same reduced height the hero uses, not
+            a flat 100dvh -- see FULL_SCREEN_SECTION's own comment). There
+            it's a hard cap: overflow-hidden is the backstop in case a real
+            editor-typed headline is ever long enough to want more room than
+            that -- it loses a sliver of padding on the very last row rather
+            than pushing the section, and everything after it, past one
+            screen. Below md it is content height instead -- see
+            NEWS_SECTION_HEIGHT for why. */}
         <section
-          className={`flex w-full flex-col overflow-hidden bg-gradient-to-b from-secondary/5 to-transparent ${FULL_SCREEN_SECTION}`}
+          className={`flex w-full flex-col overflow-hidden bg-gradient-to-b from-secondary/5 to-transparent ${NEWS_SECTION_HEIGHT}`}
         >
           {/* Heading in a readable centered column, same as the site's other
               section headers; the row below breaks out of that column to
@@ -804,7 +849,7 @@ function Home() {
               refuses to shrink below the image carousel's own content
               size, which is what let the whole row (and the section around
               it) balloon well past one screen. */}
-          <div className="min-h-0 w-full flex-1 px-4 pb-6 sm:px-6 md:pb-8 lg:px-8">
+          <div className="w-full px-4 pb-6 sm:px-6 md:min-h-0 md:flex-1 md:pb-8 lg:px-8">
             <LatestNewsAndAnnouncements />
           </div>
         </section>
