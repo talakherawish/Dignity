@@ -30,7 +30,7 @@
  *    development, where the local disk is durable enough for testing.
  */
 
-export type GithubStorageSettings = {
+type GithubStorageSettings = {
   token: string
   owner: string
   repo: string

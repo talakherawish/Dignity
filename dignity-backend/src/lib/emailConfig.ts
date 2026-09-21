@@ -11,7 +11,7 @@
  * actually sent.
  */
 
-export type SmtpSettings = {
+type SmtpSettings = {
   host: string
   port: number
   user: string
