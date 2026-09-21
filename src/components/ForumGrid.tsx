@@ -4,7 +4,7 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, Plus, X } from "lucide-react";
 import { RichText } from "./RichText";
 import { TranslationNotice } from "./TranslationNotice";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage, type TranslationKey } from "@/contexts/LanguageContext";
 import {
   formatDate,
   hasProse,
@@ -31,12 +31,18 @@ import {
  * and the cards after it in its row drop below it.
  */
 
-const FORUM_TYPE_LABEL: Record<ForumType, { en: string; ar: string }> = {
-  seminar: { en: "Seminar", ar: "ندوة" },
-  roundtable: { en: "Roundtable", ar: "طاولة مستديرة" },
-  workshop: { en: "Workshop", ar: "ورشة عمل" },
-  conference: { en: "Conference", ar: "مؤتمر" },
-  encounters: { en: "Encounters", ar: "حواريات" },
+/**
+ * The type label goes through the translation dictionary like every other
+ * label on the site, so wording changed in Site Settings (Forum Type: ...)
+ * shows here too -- and the Forums page's filter tabs, which already work this
+ * way, can't disagree with the cards.
+ */
+const FORUM_TYPE_LABEL_KEY: Record<ForumType, TranslationKey> = {
+  seminar: "forums.type.seminar",
+  roundtable: "forums.type.roundtable",
+  workshop: "forums.type.workshop",
+  conference: "forums.type.conference",
+  encounters: "forums.type.encounters",
 };
 
 /** The largest an upright poster gets once its card is open, whatever its proportions. */
@@ -69,7 +75,7 @@ const WIDE_CARD_WIDTH = "w-full lg:w-[calc(50%-0.75rem)]";
 
 /**
  * How many cards fit on a row, mirroring the widths the cards are given
- * (`sm:` two-up, `lg:` four-up). Cards are packed into rows in `arrangeCards`,
+ * (`sm:` two-up, `lg:` four-up). Cards are packed into rows in `packRows`,
  * which needs to know where a row ends.
  *
  * Starts at four: nothing is open during the server render, so the first
@@ -225,9 +231,8 @@ function galleryOf(item: PayloadActivity, isArabic: boolean): Figure[] {
   return figures;
 }
 
-function typeLabelOf(item: PayloadActivity, isArabic: boolean): string | null {
-  if (!item.forumType) return null;
-  return isArabic ? FORUM_TYPE_LABEL[item.forumType].ar : FORUM_TYPE_LABEL[item.forumType].en;
+function typeLabelOf(item: PayloadActivity, t: (key: TranslationKey) => string): string | null {
+  return item.forumType ? t(FORUM_TYPE_LABEL_KEY[item.forumType]) : null;
 }
 
 /** Plus mark on a card's corner: says the card opens. */
@@ -266,9 +271,9 @@ function ForumCardClosed({
   onToggle: () => void;
   cardRef: (el: HTMLElement | null) => void;
 }) {
-  const { lang, isArabic } = useLanguage();
+  const { t, lang, isArabic } = useLanguage();
   const displayTitle = lang === "ar" ? (item.titleAr ?? item.title) : item.title;
-  const typeLabel = typeLabelOf(item, isArabic);
+  const typeLabel = typeLabelOf(item, t);
   const image = mediaUrl(item.image);
   const expandable = isExpandable(item);
   const cardRatio = Math.min(Math.max(imageRatio(item), CARD_MIN_RATIO), CARD_MAX_RATIO);
@@ -351,9 +356,9 @@ function ForumCardOpen({
   cardRef: (el: HTMLElement | null) => void;
   showForumsLink: boolean;
 }) {
-  const { lang, isArabic } = useLanguage();
+  const { t, lang, isArabic } = useLanguage();
   const title = lang === "ar" ? (item.titleAr ?? item.title) : item.title;
-  const typeLabel = typeLabelOf(item, isArabic);
+  const typeLabel = typeLabelOf(item, t);
 
   const poster = mediaUrl(item.image);
   // Width that makes an upright poster exactly `POSTER_MAX_HEIGHT` tall (or
