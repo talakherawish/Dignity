@@ -3,11 +3,10 @@ import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft } from "lucide-react";
 import { ForumGrid } from "@/components/ForumGrid";
 import { OutputSection, PublicationGrid } from "@/components/OutputSection";
+import { PageIntro } from "@/components/PageIntro";
 import { PageLayout, PageHero } from "@/components/PageLayout";
 import { PhotoGallery, toGalleryPhoto } from "@/components/PhotoGallery";
 import { PublicationCard, PublicationCardGrid } from "@/components/PublicationCard";
-import { RichText } from "@/components/RichText";
-import { TranslationNotice } from "@/components/TranslationNotice";
 import { useLanguage } from "@/contexts/LanguageContext";
 import {
   fetchResearchBySlug,
@@ -165,27 +164,7 @@ function ResearchDetailPage() {
           (isArabic ? " text-right" : "")
         }
       >
-        {image && (
-          <img
-            src={image}
-            alt={title}
-            className="w-full rounded-lg mt-8 object-cover"
-            style={{ maxHeight: "26rem" }}
-          />
-        )}
-
-        {hasProse(body) ? (
-          <RichText
-            value={body}
-            className="mt-8 space-y-5 text-sm text-foreground leading-relaxed opacity-0 animate-[fadeIn_0.8s_ease-in-out_0.3s_forwards]"
-          />
-        ) : untranslated ? (
-          <TranslationNotice className="mt-8" />
-        ) : (
-          <p className="mt-8 text-sm text-muted-foreground">
-            {isArabic ? "المحتوى قادم قريباً." : "Content coming soon."}
-          </p>
-        )}
+        <PageIntro title={title} image={image} body={body} untranslated={untranslated} />
 
         {hasOutputs && (
           <section className="mt-16">

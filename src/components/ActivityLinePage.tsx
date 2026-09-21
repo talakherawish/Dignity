@@ -1,9 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { ForumGrid } from "./ForumGrid";
 import { OutputSection, PublicationGrid } from "./OutputSection";
+import { PageIntro } from "./PageIntro";
 import { PageLayout, PageHero } from "./PageLayout";
-import { RichText } from "./RichText";
-import { TranslationNotice } from "./TranslationNotice";
 import { useLanguage } from "@/contexts/LanguageContext";
 import {
   fetchActivityLine,
@@ -85,27 +84,7 @@ export function ActivityLinePage({
           (isArabic ? " text-right" : "")
         }
       >
-        {image && (
-          <img
-            src={image}
-            alt={title}
-            className="w-full rounded-lg mt-8 object-cover"
-            style={{ maxHeight: "26rem" }}
-          />
-        )}
-
-        {hasProse(body) ? (
-          <RichText
-            value={body}
-            className="mt-8 space-y-5 text-sm text-foreground leading-relaxed opacity-0 animate-[fadeIn_0.8s_ease-in-out_0.3s_forwards]"
-          />
-        ) : untranslated ? (
-          <TranslationNotice className="mt-8" />
-        ) : (
-          <p className="mt-8 text-sm text-muted-foreground">
-            {isArabic ? "المحتوى قادم قريباً." : "Content coming soon."}
-          </p>
-        )}
+        <PageIntro title={title} image={image} body={body} untranslated={untranslated} />
 
         {(forums.length > 0 || publications.length > 0) && (
           <div className="mt-16 border-t border-border/60">
