@@ -547,6 +547,36 @@ echo "✓ Frontend deployed!"
 
 ---
 
+## Earlier notes — folded in from retired note files (2026-06-07 → 2026-08-11)
+
+Eight loose note files were removed from the repo root on 2026-09-21. Six of them are summarized below, oldest first, in three entries, so what they recorded survives their removal (the originals stay in git history). The other two were already covered and got no new entry: `HOSTING_PLAN.md` (see *What Changed vs. Earlier Plan*) and `SESSION_LOG_2026-08-10.md` (see *Website work — 2026-08-17 to 2026-08-28* and the 2026-08-10 sections above). A ninth, `PROJECT_INSTRUCTIONS.md`, was **kept** as the project's standing instructions; its entry below records where it came from. Hours for these dates are already inside the ~80 hrs `PROGRESS.md` logs (sessions 1–14) or the 2026-08-08 to 2026-08-11 entries above, so nothing here adds to the total.
+
+### 2026-06-07 (first commit 10:53, part of `PROGRESS.md` session 3)
+
+**`PAYLOAD-GUIDE.md` — the coworker guide for editors.**
+- **Covered:** how a coworker gets an account (Tala creates it, a temporary password is changed on first login), logging in, the two roles — **Editor** (creates and edits in their own section, saves as Draft only) and **Content Manager** (publishes, manages accounts) — creating and editing content, uploading media with alt text, and the habits that matter (everything is a Draft until published; English and Arabic go in separate fields).
+- **Done:** first committed with "Wire all Payload collections to frontend". Revised around 2026-08-03 (estimated — git only shows the 2026-08-10 sweep commit `415847b`) to describe the admin sidebar regrouped to mirror the site menu: Admin / About / Activities / Publications / Information / Site. By the time it was retired it was out of date: it still listed Seminars, Conferences, Meetings and Announcements (merged into Forums and News on 2026-08-27) and pointed at `PAGES_MANAGEMENT.md`, deleted in that same sweep commit.
+
+### 2026-07-26 (commits 12:22–13:18, note committed 20:42; part of `PROGRESS.md` session 12, 2026-07-26 → 07-28)
+
+**`PAYLOAD-REFACTOR-COMPLETE.md` — the Payload restructure that made every navigation page editable.**
+- **Covered:** collections reorganized under admin groups that match the site navigation — News (renamed from Articles), Announcements, Photos, Clippings, Participants, Pages, Media; Activities as separate Seminars / Conferences / Meetings / Research / WindsorDignity collections; one unified Publications collection with a `type` field (books, papers, reports, brochures, theses, audiovisual, posters) at the slug `publications-items`; one unified Information collection (readings-documents, databases). A fetch function per collection in `src/lib/payload.ts`, with every route switched over; the homepage's "News" renamed "Latest News", moved above the partnerships section and enlarged; the favicon switched to `dignity-icon.png`; English/Arabic fields and Lexical rich text throughout.
+- **Done:** landed in `b385749`, `5e33a39` and `9a78972` (the last was still unpushed when the note was written; its own testing and deployment checklist was never ticked). Almost all of the structure has since moved on: Publications and Information were split into one collection per type (the 2026-08-10 sweep), Seminars / Conferences / Meetings became Forums (2026-08-27), and WindsorDignity became Windsor-Birzeit (2026-09-14).
+
+### 2026-08-08 (estimated ~16:35 — the start of the 8-hr Oracle session recorded above)
+
+**Four Oracle deployment guides — `QUICK_DEPLOY.md`, `BACKEND_DEPLOYMENT_GUIDE.md`, `DEPLOYMENT_CHECKLIST.md`, `DEPLOY_NOW.md`.**
+- **Covered:** step-by-step ways to stand the Payload backend up on a first Oracle instance — a five-step fast track, a phase-by-phase guide, a tick-box checklist and an "interactive" walkthrough. All assume Node 20, pnpm, pm2, nginx, the firewall rules and an Atlas connection string, and pair with `deploy-backend.sh` and `scripts/provision-oracle.sh` (both still in the repo).
+- **Done:** written for a `VM.Standard.E2.1.Micro` at `84.13.65.8` and then superseded — the real deployment is the ARM A1 instance at `84.13.77.162`, run with npm rather than pnpm, recorded above under *Oracle Cloud Backend Deployment*. Git only shows these arriving in the 2026-08-10 sweep commit `415847b` (nothing was committed between 2026-08-03 and then); the 08-08 date is an estimate from the old IP address, and the hour is the least certain part.
+
+### 2026-08-10 → 2026-08-11 (written in the 08-10 session's ~40-min documentation stage, estimated ~21:15–22:00; edited 08-11 morning; first committed 08-11 18:23)
+
+**`PROJECT_INSTRUCTIONS.md` — standing instructions for working on this project. Kept in the repo root.**
+- **Covered:** the topology (one Oracle instance; Payload under pm2, the SSR frontend under systemd, nginx routing by path, Atlas for data, uploads on disk); the rules that cost time — SSH is `opc@` and only from Cloud Shell, the sandbox has no raw TCP, never paste a heredoc into an interactive SSH session, never Ctrl-C a remote command; the deploy script and its `git reset --hard origin/main`; `VITE_PAYLOAD_URL` being baked in at build time; never staging `dignity_key` or `frontend.zip`; backups and HTTPS renewal; the warning that uploads live inside the checkout, so nothing that removes untracked files may run there; content gotchas (hardcoded fallbacks, `enforceBilingual()`, `admin.position` silently ignored, `payload-types.ts` updated by hand); and how to work with Tala.
+- **Done:** the infrastructure it describes is recorded in the sections above, and the file itself stays as the place for the working rules. One line in it was out of date within hours of being written — "Pushing to GitHub deploys nothing. There is no CI." A GitHub Actions deploy on every push to `main` went in later on 2026-08-11 (20:27) and the file was not updated.
+
+---
+
 ## Time Logged
 - **2026-08-08:** 8 hours (Oracle deployment + HTTPS login fix)
 - **2026-08-09:** ~2½ hours (frontend build, 158MB zip compressed and uploaded to Cloud Shell, extracted the upload itself was most of the time)
