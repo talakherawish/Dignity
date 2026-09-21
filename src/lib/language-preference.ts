@@ -19,7 +19,7 @@ import type { Language } from "@/contexts/LanguageContext";
  * hydration can't disagree with what was rendered.
  */
 
-export const LANGUAGE_COOKIE = "lang";
+const LANGUAGE_COOKIE = "lang";
 
 const ONE_YEAR_IN_SECONDS = 60 * 60 * 24 * 365;
 
