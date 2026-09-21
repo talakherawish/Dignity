@@ -219,11 +219,6 @@ function ForumDrawer({
     : null;
 
   const poster = mediaUrl(item.image);
-  // A wide poster beside a text column would be squeezed to a sliver, so it
-  // takes the top of the drawer instead.
-  const landscape =
-    Boolean(item.image?.width && item.image?.height) &&
-    (item.image?.width ?? 0) > (item.image?.height ?? 0);
 
   // Prose is the visitor's own language only, matching the ledger: an entry
   // written up only in the other language says so rather than serving it.
@@ -265,93 +260,88 @@ function ForumDrawer({
             drawer, fades its new contents in rather than swapping them cold. */}
         <div
           key={item.id}
-          className="relative rounded-sm border border-border border-t-2 border-t-[color:var(--brand-magenta)] bg-card p-5 opacity-0 animate-[fadeIn_0.4s_ease-out_forwards] md:p-8"
+          className="relative overflow-hidden rounded-sm border border-border border-t-2 border-t-[color:var(--brand-magenta)] bg-card opacity-0 animate-[fadeIn_0.4s_ease-out_forwards]"
         >
           <button
             type="button"
             onClick={onClose}
             aria-label={isArabic ? "إغلاق" : "Close"}
-            className="absolute end-3 top-3 grid h-8 w-8 cursor-pointer place-items-center rounded-full border border-border text-muted-foreground transition-colors hover:border-[color:var(--brand-magenta)] hover:text-[color:var(--brand-magenta)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--brand-magenta)]"
+            className="absolute end-3 top-3 z-10 grid h-8 w-8 cursor-pointer place-items-center rounded-full border border-border bg-background/90 text-muted-foreground shadow-sm transition-colors hover:border-[color:var(--brand-magenta)] hover:text-[color:var(--brand-magenta)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--brand-magenta)]"
           >
             <X className="h-4 w-4" />
           </button>
 
+          {/* The poster runs the full width of the drawer, edge to edge: its own
+              lettering carries the date and title, so it is shown as large as
+              the drawer allows rather than boxed into a column. */}
+          {poster && (
+            <img src={poster} alt={item.image?.alt || title} className="block h-auto w-full" />
+          )}
+
+          {/* A line length that reads, however wide the drawer is. */}
           <div
             className={
-              "grid gap-6 md:gap-10 " +
-              (poster && !landscape ? "md:grid-cols-[minmax(0,17rem)_minmax(0,1fr)]" : "")
+              "min-w-0 max-w-3xl space-y-6 p-5 md:p-8 " +
+              // With no poster, the close button sits over this block instead.
+              (poster ? "" : "pe-14 md:pe-16")
             }
           >
-            {poster && (
-              <div className={landscape ? "max-w-2xl" : "mx-auto w-full max-w-[17rem] md:mx-0"}>
-                <img
-                  src={poster}
-                  alt={item.image?.alt || title}
-                  className="h-auto max-h-[75vh] w-full rounded-sm border border-border bg-secondary/20 object-contain"
-                />
+            <div>
+              {(item.date || typeLabel) && (
+                <div className="mb-2 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
+                  {item.date && <span>{formatDate(item.date, isArabic ? "ar" : "en")}</span>}
+                  {item.date && typeLabel && <span aria-hidden="true"> · </span>}
+                  {typeLabel && (
+                    <span className="text-[color:var(--brand-magenta)]">{typeLabel}</span>
+                  )}
+                </div>
+              )}
+              <h4 className="font-serif text-xl leading-snug text-primary md:text-2xl">{title}</h4>
+            </div>
+
+            {hasProse(body) && (
+              <RichText
+                value={body}
+                className="space-y-4 text-sm leading-relaxed text-foreground"
+              />
+            )}
+            {untranslated && <TranslationNotice />}
+
+            {gallery.length > 0 && (
+              <div
+                className={
+                  "grid gap-3 " +
+                  (gallery.length === 1 ? "grid-cols-1 max-w-md" : "grid-cols-2 lg:grid-cols-3")
+                }
+              >
+                {gallery.map((figure, index) => (
+                  <figure key={`${figure.url}-${index}`}>
+                    <div className="overflow-hidden rounded-sm border border-border bg-secondary/40">
+                      <img
+                        src={figure.url}
+                        alt={figure.alt}
+                        loading="lazy"
+                        className="aspect-[4/3] w-full object-cover"
+                      />
+                    </div>
+                    {figure.caption && (
+                      <figcaption className="mt-2 text-[11px] leading-relaxed text-muted-foreground">
+                        {figure.caption}
+                      </figcaption>
+                    )}
+                  </figure>
+                ))}
               </div>
             )}
 
-            <div className="min-w-0 space-y-6 pe-10">
-              <div>
-                {(item.date || typeLabel) && (
-                  <div className="mb-2 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
-                    {item.date && <span>{formatDate(item.date, isArabic ? "ar" : "en")}</span>}
-                    {item.date && typeLabel && <span aria-hidden="true"> · </span>}
-                    {typeLabel && (
-                      <span className="text-[color:var(--brand-magenta)]">{typeLabel}</span>
-                    )}
-                  </div>
-                )}
-                <h4 className="font-serif text-xl leading-snug text-primary md:text-2xl">
-                  {title}
-                </h4>
-              </div>
-
-              {hasProse(body) && (
-                <RichText
-                  value={body}
-                  className="space-y-4 text-sm leading-relaxed text-foreground"
-                />
-              )}
-              {untranslated && <TranslationNotice />}
-
-              {gallery.length > 0 && (
-                <div
-                  className={
-                    "grid gap-3 " +
-                    (gallery.length === 1 ? "grid-cols-1 max-w-md" : "grid-cols-2 lg:grid-cols-3")
-                  }
-                >
-                  {gallery.map((figure, index) => (
-                    <figure key={`${figure.url}-${index}`}>
-                      <div className="overflow-hidden rounded-sm border border-border bg-secondary/40">
-                        <img
-                          src={figure.url}
-                          alt={figure.alt}
-                          loading="lazy"
-                          className="aspect-[4/3] w-full object-cover"
-                        />
-                      </div>
-                      {figure.caption && (
-                        <figcaption className="mt-2 text-[11px] leading-relaxed text-muted-foreground">
-                          {figure.caption}
-                        </figcaption>
-                      )}
-                    </figure>
-                  ))}
-                </div>
-              )}
-
-              <Link
-                to="/activities/forums"
-                search={{ type: item.forumType, open: item.id }}
-                className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground transition-colors hover:text-[color:var(--brand-magenta)]"
-              >
-                {isArabic ? "افتح في المنتديات" : "Open in Forums"}
-                <ArrowRight className="h-3.5 w-3.5 rtl:rotate-180" />
-              </Link>
-            </div>
+            <Link
+              to="/activities/forums"
+              search={{ type: item.forumType, open: item.id }}
+              className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground transition-colors hover:text-[color:var(--brand-magenta)]"
+            >
+              {isArabic ? "افتح في المنتديات" : "Open in Forums"}
+              <ArrowRight className="h-3.5 w-3.5 rtl:rotate-180" />
+            </Link>
           </div>
         </div>
       </div>
@@ -381,10 +371,15 @@ export function ForumGrid({ items }: { items: PayloadActivity[] }) {
   useEffect(() => {
     if (openId === null) return;
     const timer = setTimeout(() => {
+      const element = drawerElement.current;
+      if (!element) return;
       const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      drawerElement.current?.scrollIntoView({
+      // A full-width poster can make the drawer taller than the window, and
+      // "nearest" has no good answer for that: start at the top of it.
+      const taller = element.getBoundingClientRect().height > window.innerHeight;
+      element.scrollIntoView({
         behavior: reduced ? "auto" : "smooth",
-        block: "nearest",
+        block: taller ? "start" : "nearest",
       });
     }, DRAWER_TRANSITION_MS + 20);
     return () => clearTimeout(timer);
