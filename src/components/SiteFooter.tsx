@@ -50,13 +50,13 @@ export function SiteFooter() {
   )}`;
 
   return (
-    <footer className="border-t border-border bg-[oklch(0.35_0.01_270)] text-primary-foreground">
+    <footer className="border-t border-border bg-[var(--footer-bg)] text-primary-foreground">
       {/* Accent bar */}
       <div
         className="h-1"
         style={{
           background:
-            "linear-gradient(90deg, var(--brand-cyan) 0%, var(--brand-cyan) 33%, var(--brand-magenta) 33%, var(--brand-magenta) 66%, oklch(0.35 0.01 270) 66%, oklch(0.35 0.01 270) 100%)",
+            "linear-gradient(90deg, var(--brand-cyan) 0%, var(--brand-cyan) 33%, var(--brand-magenta) 33%, var(--brand-magenta) 66%, var(--footer-bg) 66%, var(--footer-bg) 100%)",
         }}
       />
 

@@ -32,6 +32,13 @@ const FULL_SCREEN_SECTION =
   "h-[calc(100svh-62px)] sm:h-[calc(100svh-82px)] lg:h-[calc(100svh-103px)]";
 
 /**
+ * Where the hero pins itself: directly under the sticky header, i.e. the same
+ * 62px / 82px / 103px FULL_SCREEN_SECTION subtracts. Pinning at top-0 instead
+ * would tuck the top of the video behind the header.
+ */
+const STICK_BELOW_HEADER = "top-[62px] sm:top-[82px] lg:top-[103px]";
+
+/**
  * Posters used to share FULL_SCREEN_SECTION too, forcing a full screen of
  * height on mobile even after the cards themselves were capped much
  * shorter (see the max-h comment below) -- leaving a slab of dead grey
@@ -514,7 +521,7 @@ function PostersShowcase() {
     // itself to a full screen would just leave dead space beneath them --
     // auto lets it size to its own (short) content instead.
     <section
-      className={`mt-8 flex w-full flex-col overflow-hidden bg-[#4b5563] py-6 md:mt-14 md:py-8 ${POSTERS_SECTION_HEIGHT}`}
+      className={`mt-8 flex w-full flex-col overflow-hidden bg-[var(--footer-bg)] py-6 md:mt-14 md:py-8 ${POSTERS_SECTION_HEIGHT}`}
     >
       {/* Heading stays in a readable centered column like every other
           section's text; the row below it deliberately breaks out of that
@@ -655,7 +662,13 @@ function HeroVideo() {
   }, []);
 
   return (
-    <section className={`relative w-full overflow-hidden bg-black ${FULL_SCREEN_SECTION}`}>
+    // sticky + z-0: the hero stays pinned under the header while everything
+    // after it (the z-10 wrapper in Home) scrolls up over it, so the video
+    // is covered rather than scrolled away. It unpins on its own once <main>
+    // ends, by which point the wrapper fully covers it.
+    <section
+      className={`sticky z-0 w-full overflow-hidden bg-black ${STICK_BELOW_HEADER} ${FULL_SCREEN_SECTION}`}
+    >
       <video
         ref={videoRef}
         className="absolute inset-0 h-full w-full object-cover"
@@ -724,8 +737,13 @@ function Home() {
       {/* Shared backdrop for everything below the hero: soft cyan/magenta
           blobs staggered down the scroll length, so the color motif carries
           through the page. vh-based offsets rather than fixed pixels, since
-          the sections below are variable height. */}
-      <div className="relative overflow-hidden">
+          the sections below are variable height.
+
+          relative z-10 + an opaque bg-background is what makes this the
+          layer that slides over the pinned hero video: without the solid
+          background the video would show through the gaps between sections
+          (and the transparent end of News' gradient). */}
+      <div className="relative z-10 overflow-hidden bg-background">
         <div
           className="absolute -top-16 -right-32 h-96 w-96 rounded-full opacity-25 blur-3xl pointer-events-none"
           style={{ background: "var(--brand-cyan)" }}
