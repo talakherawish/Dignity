@@ -37,9 +37,18 @@ const FORUM_TYPE_LABEL: Record<ForumType, { en: string; ar: string }> = {
 /** Long enough for the close transition below to finish before the drawer unmounts. */
 const DRAWER_TRANSITION_MS = 500;
 
-/** The largest a poster gets in the drawer, whatever its proportions. */
+/** The largest an upright poster gets in the drawer, whatever its proportions. */
 const POSTER_MAX_WIDTH = "26rem";
 const POSTER_MAX_HEIGHT = "70vh";
+
+/**
+ * Width divided by height from which an image counts as wide. Wide ones open
+ * across the top of the drawer instead of beside the text: squeezed into a
+ * side column they shrank to a thumbnail. Kept above 1 so a near-square image,
+ * which at the drawer's full width would be nearly as tall as it is wide,
+ * stays in the column.
+ */
+const WIDE_MIN_RATIO = 1.2;
 
 /**
  * How many cards fit on a row, mirroring the widths the cards are given
@@ -230,6 +239,7 @@ function ForumDrawer({
   const posterRatio =
     posterPixelsWide && posterPixelsHigh ? posterPixelsWide / posterPixelsHigh : 1 / 1.41;
   const posterWidth = `min(${POSTER_MAX_WIDTH}, calc(${POSTER_MAX_HEIGHT} * ${posterRatio.toFixed(4)}))`;
+  const wide = Boolean(poster) && posterRatio >= WIDE_MIN_RATIO;
 
   // Prose is the visitor's own language only, matching the ledger: an entry
   // written up only in the other language says so rather than serving it.
@@ -282,28 +292,41 @@ function ForumDrawer({
             <X className="h-4 w-4" />
           </button>
 
-          {/* The poster is flush with the drawer's edges, no margin around it, and
-              sized from its own proportions: as wide as `POSTER_MAX_WIDTH`, but
-              never taller than `POSTER_MAX_HEIGHT` of the window. A tall poster
-              at the drawer's full width would be taller than the screen, so the
-              height decides for those, and the poster is always shown whole. */}
+          {/* The image is flush with the drawer's edges, no margin around it, and
+              always shown whole. A wide one runs the full width across the top
+              with the text beneath. An upright one sits beside the text, at the
+              start edge (left in English, right in Arabic -- the grid follows
+              the page direction), sized from its own proportions: as wide as
+              `POSTER_MAX_WIDTH`, but never taller than `POSTER_MAX_HEIGHT` of
+              the window, since at the drawer's full width it would be taller
+              than the screen. */}
           <div
-            className={poster ? "md:grid md:grid-cols-[var(--poster-width)_minmax(0,1fr)]" : ""}
+            className={
+              poster && !wide ? "md:grid md:grid-cols-[var(--poster-width)_minmax(0,1fr)]" : ""
+            }
             style={{ "--poster-width": posterWidth } as CSSProperties}
           >
             {poster && (
-              <div className="bg-secondary/20">
+              <div className={wide ? "" : "bg-secondary/20"}>
                 <img
                   src={poster}
                   alt={item.image?.alt || title}
                   className="block h-auto w-full object-contain"
-                  style={{ maxHeight: POSTER_MAX_HEIGHT }}
+                  style={wide ? undefined : { maxHeight: POSTER_MAX_HEIGHT }}
                 />
               </div>
             )}
 
-            {/* The close button sits over this block's far corner. */}
-            <div className="min-w-0 space-y-6 p-5 pe-14 md:p-8 md:pe-16">
+            {/* Beside an upright poster, or with no image at all, the close
+                button sits over this block's far corner; over a wide image it
+                sits on the image instead. */}
+            <div
+              className={
+                "min-w-0 space-y-6 p-5 md:p-8 " +
+                // A line of text the width of the whole drawer is too long to read.
+                (wide ? "max-w-3xl" : "pe-14 md:pe-16")
+              }
+            >
               <div>
                 {(item.date || typeLabel) && (
                   <div className="mb-2 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
