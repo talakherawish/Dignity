@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { ForumGrid, OutputSection, PublicationGrid } from "./OutputSection";
+import { ForumGrid } from "./ForumGrid";
+import { OutputSection, PublicationGrid } from "./OutputSection";
 import { PageLayout, PageHero } from "./PageLayout";
 import { RichText } from "./RichText";
 import { TranslationNotice } from "./TranslationNotice";

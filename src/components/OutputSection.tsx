@@ -1,15 +1,10 @@
 import { useState } from "react";
-import { Link } from "@tanstack/react-router";
 import { ChevronDown } from "lucide-react";
 import { PublicationCard, PublicationCardGrid } from "./PublicationCard";
-import { useLanguage } from "@/contexts/LanguageContext";
 import {
-  formatDate,
   mediaUrl,
   populated,
   youtubeThumbnail,
-  type ForumType,
-  type PayloadActivity,
   type PayloadParticipant,
   type PayloadPublication,
 } from "@/lib/payload";
@@ -105,67 +100,6 @@ export function PublicationGrid({
             linkUrl={p.link ?? ""}
             linkUrlAr={p.linkAr ?? ""}
           />
-        );
-      })}
-    </PublicationCardGrid>
-  );
-}
-
-const FORUM_TYPE_LABEL: Record<ForumType, { en: string; ar: string }> = {
-  seminar: { en: "Seminar", ar: "ندوة" },
-  roundtable: { en: "Roundtable", ar: "طاولة مستديرة" },
-  workshop: { en: "Workshop", ar: "ورشة عمل" },
-  conference: { en: "Conference", ar: "مؤتمر" },
-  encounters: { en: "Encounters", ar: "حواريات" },
-};
-
-/**
- * Forums have no page of their own to link to (see /activities/forums,
- * which opens an entry in place rather than routing to it) -- so each card
- * here reopens that ledger with `open` set to this entry's id, the same
- * deep-link PhotoGallery's "Enter" link already uses for a photo's related
- * activity.
- */
-export function ForumGrid({ items }: { items: PayloadActivity[] }) {
-  const { lang, isArabic } = useLanguage();
-
-  return (
-    <PublicationCardGrid>
-      {items.map((item) => {
-        const displayTitle = lang === "ar" ? (item.titleAr ?? item.title) : item.title;
-        const typeLabel = item.forumType
-          ? isArabic
-            ? FORUM_TYPE_LABEL[item.forumType].ar
-            : FORUM_TYPE_LABEL[item.forumType].en
-          : null;
-        const image = mediaUrl(item.image);
-
-        return (
-          <Link
-            key={item.id}
-            to="/activities/forums"
-            search={{ type: item.forumType, open: item.id }}
-            className="w-full sm:w-[calc(50%-0.75rem)] lg:w-[calc(25%-1.125rem)] border border-border rounded-sm bg-card overflow-hidden hover:shadow-sm transition-shadow flex flex-col text-start"
-          >
-            {image && (
-              <div className="aspect-[1/1.41] max-h-[26rem] bg-secondary/20 overflow-hidden">
-                <img src={image} alt="" className="w-full h-full object-cover object-top" />
-              </div>
-            )}
-            <div className="p-5 flex flex-col flex-1">
-              {(item.date || typeLabel) && (
-                <div className="text-[11px] uppercase tracking-widest text-muted-foreground font-semibold mb-1.5">
-                  {item.date && <div>{formatDate(item.date, isArabic ? "ar" : "en")}</div>}
-                  {typeLabel && (
-                    <div className="text-[color:var(--brand-magenta)]">{typeLabel}</div>
-                  )}
-                </div>
-              )}
-              <h4 className="font-serif text-sm text-primary leading-snug text-balance hyphens-auto break-words">
-                {displayTitle}
-              </h4>
-            </div>
-          </Link>
         );
       })}
     </PublicationCardGrid>

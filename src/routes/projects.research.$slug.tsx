@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft } from "lucide-react";
-import { OutputSection, PublicationGrid, ForumGrid } from "@/components/OutputSection";
+import { ForumGrid } from "@/components/ForumGrid";
+import { OutputSection, PublicationGrid } from "@/components/OutputSection";
 import { PageLayout, PageHero } from "@/components/PageLayout";
 import { PhotoGallery, toGalleryPhoto } from "@/components/PhotoGallery";
 import { PublicationCard, PublicationCardGrid } from "@/components/PublicationCard";
