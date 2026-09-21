@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { PageLayout, PageHero } from "@/components/PageLayout";
-import { PhotoGallery, type GalleryPhoto } from "@/components/PhotoGallery";
+import { GalleryPage } from "@/components/GalleryPage";
+import type { GalleryPhoto } from "@/components/PhotoGallery";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { fetchStickers, mediaUrl, type PayloadSticker } from "@/lib/payload";
 import { SECTION_COLORS } from "@/lib/sectionColors";
@@ -32,40 +32,17 @@ function StickersPage() {
   });
 
   return (
-    <PageLayout>
-      <PageHero
-        eyebrow={t("publications")}
-        eyebrowColor={SECTION_COLORS.publications}
-        title={t("publications.stickers")}
-      />
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {isLoading ? (
-          // Mixed widths at one height, so the placeholder rows read like the
-          // justified rows that replace them.
-          <div className="flex flex-wrap [--row-height:12rem] sm:[--row-height:16rem] lg:[--row-height:20rem]">
-            {[1.5, 0.75, 1.3, 1.8, 1, 1.4].map((ratio, n) => (
-              <div
-                key={n}
-                style={{ flexGrow: ratio, flexBasis: `calc(var(--row-height) * ${ratio})` }}
-                className="h-[var(--row-height)] bg-secondary/30 animate-pulse"
-              />
-            ))}
-            <span aria-hidden className="grow-[999] basis-0 h-0" />
-          </div>
-        ) : items.length === 0 ? (
-          <p className="text-sm text-muted-foreground py-12 text-center">
-            {isArabic ? "لا توجد ملصقات أو فواصل كتب منشورة حالياً." : "No stickers or bookmarks published yet."}
-          </p>
-        ) : (
-          <PhotoGallery
-            photos={items
-              .map((item) => toGallerySticker(item, lang === "ar" ? "ar" : "en"))
-              // An entry whose upload went missing would otherwise render as a
-              // broken image in the middle of the gallery.
-              .filter((photo) => photo.url)}
-          />
-        )}
-      </section>
-    </PageLayout>
+    <GalleryPage
+      eyebrow={t("publications")}
+      eyebrowColor={SECTION_COLORS.publications}
+      title={t("publications.stickers")}
+      photos={items.map((item) => toGallerySticker(item, lang === "ar" ? "ar" : "en"))}
+      isLoading={isLoading}
+      empty={
+        isArabic
+          ? "لا توجد ملصقات أو فواصل كتب منشورة حالياً."
+          : "No stickers or bookmarks published yet."
+      }
+    />
   );
 }
