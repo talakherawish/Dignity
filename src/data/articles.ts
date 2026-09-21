@@ -50,16 +50,3 @@ export function getField(
 export function getBody(article: Article, lang: ArticleLang): string[] {
   return article.body[lang] ?? [];
 }
-
-/**
- * True when the excerpt was written in the other language but not this one --
- * as opposed to no excerpt existing at all, which isn't a translation gap and
- * shouldn't be announced as one. Distinguishing the two matters because
- * `getField` itself silently falls back to English, which is the wrong
- * behaviour for a piece of content substantial enough that hiding the gap
- * would mislead a reader (see TranslationNotice).
- */
-export function excerptUntranslated(article: Article, lang: ArticleLang): boolean {
-  const other: ArticleLang = lang === "ar" ? "en" : "ar";
-  return !article.excerpt[lang] && !!article.excerpt[other];
-}

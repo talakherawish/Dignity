@@ -7,8 +7,6 @@
 const PAYLOAD_URL =
   (import.meta.env.VITE_PAYLOAD_URL as string | undefined) ?? "http://localhost:3000";
 
-export { PAYLOAD_URL };
-
 // ── Types ──────────────────────────────────────────────────────────────────
 
 export type PayloadMedia = {
@@ -44,7 +42,7 @@ export type PayloadNews = {
   displayMode?: "withImage" | "textOnly";
 };
 
-export type PayloadGalleryItem = {
+type PayloadGalleryItem = {
   id?: string;
   image?: PayloadMedia;
   caption?: string;
@@ -448,7 +446,7 @@ const ARABIC_DUAL_MONTHS = [
   "ديسمبر/كانون الأول",
 ] as const;
 
-export function arabicDualMonthName(monthIndex: number): string {
+function arabicDualMonthName(monthIndex: number): string {
   return ARABIC_DUAL_MONTHS[monthIndex] ?? "";
 }
 
