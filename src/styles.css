@@ -210,6 +210,22 @@
   }
 }
 
+/* Forum poster cards grow and shrink in place -- see ForumGrid.tsx. Only the
+   cards animate (each carries its own view-transition-name); the page around
+   them just takes its new layout rather than cross-fading between the two,
+   which would ghost everything below the wall. The class is on <html> only
+   while one of those transitions is running. */
+html.forum-card-transition::view-transition-old(root),
+html.forum-card-transition::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+html.forum-card-transition::view-transition-group(*) {
+  animation-duration: 0.45s;
+  animation-timing-function: cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
 /* ── Arabic typography ─────────────────────────────────────────────────────
    Arabic runs in the same Times New Roman stack as English — see --font-sans
    above. Only the metrics differ: Arabic headings need a little more leading

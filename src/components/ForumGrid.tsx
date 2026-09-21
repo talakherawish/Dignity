@@ -1,4 +1,5 @@
-import { Fragment, useEffect, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { flushSync } from "react-dom";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, Plus, X } from "lucide-react";
 import { PublicationCardGrid } from "./PublicationCard";
@@ -14,16 +15,20 @@ import {
 } from "@/lib/payload";
 
 /**
- * The poster wall for Forums attached to a Research area, Task Force on AI, or
- * Idea Factory.
+ * The poster wall for Forums attached to a Research area, Task Force on AI,
+ * Idea Factory, or Windsor-Birzeit.
  *
  * Each card used to be a link out to /activities/forums, which is a dated
  * ledger -- a different page, and a plainer one, than the posters that made
- * someone want to click. Pressing a poster now opens a drawer directly under
- * its row instead: the whole poster (the card crops it into a fixed box, and
- * the poster's own lettering carries the date and title), the write-up at a
- * readable width, and the photographs. The grid above and below never
- * reflows, and only one drawer is open at a time.
+ * someone want to click. Pressing a poster now opens that same card in place:
+ * it grows to the full width of the wall, showing the whole poster (a card
+ * crops it, and the poster's own lettering carries the date and title), the
+ * write-up and the photographs, and pressing it again shrinks it back.
+ *
+ * Cards take the shape of their image: a wide poster makes a wide card, an
+ * upright one a tall card, so nothing is cropped into a box it doesn't fit.
+ * Any number can be open at once -- opening one never closes another, so the
+ * card under the visitor's finger doesn't move because of a different one.
  */
 
 const FORUM_TYPE_LABEL: Record<ForumType, { en: string; ar: string }> = {
@@ -34,26 +39,38 @@ const FORUM_TYPE_LABEL: Record<ForumType, { en: string; ar: string }> = {
   encounters: { en: "Encounters", ar: "حواريات" },
 };
 
-/** Long enough for the close transition below to finish before the drawer unmounts. */
-const DRAWER_TRANSITION_MS = 500;
-
-/** The largest an upright poster gets in the drawer, whatever its proportions. */
+/** The largest an upright poster gets once its card is open, whatever its proportions. */
 const POSTER_MAX_WIDTH = "26rem";
 const POSTER_MAX_HEIGHT = "70vh";
 
 /**
- * Width divided by height from which an image counts as wide. Wide ones open
- * across the top of the drawer instead of beside the text: squeezed into a
- * side column they shrank to a thumbnail. Kept above 1 so a near-square image,
- * which at the drawer's full width would be nearly as tall as it is wide,
- * stays in the column.
+ * Width divided by height from which an image counts as wide. A wide image
+ * makes a wide card, and once open runs across the top of the card with the
+ * text beneath, instead of beside it: squeezed into a side column it shrank to
+ * a thumbnail. Kept above 1 so a near-square image, which at full width would
+ * be nearly as tall as it is wide, stays upright.
  */
 const WIDE_MIN_RATIO = 1.2;
 
+/** An upload from before Payload recorded dimensions is assumed to be an A-series page. */
+const FALLBACK_RATIO = 1 / 1.41;
+
+/**
+ * A card's picture is shown at its own proportions, within limits: a very long
+ * or very wide image is cropped a little rather than making a card that
+ * dwarfs the rest of the wall.
+ */
+const CARD_MIN_RATIO = 0.5;
+const CARD_MAX_RATIO = 2.5;
+
+const NARROW_CARD_WIDTH = "w-full sm:w-[calc(50%-0.75rem)] lg:w-[calc(25%-1.125rem)]";
+/** Two columns of the four -- and the whole row at two, where two is all there is. */
+const WIDE_CARD_WIDTH = "w-full lg:w-[calc(50%-0.75rem)]";
+
 /**
  * How many cards fit on a row, mirroring the widths the cards are given
- * (`sm:` two-up, `lg:` four-up). The drawer has to be placed after the last
- * card of the row it belongs to, so it needs to know where rows break.
+ * (`sm:` two-up, `lg:` four-up). Cards are packed into rows in `arrangeCards`,
+ * which needs to know where a row ends.
  *
  * Starts at four: nothing is open during the server render, so the first
  * client render never disagrees with it.
@@ -77,6 +94,92 @@ function useGridColumns(): number {
   return columns;
 }
 
+function imageRatio(item: PayloadActivity): number {
+  const { width, height } = item.image ?? {};
+  return width && height ? width / height : FALLBACK_RATIO;
+}
+
+function isWide(item: PayloadActivity): boolean {
+  return Boolean(mediaUrl(item.image)) && imageRatio(item) >= WIDE_MIN_RATIO;
+}
+
+/**
+ * The cards in the order they are laid out. The wall is a wrapping row, so a
+ * card that doesn't fit the space left on its row drops to the next one and
+ * leaves the row short -- and an open card, which takes a whole row, would do
+ * the same to whatever came before it. Both are avoided by changing the order
+ * a little rather than leaving holes:
+ *
+ * - an open card goes ahead of the row that is still being filled, so it sits
+ *   where its row would have started;
+ * - a wide card that doesn't fit waits, and the next cards that do fit close
+ *   the row first.
+ *
+ * With nothing open and nothing wide this is the order the cards came in.
+ */
+function arrangeCards(
+  items: PayloadActivity[],
+  columns: number,
+  openIds: Set<string>,
+): PayloadActivity[] {
+  const queue = [...items];
+  const arranged: PayloadActivity[] = [];
+  let row: PayloadActivity[] = [];
+  let filled = 0;
+  let waiting: PayloadActivity[] = [];
+
+  const closeRow = () => {
+    arranged.push(...row);
+    row = [];
+    filled = 0;
+    // What was left waiting starts the next row.
+    queue.unshift(...waiting);
+    waiting = [];
+  };
+
+  while (queue.length > 0 || row.length > 0 || waiting.length > 0) {
+    const item = queue.shift();
+    if (!item) {
+      closeRow();
+      continue;
+    }
+    if (openIds.has(item.id)) {
+      arranged.push(item);
+      continue;
+    }
+    const span = isWide(item) ? Math.min(2, columns) : 1;
+    if (filled + span > columns) {
+      waiting.push(item);
+      continue;
+    }
+    row.push(item);
+    filled += span;
+    if (filled === columns) closeRow();
+  }
+
+  return arranged;
+}
+
+/**
+ * Runs a change that moves cards around as a view transition, so each card
+ * visibly grows out of, or shrinks back into, its own place instead of
+ * jumping. Browsers without the API, and visitors who asked for reduced
+ * motion, just get the change straight away. Resolves once the animation is
+ * over, or at once when there isn't one.
+ */
+function withViewTransition(update: () => void): Promise<void> {
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (reduced || typeof document.startViewTransition !== "function") {
+    update();
+    return Promise.resolve();
+  }
+  // Scopes the styles in styles.css to this transition only.
+  const root = document.documentElement;
+  root.classList.add("forum-card-transition");
+  const done = () => root.classList.remove("forum-card-transition");
+  return document.startViewTransition(update).finished.then(done, done);
+}
+
 type Figure = { url: string; alt: string; caption?: string };
 
 /** The photographs only -- the poster is shown separately, and larger. */
@@ -91,24 +194,19 @@ function galleryOf(item: PayloadActivity, isArabic: boolean): Figure[] {
   return figures;
 }
 
-/** Plus that turns into a cross. */
-function ToggleChip({ open }: { open: boolean }) {
+function typeLabelOf(item: PayloadActivity, isArabic: boolean): string | null {
+  if (!item.forumType) return null;
+  return isArabic ? FORUM_TYPE_LABEL[item.forumType].ar : FORUM_TYPE_LABEL[item.forumType].en;
+}
+
+/** Plus mark on a card's corner: says the card opens. */
+function ToggleChip() {
   return (
     <span
       aria-hidden="true"
-      className={
-        "grid h-8 w-8 place-items-center rounded-full border bg-background/95 shadow-sm transition-colors duration-300 " +
-        (open
-          ? "border-[color:var(--brand-magenta)] text-[color:var(--brand-magenta)]"
-          : "border-border text-primary group-hover:border-[color:var(--brand-magenta)] group-hover:text-[color:var(--brand-magenta)]")
-      }
+      className="grid h-8 w-8 place-items-center rounded-full border border-border bg-background/95 text-primary shadow-sm transition-colors duration-300 group-hover:border-[color:var(--brand-magenta)] group-hover:text-[color:var(--brand-magenta)]"
     >
-      <Plus
-        className={
-          "h-4 w-4 transition-transform duration-300 motion-reduce:transition-none " +
-          (open ? "rotate-45" : "")
-        }
-      />
+      <Plus className="h-4 w-4" />
     </span>
   );
 }
@@ -128,38 +226,38 @@ function isExpandable(item: PayloadActivity): boolean {
   );
 }
 
-function ForumCard({
+function ForumCardClosed({
   item,
-  open,
-  panelId,
   onToggle,
   cardRef,
 }: {
   item: PayloadActivity;
-  /** This card's drawer is the one currently open. */
-  open: boolean;
-  panelId?: string;
   onToggle: () => void;
   cardRef: (el: HTMLElement | null) => void;
 }) {
   const { lang, isArabic } = useLanguage();
   const displayTitle = lang === "ar" ? (item.titleAr ?? item.title) : item.title;
-  const typeLabel = item.forumType
-    ? isArabic
-      ? FORUM_TYPE_LABEL[item.forumType].ar
-      : FORUM_TYPE_LABEL[item.forumType].en
-    : null;
+  const typeLabel = typeLabelOf(item, isArabic);
   const image = mediaUrl(item.image);
   const expandable = isExpandable(item);
-
-  const chip = expandable ? <ToggleChip open={open} /> : null;
+  const cardRatio = Math.min(Math.max(imageRatio(item), CARD_MIN_RATIO), CARD_MAX_RATIO);
 
   const content = (
     <>
       {image && (
-        <div className="relative aspect-[1/1.41] max-h-[26rem] bg-secondary/20 overflow-hidden">
-          <img src={image} alt="" className="w-full h-full object-cover object-top" />
-          {chip && <span className="absolute bottom-2.5 end-2.5">{chip}</span>}
+        // The picture at its own proportions, so the card is as wide or as
+        // tall as the poster is. The ratio is set up front so the wall doesn't
+        // jump as pictures load.
+        <div
+          className="relative overflow-hidden bg-secondary/20"
+          style={{ aspectRatio: cardRatio }}
+        >
+          <img src={image} alt="" className="h-full w-full object-cover object-top" />
+          {expandable && (
+            <span className="absolute bottom-2.5 end-2.5">
+              <ToggleChip />
+            </span>
+          )}
         </div>
       )}
       <div className="p-5 flex flex-col flex-1">
@@ -174,18 +272,20 @@ function ForumCard({
             {displayTitle}
           </h4>
           {/* No poster to sit on, so the chip joins the title instead. */}
-          {!image && chip}
+          {!image && expandable && <ToggleChip />}
         </div>
       </div>
     </>
   );
 
   const cardClass =
-    "w-full sm:w-[calc(50%-0.75rem)] lg:w-[calc(25%-1.125rem)] border rounded-sm bg-card overflow-hidden flex flex-col text-start transition-shadow ";
+    (isWide(item) ? WIDE_CARD_WIDTH : NARROW_CARD_WIDTH) +
+    " border border-border rounded-sm bg-card overflow-hidden flex flex-col text-start transition-shadow";
+  const style = { viewTransitionName: `forum-card-${item.id}` } as CSSProperties;
 
   if (!expandable) {
     return (
-      <div ref={cardRef} className={cardClass + "border-border"}>
+      <div ref={cardRef} className={cardClass} style={style}>
         {content}
       </div>
     );
@@ -196,50 +296,39 @@ function ForumCard({
       ref={cardRef}
       type="button"
       onClick={onToggle}
-      aria-expanded={open}
-      aria-controls={panelId}
+      aria-expanded={false}
       className={
         cardClass +
-        "group cursor-pointer hover:shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--brand-magenta)] focus-visible:ring-offset-2 " +
-        (open ? "border-[color:var(--brand-magenta)] shadow-sm" : "border-border")
+        " group scroll-mt-28 cursor-pointer hover:shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--brand-magenta)] focus-visible:ring-offset-2"
       }
+      style={style}
     >
       {content}
     </button>
   );
 }
 
-function ForumDrawer({
+/** The same card, opened: the whole width of the wall, the whole poster, the write-up. */
+function ForumCardOpen({
   item,
-  open,
-  panelId,
-  onClose,
-  panelRef,
+  onToggle,
+  cardRef,
 }: {
   item: PayloadActivity;
-  /** False while the drawer is closing; it unmounts once the transition has run. */
-  open: boolean;
-  panelId: string;
-  onClose: () => void;
-  panelRef: (el: HTMLDivElement | null) => void;
+  onToggle: () => void;
+  cardRef: (el: HTMLElement | null) => void;
 }) {
   const { lang, isArabic } = useLanguage();
   const title = lang === "ar" ? (item.titleAr ?? item.title) : item.title;
-  const typeLabel = item.forumType
-    ? isArabic
-      ? FORUM_TYPE_LABEL[item.forumType].ar
-      : FORUM_TYPE_LABEL[item.forumType].en
-    : null;
+  const typeLabel = typeLabelOf(item, isArabic);
 
   const poster = mediaUrl(item.image);
-  // Width that makes the poster exactly `POSTER_MAX_HEIGHT` tall (or the cap,
-  // if that is narrower), from the proportions Payload recorded at upload. An
-  // upload from before it recorded them is assumed to be an A-series page.
-  const { width: posterPixelsWide, height: posterPixelsHigh } = item.image ?? {};
-  const posterRatio =
-    posterPixelsWide && posterPixelsHigh ? posterPixelsWide / posterPixelsHigh : 1 / 1.41;
-  const posterWidth = `min(${POSTER_MAX_WIDTH}, calc(${POSTER_MAX_HEIGHT} * ${posterRatio.toFixed(4)}))`;
-  const wide = Boolean(poster) && posterRatio >= WIDE_MIN_RATIO;
+  // Width that makes an upright poster exactly `POSTER_MAX_HEIGHT` tall (or
+  // the cap, if that is narrower), from the proportions Payload recorded at
+  // upload.
+  const posterWidth = `min(${POSTER_MAX_WIDTH}, calc(${POSTER_MAX_HEIGHT} * ${imageRatio(item).toFixed(4)}))`;
+  const wide = isWide(item);
+  const beside = Boolean(poster) && !wide;
 
   // Prose is the visitor's own language only, matching the ledger: an entry
   // written up only in the other language says so rather than serving it.
@@ -247,145 +336,119 @@ function ForumDrawer({
   const untranslated = !hasProse(body) && hasProse(lang === "ar" ? item.content : item.contentAr);
   const gallery = galleryOf(item, isArabic);
 
-  // Mounted collapsed, then opened a frame later: a panel that first appears
-  // already at full height has nothing to transition from. Two frames, because
-  // the first can run before the browser has laid out the collapsed state.
-  const [entered, setEntered] = useState(false);
-  useEffect(() => {
-    let second = 0;
-    const first = requestAnimationFrame(() => {
-      second = requestAnimationFrame(() => setEntered(true));
-    });
-    return () => {
-      cancelAnimationFrame(first);
-      cancelAnimationFrame(second);
-    };
-  }, []);
-  const expanded = entered && open;
-
   return (
     <div
-      ref={panelRef}
-      id={panelId}
+      ref={cardRef}
+      tabIndex={-1}
       role="region"
       aria-label={title}
-      inert={!expanded}
-      className={
-        "grid w-full scroll-mt-28 scroll-mb-6 transition-[grid-template-rows] ease-out motion-reduce:transition-none " +
-        (expanded ? "grid-rows-[1fr]" : "grid-rows-[0fr]")
+      onKeyDown={(event) => {
+        if (event.key === "Escape") onToggle();
+      }}
+      className="relative w-full scroll-mt-28 scroll-mb-6 overflow-hidden rounded-sm border border-border border-t-2 border-t-[color:var(--brand-magenta)] bg-card text-start focus:outline-none"
+      style={
+        {
+          viewTransitionName: `forum-card-${item.id}`,
+          "--poster-width": posterWidth,
+        } as CSSProperties
       }
-      style={{ transitionDuration: `${DRAWER_TRANSITION_MS}ms` }}
     >
-      <div className="overflow-hidden">
-        {/* Keyed so pressing another card in the same row, which reuses this
-            drawer, fades its new contents in rather than swapping them cold. */}
-        <div
-          key={item.id}
-          className="relative overflow-hidden rounded-sm border border-border border-t-2 border-t-[color:var(--brand-magenta)] bg-card opacity-0 animate-[fadeIn_0.4s_ease-out_forwards]"
-        >
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label={isArabic ? "إغلاق" : "Close"}
-            className="absolute end-3 top-3 z-10 grid h-8 w-8 cursor-pointer place-items-center rounded-full border border-border bg-background/90 text-muted-foreground shadow-sm transition-colors hover:border-[color:var(--brand-magenta)] hover:text-[color:var(--brand-magenta)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--brand-magenta)]"
-          >
-            <X className="h-4 w-4" />
-          </button>
+      <button
+        type="button"
+        onClick={onToggle}
+        aria-label={isArabic ? "إغلاق" : "Close"}
+        className="absolute end-3 top-3 z-10 grid h-8 w-8 cursor-pointer place-items-center rounded-full border border-border bg-background/90 text-muted-foreground shadow-sm transition-colors hover:border-[color:var(--brand-magenta)] hover:text-[color:var(--brand-magenta)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--brand-magenta)]"
+      >
+        <X className="h-4 w-4" />
+      </button>
 
-          {/* The image is flush with the drawer's edges, no margin around it, and
-              always shown whole. A wide one runs the full width across the top
-              with the text beneath. An upright one sits beside the text, at the
-              start edge (left in English, right in Arabic -- the grid follows
-              the page direction), sized from its own proportions: as wide as
-              `POSTER_MAX_WIDTH`, but never taller than `POSTER_MAX_HEIGHT` of
-              the window, since at the drawer's full width it would be taller
-              than the screen. */}
-          <div
-            className={
-              poster && !wide ? "md:grid md:grid-cols-[var(--poster-width)_minmax(0,1fr)]" : ""
-            }
-            style={{ "--poster-width": posterWidth } as CSSProperties}
-          >
-            {poster && (
-              <div className={wide ? "" : "bg-secondary/20"}>
-                <img
-                  src={poster}
-                  alt={item.image?.alt || title}
-                  className="block h-auto w-full object-contain"
-                  style={wide ? undefined : { maxHeight: POSTER_MAX_HEIGHT }}
-                />
+      {/* The image is flush with the card's edges, no margin around it, and
+          always shown whole. A wide one runs the full width across the top
+          with the text beneath. An upright one sits beside the text, at the
+          start edge (left in English, right in Arabic -- the grid follows the
+          page direction), sized from its own proportions: as wide as
+          `POSTER_MAX_WIDTH`, but never taller than `POSTER_MAX_HEIGHT` of the
+          window, since at the card's full width it would be taller than the
+          screen. */}
+      <div className={beside ? "md:grid md:grid-cols-[var(--poster-width)_minmax(0,1fr)]" : ""}>
+        {poster && (
+          <div className={wide ? "" : "bg-secondary/20"}>
+            <img
+              src={poster}
+              alt={item.image?.alt || title}
+              className="block h-auto w-full object-contain"
+              style={wide ? undefined : { maxHeight: POSTER_MAX_HEIGHT }}
+            />
+          </div>
+        )}
+
+        {/* The text sits in the middle of whatever room the image leaves --
+            centred across the card under a wide image, and centred against the
+            poster's height beside an upright one -- rather than pressed against
+            one edge with the rest left empty. */}
+        <div
+          className={
+            "min-w-0 p-5 md:p-8 " + (beside ? "md:flex md:flex-col md:justify-center" : "")
+          }
+        >
+          <div className="mx-auto w-full max-w-3xl space-y-6">
+            {/* Clear of the close button's corner. */}
+            <div className="pe-10">
+              {(item.date || typeLabel) && (
+                <div className="mb-2 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
+                  {item.date && <span>{formatDate(item.date, isArabic ? "ar" : "en")}</span>}
+                  {item.date && typeLabel && <span aria-hidden="true"> · </span>}
+                  {typeLabel && (
+                    <span className="text-[color:var(--brand-magenta)]">{typeLabel}</span>
+                  )}
+                </div>
+              )}
+              <h4 className="font-serif text-xl leading-snug text-primary md:text-2xl">{title}</h4>
+            </div>
+
+            {hasProse(body) && (
+              <RichText
+                value={body}
+                className="space-y-4 text-sm leading-relaxed text-foreground"
+              />
+            )}
+            {untranslated && <TranslationNotice />}
+
+            {gallery.length > 0 && (
+              <div
+                className={
+                  "grid gap-3 " +
+                  (gallery.length === 1 ? "grid-cols-1 max-w-md" : "grid-cols-2 lg:grid-cols-3")
+                }
+              >
+                {gallery.map((figure, index) => (
+                  <figure key={`${figure.url}-${index}`}>
+                    <div className="overflow-hidden rounded-sm border border-border bg-secondary/40">
+                      <img
+                        src={figure.url}
+                        alt={figure.alt}
+                        loading="lazy"
+                        className="aspect-[4/3] w-full object-cover"
+                      />
+                    </div>
+                    {figure.caption && (
+                      <figcaption className="mt-2 text-[11px] leading-relaxed text-muted-foreground">
+                        {figure.caption}
+                      </figcaption>
+                    )}
+                  </figure>
+                ))}
               </div>
             )}
 
-            {/* Beside an upright poster, or with no image at all, the close
-                button sits over this block's far corner; over a wide image it
-                sits on the image instead. */}
-            <div
-              className={
-                "min-w-0 space-y-6 p-5 md:p-8 " +
-                // A line of text the width of the whole drawer is too long to read.
-                (wide ? "max-w-3xl" : "pe-14 md:pe-16")
-              }
+            <Link
+              to="/activities/forums"
+              search={{ type: item.forumType, open: item.id }}
+              className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground transition-colors hover:text-[color:var(--brand-magenta)]"
             >
-              <div>
-                {(item.date || typeLabel) && (
-                  <div className="mb-2 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
-                    {item.date && <span>{formatDate(item.date, isArabic ? "ar" : "en")}</span>}
-                    {item.date && typeLabel && <span aria-hidden="true"> · </span>}
-                    {typeLabel && (
-                      <span className="text-[color:var(--brand-magenta)]">{typeLabel}</span>
-                    )}
-                  </div>
-                )}
-                <h4 className="font-serif text-xl leading-snug text-primary md:text-2xl">
-                  {title}
-                </h4>
-              </div>
-
-              {hasProse(body) && (
-                <RichText
-                  value={body}
-                  className="space-y-4 text-sm leading-relaxed text-foreground"
-                />
-              )}
-              {untranslated && <TranslationNotice />}
-
-              {gallery.length > 0 && (
-                <div
-                  className={
-                    "grid gap-3 " +
-                    (gallery.length === 1 ? "grid-cols-1 max-w-md" : "grid-cols-2 lg:grid-cols-3")
-                  }
-                >
-                  {gallery.map((figure, index) => (
-                    <figure key={`${figure.url}-${index}`}>
-                      <div className="overflow-hidden rounded-sm border border-border bg-secondary/40">
-                        <img
-                          src={figure.url}
-                          alt={figure.alt}
-                          loading="lazy"
-                          className="aspect-[4/3] w-full object-cover"
-                        />
-                      </div>
-                      {figure.caption && (
-                        <figcaption className="mt-2 text-[11px] leading-relaxed text-muted-foreground">
-                          {figure.caption}
-                        </figcaption>
-                      )}
-                    </figure>
-                  ))}
-                </div>
-              )}
-
-              <Link
-                to="/activities/forums"
-                search={{ type: item.forumType, open: item.id }}
-                className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground transition-colors hover:text-[color:var(--brand-magenta)]"
-              >
-                {isArabic ? "افتح في المنتديات" : "Open in Forums"}
-                <ArrowRight className="h-3.5 w-3.5 rtl:rotate-180" />
-              </Link>
-            </div>
+              {isArabic ? "افتح في المنتديات" : "Open in Forums"}
+              <ArrowRight className="h-3.5 w-3.5 rtl:rotate-180" />
+            </Link>
           </div>
         </div>
       </div>
@@ -395,99 +458,56 @@ function ForumDrawer({
 
 export function ForumGrid({ items }: { items: PayloadActivity[] }) {
   const columns = useGridColumns();
-  // What the visitor has asked to be open, and what is mounted. They differ
-  // only while a drawer is closing: it stays mounted, collapsing, until the
-  // transition has run.
-  const [openId, setOpenId] = useState<string | null>(null);
-  const [drawerId, setDrawerId] = useState<string | null>(null);
+  const [openIds, setOpenIds] = useState<Set<string>>(new Set());
   const cardElements = useRef(new Map<string, HTMLElement>());
-  const drawerElement = useRef<HTMLDivElement | null>(null);
 
-  useEffect(() => {
-    if (openId !== null) return;
-    const timer = setTimeout(() => setDrawerId(null), DRAWER_TRANSITION_MS);
-    return () => clearTimeout(timer);
-  }, [openId]);
-
-  // The drawer can open below the fold, where pressing a card would appear to
-  // do nothing. Waits for it to reach full height so "nearest" measures the
-  // real thing.
-  useEffect(() => {
-    if (openId === null) return;
-    const timer = setTimeout(() => {
-      const element = drawerElement.current;
+  const toggle = (id: string) => {
+    const opening = !openIds.has(id);
+    void withViewTransition(() => {
+      flushSync(() =>
+        setOpenIds((current) => {
+          const next = new Set(current);
+          if (opening) next.add(id);
+          else next.delete(id);
+          return next;
+        }),
+      );
+      // The card that was pressed is replaced by its other form, so focus has
+      // to be handed across or it would be left on a node that is gone.
+      cardElements.current.get(id)?.focus({ preventScroll: true });
+    }).then(() => {
+      // An opened card can land below the fold, or move to the start of its
+      // row, where pressing a card would appear to do nothing.
+      if (!opening) return;
+      const element = cardElements.current.get(id);
       if (!element) return;
       const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      // A full-width poster can make the drawer taller than the window, and
-      // "nearest" has no good answer for that: start at the top of it.
+      // A card taller than the window has no good "nearest": start at its top.
       const taller = element.getBoundingClientRect().height > window.innerHeight;
       element.scrollIntoView({
         behavior: reduced ? "auto" : "smooth",
         block: taller ? "start" : "nearest",
       });
-    }, DRAWER_TRANSITION_MS + 20);
-    return () => clearTimeout(timer);
-  }, [openId]);
-
-  const open = (id: string) => {
-    setOpenId(id);
-    setDrawerId(id);
+    });
   };
-
-  const close = () => {
-    const id = openId;
-    setOpenId(null);
-    // Closing from inside the drawer (its button, or Esc) would otherwise drop
-    // focus on a node that is about to unmount.
-    if (id) cardElements.current.get(id)?.focus({ preventScroll: true });
-  };
-
-  useEffect(() => {
-    if (openId === null) return;
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") close();
-    };
-    document.addEventListener("keydown", onKeyDown);
-    return () => document.removeEventListener("keydown", onKeyDown);
-    // `close` only reads `openId`, which is already this effect's dependency.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [openId]);
-
-  // The drawer belongs after the last card of the row holding the open one.
-  const drawerIndex = items.findIndex((item) => item.id === drawerId);
-  const drawerAfter =
-    drawerIndex < 0
-      ? -1
-      : Math.min((Math.floor(drawerIndex / columns) + 1) * columns, items.length) - 1;
-  const drawerItem = drawerIndex < 0 ? null : items[drawerIndex];
 
   return (
     <PublicationCardGrid>
-      {items.map((item, index) => (
-        <Fragment key={item.id}>
-          <ForumCard
-            item={item}
-            open={openId === item.id}
-            panelId={drawerId === item.id ? `forum-drawer-${item.id}` : undefined}
-            onToggle={() => (openId === item.id ? close() : open(item.id))}
-            cardRef={(el) => {
-              if (el) cardElements.current.set(item.id, el);
-              else cardElements.current.delete(item.id);
-            }}
-          />
-          {drawerItem && index === drawerAfter && (
-            <ForumDrawer
-              item={drawerItem}
-              open={openId !== null}
-              panelId={`forum-drawer-${drawerItem.id}`}
-              onClose={close}
-              panelRef={(el) => {
-                drawerElement.current = el;
-              }}
-            />
-          )}
-        </Fragment>
-      ))}
+      {arrangeCards(items, columns, openIds).map((item) => {
+        const props = {
+          item,
+          onToggle: () => toggle(item.id),
+          cardRef: (el: HTMLElement | null) => {
+            if (el) cardElements.current.set(item.id, el);
+            else cardElements.current.delete(item.id);
+          },
+        };
+        return openIds.has(item.id) ? (
+          <ForumCardOpen key={item.id} {...props} />
+        ) : (
+          <ForumCardClosed key={item.id} {...props} />
+        );
+      })}
     </PublicationCardGrid>
   );
 }
