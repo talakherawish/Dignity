@@ -98,11 +98,13 @@ export default buildConfig({
     Photos,
     Clippings,
     Stickers,
-    // The Partners *page* -- its heading and introduction -- followed by the
-    // institutions listed on it. Same split as a publications page and its
-    // items: one prose document, one collection of things.
-    Partners,
+    // The institutions first, then the prose at the top of the page they
+    // appear on. That order, and the "Partners" / "Partners Page Text"
+    // labels, exist because the reverse confused someone looking for where to
+    // add a partner: the page's rich-text box came first and read as the whole
+    // feature. The one you add to leads now.
     PartnerItems,
+    Partners,
 
     // Activities
     Research,

@@ -85,9 +85,17 @@ export const DignityResearchInitiative = pageCollection(
   'The heading, intro and full text of the website\'s "The Dignity Research Initiative" page. Open the entry below to edit it.',
 )
 
+/**
+ * Named "Partners Page Text", not "Partners", because the institutions
+ * themselves live in their own collection (PartnerItems.ts), listed directly
+ * above this one. Two sidebar entries reading "Partners" and "Partner
+ * Institutions" was the first thing to confuse someone looking for where to
+ * add a partner: they opened this one, found a rich-text box, and reasonably
+ * concluded nothing had been added.
+ */
 export const Partners = pageCollection(
   'partners',
-  'Partners',
-  'Partners',
-  'The heading, intro and full text of the website\'s Partners page. Open the entry below to edit it.',
+  'Partners Page Text',
+  'Partners Page Text',
+  'The heading and introduction shown at the top of the Partners page on the website. The partner institutions themselves are in "Partners", above. Open the entry below to edit this text.',
 )

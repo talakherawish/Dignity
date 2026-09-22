@@ -4,9 +4,10 @@ import type { CollectionConfig } from 'payload'
  * The institutions the initiative works with, one document each, shown as a
  * wall of logos on About -> Partners.
  *
- * Separate from the `partners` collection in AboutPages.ts, which is the
- * single prose document behind that page's heading and introduction. That one
- * is the page; this one is what's on it.
+ * Separate from the `partners` collection in AboutPages.ts -- labelled
+ * "Partners Page Text" in the admin -- which is the single prose document
+ * behind that page's heading and introduction. That one is the page; this one
+ * is what's on it, and it is the one someone adding a partner wants.
  *
  * Nearly every field is optional on purpose. The first two partners arrived as
  * a name and a web address and nothing else -- no dates, no description of
@@ -21,13 +22,13 @@ const YEAR_MAX = 2100
 
 export const PartnerItems: CollectionConfig = {
   slug: 'partner-items',
-  labels: { singular: 'Partner', plural: 'Partner Institutions' },
+  labels: { singular: 'Partner', plural: 'Partners' },
   admin: {
     group: 'About the Dignity Initiative',
     useAsTitle: 'name',
     defaultColumns: ['name', 'startYear', 'endYear', 'status', 'updatedAt'],
     description:
-      'The institutions shown on the website under About the Dignity Initiative → Partners. One entry per institution. Only the name is required -- add the logo, the website and the years when you have them.',
+      'The institutions shown on the website under About the Dignity Initiative → Partners. One entry per institution -- this is where you add a partner. Only the name is required; add the logo, the website and the years when you have them. The heading and introduction above them on that page are in "Partners Page Text", below.',
   },
   versions: {
     drafts: true,

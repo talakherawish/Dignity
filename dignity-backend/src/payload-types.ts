@@ -76,8 +76,8 @@ export interface Config {
     photos: Photo;
     clippings: Clipping;
     stickers: Sticker;
-    partners: Partner;
     'partner-items': PartnerItem;
+    partners: Partner;
     research: Research;
     forums: Forum;
     'windsor-birzeit': WindsorBirzeit;
@@ -108,8 +108,8 @@ export interface Config {
     photos: PhotosSelect<false> | PhotosSelect<true>;
     clippings: ClippingsSelect<false> | ClippingsSelect<true>;
     stickers: StickersSelect<false> | StickersSelect<true>;
-    partners: PartnersSelect<false> | PartnersSelect<true>;
     'partner-items': PartnerItemsSelect<false> | PartnerItemsSelect<true>;
+    partners: PartnersSelect<false> | PartnersSelect<true>;
     research: ResearchSelect<false> | ResearchSelect<true>;
     forums: ForumsSelect<false> | ForumsSelect<true>;
     'windsor-birzeit': WindsorBirzeitSelect<false> | WindsorBirzeitSelect<true>;
@@ -1453,7 +1453,7 @@ export interface Sticker {
   _status?: ('draft' | 'published') | null;
 }
 /**
- * The heading, intro and full text of the website's Partners page. Open the entry below to edit it.
+ * The heading and introduction shown at the top of the Partners page on the website. The partner institutions themselves are in "Partners", above. Open the entry below to edit this text.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "partners".
@@ -1993,7 +1993,7 @@ export interface StickersSelect<T extends boolean = true> {
   _status?: T;
 }
 /**
- * The institutions shown on the website under About the Dignity Initiative → Partners. One entry per institution. Only the name is required -- add the logo, the website and the years when you have them.
+ * The institutions shown on the website under About the Dignity Initiative → Partners. One entry per institution -- this is where you add a partner. Only the name is required; add the logo, the website and the years when you have them. The heading and introduction above them on that page are in "Partners Page Text", below.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "partner-items".
