@@ -1,9 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { ForumGrid } from "@/components/ForumGrid";
+import { ActivityLedger } from "@/components/ActivityLedger";
 import { PageLayout, PageHero } from "@/components/PageLayout";
-import { PUBLICATION_GRID_SKELETON } from "@/components/PublicationCard";
 import { useLanguage, type TranslationKey } from "@/contexts/LanguageContext";
 import { fetchForums, type ForumType } from "@/lib/payload";
 import { SECTION_COLORS } from "@/lib/sectionColors";
@@ -14,7 +13,7 @@ type FilterValue = "all" | ForumType;
  * ?type=seminar (etc) preselects a tab -- used by the old /activities/seminars
  * and /activities/conferences links, which redirect here (see those routes).
  * ?open=<id> deep-links to one entry -- used by a photo tagged with the
- * activity it's from (see PhotoGallery's "Enter" link) -- opening its card and
+ * activity it's from (see PhotoGallery's "Enter" link) -- opening it and
  * scrolling it into view once the list has loaded.
  */
 type ForumsSearch = { type?: FilterValue; open?: string };
@@ -92,24 +91,12 @@ function ForumsPage() {
         </div>
       </div>
 
-      <section className="mx-auto max-w-5xl px-4 py-8 sm:px-6 md:py-12 lg:px-8">
-        {isLoading ? (
-          <div className={PUBLICATION_GRID_SKELETON}>
-            {[1, 2, 3, 4].map((n) => (
-              <div
-                key={n}
-                className="h-96 animate-pulse rounded-sm border border-border bg-secondary/30"
-              />
-            ))}
-          </div>
-        ) : filtered.length === 0 ? (
-          <p className="border-t border-border py-16 text-center text-sm text-muted-foreground">
-            {t("forums.empty")}
-          </p>
-        ) : (
-          <ForumGrid items={filtered} initialOpenId={open} showForumsLink={false} />
-        )}
-      </section>
+      <ActivityLedger
+        items={filtered}
+        isLoading={isLoading}
+        empty={t("forums.empty")}
+        initialOpenId={open}
+      />
     </PageLayout>
   );
 }

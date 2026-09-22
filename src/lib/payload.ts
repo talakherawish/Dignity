@@ -446,7 +446,7 @@ const ARABIC_DUAL_MONTHS = [
   "ديسمبر/كانون الأول",
 ] as const;
 
-function arabicDualMonthName(monthIndex: number): string {
+export function arabicDualMonthName(monthIndex: number): string {
   return ARABIC_DUAL_MONTHS[monthIndex] ?? "";
 }
 
