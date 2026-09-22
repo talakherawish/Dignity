@@ -25,7 +25,8 @@ import { singletonCreateAccess, singletonListView } from '../lib/singleton'
  *
  * `pageCollection` stays a factory rather than being inlined: it is the shape
  * a standalone prose page takes here, and the next one added should take it
- * too.
+ * too. The Disclaimer page (LegalPages.ts) is one, filed under a different
+ * sidebar group.
  */
 
 function pageFields(): Field[] {
@@ -54,17 +55,18 @@ function pageFields(): Field[] {
   ]
 }
 
-function pageCollection(
+export function pageCollection(
   slug: string,
   singular: string,
   plural: string,
   description: string,
+  group = 'About the Dignity Initiative',
 ): CollectionConfig {
   return {
     slug,
     labels: { singular, plural },
     admin: {
-      group: 'About the Dignity Initiative',
+      group,
       useAsTitle: 'title',
       defaultColumns: ['title', 'updatedAt'],
       description,

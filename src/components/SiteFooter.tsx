@@ -1,5 +1,6 @@
 import { BookOpen, Database, Facebook, Mail, Send, X, Youtube } from "lucide-react";
 import { useEffect, useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { subscribeToMailingList } from "@/lib/payload";
 
@@ -191,18 +192,18 @@ export function SiteFooter() {
           </div>
 
           <nav className="flex items-center gap-4 shrink-0">
-            {[
-              { key: "footer.disclaimer" as const, href: "#" },
-              { key: "footer.privacy" as const, href: "#" },
-            ].map(({ key, href }) => (
-              <a
-                key={key}
-                href={href}
-                className="text-[12px] text-white/35 hover:text-white/60 transition-colors"
-              >
-                {t(key)}
-              </a>
-            ))}
+            <Link
+              to="/disclaimer"
+              className="text-[12px] text-white/35 hover:text-white/60 transition-colors"
+            >
+              {t("footer.disclaimer")}
+            </Link>
+            <Link
+              to="/privacy"
+              className="text-[12px] text-white/35 hover:text-white/60 transition-colors"
+            >
+              {t("footer.privacy")}
+            </Link>
           </nav>
         </div>
       </div>

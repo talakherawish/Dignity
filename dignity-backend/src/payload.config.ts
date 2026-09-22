@@ -48,6 +48,7 @@ import {
   Posters,
 } from './collections/Publications'
 import { ReadingsAndDocuments, Databases } from './collections/Information'
+import { Disclaimer, PrivacyPolicy } from './collections/LegalPages'
 import { SiteSettings } from './globals/SiteSettings'
 
 const filename = fileURLToPath(import.meta.url)
@@ -126,6 +127,11 @@ export default buildConfig({
     // Information
     ReadingsAndDocuments,
     Databases,
+
+    // Site -- shares its group with the Site Settings global, which Payload
+    // lists after it.
+    Disclaimer,
+    PrivacyPolicy,
   ]
     .map(withPublicationStatus)
     .map(enforceBilingual)

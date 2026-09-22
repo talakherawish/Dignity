@@ -748,6 +748,10 @@ async function fetchSinglePage(collection: string): Promise<PayloadPage | undefi
 
 export const fetchAboutInitiative = () => fetchSinglePage("about-initiative");
 
+/** The Disclaimer and Privacy Policy pages, linked from the footer. */
+export const fetchDisclaimer = () => fetchSinglePage("disclaimer");
+export const fetchPrivacyPolicy = () => fetchSinglePage("privacy-policy");
+
 /**
  * The partner institutions, shown on About -> Partners.
  *

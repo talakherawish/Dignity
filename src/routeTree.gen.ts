@@ -12,7 +12,9 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as ActivitiesRouteImport } from './routes/activities'
+import { Route as DisclaimerRouteImport } from './routes/disclaimer'
 import { Route as InformationRouteImport } from './routes/information'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PublicationsRouteImport } from './routes/publications'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as AboutParticipantsRouteImport } from './routes/about.participants'
@@ -57,9 +59,19 @@ const ActivitiesRoute = ActivitiesRouteImport.update({
   path: '/activities',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DisclaimerRoute = DisclaimerRouteImport.update({
+  id: '/disclaimer',
+  path: '/disclaimer',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const InformationRoute = InformationRouteImport.update({
   id: '/information',
   path: '/information',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PublicationsRoute = PublicationsRouteImport.update({
@@ -208,7 +220,9 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRouteWithChildren
   '/activities': typeof ActivitiesRouteWithChildren
+  '/disclaimer': typeof DisclaimerRoute
   '/information': typeof InformationRouteWithChildren
+  '/privacy': typeof PrivacyRoute
   '/publications': typeof PublicationsRouteWithChildren
   '/search': typeof SearchRoute
   '/about/participants': typeof AboutParticipantsRoute
@@ -242,7 +256,9 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRouteWithChildren
   '/activities': typeof ActivitiesRouteWithChildren
+  '/disclaimer': typeof DisclaimerRoute
   '/information': typeof InformationRouteWithChildren
+  '/privacy': typeof PrivacyRoute
   '/publications': typeof PublicationsRouteWithChildren
   '/search': typeof SearchRoute
   '/about/participants': typeof AboutParticipantsRoute
@@ -277,7 +293,9 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/about': typeof AboutRouteWithChildren
   '/activities': typeof ActivitiesRouteWithChildren
+  '/disclaimer': typeof DisclaimerRoute
   '/information': typeof InformationRouteWithChildren
+  '/privacy': typeof PrivacyRoute
   '/publications': typeof PublicationsRouteWithChildren
   '/search': typeof SearchRoute
   '/about/participants': typeof AboutParticipantsRoute
@@ -313,7 +331,9 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/activities'
+    | '/disclaimer'
     | '/information'
+    | '/privacy'
     | '/publications'
     | '/search'
     | '/about/participants'
@@ -347,7 +367,9 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/activities'
+    | '/disclaimer'
     | '/information'
+    | '/privacy'
     | '/publications'
     | '/search'
     | '/about/participants'
@@ -381,7 +403,9 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/activities'
+    | '/disclaimer'
     | '/information'
+    | '/privacy'
     | '/publications'
     | '/search'
     | '/about/participants'
@@ -416,7 +440,9 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRouteWithChildren
   ActivitiesRoute: typeof ActivitiesRouteWithChildren
+  DisclaimerRoute: typeof DisclaimerRoute
   InformationRoute: typeof InformationRouteWithChildren
+  PrivacyRoute: typeof PrivacyRoute
   PublicationsRoute: typeof PublicationsRouteWithChildren
   SearchRoute: typeof SearchRoute
   MediaAnnouncementsRoute: typeof MediaAnnouncementsRoute
@@ -451,11 +477,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ActivitiesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/disclaimer': {
+      id: '/disclaimer'
+      path: '/disclaimer'
+      fullPath: '/disclaimer'
+      preLoaderRoute: typeof DisclaimerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/information': {
       id: '/information'
       path: '/information'
       fullPath: '/information'
       preLoaderRoute: typeof InformationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/publications': {
@@ -737,7 +777,9 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRouteWithChildren,
   ActivitiesRoute: ActivitiesRouteWithChildren,
+  DisclaimerRoute: DisclaimerRoute,
   InformationRoute: InformationRouteWithChildren,
+  PrivacyRoute: PrivacyRoute,
   PublicationsRoute: PublicationsRouteWithChildren,
   SearchRoute: SearchRoute,
   MediaAnnouncementsRoute: MediaAnnouncementsRoute,

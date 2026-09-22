@@ -91,6 +91,7 @@ export interface Config {
     posters: Poster;
     'readings-documents': ReadingsDocument;
     databases: Database;
+    disclaimer: Disclaimer;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -122,6 +123,7 @@ export interface Config {
     posters: PostersSelect<false> | PostersSelect<true>;
     'readings-documents': ReadingsDocumentsSelect<false> | ReadingsDocumentsSelect<true>;
     databases: DatabasesSelect<false> | DatabasesSelect<true>;
+    disclaimer: DisclaimerSelect<false> | DisclaimerSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -317,7 +319,7 @@ export interface AboutInitiative {
   _status?: ('draft' | 'published') | null;
 }
 /**
- * Shows on the website under About the Dignity Initiative → Working Group. Add a new entry here for each person. Authors and Speakers are hidden from that page by default -- see the "Show on Working Group Page" field below.
+ * Shows on the website under About the Dignity Initiative → Working Group. Add a new entry here for each person. Everyone added from now on is kept off that page until "Keep off the Working Group Page" is unchecked -- they are still saved, and still shown wherever they are credited. Authors and Speakers have their own, older switch as well ("Show on Working Group Page").
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "participants".
@@ -333,7 +335,7 @@ export interface Participant {
    */
   showOnWorkingGroupPage?: boolean | null;
   /**
-   * Checked by default for everyone added from now on -- a person added while writing up a forum is saved and stays reachable from that forum, but is not listed on About → Working Group. Uncheck to list them there.
+   * Check this to keep someone off the public Working Group page while still saving them -- a conference speaker, say, who stays reachable from the forum that credits them. Leave it unchecked and they are listed on About → Working Group.
    */
   hideFromWorkingGroupPage?: boolean | null;
   title?: string | null;
@@ -1451,6 +1453,56 @@ export interface Sticker {
   _status?: ('draft' | 'published') | null;
 }
 /**
+ * The institutions shown on the website under About the Dignity Initiative → Partners. One entry per institution. Only the name is required; add the logo, the website and the years when you have them.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "partner-items".
+ */
+export interface PartnerItem {
+  id: string;
+  /**
+   * The institution's own name, spelled the way it spells itself -- e.g. "International Development Research Centre (IDRC)".
+   */
+  name: string;
+  nameAr: string;
+  /**
+   * A PNG or SVG with a transparent or white background works best. It is shown whole, at its own shape -- nothing is cropped, so there is no need to make it square.
+   */
+  logo?: (string | null) | Media;
+  /**
+   * The full address, including https:// -- e.g. https://www.uwindsor.ca/
+   */
+  website?: string | null;
+  /**
+   * Leave empty if the year isn't known. On its own it shows as a single year; fill in the one below as well to show a span.
+   */
+  startYear?: number | null;
+  /**
+   * Only for a partnership that has ended, or one with an agreed end. Leave empty for an ongoing one.
+   */
+  endYear?: number | null;
+  /**
+   * A sentence or two on what the partnership covers. Leave it empty until there is something real to say -- the card reads fine without it.
+   */
+  description?: string | null;
+  descriptionAr?: string | null;
+  /**
+   * Read-only. Reflects the Publish / Save as Draft state above.
+   */
+  publicationStatus?: string | null;
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  updatedBy?: (string | null) | User;
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  createdBy?: (string | null) | User;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
  * Shows on the website under Information → Readings and Documents.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1595,6 +1647,62 @@ export interface Database {
   _status?: ('draft' | 'published') | null;
 }
 /**
+ * The text of the website's Disclaimer page, linked from the bottom of every page. Open the entry below to edit it.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "disclaimer".
+ */
+export interface Disclaimer {
+  id: string;
+  title?: string | null;
+  titleAr?: string | null;
+  body?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  bodyAr?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Read-only. Reflects the Publish / Save as Draft state above.
+   */
+  publicationStatus?: string | null;
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  updatedBy?: (string | null) | User;
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  createdBy?: (string | null) | User;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
@@ -1713,6 +1821,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'databases';
         value: string | Database;
+      } | null)
+    | ({
+        relationTo: 'disclaimer';
+        value: string | Disclaimer;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -1929,56 +2041,6 @@ export interface StickersSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
-}
-/**
- * The institutions shown on the website under About the Dignity Initiative → Partners. One entry per institution. Only the name is required; add the logo, the website and the years when you have them.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "partner-items".
- */
-export interface PartnerItem {
-  id: string;
-  /**
-   * The institution's own name, spelled the way it spells itself -- e.g. "International Development Research Centre (IDRC)".
-   */
-  name: string;
-  nameAr: string;
-  /**
-   * A PNG or SVG with a transparent or white background works best. It is shown whole, at its own shape -- nothing is cropped, so there is no need to make it square.
-   */
-  logo?: (string | null) | Media;
-  /**
-   * The full address, including https:// -- e.g. https://www.uwindsor.ca/
-   */
-  website?: string | null;
-  /**
-   * Leave empty if the year isn't known. On its own it shows as a single year; fill in the one below as well to show a span.
-   */
-  startYear?: number | null;
-  /**
-   * Only for a partnership that has ended, or one with an agreed end. Leave empty for an ongoing one.
-   */
-  endYear?: number | null;
-  /**
-   * A sentence or two on what the partnership covers. Leave it empty until there is something real to say -- the card reads fine without it.
-   */
-  description?: string | null;
-  descriptionAr?: string | null;
-  /**
-   * Read-only. Reflects the Publish / Save as Draft state above.
-   */
-  publicationStatus?: string | null;
-  /**
-   * Set automatically -- not editable by hand.
-   */
-  updatedBy?: (string | null) | User;
-  /**
-   * Set automatically -- not editable by hand.
-   */
-  createdBy?: (string | null) | User;
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2386,6 +2448,22 @@ export interface DatabasesSelect<T extends boolean = true> {
   linkAr?: T;
   file?: T;
   fileAr?: T;
+  publicationStatus?: T;
+  updatedBy?: T;
+  createdBy?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "disclaimer_select".
+ */
+export interface DisclaimerSelect<T extends boolean = true> {
+  title?: T;
+  titleAr?: T;
+  body?: T;
+  bodyAr?: T;
   publicationStatus?: T;
   updatedBy?: T;
   createdBy?: T;
