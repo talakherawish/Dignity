@@ -54,14 +54,3 @@ export function PageHero({
     </section>
   );
 }
-
-export function ImagePlaceholder({ label, ratio = "16/9" }: { label?: string; ratio?: string }) {
-  return (
-    <div
-      className="w-full bg-secondary border border-border rounded-md flex items-center justify-center text-sm text-muted-foreground"
-      style={{ aspectRatio: ratio }}
-    >
-      {label ?? "Image placeholder"}
-    </div>
-  );
-}

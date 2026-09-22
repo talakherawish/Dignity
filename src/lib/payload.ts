@@ -173,6 +173,26 @@ export type PayloadParticipant = {
   hideFromWorkingGroupPage?: boolean;
 };
 
+/**
+ * One partner institution, shown on About -> Partners.
+ *
+ * Everything but the name is optional, because the first two arrived as a name
+ * and a web address and nothing else -- see PartnerItems.ts. The page is built
+ * to read properly with any of it missing.
+ */
+export type PayloadPartnerItem = {
+  id: string;
+  name: string;
+  nameAr?: string;
+  logo?: PayloadMedia;
+  website?: string;
+  /** A year on its own, or the first of a span -- never a full date. */
+  startYear?: number;
+  endYear?: number;
+  description?: string;
+  descriptionAr?: string;
+};
+
 /** Shown under a participant's name in place of their title when the CMS entry leaves it blank. */
 export const PARTICIPANT_ROLE_LABEL: Record<
   PayloadParticipant["category"],
@@ -729,6 +749,16 @@ async function fetchSinglePage(collection: string): Promise<PayloadPage | undefi
 export const fetchAboutInitiative = () => fetchSinglePage("about-initiative");
 
 export const fetchPartners = () => fetchSinglePage("partners");
+
+/**
+ * The institutions listed on the Partners page. A separate collection from the
+ * page itself (`partners`, above), which is the prose around them.
+ *
+ * depth: 1 reaches each partner's logo. There is nothing below it to resolve --
+ * a logo is an image, so it carries no PDF thumbnail of its own.
+ */
+export const fetchPartnerItems = () =>
+  fetchCollection<PayloadPartnerItem>("partner-items", { depth: "1" });
 
 /**
  * Fetch the Site Settings global (nav labels, hero, footer, small UI labels,

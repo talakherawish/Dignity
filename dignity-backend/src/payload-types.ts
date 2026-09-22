@@ -77,6 +77,7 @@ export interface Config {
     clippings: Clipping;
     stickers: Sticker;
     partners: Partner;
+    'partner-items': PartnerItem;
     research: Research;
     forums: Forum;
     'windsor-birzeit': WindsorBirzeit;
@@ -108,6 +109,7 @@ export interface Config {
     clippings: ClippingsSelect<false> | ClippingsSelect<true>;
     stickers: StickersSelect<false> | StickersSelect<true>;
     partners: PartnersSelect<false> | PartnersSelect<true>;
+    'partner-items': PartnerItemsSelect<false> | PartnerItemsSelect<true>;
     research: ResearchSelect<false> | ResearchSelect<true>;
     forums: ForumsSelect<false> | ForumsSelect<true>;
     'windsor-birzeit': WindsorBirzeitSelect<false> | WindsorBirzeitSelect<true>;
@@ -1715,6 +1717,10 @@ export interface PayloadLockedDocument {
         value: string | Partner;
       } | null)
     | ({
+        relationTo: 'partner-items';
+        value: string | PartnerItem;
+      } | null)
+    | ({
         relationTo: 'research';
         value: string | Research;
       } | null)
@@ -1987,6 +1993,56 @@ export interface StickersSelect<T extends boolean = true> {
   _status?: T;
 }
 /**
+ * The institutions shown on the website under About the Dignity Initiative → Partners. One entry per institution. Only the name is required -- add the logo, the website and the years when you have them.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "partner-items".
+ */
+export interface PartnerItem {
+  id: string;
+  /**
+   * The institution's own name, spelled the way it spells itself -- e.g. "International Development Research Centre (IDRC)".
+   */
+  name: string;
+  nameAr: string;
+  /**
+   * A PNG or SVG with a transparent or white background works best. It is shown whole, at its own shape -- nothing is cropped, so there is no need to make it square.
+   */
+  logo?: (string | null) | Media;
+  /**
+   * The full address, including https:// -- e.g. https://www.uwindsor.ca/
+   */
+  website?: string | null;
+  /**
+   * Leave empty if the year isn't known. On its own it shows as a single year; fill in the one below as well to show a span.
+   */
+  startYear?: number | null;
+  /**
+   * Only for a partnership that has ended, or one with an agreed end. Leave empty for an ongoing one.
+   */
+  endYear?: number | null;
+  /**
+   * A sentence or two on what the partnership covers. Leave it empty until there is something real to say -- the card reads fine without it.
+   */
+  description?: string | null;
+  descriptionAr?: string | null;
+  /**
+   * Read-only. Reflects the Publish / Save as Draft state above.
+   */
+  publicationStatus?: string | null;
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  updatedBy?: (string | null) | User;
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  createdBy?: (string | null) | User;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "partners_select".
  */
@@ -1995,6 +2051,26 @@ export interface PartnersSelect<T extends boolean = true> {
   titleAr?: T;
   body?: T;
   bodyAr?: T;
+  publicationStatus?: T;
+  updatedBy?: T;
+  createdBy?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "partner-items_select".
+ */
+export interface PartnerItemsSelect<T extends boolean = true> {
+  name?: T;
+  nameAr?: T;
+  logo?: T;
+  website?: T;
+  startYear?: T;
+  endYear?: T;
+  description?: T;
+  descriptionAr?: T;
   publicationStatus?: T;
   updatedBy?: T;
   createdBy?: T;

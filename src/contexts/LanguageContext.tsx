@@ -79,6 +79,8 @@ const translations = {
       "Readings, documents, and databases relevant to the Dignity initiative's research.",
     "information.empty": "No items available yet.",
     "information.visit": "Visit",
+    "partners.empty": "No partners published yet.",
+    "partners.visitSite": "Visit website",
     // HOME
     "hero.eyebrow": "Academic Initiative",
     "hero.title": "Advancing scholarship in service of human dignity",
@@ -107,10 +109,6 @@ const translations = {
     "news.item3.excerpt":
       "Brief summary of the third article will appear here once content is added.",
     // PAGE DESCRIPTIONS
-    "page.placeholder":
-      "This section is a placeholder. Replace this text with the official content for this page.",
-    "page.placeholder2":
-      "You can add multiple paragraphs, lists, images, and other elements here as the content becomes available.",
     "about.page.desc":
       "An overview of the Dignity initiative, its origins, and its scholarly purpose.",
     "participants.page.desc":
@@ -258,6 +256,8 @@ const translations = {
     "information.page.desc": "قراءات ووثائق وقواعد معلومات ذات صلة بأبحاث مبادرة الكرامة.",
     "information.empty": "لا توجد عناصر متاحة حالياً.",
     "information.visit": "زيارة",
+    "partners.empty": "لا توجد جهات شريكة منشورة حالياً.",
+    "partners.visitSite": "زيارة الموقع",
     // HOME
     "hero.eyebrow": "مبادرة أكاديمية",
     "hero.title": "تعزيز المعرفة في خدمة الكرامة الإنسانية",
@@ -282,9 +282,6 @@ const translations = {
     "news.item3.title": "عنوان المقال الثالث",
     "news.item3.excerpt": "سيظهر هنا ملخص مختصر للمقال الثالث بمجرد إضافة المحتوى.",
     // PAGE DESCRIPTIONS
-    "page.placeholder":
-      "هذا القسم عبارة عن نص تجريبي. استبدل هذا النص بالمحتوى الرسمي لهذه الصفحة.",
-    "page.placeholder2": "يمكنك إضافة فقرات متعددة وقوائم وصور وعناصر أخرى هنا عند توفر المحتوى.",
     "about.page.desc": "نظرة عامة على مبادرة الكرامة وأصولها وغرضها الأكاديمي.",
     "participants.page.desc": "العلماء والباحثون والطلاب والزوار الذين يشكلون مجتمع الكرامة.",
     "partners.page.desc": "المؤسسات والمنظمات التي تتعاون مع مبادرة الكرامة.",

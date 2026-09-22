@@ -29,6 +29,7 @@ import { Users } from './collections/Users'
 import { Media } from './collections/Media'
 import { Recipients } from './collections/Recipients'
 import { DignityResearchInitiative, Partners } from './collections/AboutPages'
+import { PartnerItems } from './collections/PartnerItems'
 import { Participants } from './collections/Participants'
 import { News } from './collections/News'
 import { Photos } from './collections/Photos'
@@ -89,7 +90,11 @@ export default buildConfig({
     Photos,
     Clippings,
     Stickers,
+    // The Partners *page* -- its heading and introduction -- followed by the
+    // institutions listed on it. Same split as a publications page and its
+    // items: one prose document, one collection of things.
     Partners,
+    PartnerItems,
 
     // Activities
     Research,
