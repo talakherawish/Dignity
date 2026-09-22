@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react"
 import { flushSync } from "react-dom";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, Plus, X } from "lucide-react";
+import { ForumAdditionalInfo, hasAdditionalInfo } from "./ForumAdditionalInfo";
 import { RichText } from "./RichText";
 import { TranslationNotice } from "./TranslationNotice";
 import { useLanguage, type TranslationKey } from "@/contexts/LanguageContext";
@@ -251,15 +252,16 @@ function ToggleChip() {
 /**
  * A card is only pressable when there is something to open: a poster, a
  * write-up (even one only written in the other language, which opens to say
- * so), or photographs. One with none of those is a line of text, not a
- * control.
+ * so), photographs, or anything under Additional Information. One with none
+ * of those is a line of text, not a control.
  */
 function isExpandable(item: PayloadActivity): boolean {
   return (
     Boolean(mediaUrl(item.image)) ||
     hasProse(item.content) ||
     hasProse(item.contentAr) ||
-    (item.gallery ?? []).some((entry) => mediaUrl(entry.image))
+    (item.gallery ?? []).some((entry) => mediaUrl(entry.image)) ||
+    hasAdditionalInfo(item)
   );
 }
 
@@ -477,6 +479,8 @@ function ForumCardOpen({
                 ))}
               </div>
             )}
+
+            <ForumAdditionalInfo item={item} />
 
             <Link
               to="/activities/forums"

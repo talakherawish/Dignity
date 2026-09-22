@@ -22,7 +22,7 @@ export const Participants: CollectionConfig = {
     group: 'About the Dignity Initiative',
     useAsTitle: 'name',
     defaultColumns: ['name', 'category', 'status'],
-    description: 'Shows on the website under About the Dignity Initiative → Working Group. Add a new entry here for each person. Authors and Speakers are hidden from that page by default -- see the "Show on Working Group Page" field below.',
+    description: 'Shows on the website under About the Dignity Initiative → Working Group. Add a new entry here for each person. Everyone added from now on is kept off that page until "Keep off the Working Group Page" is unchecked -- they are still saved, and still shown wherever they are credited. Authors and Speakers have their own, older switch as well ("Show on Working Group Page").',
   },
   versions: {
     drafts: true,
@@ -89,6 +89,32 @@ export const Participants: CollectionConfig = {
         condition: (data) => data?.category === 'author' || data?.category === 'speaker',
         description:
           'Authors and Speakers are hidden from the public Working Group page by default. Check this to show this person there too. Their profile stays reachable from the publications/photos that credit them either way.',
+      },
+    },
+    /**
+     * Kept off the public Working Group page without being unpublished.
+     *
+     * Unpublishing would have been the obvious way to hide someone, but a
+     * draft is invisible to the public API altogether -- the person would
+     * vanish from the forum that credits them as well as from this page,
+     * which is the opposite of what's wanted for a conference speaker.
+     *
+     * `defaultValue: true` applies to new people only. Payload fills a
+     * default in when a document is created, so the people already in the
+     * collection have no value stored for this field at all and go on
+     * showing exactly as before -- no migration, nothing to remember to run.
+     * Every person added from now on, including anyone created from inside a
+     * Forum's Participants picker, starts out off the page until someone
+     * decides otherwise.
+     */
+    {
+      name: 'hideFromWorkingGroupPage',
+      type: 'checkbox',
+      label: 'Keep off the Working Group Page',
+      defaultValue: true,
+      admin: {
+        description:
+          'Checked by default for everyone added from now on -- a person added while writing up a forum is saved and stays reachable from that forum, but is not listed on About → Working Group. Uncheck to list them there.',
       },
     },
     {

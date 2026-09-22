@@ -332,6 +332,10 @@ export interface Participant {
    * Authors and Speakers are hidden from the public Working Group page by default. Check this to show this person there too. Their profile stays reachable from the publications/photos that credit them either way.
    */
   showOnWorkingGroupPage?: boolean | null;
+  /**
+   * Checked by default for everyone added from now on -- a person added while writing up a forum is saved and stays reachable from that forum, but is not listed on About → Working Group. Uncheck to list them there.
+   */
+  hideFromWorkingGroupPage?: boolean | null;
   title?: string | null;
   titleAr?: string | null;
   email?: string | null;
@@ -524,6 +528,21 @@ export interface Forum {
         id?: string | null;
       }[]
     | null;
+  /**
+   * Documents attached to this forum -- programme, concept note, slides, anything. They appear under Additional Information inside the entry, after a visitor opens it.
+   */
+  attachments?:
+    | {
+        file: string | Media;
+        title: string;
+        titleAr: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * People who took part in this forum. Pick existing entries, or use Create New to add someone without leaving this page. A person added here is kept off the public Working Group page unless you uncheck "Keep off the Working Group page" on their profile.
+   */
+  participants?: (string | Participant)[] | null;
   /**
    * Which research line(s) this forum came out of. Shows up on that research line's page automatically.
    */
@@ -1880,6 +1899,7 @@ export interface ParticipantsSelect<T extends boolean = true> {
   nameAr?: T;
   category?: T;
   showOnWorkingGroupPage?: T;
+  hideFromWorkingGroupPage?: T;
   title?: T;
   titleAr?: T;
   email?: T;
@@ -2030,6 +2050,15 @@ export interface ForumsSelect<T extends boolean = true> {
         captionAr?: T;
         id?: T;
       };
+  attachments?:
+    | T
+    | {
+        file?: T;
+        title?: T;
+        titleAr?: T;
+        id?: T;
+      };
+  participants?: T;
   researchLines?: T;
   taskForceAILines?: T;
   ideaFactoryLines?: T;

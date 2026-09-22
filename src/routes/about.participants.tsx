@@ -60,8 +60,22 @@ const CATEGORIES = [
   { value: "practical_support", en: "Practical Support", ar: "الدعم العملي" },
 ];
 
-/** Authors and Speakers are hidden unless the CMS entry opts back in. */
+/**
+ * Who this page lists.
+ *
+ * Two switches, each with its own history. "Keep off the Working Group page"
+ * applies to anyone, whatever their role, and is checked by default for every
+ * person added from now on -- including anyone added from inside a Forum, who
+ * is saved and shown on that forum but has no business appearing here until
+ * someone says so. The people who were already in the collection have no value
+ * stored for it, which reads as false, so they go on showing as before.
+ *
+ * The older switch covers Authors and Speakers only, who were hidden here from
+ * the start: they're reachable from the publications and photos that credit
+ * them rather than from browsing this page.
+ */
 function isVisible(p: PayloadParticipant): boolean {
+  if (p.hideFromWorkingGroupPage === true) return false;
   if (p.category === "author" || p.category === "speaker") {
     return p.showOnWorkingGroupPage === true;
   }

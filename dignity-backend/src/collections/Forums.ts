@@ -126,6 +126,72 @@ export const Forums: CollectionConfig = {
         },
       ],
     },
+    /**
+     * Files that belong to this forum -- a programme, a call for papers, a
+     * concept note, the slides someone presented. Each row is the file plus
+     * its name in both languages, and nothing else: the name is what a
+     * visitor reads under the card, so a row with a file and no name would
+     * show as an unlabelled thumbnail.
+     *
+     * Separate from Publications on purpose. A publication is a piece of work
+     * in its own right, listed and searchable across the site; these are
+     * papers attached to one event, shown only inside it.
+     */
+    {
+      name: 'attachments',
+      type: 'array',
+      label: 'Additional Files (optional)',
+      labels: { singular: 'File', plural: 'Files' },
+      admin: {
+        description:
+          'Documents attached to this forum -- programme, concept note, slides, anything. They appear under Additional Information inside the entry, after a visitor opens it.',
+      },
+      fields: [
+        {
+          name: 'file',
+          type: 'upload',
+          relationTo: 'media',
+          required: true,
+          label: 'File',
+        },
+        {
+          name: 'title',
+          type: 'text',
+          required: true,
+          label: 'Title (English)',
+        },
+        {
+          name: 'titleAr',
+          type: 'text',
+          label: 'Title (Arabic / العنوان بالعربية)',
+          admin: { rtl: true },
+        },
+      ],
+    },
+    /**
+     * Who took part. Pick people who are already in the Working Group
+     * collection, or add a new person here without leaving this page -- the
+     * picker's "Create New" opens the full Participant form in a drawer.
+     *
+     * Someone created that way starts out kept off the public Working Group
+     * page (see `hideFromWorkingGroupPage` on Participants, which is checked
+     * by default for every new person). They still show here, and their
+     * profile is still reachable from this forum, so adding a conference
+     * speaker doesn't put them on a page meant for the initiative's own
+     * people. Unchecking that box -- in the drawer while adding them, or
+     * later in Working Group -- is what lists them there.
+     */
+    {
+      name: 'participants',
+      type: 'relationship',
+      relationTo: 'participants',
+      hasMany: true,
+      label: 'Participants',
+      admin: {
+        description:
+          'People who took part in this forum. Pick existing entries, or use Create New to add someone without leaving this page. A person added here is kept off the public Working Group page unless you uncheck "Keep off the Working Group page" on their profile.',
+      },
+    },
     {
       name: 'researchLines',
       type: 'relationship',

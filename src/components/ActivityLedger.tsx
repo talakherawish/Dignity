@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { ForumAdditionalInfo, hasAdditionalInfo } from "@/components/ForumAdditionalInfo";
 import { RichText } from "@/components/RichText";
 import { TranslationNotice } from "@/components/TranslationNotice";
 import { useLanguage, type TranslationKey } from "@/contexts/LanguageContext";
@@ -31,8 +32,9 @@ const FORUM_TYPE_LABEL_KEY: Record<ForumType, TranslationKey> = {
  * pressing a row opens it in place.
  *
  * Everything except the date and the title lives inside the row. An entry may
- * carry a write-up, photographs, or neither, and hoisting any of it into the
- * list would leave the rows as ragged as the entries are uneven.
+ * carry a write-up, photographs, attached files, the people who took part, or
+ * none of it, and hoisting any of that into the list would leave the rows as
+ * ragged as the entries are uneven.
  */
 
 type Lang = "en" | "ar";
@@ -152,8 +154,10 @@ function ActivityEntry({
 
   // An entry with nothing behind it is a line of text, not a control: no
   // toggle, no pointer, nothing to press that would then do nothing. An entry
-  // written up in the other language still opens, to say so.
-  const expandable = prose || untranslated || figures.length > 0;
+  // written up in the other language still opens, to say so, and so does one
+  // whose only content is a programme PDF or the people who took part.
+  const extras = hasAdditionalInfo(item);
+  const expandable = prose || untranslated || figures.length > 0 || extras;
   const panelId = `activity-panel-${item.id}`;
   const titleId = `activity-title-${item.id}`;
 
@@ -297,6 +301,11 @@ function ActivityEntry({
                 />
               )}
               {untranslated && <TranslationNotice />}
+              {extras && (
+                <div className="mt-8">
+                  <ForumAdditionalInfo item={item} />
+                </div>
+              )}
             </div>
           </div>
         </div>

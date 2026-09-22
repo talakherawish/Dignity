@@ -49,6 +49,17 @@ type PayloadGalleryItem = {
   captionAr?: string;
 };
 
+/**
+ * One file attached to a forum, with the name it's shown under. Both names are
+ * required in the CMS, so a card always has something to be labelled with.
+ */
+export type PayloadForumAttachment = {
+  id?: string;
+  file?: PayloadMedia;
+  title?: string;
+  titleAr?: string;
+};
+
 /** The five sub-types shown as filter tabs on Activities -> Forums. */
 export type ForumType = "seminar" | "roundtable" | "workshop" | "conference" | "encounters";
 
@@ -69,6 +80,10 @@ export type PayloadActivity = {
   contentAr?: unknown;
   image?: PayloadMedia;
   gallery?: PayloadGalleryItem[];
+  /** Programme, concept note, slides -- whatever was attached to the event. */
+  attachments?: PayloadForumAttachment[];
+  /** People who took part, shown under Additional Information once the entry is open. */
+  participants?: (PayloadParticipant | string)[];
 };
 
 /**
@@ -148,6 +163,14 @@ export type PayloadParticipant = {
   photo?: PayloadMedia;
   /** Authors/speakers are hidden from the public Working Group page unless this is set -- see mapPayloadParticipant on that page. */
   showOnWorkingGroupPage?: boolean;
+  /**
+   * Keeps someone off the Working Group page whatever their role, without
+   * unpublishing them -- a draft would be invisible to the public API
+   * altogether, including on the forum that credits them. Checked by default
+   * for everyone added from now on (see Participants.ts); absent on the people
+   * who were already there, which reads as false, so they are unaffected.
+   */
+  hideFromWorkingGroupPage?: boolean;
 };
 
 /** Shown under a participant's name in place of their title when the CMS entry leaves it blank. */
