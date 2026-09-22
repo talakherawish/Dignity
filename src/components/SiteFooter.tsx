@@ -60,60 +60,6 @@ export function SiteFooter() {
         }}
       />
 
-      {/* Top bar: copyright | resources | disclaimer & privacy.
-          Stacked in a single centered column on mobile -- three flex-wrap
-          items with justify-between look tidy at desktop widths, but once
-          the middle (resources) block is forced to its own wrapped line by
-          min-w-[220px], the other two land on opposite ends of a line that
-          no longer has a middle item to justify against, reading as
-          scattered rather than stacked. Row layout (and the resources
-          block's own flex-1 growth within it) only kicks back in at sm:. */}
-      <div className="border-b border-white/10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-3 flex flex-col items-center gap-3 text-center sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:text-start">
-          <p className="text-[12px] text-white/35 shrink-0 order-3 sm:order-none">
-            {t("footer.copyright")}
-          </p>
-
-          {/* Plain text links on mobile -- same footprint as Disclaimer /
-              Privacy beside them, so this stays a compact single row
-              instead of two chunky icon-buttons forcing a wrap. The
-              bordered pill-with-icon treatment only kicks in from sm: up,
-              where there's room for it. */}
-          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 sm:gap-2 min-w-[220px] sm:flex-1">
-            <span className="text-[11px] sm:text-[12px] uppercase tracking-[0.18em] text-white/35 font-semibold sm:me-2">
-              {t("footer.resources")}
-            </span>
-            {RESOURCES.map(({ key, Icon }) => (
-              <a
-                key={key}
-                href="#"
-                className="group flex items-center gap-1.5 rounded-sm text-white/60 transition-all duration-200 hover:text-white/90 sm:gap-2 sm:border sm:border-white/10 sm:bg-white/5 sm:px-3.5 sm:py-2 sm:hover:border-white/20 sm:hover:bg-white/10"
-              >
-                <Icon className="hidden h-3.5 w-3.5 shrink-0 text-white/55 transition-colors group-hover:text-[color:var(--brand-magenta)] sm:block" />
-                <span className="text-[12px] font-medium transition-colors whitespace-nowrap sm:text-xs">
-                  {t(key)}
-                </span>
-              </a>
-            ))}
-          </div>
-
-          <nav className="flex items-center gap-4 shrink-0">
-            {[
-              { key: "footer.disclaimer" as const, href: "#" },
-              { key: "footer.privacy" as const, href: "#" },
-            ].map(({ key, href }) => (
-              <a
-                key={key}
-                href={href}
-                className="text-[12px] text-white/35 hover:text-white/60 transition-colors"
-              >
-                {t(key)}
-              </a>
-            ))}
-          </nav>
-        </div>
-      </div>
-
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-7 grid gap-x-8 gap-y-7 sm:grid-cols-2">
         {/* Contact */}
         <div>
@@ -197,6 +143,67 @@ export function SiteFooter() {
               {t("footer.subscribe.btn")}
             </button>
           </div>
+        </div>
+      </div>
+
+      {/* Bottom bar: copyright | resources | disclaimer & privacy. The last
+          thing in the footer, under the contact and subscribe columns, which
+          is where a reader looks for a copyright line and a privacy link. It
+          used to sit above them, at the top of the footer, where it read as a
+          second navigation strip rather than as the end of the page. Its rule
+          is a border-t for the same reason: it divides itself from the block
+          above rather than from the page below.
+
+          Stacked in a single centered column on mobile -- three flex-wrap
+          items with justify-between look tidy at desktop widths, but once
+          the middle (resources) block is forced to its own wrapped line by
+          min-w-[220px], the other two land on opposite ends of a line that
+          no longer has a middle item to justify against, reading as
+          scattered rather than stacked. Row layout (and the resources
+          block's own flex-1 growth within it) only kicks back in at sm:. */}
+      <div className="border-t border-white/10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-3 flex flex-col items-center gap-3 text-center sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:text-start">
+          <p className="text-[12px] text-white/35 shrink-0 order-3 sm:order-none">
+            {t("footer.copyright")}
+          </p>
+
+          {/* Plain text links on mobile -- same footprint as Disclaimer /
+              Privacy beside them, so this stays a compact single row
+              instead of two chunky icon-buttons forcing a wrap. The
+              bordered pill-with-icon treatment only kicks in from sm: up,
+              where there's room for it. */}
+          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 sm:gap-2 min-w-[220px] sm:flex-1">
+            <span className="text-[11px] sm:text-[12px] uppercase tracking-[0.18em] text-white/35 font-semibold sm:me-2">
+              {t("footer.resources")}
+            </span>
+            {RESOURCES.map(({ key, Icon }) => (
+              <a
+                key={key}
+                href="#"
+                className="group flex items-center gap-1.5 rounded-sm text-white/60 transition-all duration-200 hover:text-white/90 sm:gap-2 sm:border sm:border-white/10 sm:bg-white/5 sm:px-3.5 sm:py-2 sm:hover:border-white/20 sm:hover:bg-white/10"
+              >
+                <Icon className="hidden h-3.5 w-3.5 shrink-0 text-white/55 transition-colors group-hover:text-[color:var(--brand-magenta)] sm:block" />
+                <span className="text-[12px] font-medium transition-colors whitespace-nowrap sm:text-xs">
+                  {t(key)}
+                </span>
+              </a>
+            ))}
+          </div>
+
+          <nav className="flex items-center gap-4 shrink-0">
+            {[
+              { key: "footer.disclaimer" as const, href: "#" },
+              { key: "footer.privacy" as const, href: "#" },
+            ].map(({ key, href }) => (
+              <a
+                key={key}
+                href={href}
+                className="text-[12px] text-white/35 hover:text-white/60 transition-colors"
+              >
+                {t(key)}
+              </a>
+            ))}
+          </nav>
         </div>
       </div>
 
