@@ -32,7 +32,8 @@ export function PageHero({
         {eyebrow && (
           <p
             className={
-              "uppercase tracking-[0.22em] font-semibold mb-3 " + (isArabic ? "text-[13px]" : "text-[11px]")
+              "uppercase tracking-[0.22em] font-semibold mb-3 " +
+              (isArabic ? "text-[13px]" : "text-[11px]")
             }
             style={{ color: eyebrowColor ?? "var(--brand-magenta)" }}
           >

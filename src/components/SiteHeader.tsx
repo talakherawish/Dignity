@@ -274,90 +274,90 @@ function MobileNav({ open, onNavigate }: { open: boolean; onNavigate: () => void
             ? "data-[status=active]:text-[var(--section-hover)]"
             : "data-[status=active]:text-accent";
           return (
-          <div key={item.labelKey} className="border-b border-border last:border-b-0">
-            {item.children ? (
-              <>
-                <div className="flex items-center justify-between">
-                  {item.to ? (
-                    <Link
-                      to={item.to}
-                      onClick={onNavigate}
-                      style={sectionStyle}
-                      className={[
-                        "flex-1 py-3 font-medium text-foreground/80",
-                        activeClass,
-                        isArabic ? "font-arabic text-[18px]" : "text-[17px]",
-                      ].join(" ")}
-                    >
-                      {t(item.labelKey)}
-                    </Link>
-                  ) : (
-                    <span
-                      className={[
-                        "flex-1 py-3 font-medium text-foreground/80",
-                        isArabic ? "font-arabic text-[18px]" : "text-[17px]",
-                      ].join(" ")}
-                    >
-                      {t(item.labelKey)}
-                    </span>
-                  )}
-                  <button
-                    onClick={() =>
-                      setExpanded((cur) => (cur === item.labelKey ? null : item.labelKey))
-                    }
-                    aria-label={expanded === item.labelKey ? "Collapse" : "Expand"}
-                    aria-expanded={expanded === item.labelKey}
-                    className="p-3 -m-3 shrink-0"
-                  >
-                    <ChevronDown
-                      className="h-4 w-4 shrink-0 transition-transform duration-200"
-                      style={{
-                        transform: expanded === item.labelKey ? "rotate(180deg)" : "rotate(0deg)",
-                      }}
-                    />
-                  </button>
-                </div>
-                <div
-                  className="overflow-hidden"
-                  style={{
-                    maxHeight: expanded === item.labelKey ? "600px" : "0px",
-                    transition: "max-height 0.25s ease",
-                  }}
-                >
-                  <div className={`pb-2 flex flex-col gap-0.5 ${isArabic ? "pr-3" : "pl-3"}`}>
-                    {item.children.map((c) => (
+            <div key={item.labelKey} className="border-b border-border last:border-b-0">
+              {item.children ? (
+                <>
+                  <div className="flex items-center justify-between">
+                    {item.to ? (
                       <Link
-                        key={c.labelKey}
-                        to={c.to}
+                        to={item.to}
                         onClick={onNavigate}
                         style={sectionStyle}
                         className={[
-                          "block py-2 text-sm text-foreground/75",
-                          item.color ? "hover:text-[var(--section-hover)]" : "hover:text-accent",
+                          "flex-1 py-3 font-medium text-foreground/80",
                           activeClass,
+                          isArabic ? "font-arabic text-[18px]" : "text-[17px]",
                         ].join(" ")}
                       >
-                        {t(c.labelKey)}
+                        {t(item.labelKey)}
                       </Link>
-                    ))}
+                    ) : (
+                      <span
+                        className={[
+                          "flex-1 py-3 font-medium text-foreground/80",
+                          isArabic ? "font-arabic text-[18px]" : "text-[17px]",
+                        ].join(" ")}
+                      >
+                        {t(item.labelKey)}
+                      </span>
+                    )}
+                    <button
+                      onClick={() =>
+                        setExpanded((cur) => (cur === item.labelKey ? null : item.labelKey))
+                      }
+                      aria-label={expanded === item.labelKey ? "Collapse" : "Expand"}
+                      aria-expanded={expanded === item.labelKey}
+                      className="p-3 -m-3 shrink-0"
+                    >
+                      <ChevronDown
+                        className="h-4 w-4 shrink-0 transition-transform duration-200"
+                        style={{
+                          transform: expanded === item.labelKey ? "rotate(180deg)" : "rotate(0deg)",
+                        }}
+                      />
+                    </button>
                   </div>
-                </div>
-              </>
-            ) : (
-              <Link
-                to={item.to!}
-                onClick={onNavigate}
-                style={sectionStyle}
-                className={[
-                  "block py-3 font-medium text-foreground/80",
-                  activeClass,
-                  isArabic ? "font-arabic text-[18px]" : "text-[17px]",
-                ].join(" ")}
-              >
-                {t(item.labelKey)}
-              </Link>
-            )}
-          </div>
+                  <div
+                    className="overflow-hidden"
+                    style={{
+                      maxHeight: expanded === item.labelKey ? "600px" : "0px",
+                      transition: "max-height 0.25s ease",
+                    }}
+                  >
+                    <div className={`pb-2 flex flex-col gap-0.5 ${isArabic ? "pr-3" : "pl-3"}`}>
+                      {item.children.map((c) => (
+                        <Link
+                          key={c.labelKey}
+                          to={c.to}
+                          onClick={onNavigate}
+                          style={sectionStyle}
+                          className={[
+                            "block py-2 text-sm text-foreground/75",
+                            item.color ? "hover:text-[var(--section-hover)]" : "hover:text-accent",
+                            activeClass,
+                          ].join(" ")}
+                        >
+                          {t(c.labelKey)}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <Link
+                  to={item.to!}
+                  onClick={onNavigate}
+                  style={sectionStyle}
+                  className={[
+                    "block py-3 font-medium text-foreground/80",
+                    activeClass,
+                    isArabic ? "font-arabic text-[18px]" : "text-[17px]",
+                  ].join(" ")}
+                >
+                  {t(item.labelKey)}
+                </Link>
+              )}
+            </div>
           );
         })}
       </nav>

@@ -384,8 +384,12 @@ export function PublicationCard({
           href={fileUrl}
           download
           onClick={(e) => e.stopPropagation()}
-          aria-label={sizeLabel ? `${t("publications.download")} (${sizeLabel})` : t("publications.download")}
-          title={sizeLabel ? `${t("publications.download")} (${sizeLabel})` : t("publications.download")}
+          aria-label={
+            sizeLabel ? `${t("publications.download")} (${sizeLabel})` : t("publications.download")
+          }
+          title={
+            sizeLabel ? `${t("publications.download")} (${sizeLabel})` : t("publications.download")
+          }
           className="absolute top-2 end-2 z-10 inline-flex h-8 w-8 items-center justify-center rounded-full bg-black/60 text-white transition-colors hover:bg-black/75"
         >
           <Download className="h-3.5 w-3.5" />
