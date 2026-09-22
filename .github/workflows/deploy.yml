@@ -47,8 +47,13 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          # The backend's own floor (package.json engines).
-          node-version: 20
+          # 22, not 20: @tanstack/react-start and its siblings declare
+          # `node >= 22.12.0`, so `npm ci` at the root fails outright on 20.
+          # Pinning 20 here -- the backend's engines floor -- blocked a deploy
+          # on the install step the first time these checks ran. 22 satisfies
+          # both halves. The floor is on the root package.json now too, so the
+          # next person sees it without reading a dependency tree.
+          node-version: 22
           cache: npm
           cache-dependency-path: |
             package-lock.json

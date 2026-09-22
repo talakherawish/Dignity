@@ -50,13 +50,22 @@ function PartnerCard({ partner }: { partner: PayloadPartner }) {
      surface -- and an institution's mark is not ours to recolour. Contained,
      never cropped: it is fixed artwork, and a logo cut off at the edge reads
      as a broken image rather than a design. */
-  /* 4:3 and lightly padded rather than 16:9 and generously padded. Most
-     institutional logos are a roughly square crest or roundel, and a wide
-     plate left one stranded in the middle of it with more white either side
-     than logo. A wide wordmark still fits -- it just sits width-constrained,
-     with space above and below instead. */
+  /* No panel, no shadow, no lift: the logo sits flat on the page, and the
+     only thing hovering changes is the name's colour. It was a white card
+     raised on a shadow, which read as an object floating above the page rather
+     than as a mark printed on it.
+
+     The box is still a fixed 6:5 so the names line up across a row, but it is
+     invisible -- nothing is drawn for it -- and the padding is down to 0.5rem,
+     so a roughly square crest very nearly fills it. That is as close a crop as
+     `object-contain` allows without cutting the artwork.
+
+     No background of its own means a logo drawn in white on transparency would
+     disappear. Every current one is in colour, and the site has no dark mode
+     (`.dark` exists in styles.css but is never applied), so the page behind is
+     reliably light. */
   const plate = (
-    <div className="flex aspect-[4/3] w-full items-center justify-center overflow-hidden rounded-sm bg-white p-6 shadow-[0_6px_18px_-8px_rgba(0,0,0,0.35)] transition-transform duration-300 ease-out group-hover:-translate-y-1 group-focus-visible:-translate-y-1 motion-reduce:transition-none">
+    <div className="flex aspect-[6/5] w-full items-center justify-center p-2">
       {logo ? (
         <img
           src={logo}
@@ -158,7 +167,7 @@ function PartnersPage() {
             {[1, 2, 3].map((n) => (
               <div
                 key={n}
-                className="aspect-[4/3] w-full animate-pulse rounded-sm bg-secondary/40 sm:w-[calc(50%-1rem)] lg:w-[calc(25%-1.5rem)]"
+                className="aspect-[6/5] w-full animate-pulse rounded-sm bg-secondary/40 sm:w-[calc(50%-1rem)] lg:w-[calc(25%-1.5rem)]"
               />
             ))}
           </div>
