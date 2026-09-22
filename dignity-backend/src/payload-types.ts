@@ -76,7 +76,7 @@ export interface Config {
     photos: Photo;
     clippings: Clipping;
     stickers: Sticker;
-    partners: Partner;
+    'partner-items': PartnerItem;
     research: Research;
     forums: Forum;
     'windsor-birzeit': WindsorBirzeit;
@@ -107,7 +107,7 @@ export interface Config {
     photos: PhotosSelect<false> | PhotosSelect<true>;
     clippings: ClippingsSelect<false> | ClippingsSelect<true>;
     stickers: StickersSelect<false> | StickersSelect<true>;
-    partners: PartnersSelect<false> | PartnersSelect<true>;
+    'partner-items': PartnerItemsSelect<false> | PartnerItemsSelect<true>;
     research: ResearchSelect<false> | ResearchSelect<true>;
     forums: ForumsSelect<false> | ForumsSelect<true>;
     'windsor-birzeit': WindsorBirzeitSelect<false> | WindsorBirzeitSelect<true>;
@@ -1655,8 +1655,8 @@ export interface PayloadLockedDocument {
         value: string | Sticker;
       } | null)
     | ({
-        relationTo: 'partners';
-        value: string | Partner;
+        relationTo: 'partner-items';
+        value: string | PartnerItem;
       } | null)
     | ({
         relationTo: 'research';
@@ -1934,9 +1934,9 @@ export interface StickersSelect<T extends boolean = true> {
  * The institutions shown on the website under About the Dignity Initiative → Partners. One entry per institution. Only the name is required; add the logo, the website and the years when you have them.
  *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "partners".
+ * via the `definition` "partner-items".
  */
-export interface Partner {
+export interface PartnerItem {
   id: string;
   /**
    * The institution's own name, spelled the way it spells itself -- e.g. "International Development Research Centre (IDRC)".
@@ -1982,9 +1982,9 @@ export interface Partner {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "partners_select".
+ * via the `definition` "partner-items_select".
  */
-export interface PartnersSelect<T extends boolean = true> {
+export interface PartnerItemsSelect<T extends boolean = true> {
   name?: T;
   nameAr?: T;
   logo?: T;

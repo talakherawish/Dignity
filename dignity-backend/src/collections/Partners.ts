@@ -11,10 +11,17 @@ import type { CollectionConfig } from 'payload'
  * this is the whole of Partners. The page is its heading and these
  * institutions.
  *
- * The old document still sits in this same Mongo collection, carrying
- * title/body and no `name`. Nothing renders it -- the website skips a partner
- * without a name, since there would be nothing to label its card with -- and it
- * is deleted from the admin list by hand.
+ * **The slug is `partner-items`, not `partners`, and has to stay that way.**
+ * A slug is the name of the MongoDB collection behind it, so renaming this one
+ * to `partners` does not carry the documents across -- it points the code at
+ * a different, older collection (the retired prose page's) and strands every
+ * partner already entered. That was tried, and the live Partners page went
+ * from two institutions to none.
+ *
+ * The retired prose document is still in the `partners` collection in Mongo,
+ * the same way the merged Seminars / Conferences / Meetings data is still
+ * under its old names. Nothing is registered at that slug any more, so it is
+ * unreachable and invisible rather than something to tidy up.
  *
  * Nearly every field is optional on purpose. The first two partners arrived as
  * a name and a web address and nothing else -- no dates, no description of
@@ -28,7 +35,9 @@ const YEAR_MIN = 1900
 const YEAR_MAX = 2100
 
 export const Partners: CollectionConfig = {
-  slug: 'partners',
+  // See the note above: this cannot be renamed to 'partners' without moving
+  // the documents in Mongo first.
+  slug: 'partner-items',
   labels: { singular: 'Partner', plural: 'Partners' },
   admin: {
     group: 'About the Dignity Initiative',
