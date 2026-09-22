@@ -32,7 +32,9 @@ ssh -i ~/.ssh/dignity opc@84.13.77.162
 ```
 Not `ubuntu@` — this is Oracle Linux. The key exists **only in Cloud Shell**; there is no SSH key on Tala's laptop, so `scp`/`ssh` from PowerShell will not work.
 
-**Claude's sandbox has no raw TCP.** It cannot SSH or reach `api.github.com`. All server work goes through commands Tala pastes into Cloud Shell. Give her one block at a time.
+**Claude's sandbox does have outbound HTTPS** — verified 2026-09-22: it reached `api.github.com`, `https://84-13-77-162.sslip.io` and pushed to GitHub in one session. This file used to say it had no raw TCP at all and that every server command had to be pasted into Cloud Shell by hand; that is no longer true for anything over HTTPS, so Claude can check a deploy, read the live API and push without help.
+
+**Whether it can SSH is untested.** Assume not, and remember the key lives **only in Cloud Shell** anyway. Anything that genuinely needs a shell on the box still goes through Cloud Shell — one block at a time — but that is now the rare case, not the default.
 
 **Never paste a heredoc inside an interactive SSH session** — bracketed-paste markers (`^[[200~`) corrupt it. Use `ssh ... 'bash -s' <<'REMOTE'` from Cloud Shell instead. Keep blocks short; long nested ones get truncated mid-paste.
 
@@ -40,23 +42,38 @@ Not `ubuntu@` — this is Oracle Linux. The key exists **only in Cloud Shell**; 
 
 **`cmd | tail -n` prints nothing until the command exits.** This repeatedly looks like a hang. Redirect to a file and poll it instead.
 
-**Tala's VS Code terminal runs git normally.** Commits and pushes work there — only the sandbox can't reach GitHub.
+**Tala's VS Code terminal runs git normally.** So does the sandbox — see above.
 
 ---
 
 ## Deploying
 
-**Pushing to GitHub deploys nothing.** There is no CI. A deploy is a deliberate act.
+**Pushing to `main` deploys.** `.github/workflows/deploy.yml` (added 2026-08-11, after the rest of this file was written) SSHes into the server and runs `/usr/local/bin/deploy` on every push. This file said the opposite for over a year — that there was no CI and a deploy was a deliberate act — which was true when it was written and stopped being true the same evening.
 
-There is a tested script at `/usr/local/bin/deploy` on the server (verified on a repeat run, 2026-08-11):
+So: a push is a deploy. There is nothing else to do, and nothing to paste into Cloud Shell.
+
+**Check that it worked rather than assuming.** The run shows up under the repo's Actions tab, or:
+```
+curl -s 'https://api.github.com/repos/talakherawish/Dignity/actions/runs?per_page=3'
+```
+Green is not the whole story — the endpoints are. A deploy is done when `/`, `/admin` and `/api/forums` all return 200.
+
+**Re-running without a new commit:** the workflow has `workflow_dispatch`, so it can be re-run from the Actions tab. No empty commit needed.
+
+**Two deploys never overlap.** `concurrency: group: deploy, cancel-in-progress: false` queues them instead of cancelling, so the last push is always the one that ships. The server builds in place and swaps the frontend directory at the end; two runs would fight over it.
+
+**The manual path still works** and is the fallback if Actions is down or the key is rotated — from Cloud Shell, not from the laptop:
 ```
 ssh -i ~/.ssh/dignity opc@84.13.77.162 '/usr/local/bin/deploy'
 ```
+
+### What the script does
+
 It pulls, builds both halves, copies the frontend into place, restarts both services, and checks the endpoints. Builds run **before** anything is restarted, so a failed build leaves the live site untouched. The previous frontend is kept at `/srv/dignity-frontend.old` for rollback.
 
 It runs `git reset --hard origin/main`, so **anything edited directly on the server is wiped**. All changes go through GitHub. That is deliberate — the server and repo silently drifted apart before this existed.
 
-**`VITE_PAYLOAD_URL` is baked in at build time.** It must be `https://84-13-77-162.sslip.io` in the repo-root `.env` before building. If it's wrong, pages render fine for you and silently fail for visitors — this bug has already shipped once.
+**`VITE_PAYLOAD_URL` is baked in at build time.** It must be `https://84-13-77-162.sslip.io` in the repo-root `.env` **on the server**, which is where the build actually happens. The workflow deliberately has no build step of its own for exactly this reason: building in CI would bake in whatever that runner's environment held instead. If it's wrong, pages render fine for you and silently fail for visitors — this bug has already shipped once.
 
 ---
 
@@ -102,7 +119,9 @@ Several pages fall back to hardcoded content when Payload returns nothing. A pop
 curl -sk 'https://84-13-77-162.sslip.io/api/participants?limit=3'
 ```
 
-All collections are wrapped in `enforceBilingual()`: every English/Arabic field pair must be filled before a document can be published.
+All collections are wrapped in `enforceBilingual()`, but it does less than this file used to claim. It mirrors `required` from an English field onto its `...Ar` sibling — **titles only**, since titles are the one pair collections mark required. Every other pair is independent: a document may carry an English-only write-up, an Arabic-only caption, or both, and publish fine. Forcing both sides meant a half-translated entry couldn't be saved at all; the frontend now tells a reader when the field they're looking at doesn't exist in their language (`TranslationNotice`, `resolveAttachment`) instead. See `dignity-backend/src/lib/bilingual.ts`, which explains it at the top.
+
+One consequence worth knowing: marking any new English field `required` silently makes its Arabic half required too — including inside an array. A Forum's attached files work this way, so a file needs both names before the forum will save.
 
 Admin sidebar order comes from the `collections` array in `payload.config.ts`. Payload has no per-collection ordering setting — an `admin.position` key is **silently ignored**. Don't re-add it.
 
