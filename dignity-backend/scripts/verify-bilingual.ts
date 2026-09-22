@@ -16,6 +16,7 @@ import { DignityResearchInitiative } from '../src/collections/AboutPages'
 import { Participants } from '../src/collections/Participants'
 import { Books } from '../src/collections/Publications'
 import { Forums } from '../src/collections/Forums'
+import { PartnerItems } from '../src/collections/PartnerItems'
 
 let failures = 0
 const ok = (name: string) => console.log(`  PASS  ${name}`)
@@ -26,6 +27,12 @@ const bad = (name: string, detail: string) => {
 
 const findField = (fields: Field[], name: string): Field | undefined =>
   fields.find((f) => (f as { name?: string }).name === name)
+
+/** A field inside an array/group field -- `attachments.title`, say. */
+const findNested = (fields: Field[], arrayName: string, name: string): Field | undefined => {
+  const container = findField(fields, arrayName) as { fields?: Field[] } | undefined
+  return container?.fields ? findField(container.fields, name) : undefined
+}
 
 function expectRequired(label: string, c: CollectionConfig, enName: string, arName: string) {
   const patched = enforceBilingual(c)
@@ -57,6 +64,21 @@ async function main() {
   expectRequired('Forums: titleAr required (mirrored from title)', Forums, 'title', 'titleAr')
   expectRequired('Participants: nameAr required (mirrored from name)', Participants, 'name', 'nameAr')
   expectRequired('Books: titleAr required (mirrored from title)', Books, 'title', 'titleAr')
+  expectRequired('PartnerItems: nameAr required (mirrored from name)', PartnerItems, 'name', 'nameAr')
+
+  // enforceBilingual recurses into array fields, so marking the English half
+  // of a pair required inside one quietly requires the Arabic half too. That
+  // is easy to forget when adding a field and is the reason a Forum's attached
+  // file needs both of its names before the forum will save -- so it is
+  // asserted rather than left as folklore.
+  {
+    const patched = enforceBilingual(Forums)
+    const en = findNested(patched.fields, 'attachments', 'title') as { required?: boolean } | undefined
+    const ar = findNested(patched.fields, 'attachments', 'titleAr') as { required?: boolean } | undefined
+    const label = 'Forums: attachments[].titleAr required (mirrored inside an array)'
+    if (en?.required && ar?.required) ok(label)
+    else bad(label, `en.required=${en?.required} ar.required=${ar?.required}`)
+  }
   // DignityResearchInitiative and Partners are standalone prose pages (see
   // AboutPages.ts), not itemized content — their title was never marked
   // required, so there's nothing for enforceBilingual to mirror. Not tested
@@ -65,15 +87,16 @@ async function main() {
   console.log('\n— Every other pair is independent: no forced coupling, no custom validator —')
   expectIndependent('News: excerpt/excerptAr', News, 'excerpt', 'excerptAr')
   expectIndependent('News: content/contentAr', News, 'content', 'contentAr')
-  expectIndependent('Forums: description/descriptionAr', Forums, 'description', 'descriptionAr')
+  expectIndependent('Forums: content/contentAr', Forums, 'content', 'contentAr')
+  expectIndependent('PartnerItems: description/descriptionAr', PartnerItems, 'description', 'descriptionAr')
   expectIndependent('Participants: bio/bioAr', Participants, 'bio', 'bioAr')
   expectIndependent('Books: author/authorAr', Books, 'author', 'authorAr')
   expectIndependent('Books: description/descriptionAr', Books, 'description', 'descriptionAr')
   expectIndependent(
-    'DignityResearchInitiative: description/descriptionAr',
+    'DignityResearchInitiative: title/titleAr',
     DignityResearchInitiative,
-    'description',
-    'descriptionAr',
+    'title',
+    'titleAr',
   )
   expectIndependent('DignityResearchInitiative: body/bodyAr', DignityResearchInitiative, 'body', 'bodyAr')
 

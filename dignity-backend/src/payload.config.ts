@@ -68,9 +68,17 @@ export default buildConfig({
   // arranged, and it should be kept in step with src/components/SiteHeader.tsx
   // in the frontend.)
   //
-  // Every collection is wrapped in enforceBilingual() so that any English /
-  // Arabic field pair (title/titleAr, body/bodyAr, …) must be filled in both
-  // languages before a document can be published — see src/lib/bilingual.ts.
+  // Every collection is wrapped in enforceBilingual(), which mirrors `required`
+  // from an English field onto its `...Ar` sibling — titles only, since titles
+  // are the one pair collections mark required. Every other pair is
+  // independent: a document may carry an English-only write-up or an
+  // Arabic-only caption and publish fine. This comment used to say that *any*
+  // pair had to be filled in both languages, which was true until the block was
+  // lifted — it meant half-translated content couldn't be saved at all, and the
+  // frontend now tells a reader when a field doesn't exist in their language
+  // instead. See src/lib/bilingual.ts, which explains it at the top. Note that
+  // marking a new English field required quietly requires its Arabic half too,
+  // inside arrays included.
   // Also wrapped in withPublicationStatus(), which adds an explicit
   // "Published?" field to every collection with a draft/publish workflow —
   // see src/lib/publicationStatus.ts. And withEditTracking(), which adds
