@@ -99,22 +99,29 @@ export const Participants: CollectionConfig = {
      * vanish from the forum that credits them as well as from this page,
      * which is the opposite of what's wanted for a conference speaker.
      *
-     * `defaultValue: true` applies to new people only. Payload fills a
-     * default in when a document is created, so the people already in the
-     * collection have no value stored for this field at all and go on
-     * showing exactly as before -- no migration, nothing to remember to run.
-     * Every person added from now on, including anyone created from inside a
-     * Forum's Participants picker, starts out off the page until someone
-     * decides otherwise.
+     * **`defaultValue` must stay `false` here.** It was `true` for one
+     * afternoon, on the reasoning that Payload fills a default in only when a
+     * document is created, so the nine people already in the collection --
+     * who have no value stored for this field -- would be unaffected. That is
+     * wrong. The Mongo adapter applies schema defaults when it *hydrates* a
+     * document, so every existing participant read back as hidden and the
+     * public Working Group page went empty. Adding a field with a truthy
+     * default to a populated collection is a retroactive change to every row
+     * in it, whatever the stored data says.
+     *
+     * The cost is that a new person is listed on the page unless someone
+     * checks this box -- including someone added from inside a Forum, who was
+     * meant to start out hidden. That needs a mechanism that can tell a new
+     * document from an old one, which a field default cannot.
      */
     {
       name: 'hideFromWorkingGroupPage',
       type: 'checkbox',
       label: 'Keep off the Working Group Page',
-      defaultValue: true,
+      defaultValue: false,
       admin: {
         description:
-          'Checked by default for everyone added from now on -- a person added while writing up a forum is saved and stays reachable from that forum, but is not listed on About → Working Group. Uncheck to list them there.',
+          'Check this to keep someone off the public Working Group page while still saving them -- a conference speaker, say, who stays reachable from the forum that credits them. Leave it unchecked and they are listed on About → Working Group.',
       },
     },
     {
