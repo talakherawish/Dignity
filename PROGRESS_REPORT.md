@@ -1,6 +1,6 @@
 # Dignity Initiative — Progress Report
-**Updated:** 2026-09-14  
-**Reporting period:** 2026-08-08 to 2026-09-14
+**Updated:** 2026-09-22  
+**Reporting period:** 2026-08-08 to 2026-09-22
 
 ---
 
@@ -13,6 +13,40 @@ Infrastructure work is finished. HTTPS renews itself, backups run nightly and ha
 **Oracle is the permanent home.** The university has no hosting capacity; they will only map a domain to this IP. Backups, uptime and deployment are therefore ours to own.
 
 **Engineering didn't stop after that.** 2026-08-17 to 2026-08-28 added a real content-model consolidation (Seminars/Conferences/Meetings merged into one "Forums" collection, Announcements folded into News), a homepage and navigation redesign, and several new features — mailing-list signup, bidirectional research-to-output linking, photo tagging. See *Website work — 2026-08-17 to 2026-08-28*, below. **Two migration scripts from that work still need to run against production**, and one schema change has no migration at all yet — both flagged at the top of that section, and worth resolving before treating this as settled history.
+
+---
+
+## Website work — 2026-09-22 (~6½ hrs, 16:36–23:10)
+
+One long, continuous working stretch across two Claude Code sessions (16:36–21:53 and 22:36–23:10), bridged by admin-panel content uploads in between (21:45–22:16). 21 code commits plus 13 media uploads auto-committed by the server.
+
+**Forums**
+- **Forums page put back to the dated ledger** (grouped by year, day leading each row). The expanding card wall built on 2026-09-21 stays, but only where a Forum is referenced from somewhere else: a research line's conferences, Idea Factory, Task Force on AI and Windsor-Birzeit. The page's own `?open=` deep link came back with it.
+- **Two new optional fields on Forums: Attachments and Participants.** Attachments are a file plus its English and Arabic name. Participants link to the Working Group collection, and someone new can be created from the picker without leaving the page. Both show in a new Additional Information block inside an opened entry.
+- **Every attached file got a card that opens it plus a download badge**, the same pair publication cards have, with the file size shown on hover.
+- **The Palestinians and Tamils roundtable photos fixed.** Both uploads were 468px screenshots with the photo on the left and a transparent area filling the rest, which showed as a grey box once the page cropped them to 4:3. A scan of every image in `public/uploads` found only these two; both were cropped in place, keeping their filenames. They are still small (~200–250px wide) — replacements from the originals would look better.
+
+**Partners**
+- **Partners rebuilt as a wall of institution logos** instead of one prose page with a grey "Image placeholder" box, which also removed the last fake fallback prose on the site. One document per institution.
+- **Merged into one collection instead of two.** The separate "Partners Page Text" entry kept sending editors to a rich-text box with no partners in it.
+- **A regression caught and fixed the same session:** renaming the collection's slug for tidiness pointed the code at an older, different MongoDB collection and stranded both partners already entered. The slug was put back and the live page confirmed showing Windsor and IDRC again. Logo plates tightened and text centred under them.
+
+**Working Group**
+- **Page restored after a field default emptied it.** A new `hideFromWorkingGroupPage` field defaulting to `true` read back as hidden for all nine existing people, so the public page showed "No participants found." Default corrected.
+
+**Deploy safety (CI)**
+- **Deploys now stop on broken code.** A `verify` job that `deploy` depends on runs the bilingual field rules check (`scripts/verify-bilingual.ts`, which had been failing unnoticed because nothing ran it — its harness was repaired), typechecks both frontend and backend, and lints the website. A failure leaves the live site exactly as it was.
+- **Both lockfiles repaired so `npm ci` works from a clean clone**, which it never had. CI's Node version corrected. Prettier run over three files it had been failing on, untitled clippings left out of the search index, and four stale claims in the project instructions corrected.
+
+**Disclaimer and Privacy Policy — new pages**
+- **`/disclaimer` and `/privacy`, both editable in Payload** under Site, next to Site Settings. Each is one entry (English and Arabic title and body), built on the same page shape as The Dignity Research Initiative. The footer's two links, which previously went nowhere, now open them.
+- **Both filled in with the supplied bilingual text, published**, via `dignity-backend/scripts/seed-legal-pages.ts` (headings, bullet lists and a clickable `Dignity@birzeit.edu` link; it skips any page that already exists, so it can never overwrite admin edits). Two transient Atlas errors on first write were retried, and the database checked in between to confirm nothing was left half-written.
+- **Two follow-ups:** the privacy policy points readers to a "What Are Cookies?" page that doesn't exist on the site, and the Arabic effective date was written in the site's usual form, "30 ديسمبر/كانون الأول 2026".
+
+**Also**
+- **Footer's copyright / resources / legal row moved to the bottom of the footer**, under the contact and subscribe columns.
+- **Content uploads through the admin:** Background, Programme and Participants PDFs (with thumbnails), a Booklet PDF, several images, and two replacement photos.
+- **Update email drafted for Professor Mudar**: Idea Factory and Task Force on AI now share one structure and are ready for content; the Information section (Databases, Readings and Documents) and Task Force on AI need material.
 
 ---
 
@@ -600,6 +634,6 @@ Eight loose note files were removed from the repo root on 2026-09-21. Six of the
 - **2026-09-12, morning (06:52–10:27):** ~3½ hours — homepage hero replaced with a full-viewport looping background video (dark overlay added, then removed again at the client's explicit instruction); height corrected for `dvh` vs `vh` and the sticky header's own height; News & Announcements reworked to opposite-sides-per-language and a new homepage Posters section added; both capped to one screen and matched to the hero's height; a real flexbox `min-height:auto`/`justify-center` overflow bug found and fixed via live-production DOM measurement; Team section redesigned to circular photos with a centered "View All" pill; Research renamed to Research Projects with its detail page moved onto `PageHero`; a further round of Posters/View-All copy and News sizing fixes; Clippings restored to the About nav; the Pillars section removed from the homepage; Clippings reworked into a photo-gallery collage with looser required fields.
 - **2026-09-12, afternoon (13:52–17:42):** ~2 hours across two gaps — `landing.mp4` compressed from 134MB to ~6MB (H.264, audio dropped); mobile-specific layout fixes to Posters, Team, the hero/News/Posters viewport-height units, and the footer's top bar; five Clippings-related media uploads plus one later screenshot upload, both auto-committed by the server.
 
-**Total project time to date: at least ~153¾ hours.** `PROGRESS.md` logs ~80 hours for sessions 1–14 (2026-05-31 → 2026-08-03); this file adds ~73¾ hours for 2026-08-08 → 2026-09-12, now that the 08-09/08-10/08-11-daytime gaps are estimated from the work recorded above instead of left blank. The two logs are reconciled into this one master total.
+**Total project time to date: at least ~160¼ hours.** `PROGRESS.md` logs ~80 hours for sessions 1–14 (2026-05-31 → 2026-08-03); this file adds ~80¼ hours for 2026-08-08 → 2026-09-22, now that the 08-09/08-10/08-11-daytime gaps are estimated from the work recorded above instead of left blank. The two logs are reconciled into this one master total.
 
-**This is a floor, not a ceiling.** Neither log tracked hours in real time — both were reconstructed after the fact from commits and memory — and there is at least one confirmed dead zone in the reconstruction: **2026-06-07 to 2026-07-05, four weeks, zero commits in either the repo or `PROGRESS.md`.** Whatever happened in that window (and general day-to-day work throughout the project that never produced a commit or a note — research, dead ends, learning Payload/Oracle/nginx/certbot from scratch, coordinating with the team) isn't in the 153¾. The real number is higher; 153¾ is what's actually documented and traceable, not a cap on what was worked.
+**This is a floor, not a ceiling.** Neither log tracked hours in real time — both were reconstructed after the fact from commits and memory — and there is at least one confirmed dead zone in the reconstruction: **2026-06-07 to 2026-07-05, four weeks, zero commits in either the repo or `PROGRESS.md`.** Whatever happened in that window (and general day-to-day work throughout the project that never produced a commit or a note — research, dead ends, learning Payload/Oracle/nginx/certbot from scratch, coordinating with the team) isn't in the 160¼. The real number is higher; 160¼ is what's actually documented and traceable, not a cap on what was worked.
