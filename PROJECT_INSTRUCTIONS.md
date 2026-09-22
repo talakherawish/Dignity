@@ -30,7 +30,9 @@ Live at **https://84-13-77-162.sslip.io** — site at `/`, admin at `/admin`.
 ```
 ssh -i ~/.ssh/dignity opc@84.13.77.162
 ```
-Not `ubuntu@` — this is Oracle Linux. The key exists **only in Cloud Shell**; there is no SSH key on Tala's laptop, so `scp`/`ssh` from PowerShell will not work.
+Not `ubuntu@` — this is Oracle Linux. Cloud Shell is where server work happens.
+
+A copy of the key does exist on the laptop, at `~/.ssh/dignity` (`C:Users	ala.sshdignity`). It sat in the project root as `dignity_key` until 2026-09-22 and was moved out: gitignored or not, a private key inside the folder you zip, copy and share is one accident from being handed to someone. A third copy is the `DEPLOY_SSH_KEY` secret the deploy workflow uses. Delete the laptop copy once you have confirmed Cloud Shell still has the key — nothing here needs it.
 
 **Claude's sandbox does have outbound HTTPS** — verified 2026-09-22: it reached `api.github.com`, `https://84-13-77-162.sslip.io` and pushed to GitHub in one session. This file used to say it had no raw TCP at all and that every server command had to be pasted into Cloud Shell by hand; that is no longer true for anything over HTTPS, so Claude can check a deploy, read the live API and push without help.
 
@@ -79,15 +81,12 @@ It runs `git reset --hard origin/main`, so **anything edited directly on the ser
 
 ## Before committing
 
-Staging everything at once is dangerous in this repo. Two files sit in the project root:
-
-- **`dignity_key`** — an SSH **private key**
-- **`frontend.zip`** — ~158MB, over GitHub's 100MB limit
-
-Both are now in `.gitignore`. Verify before staging:
+The project root used to hold two things that must never be staged — `dignity_key` (an SSH private key) and `frontend.zip` (~158MB, over GitHub's 100MB limit). Both were removed on 2026-09-22: the key moved to `~/.ssh/dignity` (see above) and the zip deleted, along with an empty `frontend.tar.gz`. The `.gitignore` rules covering them stay, so a stray copy is still caught:
 ```
 git check-ignore -v dignity_key frontend.zip
 ```
+`dist/` and `.output/` are build output and are not tracked either.
+
 `dignity-backend/.env` holds the database credentials, `PAYLOAD_SECRET` and a `GITHUB_TOKEN`. It is correctly ignored — keep it that way.
 
 ---

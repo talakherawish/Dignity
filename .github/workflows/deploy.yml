@@ -6,13 +6,21 @@
 # happened to run the build. Duplicating the build here would prove nothing the
 # server does not prove a minute later.
 #
-# The one thing checked here is the thing the server's build would not catch:
-# the bilingual field rules. A collection whose English/Arabic pairing has
-# quietly changed still compiles, still builds and still deploys -- it just
-# stops behaving the way the admin panel is documented to behave, and nobody
-# finds out until an editor cannot save something. scripts/verify-bilingual.ts
-# had in fact been failing for months before anyone ran it. It gates the
-# deploy now, so that cannot happen again.
+# What is checked here is what the server's build would let through. Both
+# halves are typechecked and the website is linted, because a broken typecheck
+# does not stop a Vite build: an error sat in src/lib/search.ts for months, and
+# 87 formatting errors sat across four files, because nothing ever ran either
+# command. The bilingual field rules are checked too -- a collection whose
+# English/Arabic pairing has quietly changed still compiles, still builds and
+# still deploys, it just stops behaving the way the admin panel is documented
+# to behave, and the first person to find out is an editor who cannot save
+# something. That script had itself been failing for months before anyone ran
+# it.
+#
+# The backend is not linted: `npm run lint` there crashes inside its own
+# ESLint config ("property 'react' closes the circle") before it reaches any
+# source file. Adding it would block every deploy on a broken config rather
+# than on a real problem. Worth fixing, then adding here.
 name: Deploy
 
 on:
@@ -29,11 +37,11 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  # Runs the real enforceBilingual() over the real collections. A failure here
-  # stops the deploy: the site on the box stays exactly as it was.
+  # A failure in any step here stops the deploy: the site on the box stays
+  # exactly as it was.
   verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
 
@@ -42,16 +50,31 @@ jobs:
           # The backend's own floor (package.json engines).
           node-version: 20
           cache: npm
-          cache-dependency-path: dignity-backend/package-lock.json
+          cache-dependency-path: |
+            package-lock.json
+            dignity-backend/package-lock.json
 
-      # The collections import real code, not just types -- hooks, the
-      # singleton helpers -- so the script needs the dependency tree, not only
-      # tsx. `npm ci` rather than `npm install`: the lockfile decides, and a
-      # lockfile that has drifted out of step with package.json is itself worth
-      # failing on.
+      # `npm ci` rather than `npm install`: the lockfile decides, and a
+      # lockfile that has drifted out of step with its package.json is itself
+      # worth failing on. The backend needs its full tree, not just tsx -- the
+      # collections import real code (hooks, the singleton helpers), not only
+      # types.
+      - name: Install website dependencies
+        run: npm ci
+
       - name: Install backend dependencies
         working-directory: dignity-backend
         run: npm ci
+
+      - name: Typecheck the website
+        run: npm run typecheck
+
+      - name: Lint the website
+        run: npm run lint
+
+      - name: Typecheck the backend
+        working-directory: dignity-backend
+        run: npm run typecheck
 
       - name: Check the bilingual field rules
         working-directory: dignity-backend
