@@ -59,35 +59,32 @@ jobs:
             package-lock.json
             dignity-backend/package-lock.json
 
-      # `npm install`, not `npm ci`, and not by preference: **neither
-      # package-lock.json currently satisfies `npm ci`.** Both halves fail its
-      # sync check from a clean checkout --
+      # `npm ci`: the lockfile decides, nothing is re-resolved, and drift
+      # becomes a build failure instead of a silent condition.
       #
-      #   root:    Missing @emnapi/core, @emnapi/runtime, lru-cache (npm 10;
-      #            npm 11 happens to accept it)
-      #   backend: Missing yjs, monaco-editor, @testing-library/dom and ~10
-      #            more, plus an Invalid picomatch -- under *every* npm tested
+      # It could not be used at first -- neither lockfile satisfied it from a
+      # clean checkout. The root was missing three transitive packages and the
+      # backend about a dozen, plus an Invalid picomatch, so `npm ci` had never
+      # worked here from a clean clone; the server gets away with `npm install`,
+      # which re-resolves. Both lockfiles were regenerated and the churn was
+      # almost nothing: the website's resolved versions did not move at all,
+      # and the backend's moved two transitive tooling packages (picomatch
+      # 2.3.2 -> 4.0.7, yaml 1.10.3 -> 2.9.1) to the versions npm was already
+      # installing -- the lockfile catching up to reality, not an upgrade.
       #
-      # -- so the first run of these checks died on the install step before
-      # reaching a single line of source. `npm install` reconciles and
-      # installs; verified from a clean directory on npm 10, the version Node
-      # 22 ships, before being put here.
-      #
-      # Repairing the lockfiles is the real fix, and it is deliberately not
-      # done here: regenerating the backend's re-resolves ~900 packages that
-      # the production server builds from, which is a decision to take
-      # knowingly rather than as part of a CI change. Until then the cost is
-      # bounded -- this job typechecks and lints, it does not build the
-      # artifact that ships. The server builds that from its own tree.
+      # Verified from an empty directory on npm 10, the version Node 22 ships,
+      # including that the Linux binaries survived being regenerated on
+      # Windows: a lockfile written on one platform can omit another's, and the
+      # runner would fail on the missing @rollup/rollup-linux-x64-gnu.
       #
       # The backend needs its full tree, not just tsx: the collections import
       # real code (hooks, the singleton helpers), not only types.
       - name: Install website dependencies
-        run: npm install --no-audit --no-fund
+        run: npm ci --no-audit --no-fund
 
       - name: Install backend dependencies
         working-directory: dignity-backend
-        run: npm install --no-audit --no-fund
+        run: npm ci --no-audit --no-fund
 
       - name: Typecheck the website
         run: npm run typecheck
