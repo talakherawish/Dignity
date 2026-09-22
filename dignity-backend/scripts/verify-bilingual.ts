@@ -16,7 +16,7 @@ import { DignityResearchInitiative } from '../src/collections/AboutPages'
 import { Participants } from '../src/collections/Participants'
 import { Books } from '../src/collections/Publications'
 import { Forums } from '../src/collections/Forums'
-import { PartnerItems } from '../src/collections/PartnerItems'
+import { Partners } from '../src/collections/Partners'
 
 let failures = 0
 const ok = (name: string) => console.log(`  PASS  ${name}`)
@@ -64,7 +64,7 @@ async function main() {
   expectRequired('Forums: titleAr required (mirrored from title)', Forums, 'title', 'titleAr')
   expectRequired('Participants: nameAr required (mirrored from name)', Participants, 'name', 'nameAr')
   expectRequired('Books: titleAr required (mirrored from title)', Books, 'title', 'titleAr')
-  expectRequired('PartnerItems: nameAr required (mirrored from name)', PartnerItems, 'name', 'nameAr')
+  expectRequired('Partners: nameAr required (mirrored from name)', Partners, 'name', 'nameAr')
 
   // enforceBilingual recurses into array fields, so marking the English half
   // of a pair required inside one quietly requires the Arabic half too. That
@@ -79,16 +79,16 @@ async function main() {
     if (en?.required && ar?.required) ok(label)
     else bad(label, `en.required=${en?.required} ar.required=${ar?.required}`)
   }
-  // DignityResearchInitiative and Partners are standalone prose pages (see
-  // AboutPages.ts), not itemized content — their title was never marked
-  // required, so there's nothing for enforceBilingual to mirror. Not tested
-  // here for that reason, not because the mirroring is skipped for them.
+  // DignityResearchInitiative is a standalone prose page (see AboutPages.ts),
+  // not itemized content — its title was never marked required, so there's
+  // nothing for enforceBilingual to mirror. Not tested here for that reason,
+  // not because the mirroring is skipped for it.
 
   console.log('\n— Every other pair is independent: no forced coupling, no custom validator —')
   expectIndependent('News: excerpt/excerptAr', News, 'excerpt', 'excerptAr')
   expectIndependent('News: content/contentAr', News, 'content', 'contentAr')
   expectIndependent('Forums: content/contentAr', Forums, 'content', 'contentAr')
-  expectIndependent('PartnerItems: description/descriptionAr', PartnerItems, 'description', 'descriptionAr')
+  expectIndependent('Partners: description/descriptionAr', Partners, 'description', 'descriptionAr')
   expectIndependent('Participants: bio/bioAr', Participants, 'bio', 'bioAr')
   expectIndependent('Books: author/authorAr', Books, 'author', 'authorAr')
   expectIndependent('Books: description/descriptionAr', Books, 'description', 'descriptionAr')

@@ -177,10 +177,10 @@ export type PayloadParticipant = {
  * One partner institution, shown on About -> Partners.
  *
  * Everything but the name is optional, because the first two arrived as a name
- * and a web address and nothing else -- see PartnerItems.ts. The page is built
- * to read properly with any of it missing.
+ * and a web address and nothing else -- see Partners.ts. The page is built to
+ * read properly with any of it missing.
  */
-export type PayloadPartnerItem = {
+export type PayloadPartner = {
   id: string;
   name: string;
   nameAr?: string;
@@ -748,17 +748,21 @@ async function fetchSinglePage(collection: string): Promise<PayloadPage | undefi
 
 export const fetchAboutInitiative = () => fetchSinglePage("about-initiative");
 
-export const fetchPartners = () => fetchSinglePage("partners");
-
 /**
- * The institutions listed on the Partners page. A separate collection from the
- * page itself (`partners`, above), which is the prose around them.
+ * The partner institutions, shown on About -> Partners.
  *
  * depth: 1 reaches each partner's logo. There is nothing below it to resolve --
  * a logo is an image, so it carries no PDF thumbnail of its own.
+ *
+ * A partner with no name is dropped. `name` is required on new documents, so
+ * the only thing this filters is the page's old prose document, which shared
+ * this collection until the two were merged and carries a title and a body
+ * rather than a name. There would be nothing to label its card with.
  */
-export const fetchPartnerItems = () =>
-  fetchCollection<PayloadPartnerItem>("partner-items", { depth: "1" });
+export const fetchPartners = async (): Promise<PayloadPartner[]> => {
+  const docs = await fetchCollection<PayloadPartner>("partners", { depth: "1" });
+  return docs.filter((partner) => Boolean(partner.name));
+};
 
 /**
  * Fetch the Site Settings global (nav labels, hero, footer, small UI labels,

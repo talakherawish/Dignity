@@ -159,6 +159,18 @@ export async function buildSearchIndex(): Promise<SearchResult[]> {
       }),
     );
 
+  for (const item of partners)
+    results.push(
+      makeResult({
+        typeKey: "about.partners",
+        title: item.name,
+        titleAr: item.nameAr,
+        display: [item.description],
+        displayAr: [item.descriptionAr],
+        to: "/about/partners",
+      }),
+    );
+
   for (const item of participants)
     results.push(
       makeResult({
@@ -238,18 +250,6 @@ export async function buildSearchIndex(): Promise<SearchResult[]> {
         display: [aboutInitiative.body],
         displayAr: [aboutInitiative.bodyAr],
         to: "/about",
-      }),
-    );
-
-  if (partners?.title)
-    results.push(
-      makeResult({
-        typeKey: "about.partners",
-        title: partners.title,
-        titleAr: partners.titleAr,
-        display: [partners.body],
-        displayAr: [partners.bodyAr],
-        to: "/about/partners",
       }),
     );
 

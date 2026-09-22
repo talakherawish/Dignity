@@ -76,7 +76,6 @@ export interface Config {
     photos: Photo;
     clippings: Clipping;
     stickers: Sticker;
-    'partner-items': PartnerItem;
     partners: Partner;
     research: Research;
     forums: Forum;
@@ -108,7 +107,6 @@ export interface Config {
     photos: PhotosSelect<false> | PhotosSelect<true>;
     clippings: ClippingsSelect<false> | ClippingsSelect<true>;
     stickers: StickersSelect<false> | StickersSelect<true>;
-    'partner-items': PartnerItemsSelect<false> | PartnerItemsSelect<true>;
     partners: PartnersSelect<false> | PartnersSelect<true>;
     research: ResearchSelect<false> | ResearchSelect<true>;
     forums: ForumsSelect<false> | ForumsSelect<true>;
@@ -1453,62 +1451,6 @@ export interface Sticker {
   _status?: ('draft' | 'published') | null;
 }
 /**
- * The heading and introduction shown at the top of the Partners page on the website. The partner institutions themselves are in "Partners", above. Open the entry below to edit this text.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "partners".
- */
-export interface Partner {
-  id: string;
-  title?: string | null;
-  titleAr?: string | null;
-  body?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  bodyAr?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  /**
-   * Read-only. Reflects the Publish / Save as Draft state above.
-   */
-  publicationStatus?: string | null;
-  /**
-   * Set automatically -- not editable by hand.
-   */
-  updatedBy?: (string | null) | User;
-  /**
-   * Set automatically -- not editable by hand.
-   */
-  createdBy?: (string | null) | User;
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
-}
-/**
  * Shows on the website under Information → Readings and Documents.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1715,10 +1657,6 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'partners';
         value: string | Partner;
-      } | null)
-    | ({
-        relationTo: 'partner-items';
-        value: string | PartnerItem;
       } | null)
     | ({
         relationTo: 'research';
@@ -1993,12 +1931,12 @@ export interface StickersSelect<T extends boolean = true> {
   _status?: T;
 }
 /**
- * The institutions shown on the website under About the Dignity Initiative → Partners. One entry per institution -- this is where you add a partner. Only the name is required; add the logo, the website and the years when you have them. The heading and introduction above them on that page are in "Partners Page Text", below.
+ * The institutions shown on the website under About the Dignity Initiative → Partners. One entry per institution. Only the name is required; add the logo, the website and the years when you have them.
  *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "partner-items".
+ * via the `definition` "partners".
  */
-export interface PartnerItem {
+export interface Partner {
   id: string;
   /**
    * The institution's own name, spelled the way it spells itself -- e.g. "International Development Research Centre (IDRC)".
@@ -2047,22 +1985,6 @@ export interface PartnerItem {
  * via the `definition` "partners_select".
  */
 export interface PartnersSelect<T extends boolean = true> {
-  title?: T;
-  titleAr?: T;
-  body?: T;
-  bodyAr?: T;
-  publicationStatus?: T;
-  updatedBy?: T;
-  createdBy?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  _status?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "partner-items_select".
- */
-export interface PartnerItemsSelect<T extends boolean = true> {
   name?: T;
   nameAr?: T;
   logo?: T;

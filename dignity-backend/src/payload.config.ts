@@ -28,8 +28,8 @@ const email = resolveEmailConfig()
 import { Users } from './collections/Users'
 import { Media } from './collections/Media'
 import { Recipients } from './collections/Recipients'
-import { DignityResearchInitiative, Partners } from './collections/AboutPages'
-import { PartnerItems } from './collections/PartnerItems'
+import { DignityResearchInitiative } from './collections/AboutPages'
+import { Partners } from './collections/Partners'
 import { Participants } from './collections/Participants'
 import { News } from './collections/News'
 import { Photos } from './collections/Photos'
@@ -98,12 +98,9 @@ export default buildConfig({
     Photos,
     Clippings,
     Stickers,
-    // The institutions first, then the prose at the top of the page they
-    // appear on. That order, and the "Partners" / "Partners Page Text"
-    // labels, exist because the reverse confused someone looking for where to
-    // add a partner: the page's rich-text box came first and read as the whole
-    // feature. The one you add to leads now.
-    PartnerItems,
+    // One entry, holding the institutions themselves. It was briefly two --
+    // the page's prose and the list on it -- which nobody could tell apart at
+    // a glance whatever they were labelled.
     Partners,
 
     // Activities

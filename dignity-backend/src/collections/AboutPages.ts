@@ -2,22 +2,30 @@ import type { CollectionConfig, Field } from 'payload'
 import { singletonCreateAccess, singletonListView } from '../lib/singleton'
 
 /**
- * The two standalone pages under About the Dignity Initiative — the initiative's
- * own page and Partners. Every other entry in that menu is a list of things
- * (Participants, News, Photos…) and already had a collection; these two are
- * prose, and used to be two rows inside a general `pages` collection holding all
- * 22 page headings, which was hidden from the sidebar and read by nothing. Their
+ * The standalone prose page under About the Dignity Initiative: the
+ * initiative's own page. Every other entry in that menu is a list of things
+ * (Participants, News, Photos…) and already had a collection; this one is
+ * prose, and used to be a row inside a general `pages` collection holding all
+ * 22 page headings, which was hidden from the sidebar and read by nothing. Its
  * text was therefore uneditable in practice: the website rendered a hardcoded
  * copy of it.
  *
- * A collection each (rather than a global each) is what puts them in the
- * sidebar in the site's own order — Payload renders every global after every
- * collection within a group, so a global could not sit above Participants where
- * the website's menu puts it.
+ * A collection (rather than a global) is what puts it in the sidebar in the
+ * site's own order — Payload renders every global after every collection
+ * within a group, so a global could not sit above Participants where the
+ * website's menu puts it.
  *
- * Each holds a single document -- singletonListView sends the admin straight
- * to it (or to the create form, the first time) instead of the normal list
- * view, and singletonCreateAccess blocks a second one from being created.
+ * Partners was the second page here and no longer is: its heading and
+ * one-line introduction were one sidebar entry too many for a page whose
+ * content is the institutions on it. See collections/Partners.ts.
+ *
+ * It holds a single document -- singletonListView sends the admin straight to
+ * it (or to the create form, the first time) instead of the normal list view,
+ * and singletonCreateAccess blocks a second one from being created.
+ *
+ * `pageCollection` stays a factory rather than being inlined: it is the shape
+ * a standalone prose page takes here, and the next one added should take it
+ * too.
  */
 
 function pageFields(): Field[] {
@@ -85,17 +93,3 @@ export const DignityResearchInitiative = pageCollection(
   'The heading, intro and full text of the website\'s "The Dignity Research Initiative" page. Open the entry below to edit it.',
 )
 
-/**
- * Named "Partners Page Text", not "Partners", because the institutions
- * themselves live in their own collection (PartnerItems.ts), listed directly
- * above this one. Two sidebar entries reading "Partners" and "Partner
- * Institutions" was the first thing to confuse someone looking for where to
- * add a partner: they opened this one, found a rich-text box, and reasonably
- * concluded nothing had been added.
- */
-export const Partners = pageCollection(
-  'partners',
-  'Partners Page Text',
-  'Partners Page Text',
-  'The heading and introduction shown at the top of the Partners page on the website. The partner institutions themselves are in "Partners", above. Open the entry below to edit this text.',
-)

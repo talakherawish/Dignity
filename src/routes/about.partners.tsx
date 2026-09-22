@@ -3,13 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { ArrowUpRight } from "lucide-react";
 import { PageLayout, PageHero } from "@/components/PageLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
-import {
-  extractText,
-  fetchPartnerItems,
-  fetchPartners,
-  mediaUrl,
-  type PayloadPartnerItem,
-} from "@/lib/payload";
+import { fetchPartners, mediaUrl, type PayloadPartner } from "@/lib/payload";
 import { SECTION_COLORS } from "@/lib/sectionColors";
 
 export const Route = createFileRoute("/about/partners")({
@@ -44,7 +38,7 @@ function PartnerYears({ from, to }: { from?: number; to?: number }) {
   );
 }
 
-function PartnerCard({ partner }: { partner: PayloadPartnerItem }) {
+function PartnerCard({ partner }: { partner: PayloadPartner }) {
   const { t, lang, isArabic } = useLanguage();
   const name = lang === "ar" ? (partner.nameAr ?? partner.name) : partner.name;
   const description = lang === "ar" ? partner.descriptionAr : partner.description;
@@ -139,41 +133,26 @@ function PartnerCard({ partner }: { partner: PayloadPartnerItem }) {
 function PartnersPage() {
   const { t, isArabic } = useLanguage();
 
-  // The page's own heading and introduction, edited in the CMS under About
-  // the Dignity Initiative -> Partners. No staleTime on either query: an
-  // editor publishing a change expects it on the next load.
-  const { data: page } = useQuery({
-    queryKey: ["partners-page"],
+  // Partners is one collection: the institutions themselves. It used to be two
+  // -- these, plus a prose document for the page's heading and a one-line
+  // introduction -- and two sidebar entries for one page confused everyone
+  // looking for where to add a partner. The heading now comes from the site's
+  // own navigation label, and there is no introduction. No staleTime: an
+  // editor publishing a partner expects it on the next load.
+  const { data: partners = [], isLoading } = useQuery({
+    queryKey: ["partners"],
     queryFn: fetchPartners,
   });
-
-  const { data: partners = [], isLoading } = useQuery({
-    queryKey: ["partner-items"],
-    queryFn: fetchPartnerItems,
-  });
-
-  const intro = extractText(isArabic ? page?.bodyAr : page?.body);
 
   return (
     <PageLayout>
       <PageHero
         eyebrow={t("about")}
         eyebrowColor={SECTION_COLORS.about}
-        title={(isArabic ? page?.titleAr : page?.title) || t("about.partners")}
+        title={t("about.partners")}
       />
 
       <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-        {/* Nothing stands in for an empty introduction. This page used to
-            print two paragraphs of placeholder prose when the CMS had none,
-            which is how it looked finished while being empty. */}
-        {intro.length > 0 && (
-          <div className="mb-14 max-w-3xl space-y-5 text-sm leading-relaxed text-foreground">
-            {intro.map((paragraph, index) => (
-              <p key={index}>{paragraph}</p>
-            ))}
-          </div>
-        )}
-
         {isLoading ? (
           <div className="flex flex-wrap justify-center gap-8">
             {[1, 2, 3].map((n) => (
