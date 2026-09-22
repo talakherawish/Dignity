@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { FileText } from "lucide-react";
+import { Download, FileText } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import {
   formatFileSize,
@@ -48,7 +48,7 @@ export function hasAdditionalInfo(item: PayloadActivity): boolean {
 }
 
 function AttachmentCard({ attachment }: { attachment: PayloadForumAttachment }) {
-  const { lang, isArabic } = useLanguage();
+  const { t, lang, isArabic } = useLanguage();
   const file = attachment.file;
   const url = mediaUrl(file);
   const title = lang === "ar" ? (attachment.titleAr ?? attachment.title) : attachment.title;
@@ -57,15 +57,35 @@ function AttachmentCard({ attachment }: { attachment: PayloadForumAttachment }) 
 
   if (!url) return null;
 
+  // Hovering anything on the card says how big the file is, so nobody opens a
+  // 40MB scan on a phone connection without knowing.
+  const downloadLabel = size
+    ? `${t("publications.download")} (${size})`
+    : t("publications.download");
+  const openLabel = size ? `${title} (${size})` : title;
+
+  const open = () => openFileInNewTab(url, file?.mimeType);
+
   return (
-    <button
-      type="button"
-      onClick={() => openFileInNewTab(url, file?.mimeType)}
-      title={size ? `${title} (${size})` : title}
-      className="group w-[7.5rem] shrink-0 cursor-pointer text-start focus:outline-none sm:w-36"
+    /* A div rather than a button: the download link sits inside it, and an
+       anchor nested in a button is invalid markup. role/tabIndex/onKeyDown
+       give it back what a real button had -- the same shape PublicationCard
+       uses for the identical problem. */
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={open}
+      onKeyDown={(event) => {
+        if (event.key !== "Enter" && event.key !== " ") return;
+        event.preventDefault();
+        open();
+      }}
+      aria-label={openLabel}
+      title={openLabel}
+      className="group relative w-[7.5rem] shrink-0 cursor-pointer text-start focus:outline-none sm:w-36"
     >
       {/* The lift on hover is the whole affordance -- there's no border to
-          change colour and no button to reveal. */}
+          change colour and no frame to light up. */}
       <div className="overflow-hidden rounded-sm shadow-[0_6px_18px_-8px_rgba(0,0,0,0.45)] transition-transform duration-300 ease-out group-hover:-translate-y-1 group-focus-visible:-translate-y-1 motion-reduce:transition-none">
         {preview ? (
           <img
@@ -81,6 +101,20 @@ function AttachmentCard({ attachment }: { attachment: PayloadForumAttachment }) 
             <FileText className="h-8 w-8 text-muted-foreground/50" />
           </div>
         )}
+
+        {/* Pressing the card opens the file to read; this takes it away
+            instead. The dark badge is the same one the video and publication
+            cards use, so it stays legible over any page-one scan. */}
+        <a
+          href={url}
+          download
+          onClick={(event) => event.stopPropagation()}
+          aria-label={downloadLabel}
+          title={downloadLabel}
+          className="absolute end-1.5 top-1.5 z-10 inline-flex h-7 w-7 items-center justify-center rounded-full bg-black/55 text-white transition-colors hover:bg-black/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
+        >
+          <Download className="h-3.5 w-3.5" />
+        </a>
       </div>
 
       <span
@@ -91,12 +125,7 @@ function AttachmentCard({ attachment }: { attachment: PayloadForumAttachment }) 
       >
         {title}
       </span>
-      {size && (
-        <span className="mt-1 block text-[10px] uppercase tracking-widest text-muted-foreground">
-          {size}
-        </span>
-      )}
-    </button>
+    </div>
   );
 }
 

@@ -210,11 +210,13 @@ export function PublicationCard({
   // non-video link (e.g. a Paper's journal page) has no embedded form, so it
   // keeps the older "this button is the only way there" Play affordance.
   //
-  // A file has no bottom-row action at all: the whole card opens it (see
-  // isFileOnly below), and downloading is a small button overlaid on the well
+  // A file has no bottom-row action of its own: the whole card opens it (see
+  // canOpenFile below), and downloading is a small button overlaid on the well
   // instead of a second row competing with the title for height. That row
   // was the tight fit on the four-up document cards -- Papers, Posters,
   // Reports -- whose narrower column already gives a long title little room.
+  // An item carrying a file *and* a link keeps this button for the link, so
+  // both are reachable.
   const action = linkUrl ? (
     isVideo ? (
       <a
@@ -241,7 +243,19 @@ export function PublicationCard({
     )
   ) : null;
 
-  const isFileOnly = !linkUrl && !!fileUrl;
+  /**
+   * Every attached file behaves the same way: pressing the card opens it in a
+   * new tab to read, and the badge on the well downloads it. Any external link
+   * the item also carries keeps its own button in the row below, so nothing is
+   * out of reach.
+   *
+   * This used to be `!linkUrl && !!fileUrl` -- a card carrying both lost the
+   * card press and the download badge, and its well linked out instead, which
+   * left the PDF on "Decolonizing Knowledge Production" reachable from nowhere
+   * on the page. Only a video still outranks the file: there the well plays in
+   * place, which is the more useful thing to press.
+   */
+  const canOpenFile = !!fileUrl && !isVideo;
   const openFile = () => {
     if (fileUrl) openFileInNewTab(fileUrl, resolvedFileMimeType);
   };
@@ -256,28 +270,30 @@ export function PublicationCard({
       className={
         (isVideo ? VIDEO_CARD_WIDTH : CARD_WIDTH) +
         " relative border border-border rounded-sm bg-card overflow-hidden hover:shadow-sm transition-shadow flex flex-col" +
-        (isFileOnly ? " cursor-pointer" : "")
+        (canOpenFile ? " cursor-pointer" : "")
       }
       // The card itself is the click target for a file -- there's no
       // separate "view" button left to carry it (see the removed action row
       // below). role/tabIndex/onKeyDown make that work for keyboard and
       // screen-reader users the way a real link or button would.
-      {...(isFileOnly
+      {...(canOpenFile
         ? {
             role: "button" as const,
             tabIndex: 0,
             onClick: openFile,
             onKeyDown: handleCardKeyDown,
             "aria-label": t("publications.view"),
+            title: sizeLabel ? `${displayTitle} (${sizeLabel})` : displayTitle,
           }
         : {})}
     >
       {/* A video plays inline in place of its thumbnail once clicked, rather
           than only ever sending the visitor away to youtube.com (that's what
-          the action button below is for). A non-video link opens on its own
-          site; a file's well is plain -- the whole card (above) is already
-          the click target; anything else stays a plain well, since it
-          carries no click of its own. */}
+          the action button below is for). A file's well is plain -- the whole
+          card (above) is already the click target -- and it is checked before
+          the link, so a card carrying both doesn't follow the link and open
+          the file at the same press. A link with no file opens on its own
+          site; anything else stays a plain well, carrying no click at all. */}
       {preview !== "none" &&
         (isVideo && isPlaying ? (
           <div className={wellClass} style={wellStyle}>
@@ -306,6 +322,12 @@ export function PublicationCard({
               </span>
             </span>
           </button>
+        ) : canOpenFile ? (
+          <div className={"group w-full " + wellClass} style={wellStyle}>
+            <div className="w-full h-full transition-transform duration-300 group-hover:scale-[1.03]">
+              {thumbnail}
+            </div>
+          </div>
         ) : linkUrl ? (
           <a
             href={linkUrl}
@@ -319,12 +341,6 @@ export function PublicationCard({
               {thumbnail}
             </div>
           </a>
-        ) : fileUrl ? (
-          <div className={"group w-full " + wellClass} style={wellStyle}>
-            <div className="w-full h-full transition-transform duration-300 group-hover:scale-[1.03]">
-              {thumbnail}
-            </div>
-          </div>
         ) : (
           <div className={wellClass} style={wellStyle}>
             {thumbnail}
@@ -379,7 +395,7 @@ export function PublicationCard({
           so this only needs to carry the second, less-common action. It's
           pinned to the well's corner, matching the video play button's dark
           badge so it reads over any thumbnail. */}
-      {isFileOnly && (
+      {canOpenFile && (
         <a
           href={fileUrl}
           download
