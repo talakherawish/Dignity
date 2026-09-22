@@ -5,6 +5,14 @@
 # VITE_PAYLOAD_URL from the server's own .env rather than from whatever machine
 # happened to run the build. Duplicating the build here would prove nothing the
 # server does not prove a minute later.
+#
+# The one thing checked here is the thing the server's build would not catch:
+# the bilingual field rules. A collection whose English/Arabic pairing has
+# quietly changed still compiles, still builds and still deploys -- it just
+# stops behaving the way the admin panel is documented to behave, and nobody
+# finds out until an editor cannot save something. scripts/verify-bilingual.ts
+# had in fact been failing for months before anyone ran it. It gates the
+# deploy now, so that cannot happen again.
 name: Deploy
 
 on:
@@ -21,7 +29,36 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # Runs the real enforceBilingual() over the real collections. A failure here
+  # stops the deploy: the site on the box stays exactly as it was.
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          # The backend's own floor (package.json engines).
+          node-version: 20
+          cache: npm
+          cache-dependency-path: dignity-backend/package-lock.json
+
+      # The collections import real code, not just types -- hooks, the
+      # singleton helpers -- so the script needs the dependency tree, not only
+      # tsx. `npm ci` rather than `npm install`: the lockfile decides, and a
+      # lockfile that has drifted out of step with package.json is itself worth
+      # failing on.
+      - name: Install backend dependencies
+        working-directory: dignity-backend
+        run: npm ci
+
+      - name: Check the bilingual field rules
+        working-directory: dignity-backend
+        run: npx tsx scripts/verify-bilingual.ts
+
   deploy:
+    needs: verify
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
