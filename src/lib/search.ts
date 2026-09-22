@@ -171,15 +171,23 @@ export async function buildSearchIndex(): Promise<SearchResult[]> {
       }),
     );
 
-  for (const item of clippings)
+  // Clippings are the one searched collection whose title is optional -- one
+  // that speaks for itself carries no caption at all. An untitled clipping has
+  // no text to match a query against, so it is left out rather than added as a
+  // nameless row. A clipping named in only one language is kept, under the
+  // name it does have.
+  for (const item of clippings) {
+    const title = item.title?.trim() || item.titleAr?.trim();
+    if (!title) continue;
     results.push(
       makeResult({
         typeKey: "media.clippings",
-        title: item.title,
+        title,
         titleAr: item.titleAr,
         to: "/media/clippings",
       }),
     );
+  }
 
   const infoGroups: { items: typeof readings; typeKey: TranslationKey; to: string }[] = [
     { items: readings, typeKey: "information.readings", to: "/information/readings" },
