@@ -56,8 +56,13 @@ function PartnerCard({ partner }: { partner: PayloadPartnerItem }) {
      surface -- and an institution's mark is not ours to recolour. Contained,
      never cropped: it is fixed artwork, and a logo cut off at the edge reads
      as a broken image rather than a design. */
+  /* 4:3 and lightly padded rather than 16:9 and generously padded. Most
+     institutional logos are a roughly square crest or roundel, and a wide
+     plate left one stranded in the middle of it with more white either side
+     than logo. A wide wordmark still fits -- it just sits width-constrained,
+     with space above and below instead. */
   const plate = (
-    <div className="flex aspect-[16/9] w-full items-center justify-center overflow-hidden rounded-sm bg-white p-8 shadow-[0_6px_18px_-8px_rgba(0,0,0,0.35)] transition-transform duration-300 ease-out group-hover:-translate-y-1 group-focus-visible:-translate-y-1 motion-reduce:transition-none">
+    <div className="flex aspect-[4/3] w-full items-center justify-center overflow-hidden rounded-sm bg-white p-6 shadow-[0_6px_18px_-8px_rgba(0,0,0,0.35)] transition-transform duration-300 ease-out group-hover:-translate-y-1 group-focus-visible:-translate-y-1 motion-reduce:transition-none">
       {logo ? (
         <img
           src={logo}
@@ -84,7 +89,7 @@ function PartnerCard({ partner }: { partner: PayloadPartnerItem }) {
   const body = (
     <>
       {plate}
-      <div className="mt-5">
+      <div className="mt-5 flex flex-col items-center">
         <PartnerYears from={partner.startYear} to={partner.endYear} />
         <h3
           className={
@@ -110,7 +115,11 @@ function PartnerCard({ partner }: { partner: PayloadPartnerItem }) {
     </>
   );
 
-  const width = "w-full sm:w-[calc(50%-1rem)] lg:w-[calc(33.333%-1.334rem)]";
+  // Four across at the widest instead of three. The cards carry a logo and a
+  // line of text, not a paragraph, and at a third of the page each they were
+  // mostly plate. (The subtraction is the card's share of the 2rem gap:
+  // 100%/n - gap*(n-1)/n.)
+  const width = "w-full sm:w-[calc(50%-1rem)] lg:w-[calc(25%-1.5rem)]";
 
   // A partner with no website is not a link -- there is nowhere for it to go.
   return href ? (
@@ -118,12 +127,12 @@ function PartnerCard({ partner }: { partner: PayloadPartnerItem }) {
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className={"group block text-start focus:outline-none " + width}
+      className={"group block text-center focus:outline-none " + width}
     >
       {body}
     </a>
   ) : (
-    <div className={"group text-start " + width}>{body}</div>
+    <div className={"group text-center " + width}>{body}</div>
   );
 }
 
@@ -170,7 +179,7 @@ function PartnersPage() {
             {[1, 2, 3].map((n) => (
               <div
                 key={n}
-                className="aspect-[16/9] w-full animate-pulse rounded-sm bg-secondary/40 sm:w-[calc(50%-1rem)] lg:w-[calc(33.333%-1.334rem)]"
+                className="aspect-[4/3] w-full animate-pulse rounded-sm bg-secondary/40 sm:w-[calc(50%-1rem)] lg:w-[calc(25%-1.5rem)]"
               />
             ))}
           </div>
