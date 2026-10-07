@@ -1,4 +1,11 @@
-import type { CollectionConfig, Field, FieldAccess, PayloadRequest } from 'payload'
+import type {
+  CollectionConfig,
+  Field,
+  FieldAccess,
+  PayloadRequest,
+  TextField,
+  Validate,
+} from 'payload'
 
 /**
  * The annotated bibliographies behind Information → Databases.
@@ -18,6 +25,8 @@ import type { CollectionConfig, Field, FieldAccess, PayloadRequest } from 'paylo
  */
 
 const signedIn: FieldAccess = ({ req }) => !!req.user
+
+type KeywordValidation = Validate<string, unknown, { nameAr?: string }, TextField>
 
 /**
  * A keyword already spelled this way, ignoring case and surrounding spaces.
@@ -87,17 +96,18 @@ export const Keywords: CollectionConfig = {
       name: 'name',
       type: 'text',
       label: 'Keyword (English)',
-      validate: async (value: unknown, { siblingData, req, id }: any) => {
+      validate: (async (value, { siblingData, req, id }) => {
         if (!value && !siblingData?.nameAr) return 'Fill in the keyword in at least one language.'
         return notTaken('name', value, req, id)
-      },
+      }) satisfies KeywordValidation,
     },
     {
       name: 'nameAr',
       type: 'text',
       label: 'Keyword (Arabic / الكلمة المفتاحية بالعربية)',
       admin: { rtl: true },
-      validate: async (value: unknown, { req, id }: any) => notTaken('nameAr', value, req, id),
+      validate: (async (value, { req, id }) =>
+        notTaken('nameAr', value, req, id)) satisfies KeywordValidation,
     },
     {
       // Set from the two names above on save; it's what the admin shows in
