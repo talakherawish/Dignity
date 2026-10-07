@@ -42,6 +42,7 @@ import { Route as PublicationsReportsRouteImport } from './routes/publications.r
 import { Route as PublicationsStickersRouteImport } from './routes/publications.stickers'
 import { Route as PublicationsThesesRouteImport } from './routes/publications.theses'
 import { Route as InformationDatabasesSlugRouteImport } from './routes/information.databases_.$slug'
+import { Route as InformationReadingsSlugRouteImport } from './routes/information.readings_.$slug'
 import { Route as ProjectsResearchIndexRouteImport } from './routes/projects.research.index'
 import { Route as ProjectsResearchSlugRouteImport } from './routes/projects.research.$slug'
 
@@ -212,6 +213,11 @@ const InformationDatabasesSlugRoute =
     path: '/databases/$slug',
     getParentRoute: () => InformationRoute,
   } as any)
+const InformationReadingsSlugRoute = InformationReadingsSlugRouteImport.update({
+  id: '/readings_/$slug',
+  path: '/readings/$slug',
+  getParentRoute: () => InformationRoute,
+} as any)
 const ProjectsResearchIndexRoute = ProjectsResearchIndexRouteImport.update({
   id: '/projects/research/',
   path: '/projects/research/',
@@ -257,6 +263,7 @@ export interface FileRoutesByFullPath {
   '/publications/stickers': typeof PublicationsStickersRoute
   '/publications/theses': typeof PublicationsThesesRoute
   '/information/databases/$slug': typeof InformationDatabasesSlugRoute
+  '/information/readings/$slug': typeof InformationReadingsSlugRoute
   '/projects/research/$slug': typeof ProjectsResearchSlugRoute
   '/projects/research/': typeof ProjectsResearchIndexRoute
 }
@@ -294,6 +301,7 @@ export interface FileRoutesByTo {
   '/publications/stickers': typeof PublicationsStickersRoute
   '/publications/theses': typeof PublicationsThesesRoute
   '/information/databases/$slug': typeof InformationDatabasesSlugRoute
+  '/information/readings/$slug': typeof InformationReadingsSlugRoute
   '/projects/research/$slug': typeof ProjectsResearchSlugRoute
   '/projects/research': typeof ProjectsResearchIndexRoute
 }
@@ -332,6 +340,7 @@ export interface FileRoutesById {
   '/publications/stickers': typeof PublicationsStickersRoute
   '/publications/theses': typeof PublicationsThesesRoute
   '/information/databases_/$slug': typeof InformationDatabasesSlugRoute
+  '/information/readings_/$slug': typeof InformationReadingsSlugRoute
   '/projects/research/$slug': typeof ProjectsResearchSlugRoute
   '/projects/research/': typeof ProjectsResearchIndexRoute
 }
@@ -371,6 +380,7 @@ export interface FileRouteTypes {
     | '/publications/stickers'
     | '/publications/theses'
     | '/information/databases/$slug'
+    | '/information/readings/$slug'
     | '/projects/research/$slug'
     | '/projects/research/'
   fileRoutesByTo: FileRoutesByTo
@@ -408,6 +418,7 @@ export interface FileRouteTypes {
     | '/publications/stickers'
     | '/publications/theses'
     | '/information/databases/$slug'
+    | '/information/readings/$slug'
     | '/projects/research/$slug'
     | '/projects/research'
   id:
@@ -445,6 +456,7 @@ export interface FileRouteTypes {
     | '/publications/stickers'
     | '/publications/theses'
     | '/information/databases_/$slug'
+    | '/information/readings_/$slug'
     | '/projects/research/$slug'
     | '/projects/research/'
   fileRoutesById: FileRoutesById
@@ -700,6 +712,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InformationDatabasesSlugRouteImport
       parentRoute: typeof InformationRoute
     }
+    '/information/readings_/$slug': {
+      id: '/information/readings_/$slug'
+      path: '/readings/$slug'
+      fullPath: '/information/readings/$slug'
+      preLoaderRoute: typeof InformationReadingsSlugRouteImport
+      parentRoute: typeof InformationRoute
+    }
     '/projects/research/': {
       id: '/projects/research/'
       path: '/projects/research'
@@ -757,12 +776,14 @@ interface InformationRouteChildren {
   InformationDatabasesRoute: typeof InformationDatabasesRoute
   InformationReadingsRoute: typeof InformationReadingsRoute
   InformationDatabasesSlugRoute: typeof InformationDatabasesSlugRoute
+  InformationReadingsSlugRoute: typeof InformationReadingsSlugRoute
 }
 
 const InformationRouteChildren: InformationRouteChildren = {
   InformationDatabasesRoute: InformationDatabasesRoute,
   InformationReadingsRoute: InformationReadingsRoute,
   InformationDatabasesSlugRoute: InformationDatabasesSlugRoute,
+  InformationReadingsSlugRoute: InformationReadingsSlugRoute,
 }
 
 const InformationRouteWithChildren = InformationRoute._addFileChildren(

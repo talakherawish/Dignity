@@ -201,9 +201,11 @@ export async function buildSearchIndex(): Promise<SearchResult[]> {
     );
   }
 
+  // Each reading and database has its own page, at its slug (or its id, for
+  // one saved before slugs existed).
   const infoGroups: { items: typeof readings; typeKey: TranslationKey; to: string }[] = [
-    { items: readings, typeKey: "information.readings", to: "/information/readings" },
-    { items: databases, typeKey: "information.databases", to: "/information/databases" },
+    { items: readings, typeKey: "information.readings", to: "/information/readings/" },
+    { items: databases, typeKey: "information.databases", to: "/information/databases/" },
   ];
   for (const group of infoGroups)
     for (const item of group.items)
@@ -214,7 +216,7 @@ export async function buildSearchIndex(): Promise<SearchResult[]> {
           titleAr: item.titleAr,
           display: [item.description],
           displayAr: [item.descriptionAr],
-          to: group.to,
+          to: group.to + ((item as { slug?: string }).slug ?? item.id),
         }),
       );
 

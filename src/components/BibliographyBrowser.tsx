@@ -3,6 +3,7 @@ import { Download, ExternalLink, Search, X } from "lucide-react";
 import { ToggleMark } from "@/components/ActivityLedger";
 import { useLanguage, type TranslationKey } from "@/contexts/LanguageContext";
 import { Citation, sortName } from "@/lib/citation";
+import { fold, keywordLabel, keywordsOf } from "@/lib/keywords";
 import {
   mediaUrl,
   openFileInNewTab,
@@ -49,28 +50,6 @@ const LANGUAGE_LABEL: Record<PayloadBibliographyEntry["language"], TranslationKe
   ar: "databases.lang.ar",
   other: "databases.lang.other",
 };
-
-/**
- * Folds the differences a searcher doesn't type: case, Latin accents, and the
- * Arabic letter variants (أ إ آ → ا, ة → ه, ى → ي) and short-vowel marks that
- * the same word is written with or without.
- */
-function fold(text: string): string {
-  return text
-    .normalize("NFD")
-    .replace(/[̀-ًͯ-ْٰ]/g, "")
-    .replace(/[أإآ]/g, "ا")
-    .replace(/ة/g, "ه")
-    .replace(/ى/g, "ي")
-    .toLowerCase();
-}
-
-const keywordsOf = (entry: PayloadBibliographyEntry) =>
-  (entry.keywords ?? []).filter((k): k is PayloadKeyword => typeof k === "object" && !!k);
-
-/** In the reader's language when it exists, else the other -- a tag can't be blank. */
-const keywordLabel = (keyword: PayloadKeyword, isArabic: boolean) =>
-  (isArabic ? (keyword.nameAr ?? keyword.name) : (keyword.name ?? keyword.nameAr)) ?? "";
 
 const smallCaps = (isArabic: boolean) =>
   "uppercase tracking-[0.2em] " + (isArabic ? "text-[15px]" : "text-[10px] md:text-[11px]");

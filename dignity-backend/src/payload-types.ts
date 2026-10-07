@@ -1511,7 +1511,7 @@ export interface PartnerItem {
   _status?: ('draft' | 'published') | null;
 }
 /**
- * Shows on the website under Information → Readings and Documents.
+ * A text the team has read and written about. Shows on the website under Information → Readings and Documents, each with its own page.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "readings-documents".
@@ -1551,21 +1551,50 @@ export interface ReadingsDocument {
     [k: string]: unknown;
   } | null;
   /**
-   * Shown to readers in both languages unless an Arabic-only link is set below.
+   * Filled in automatically from the English title. It is the end of this reading's web address, so changing it after the page has been shared will break the old link.
+   */
+  slug?: string | null;
+  authors?:
+    | {
+        name: string;
+        id?: string | null;
+      }[]
+    | null;
+  year?: string | null;
+  language?: ('en' | 'ar' | 'other') | null;
+  /**
+   * If the text is a translation.
+   */
+  translator?: string | null;
+  /**
+   * Where the text comes from, as readers should see it -- e.g. "Project Gutenberg, eBook #5682".
+   */
+  sourceName?: string | null;
+  /**
+   * Shown to readers next to the file. Only host a file that is public domain, openly licensed, or shared with permission -- otherwise give the link alone.
+   */
+  rights?: ('publicDomain' | 'openLicence' | 'permission' | 'linkOnly') | null;
+  /**
+   * Shown to readers in both languages unless an Arabic-only file is set below.
+   */
+  file?: (string | null) | Media;
+  /**
+   * Only needed when there is a separate Arabic edition or translation. Leave empty to show the same file to everyone.
+   */
+  fileAr?: (string | null) | Media;
+  /**
+   * The text online, e.g. its Project Gutenberg page. Shown in both languages unless an Arabic-only link is set below.
    */
   link?: string | null;
   /**
    * Only needed when the Arabic destination differs from the link above.
    */
   linkAr?: string | null;
+  keywords?: (string | Keyword)[] | null;
   /**
-   * Shown to readers in both languages unless an Arabic-only file is set below.
+   * Who read the text and wrote this up. Pick from the Working Group, or Create New.
    */
-  file?: (string | null) | Media;
-  /**
-   * Only needed when the Arabic file is a different document from the one above. Leave empty to show the same file to everyone.
-   */
-  fileAr?: (string | null) | Media;
+  writtenBy?: (string | Participant)[] | null;
   /**
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
@@ -1581,6 +1610,28 @@ export interface ReadingsDocument {
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
+}
+/**
+ * The shared tag list for Databases and Readings. Pick from it rather than creating near-duplicates -- every keyword becomes a filter on the website.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "keywords".
+ */
+export interface Keyword {
+  id: string;
+  name?: string | null;
+  nameAr?: string | null;
+  label?: string | null;
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  updatedBy?: (string | null) | User;
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  createdBy?: (string | null) | User;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * One annotated bibliography, listed under Information → Databases. Its sources are added under Bibliography Entries.
@@ -1715,28 +1766,6 @@ export interface BibliographyEntry {
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
-}
-/**
- * The shared tag list for Databases and Readings. Pick from it rather than creating near-duplicates -- every keyword becomes a filter on the website.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "keywords".
- */
-export interface Keyword {
-  id: string;
-  name?: string | null;
-  nameAr?: string | null;
-  label?: string | null;
-  /**
-   * Set automatically -- not editable by hand.
-   */
-  updatedBy?: (string | null) | User;
-  /**
-   * Set automatically -- not editable by hand.
-   */
-  createdBy?: (string | null) | User;
-  updatedAt: string;
-  createdAt: string;
 }
 /**
  * Load a bibliography spreadsheet (.xlsx) into a database. Each row becomes a Bibliography Entry you can edit afterwards. The first row of the sheet must hold the column names: Type, Lang, Keywords, Names, Title, Book_title, Journal_name, Year, City, Publisher, Pages, Volume, Issue, URL, DOI, Editors, Annotations. Several names or keywords in one cell are separated by |. An optional second sheet named "Keywords", with English and Arabic columns, pairs each keyword with its translation. Rows already in the database (same title and year) are skipped, so a sheet can be imported again after adding rows to it.
@@ -2630,10 +2659,24 @@ export interface ReadingsDocumentsSelect<T extends boolean = true> {
   titleAr?: T;
   description?: T;
   descriptionAr?: T;
-  link?: T;
-  linkAr?: T;
+  slug?: T;
+  authors?:
+    | T
+    | {
+        name?: T;
+        id?: T;
+      };
+  year?: T;
+  language?: T;
+  translator?: T;
+  sourceName?: T;
+  rights?: T;
   file?: T;
   fileAr?: T;
+  link?: T;
+  linkAr?: T;
+  keywords?: T;
+  writtenBy?: T;
   publicationStatus?: T;
   updatedBy?: T;
   createdBy?: T;

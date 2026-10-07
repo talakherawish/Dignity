@@ -311,6 +311,25 @@ export type PayloadInformationItem = {
   fileAr?: PayloadMedia;
 };
 
+/**
+ * A text the team has read and written about, under Information → Readings
+ * and Documents. The write-up is bilingual; the citation fields describe the
+ * text itself and aren't translated.
+ */
+export type PayloadReading = PayloadInformationItem & {
+  /** End of the reading's URL, generated from the English title in the admin. */
+  slug?: string;
+  authors?: { name: string }[];
+  year?: string;
+  language?: "en" | "ar" | "other";
+  translator?: string;
+  /** Where the text comes from, e.g. "Project Gutenberg, eBook #5682". */
+  sourceName?: string;
+  rights?: "publicDomain" | "openLicence" | "permission" | "linkOnly";
+  keywords?: (PayloadKeyword | string)[];
+  writtenBy?: (PayloadParticipant | string)[];
+};
+
 /** One annotated bibliography under Information → Databases. */
 export type PayloadDatabase = {
   id: string;
@@ -793,6 +812,30 @@ export const fetchPublications = (collection: PublicationCollection) =>
 
 export const fetchInformation = (collection: InformationCollection) =>
   fetchCollection<PayloadInformationItem>(collection);
+
+/**
+ * Every reading. depth 2: a reading's file is one hop away and its preview
+ * image (the PDF's first page, generated on upload) is a second.
+ */
+export const fetchReadings = () =>
+  fetchCollection<PayloadReading>("readings-documents", {
+    depth: "2",
+    pagination: "false",
+    sort: "title",
+  });
+
+/** One reading by the end of its address, or by id for one saved before slugs existed. */
+export async function fetchReading(slugOrId: string): Promise<PayloadReading | undefined> {
+  for (const field of ["slug", "id"]) {
+    const [match] = await fetchCollection<PayloadReading>("readings-documents", {
+      [`where[${field}][equals]`]: slugOrId,
+      depth: "2",
+      limit: "1",
+    });
+    if (match) return match;
+  }
+  return undefined;
+}
 
 export const fetchDatabases = () =>
   fetchCollection<PayloadDatabase>("databases", { depth: "0", sort: "title" });
