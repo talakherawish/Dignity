@@ -8,8 +8,8 @@ import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 import { nitro } from "nitro/vite";
 import type { ConfigEnv } from "vite";
 
-// Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper),
-// which wrangler.jsonc points at via "main" — nitro is what actually builds from it.
+// TanStack Start picks up src/server.ts (our SSR error wrapper) as the server entry by
+// convention, and nitro builds the Node server for the Oracle box from it.
 //
 // nitro() is scoped to build/preview on purpose. Under `vite dev` it puts nitro's
 // module-runner transport in front of SSR, which can hang and kill the request with
