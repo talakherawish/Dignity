@@ -9,7 +9,8 @@ import type { CollectionConfig, Field } from 'payload'
  * Nothing had ever been added to it, so the split cost no content.
  */
 
-function informationFields(): Field[] {
+/** Title and description in both languages -- all a database itself needs. */
+function describedFields(): Field[] {
   return [
     {
       name: 'title',
@@ -33,6 +34,12 @@ function informationFields(): Field[] {
       type: 'richText',
       label: 'Description (Arabic / الوصف بالعربية)',
     },
+  ]
+}
+
+function informationFields(): Field[] {
+  return [
+    ...describedFields(),
     {
       name: 'link',
       type: 'text',
@@ -77,6 +84,7 @@ function informationCollection(
   singular: string,
   plural: string,
   description: string,
+  fields: Field[],
 ): CollectionConfig {
   return {
     slug,
@@ -99,7 +107,7 @@ function informationCollection(
       update: ({ req }) => !!req.user,
       delete: ({ req }) => !!req.user,
     },
-    fields: informationFields(),
+    fields,
   }
 }
 
@@ -108,11 +116,19 @@ export const ReadingsAndDocuments = informationCollection(
   'Reading or Document',
   'Readings and Documents',
   'Shows on the website under Information → Readings and Documents.',
+  informationFields(),
 )
 
+/**
+ * Each item is one annotated bibliography -- the list itself, not a source in
+ * it. Its sources are Bibliography Entries (src/collections/Bibliography.ts),
+ * each pointing back at the database it belongs to. Until then a database was
+ * a single item with a link and a file, like a reading; none had been created.
+ */
 export const Databases = informationCollection(
   'databases',
   'Database',
   'Databases',
-  'Shows on the website under Information → Databases.',
+  'One annotated bibliography, listed under Information → Databases. Its sources are added under Bibliography Entries.',
+  describedFields(),
 )

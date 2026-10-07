@@ -48,6 +48,7 @@ import {
   Posters,
 } from './collections/Publications'
 import { ReadingsAndDocuments, Databases } from './collections/Information'
+import { BibliographyEntries, Keywords } from './collections/Bibliography'
 import { Disclaimer, PrivacyPolicy } from './collections/LegalPages'
 import { SiteSettings } from './globals/SiteSettings'
 
@@ -127,6 +128,8 @@ export default buildConfig({
     // Information
     ReadingsAndDocuments,
     Databases,
+    BibliographyEntries,
+    Keywords,
 
     // Site -- shares its group with the Site Settings global, which Payload
     // lists after it.

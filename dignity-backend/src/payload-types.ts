@@ -91,7 +91,10 @@ export interface Config {
     posters: Poster;
     'readings-documents': ReadingsDocument;
     databases: Database;
+    'bibliography-entries': BibliographyEntry;
+    keywords: Keyword;
     disclaimer: Disclaimer;
+    'privacy-policy': PrivacyPolicy;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -123,7 +126,10 @@ export interface Config {
     posters: PostersSelect<false> | PostersSelect<true>;
     'readings-documents': ReadingsDocumentsSelect<false> | ReadingsDocumentsSelect<true>;
     databases: DatabasesSelect<false> | DatabasesSelect<true>;
+    'bibliography-entries': BibliographyEntriesSelect<false> | BibliographyEntriesSelect<true>;
+    keywords: KeywordsSelect<false> | KeywordsSelect<true>;
     disclaimer: DisclaimerSelect<false> | DisclaimerSelect<true>;
+    'privacy-policy': PrivacyPolicySelect<false> | PrivacyPolicySelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -1575,7 +1581,7 @@ export interface ReadingsDocument {
   _status?: ('draft' | 'published') | null;
 }
 /**
- * Shows on the website under Information → Databases.
+ * One annotated bibliography, listed under Information → Databases. Its sources are added under Bibliography Entries.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "databases".
@@ -1615,21 +1621,79 @@ export interface Database {
     [k: string]: unknown;
   } | null;
   /**
-   * Shown to readers in both languages unless an Arabic-only link is set below.
+   * Read-only. Reflects the Publish / Save as Draft state above.
    */
-  link?: string | null;
+  publicationStatus?: string | null;
   /**
-   * Only needed when the Arabic destination differs from the link above.
+   * Set automatically -- not editable by hand.
    */
-  linkAr?: string | null;
+  updatedBy?: (string | null) | User;
   /**
-   * Shown to readers in both languages unless an Arabic-only file is set below.
+   * Set automatically -- not editable by hand.
+   */
+  createdBy?: (string | null) | User;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * One source in an annotated bibliography. Shows on the website inside its database, under Information → Databases.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "bibliography-entries".
+ */
+export interface BibliographyEntry {
+  id: string;
+  database: string | Database;
+  entryType: 'book' | 'bookChapter' | 'journalArticle' | 'otherArticle' | 'report' | 'thesis' | 'website' | 'other';
+  /**
+   * Also sets the direction the title and annotation are shown in.
+   */
+  language: 'en' | 'ar' | 'other';
+  isTranslation?: boolean | null;
+  /**
+   * In the source's own language. For a chapter or article, the chapter or article; for a whole book, the book.
+   */
+  title: string;
+  authors?:
+    | {
+        name: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * The book a chapter is in, or the journal or website an article is in. Leave empty for a whole book.
+   */
+  containerTitle?: string | null;
+  editors?:
+    | {
+        name: string;
+        id?: string | null;
+      }[]
+    | null;
+  year?: string | null;
+  publisher?: string | null;
+  city?: string | null;
+  volume?: string | null;
+  issue?: string | null;
+  pages?: string | null;
+  edition?: string | null;
+  reportType?: string | null;
+  url?: string | null;
+  doi?: string | null;
+  dateAccessed?: string | null;
+  annotation?: string | null;
+  keywords?: (string | Keyword)[] | null;
+  access: 'citation' | 'link' | 'upload';
+  /**
+   * Only for texts that are public domain, openly licensed, or shared with permission.
    */
   file?: (string | null) | Media;
+  copyrightStatus?: ('copyrighted' | 'verify' | 'publicDomain' | 'openAccess' | 'webContent') | null;
   /**
-   * Only needed when the Arabic file is a different document from the one above. Leave empty to show the same file to everyone.
+   * For the team only -- never shown on the website.
    */
-  fileAr?: (string | null) | Media;
+  internalNote?: string | null;
   /**
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
@@ -1647,12 +1711,90 @@ export interface Database {
   _status?: ('draft' | 'published') | null;
 }
 /**
+ * The shared tag list for Databases and Readings. Pick from it rather than creating near-duplicates -- every keyword becomes a filter on the website.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "keywords".
+ */
+export interface Keyword {
+  id: string;
+  name?: string | null;
+  nameAr?: string | null;
+  label?: string | null;
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  updatedBy?: (string | null) | User;
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  createdBy?: (string | null) | User;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * The text of the website's Disclaimer page, linked from the bottom of every page. Open the entry below to edit it.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "disclaimer".
  */
 export interface Disclaimer {
+  id: string;
+  title?: string | null;
+  titleAr?: string | null;
+  body?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  bodyAr?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Read-only. Reflects the Publish / Save as Draft state above.
+   */
+  publicationStatus?: string | null;
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  updatedBy?: (string | null) | User;
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  createdBy?: (string | null) | User;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * The text of the website's Privacy Policy page, linked from the bottom of every page. Open the entry below to edit it.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "privacy-policy".
+ */
+export interface PrivacyPolicy {
   id: string;
   title?: string | null;
   titleAr?: string | null;
@@ -1823,8 +1965,20 @@ export interface PayloadLockedDocument {
         value: string | Database;
       } | null)
     | ({
+        relationTo: 'bibliography-entries';
+        value: string | BibliographyEntry;
+      } | null)
+    | ({
+        relationTo: 'keywords';
+        value: string | Keyword;
+      } | null)
+    | ({
         relationTo: 'disclaimer';
         value: string | Disclaimer;
+      } | null)
+    | ({
+        relationTo: 'privacy-policy';
+        value: string | PrivacyPolicy;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -2444,10 +2598,6 @@ export interface DatabasesSelect<T extends boolean = true> {
   titleAr?: T;
   description?: T;
   descriptionAr?: T;
-  link?: T;
-  linkAr?: T;
-  file?: T;
-  fileAr?: T;
   publicationStatus?: T;
   updatedBy?: T;
   createdBy?: T;
@@ -2457,9 +2607,85 @@ export interface DatabasesSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "bibliography-entries_select".
+ */
+export interface BibliographyEntriesSelect<T extends boolean = true> {
+  database?: T;
+  entryType?: T;
+  language?: T;
+  isTranslation?: T;
+  title?: T;
+  authors?:
+    | T
+    | {
+        name?: T;
+        id?: T;
+      };
+  containerTitle?: T;
+  editors?:
+    | T
+    | {
+        name?: T;
+        id?: T;
+      };
+  year?: T;
+  publisher?: T;
+  city?: T;
+  volume?: T;
+  issue?: T;
+  pages?: T;
+  edition?: T;
+  reportType?: T;
+  url?: T;
+  doi?: T;
+  dateAccessed?: T;
+  annotation?: T;
+  keywords?: T;
+  access?: T;
+  file?: T;
+  copyrightStatus?: T;
+  internalNote?: T;
+  publicationStatus?: T;
+  updatedBy?: T;
+  createdBy?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "keywords_select".
+ */
+export interface KeywordsSelect<T extends boolean = true> {
+  name?: T;
+  nameAr?: T;
+  label?: T;
+  updatedBy?: T;
+  createdBy?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "disclaimer_select".
  */
 export interface DisclaimerSelect<T extends boolean = true> {
+  title?: T;
+  titleAr?: T;
+  body?: T;
+  bodyAr?: T;
+  publicationStatus?: T;
+  updatedBy?: T;
+  createdBy?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "privacy-policy_select".
+ */
+export interface PrivacyPolicySelect<T extends boolean = true> {
   title?: T;
   titleAr?: T;
   body?: T;
