@@ -1621,6 +1621,10 @@ export interface Database {
     [k: string]: unknown;
   } | null;
   /**
+   * Filled in automatically from the English title. It is the end of this database's web address, so changing it after the page has been shared will break the old link.
+   */
+  slug?: string | null;
+  /**
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
   publicationStatus?: string | null;
@@ -2598,6 +2602,7 @@ export interface DatabasesSelect<T extends boolean = true> {
   titleAr?: T;
   description?: T;
   descriptionAr?: T;
+  slug?: T;
   publicationStatus?: T;
   updatedBy?: T;
   createdBy?: T;

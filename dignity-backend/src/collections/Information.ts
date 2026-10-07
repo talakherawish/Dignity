@@ -1,4 +1,5 @@
 import type { CollectionConfig, Field } from 'payload'
+import { toSlug } from '../lib/slug'
 
 /**
  * The two Information collections, matching the website's Information menu.
@@ -125,10 +126,38 @@ export const ReadingsAndDocuments = informationCollection(
  * each pointing back at the database it belongs to. Until then a database was
  * a single item with a link and a file, like a reading; none had been created.
  */
-export const Databases = informationCollection(
+const databases = informationCollection(
   'databases',
   'Database',
   'Databases',
   'One annotated bibliography, listed under Information → Databases. Its sources are added under Bibliography Entries.',
-  describedFields(),
+  [
+    ...describedFields(),
+    {
+      name: 'slug',
+      type: 'text',
+      unique: true,
+      index: true,
+      label: 'Page address',
+      admin: {
+        position: 'sidebar',
+        description:
+          "Filled in automatically from the English title. It is the end of this database's web address, so changing it after the page has been shared will break the old link.",
+      },
+    },
+  ],
 )
+
+export const Databases: CollectionConfig = {
+  ...databases,
+  admin: { ...databases.admin, defaultColumns: ['title', 'slug', 'updatedAt'] },
+  hooks: {
+    beforeValidate: [
+      // As on Research: derived from the English title unless set by hand.
+      ({ data }) => {
+        if (data && !data.slug && typeof data.title === 'string') data.slug = toSlug(data.title)
+        return data
+      },
+    ],
+  },
+}

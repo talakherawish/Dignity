@@ -101,8 +101,8 @@ function figuresOf(item: PayloadActivity, lang: Lang): Figure[] {
   return figures;
 }
 
-/** Plus that turns into a cross. */
-function ToggleMark({ open }: { open: boolean }) {
+/** Plus that turns into a cross. Shared with BibliographyBrowser's entries. */
+export function ToggleMark({ open }: { open: boolean }) {
   return (
     <span
       aria-hidden="true"

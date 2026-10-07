@@ -1,5 +1,6 @@
 import type { CollectionConfig } from 'payload'
 import { mirrorLinksOnChange, mirrorLinksOnDelete } from '../hooks/syncResearchLinks'
+import { toSlug } from '../lib/slug'
 
 /** Every output type a research line can list, and the field each mirrors on the other side. */
 const OUTPUT_LINKS = [
@@ -14,15 +15,6 @@ const OUTPUT_LINKS = [
   { field: 'relatedPhotos', relationTo: 'photos' },
   { field: 'relatedForums', relationTo: 'forums' },
 ] as const
-
-/** "Dignity of Children" -> "dignity-of-children". */
-function toSlug(value: string): string {
-  return value
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-}
 
 export const Research: CollectionConfig = {
   slug: 'research',
@@ -104,7 +96,7 @@ export const Research: CollectionConfig = {
       admin: {
         position: 'sidebar',
         description:
-          'Filled in automatically from the English title. It is the end of this entry\'s web address, so changing it after the page has been shared will break the old link.',
+          "Filled in automatically from the English title. It is the end of this entry's web address, so changing it after the page has been shared will break the old link.",
       },
     },
     // The outputs of a research area, shown on its page beneath the write-up.
@@ -183,7 +175,8 @@ export const Research: CollectionConfig = {
       hasMany: true,
       label: 'Forums from this research',
       admin: {
-        description: 'Seminars, roundtables, workshops, and conferences that came out of this research.',
+        description:
+          'Seminars, roundtables, workshops, and conferences that came out of this research.',
       },
     },
   ],

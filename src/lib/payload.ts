@@ -311,6 +311,65 @@ export type PayloadInformationItem = {
   fileAr?: PayloadMedia;
 };
 
+/** One annotated bibliography under Information → Databases. */
+export type PayloadDatabase = {
+  id: string;
+  /** End of the database's URL, generated from the English title in the admin. */
+  slug?: string;
+  title: string;
+  titleAr?: string;
+  description?: unknown;
+  descriptionAr?: unknown;
+};
+
+/** A tag from the shared Keywords collection -- may exist in one language only. */
+export type PayloadKeyword = {
+  id: string;
+  name?: string;
+  nameAr?: string;
+};
+
+export type BibliographyEntryType =
+  | "book"
+  | "bookChapter"
+  | "journalArticle"
+  | "otherArticle"
+  | "report"
+  | "thesis"
+  | "website"
+  | "other";
+
+/**
+ * One source in a database. Its citation and annotation are in the source's
+ * own language (`language`), not translated -- see the Bibliography
+ * collection in the backend.
+ */
+export type PayloadBibliographyEntry = {
+  id: string;
+  entryType: BibliographyEntryType;
+  language: "en" | "ar" | "other";
+  isTranslation?: boolean;
+  title: string;
+  authors?: { name: string }[];
+  /** The book a chapter is in, or the journal or website an article is in. */
+  containerTitle?: string;
+  editors?: { name: string }[];
+  year?: string;
+  publisher?: string;
+  city?: string;
+  volume?: string;
+  issue?: string;
+  pages?: string;
+  edition?: string;
+  reportType?: string;
+  url?: string;
+  doi?: string;
+  annotation?: string;
+  keywords?: (PayloadKeyword | string)[];
+  access: "citation" | "link" | "upload";
+  file?: PayloadMedia;
+};
+
 export type PayloadResearchActivity = {
   id: string;
   /** End of the entry's URL, generated from the English title in the admin. */
@@ -734,6 +793,55 @@ export const fetchPublications = (collection: PublicationCollection) =>
 
 export const fetchInformation = (collection: InformationCollection) =>
   fetchCollection<PayloadInformationItem>(collection);
+
+export const fetchDatabases = () =>
+  fetchCollection<PayloadDatabase>("databases", { depth: "0", sort: "title" });
+
+/**
+ * One database by the end of its address. Matched on the slug, falling back to
+ * the id for a database saved before slugs existed (the first two were).
+ */
+export async function fetchDatabase(slugOrId: string): Promise<PayloadDatabase | undefined> {
+  const [bySlug] = await fetchCollection<PayloadDatabase>("databases", {
+    "where[slug][equals]": slugOrId,
+    depth: "0",
+    limit: "1",
+  });
+  if (bySlug) return bySlug;
+  const [byId] = await fetchCollection<PayloadDatabase>("databases", {
+    "where[id][equals]": slugOrId,
+    depth: "0",
+    limit: "1",
+  });
+  return byId;
+}
+
+/**
+ * Every published entry in one database, at once -- the filters on its page
+ * run in the browser, and a few hundred citations is a small download. depth 1
+ * brings each entry's keywords and file as objects rather than ids.
+ */
+export const fetchBibliographyEntries = (databaseId: string) =>
+  fetchCollection<PayloadBibliographyEntry>("bibliography-entries", {
+    "where[database][equals]": databaseId,
+    depth: "1",
+    pagination: "false",
+    sort: "title",
+  });
+
+/** How many published entries each database holds, by database id. */
+export async function fetchBibliographyCounts(): Promise<Record<string, number>> {
+  const entries = await fetchCollection<{ database?: string }>("bibliography-entries", {
+    depth: "0",
+    pagination: "false",
+    "select[database]": "true",
+  });
+  const counts: Record<string, number> = {};
+  for (const entry of entries) {
+    if (entry.database) counts[entry.database] = (counts[entry.database] ?? 0) + 1;
+  }
+  return counts;
+}
 
 /**
  * The two standalone pages under About — the initiative's own page and
