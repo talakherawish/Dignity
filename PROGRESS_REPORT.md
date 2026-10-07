@@ -1,6 +1,6 @@
 # Dignity Initiative — Progress Report
-**Updated:** 2026-09-22  
-**Reporting period:** 2026-08-08 to 2026-09-22
+**Updated:** 2026-10-07  
+**Reporting period:** 2026-08-08 to 2026-10-07
 
 ---
 
@@ -13,6 +13,12 @@ Infrastructure work is finished. HTTPS renews itself, backups run nightly and ha
 **Oracle is the permanent home.** The university has no hosting capacity; they will only map a domain to this IP. Backups, uptime and deployment are therefore ours to own.
 
 **Engineering didn't stop after that.** 2026-08-17 to 2026-08-28 added a real content-model consolidation (Seminars/Conferences/Meetings merged into one "Forums" collection, Announcements folded into News), a homepage and navigation redesign, and several new features — mailing-list signup, bidirectional research-to-output linking, photo tagging. See *Website work — 2026-08-17 to 2026-08-28*, below. **Two migration scripts from that work still need to run against production**, and one schema change has no migration at all yet — both flagged at the top of that section, and worth resolving before treating this as settled history.
+
+---
+
+## Website work — 2026-10-07 (in progress, started 15:06)
+
+**Information section: Readings and Documents.** Work started at 15:06. Details and hours will be added when the session ends.
 
 ---
 
@@ -634,6 +640,7 @@ Eight loose note files were removed from the repo root on 2026-09-21. Six of the
 - **2026-09-12, morning (06:52–10:27):** ~3½ hours — homepage hero replaced with a full-viewport looping background video (dark overlay added, then removed again at the client's explicit instruction); height corrected for `dvh` vs `vh` and the sticky header's own height; News & Announcements reworked to opposite-sides-per-language and a new homepage Posters section added; both capped to one screen and matched to the hero's height; a real flexbox `min-height:auto`/`justify-center` overflow bug found and fixed via live-production DOM measurement; Team section redesigned to circular photos with a centered "View All" pill; Research renamed to Research Projects with its detail page moved onto `PageHero`; a further round of Posters/View-All copy and News sizing fixes; Clippings restored to the About nav; the Pillars section removed from the homepage; Clippings reworked into a photo-gallery collage with looser required fields.
 - **2026-09-12, afternoon (13:52–17:42):** ~2 hours across two gaps — `landing.mp4` compressed from 134MB to ~6MB (H.264, audio dropped); mobile-specific layout fixes to Posters, Team, the hero/News/Posters viewport-height units, and the footer's top bar; five Clippings-related media uploads plus one later screenshot upload, both auto-committed by the server.
 - **2026-09-22 16:36 → 23:10:** ~6½ hours, one continuous stretch across two Claude Code sessions plus admin uploads between them — Forums back to the dated ledger with new Attachments and Participants fields and file cards; Partners rebuilt as a logo wall and merged into one collection (plus a same-session fix for a slug change that stranded the entered partners); the Working Group page restored after a field default hid everyone; CI now typechecks, lints and checks the bilingual rules before any deploy, with both lockfiles repaired; new CMS-editable Disclaimer and Privacy Policy pages, seeded with the supplied bilingual text; two padded forum photos cropped; footer bottom row moved; PDF and image uploads; an update email drafted for Professor Mudar. 21 code commits plus 13 server-committed uploads.
+- **2026-10-07 15:06 → (in progress):** work started on the Information section's Readings and Documents.
 
 **Total project time to date: at least ~160¼ hours.** `PROGRESS.md` logs ~80 hours for sessions 1–14 (2026-05-31 → 2026-08-03); this file adds ~80¼ hours for 2026-08-08 → 2026-09-22, now that the 08-09/08-10/08-11-daytime gaps are estimated from the work recorded above instead of left blank. The two logs are reconciled into this one master total.
 
