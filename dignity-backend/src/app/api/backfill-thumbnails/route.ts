@@ -19,10 +19,9 @@ import { attachThumbnailAsCoverImage, generateThumbnailForPdf, MAX_SOURCE_BYTES 
 // admin session, since this needs to be triggerable with a single browser
 // visit to a URL (no login flow to script around) but must not be a public,
 // unauthenticated door that lets anyone trigger repeated GitHub API writes
-// and payload.create() calls. Set BACKFILL_SECRET in Vercel's environment
-// variables to any random string, then visit:
+// and payload.create() calls. Set BACKFILL_SECRET in dignity-backend/.env on
+// the server to any random string, then visit:
 //   https://<your-backend>/api/backfill-thumbnails?secret=<that-value>
-export const maxDuration = 300
 
 export async function GET(request: Request) {
   const url = new URL(request.url)

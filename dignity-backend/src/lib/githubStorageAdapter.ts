@@ -3,7 +3,7 @@ import type { Adapter } from '@payloadcms/plugin-cloud-storage/types'
 /**
  * Custom Payload storage adapter that stores uploaded files directly in a
  * GitHub repository via the Contents API, instead of a paid cloud storage
- * service (Vercel Blob, S3, etc).
+ * service (S3 and the like).
  *
  * Why this exists: the university has no storage budget, and files uploaded
  * through Payload's normal drag-and-drop button need somewhere durable to
@@ -34,8 +34,8 @@ import type { Adapter } from '@payloadcms/plugin-cloud-storage/types'
  *    as a generic {"errors":[{"message":"Something went wrong."}]} with no
  *    way to see what actually broke.
  *
- * Required environment variables (set these in Railway/Vercel/wherever this
- * runs — never commit them):
+ * Required environment variables (set these in dignity-backend/.env on the
+ * server — never commit them):
  *  - GITHUB_TOKEN        A GitHub Personal Access Token with "repo" scope
  *                        (Contents: Read and write) for the target repo.
  *  - GITHUB_REPO_OWNER   e.g. "talakherawish"
@@ -280,7 +280,7 @@ export function createGithubStorageAdapter({
         // unhandled error from a static handler into a generic
         // {"errors":[{"message":"Something went wrong."}]} response with no
         // detail visible to the person clicking Download. Logging here at
-        // least puts the real cause in Vercel's function logs.
+        // least puts the real cause in the server log (pm2 logs dignity-backend).
         console.error(
           `github-contents staticHandler failed for filename "${filename}": ${error instanceof Error ? error.message : String(error)}`,
         )

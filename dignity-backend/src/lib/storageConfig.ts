@@ -6,8 +6,9 @@
  * The cloud storage plugin used to be wired up as
  * `enabled: Boolean(process.env.GITHUB_TOKEN)`. When that token was missing
  * the plugin silently switched off, and Payload fell back to writing uploads
- * to the local filesystem. On Vercel that filesystem is ephemeral — it is
- * wiped between deployments and can vanish between invocations — so:
+ * to the local filesystem. The backend was on Vercel then, where that
+ * filesystem is wiped between deployments and can vanish between
+ * invocations — so:
  *
  *   - every uploaded file's bytes were lost shortly after upload,
  *   - the Media documents survived in MongoDB pointing at files that no

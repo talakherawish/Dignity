@@ -6,7 +6,7 @@ import type { BasePayload, CollectionAfterChangeHook, CollectionBeforeChangeHook
 // at module top-level. This file is pulled in by Media.ts -> payload.config.ts,
 // so a static top-level import runs the moment the whole Payload config loads —
 // and pdf-to-img's pdfjs-dist dependency throws `ReferenceError: DOMMatrix is
-// not defined` on Vercel's Node runtime (DOMMatrix is a browser/Canvas API, not
+// not defined` under Node (DOMMatrix is a browser/Canvas API, not
 // available in Node by default). That crashed EVERY collection's API route
 // (participants, articles, pages, etc.), not just Media/PDF ones, since it's a
 // module-evaluation failure, not a runtime one. Deferring the import to the
@@ -32,7 +32,7 @@ import type { BasePayload, CollectionAfterChangeHook, CollectionBeforeChangeHook
  * already-uploaded file's bytes from `req.file.data`, then (deferred via
  * `after()`, see below) rasterizes page 1 to a PNG buffer using pdf-to-img
  * (a thin, pure-npm wrapper around pdfjs-dist's Node-canvas-free rendering
- * path — no native binary dependency, safe for Vercel's build), creates a
+ * path — no native binary dependency to build on the server), creates a
  * second Media document from that PNG via `payload.create`, and finally
  * `payload.update`s the *original* document's `thumbnail` field to point at
  * it.
@@ -41,34 +41,22 @@ import type { BasePayload, CollectionAfterChangeHook, CollectionBeforeChangeHook
  * `beforeChange`:
  * This used to be a `beforeChange` hook that awaited rasterization + a
  * second `payload.create` (itself a GitHub Contents API upload) *before*
- * returning, which meant the entire original upload request stayed open
- * for both round-trips combined. On Vercel's default function duration
- * (10s on Hobby, per vercel.com/docs/functions/configuring-functions/duration),
- * a multi-MB PDF's rasterization + a second network upload routinely blew
- * past that ceiling — Vercel kills the function mid-request, so the
- * try/catch below never even gets a chance to run, no thumbnail is ever
- * created, and — worse — the *original* upload request could be killed
- * before its own document/file write finished, since it was all one
- * function invocation. That's why every recent PDF had zero `thumbnail`
- * and no error appeared anywhere in Vercel's logs.
+ * returning, which kept the whole original upload request open for both
+ * round-trips combined. On the serverless host the backend ran on at the
+ * time, a multi-MB PDF routinely ran past the request time limit and was
+ * killed mid-request: no thumbnail, no error logged, and sometimes the
+ * original upload itself cut short.
  *
  * Firing this in `afterChange`, wrapped in Next's `after()`, means the
  * original document has already been saved and the response is already on
  * its way to the client; the thumbnail generation below runs as a
  * best-effort background task that updates the document afterward if it
- * succeeds. A bare `void (async () => {...})()` is NOT enough on Vercel —
- * once the response is sent, a serverless function can freeze/terminate
- * immediately, killing any detached promise mid-flight. `after()` is
- * Next.js's (15.1+) supported way to keep the function alive specifically
- * for this kind of post-response work — see
- * vercel.com/docs/functions/functions-api-reference/vercel-functions-package#waituntil,
- * which explicitly recommends `after()` over the older `waitUntil()` on
- * Next 15.1+. Note this doesn't grant unlimited extra time: per that same
- * page, deferred work shares the *same timeout as the function itself*, so
- * `maxDuration` on the route (see route.ts) still has to be raised for this
- * to reliably finish. A slow or failed thumbnail can now never delay or
- * crash the parent upload — worst case, the card just keeps showing the
- * generic file icon, exactly like before this hook existed.
+ * succeeds. On the Oracle server (`next start`, a long-running process)
+ * `after()` simply runs once the response has been sent. It is still the
+ * right tool: it is Next's supported way to do work after a response, and
+ * a slow or failed thumbnail can never delay or crash the parent upload —
+ * worst case, the card just keeps showing the generic file icon, exactly
+ * like before this hook existed.
  *
  * This only ever fires for `create` operations with an actual file attached
  * — editing metadata on an existing Media doc (e.g. fixing the alt text)

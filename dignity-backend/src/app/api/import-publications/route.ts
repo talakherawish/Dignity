@@ -24,7 +24,6 @@ import config from '@payload-config'
  *
  * Safe to re-run: an item whose English title already exists is skipped.
  */
-export const maxDuration = 300
 
 const SOURCE = 'https://dignity.birzeit.edu'
 
