@@ -1,10 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, Download, ExternalLink } from "lucide-react";
+import { Citation, CopyCitation } from "@/components/CopyCitation";
 import { PageLayout, PageHero } from "@/components/PageLayout";
 import { RichText } from "@/components/RichText";
 import { TranslationNotice } from "@/components/TranslationNotice";
 import { useLanguage, type TranslationKey } from "@/contexts/LanguageContext";
+import { chicago, readingSource } from "@/lib/citation";
 import { keywordLabel, keywordsOf } from "@/lib/keywords";
 import {
   fetchReading,
@@ -78,6 +80,8 @@ function ReadingPage() {
   const keywords = keywordsOf(reading);
   // The text's own details are in its own language, like a citation.
   const sourceDir = reading.language === "ar" ? "rtl" : "ltr";
+  const citation = reading.authors?.length ? chicago(readingSource(reading)) : undefined;
+  const smallCaps = "uppercase tracking-[0.16em] " + (isArabic ? "text-[14px]" : "text-[10px]");
 
   return (
     <PageLayout>
@@ -181,15 +185,22 @@ function ReadingPage() {
               </div>
             )}
 
-            {rights && file && (
-              <p
-                className={
-                  "uppercase tracking-[0.16em] text-muted-foreground " +
-                  (isArabic ? "text-[14px]" : "text-[10px]")
-                }
-              >
-                {t(rights)}
-              </p>
+            {rights && file && <p className={"text-muted-foreground " + smallCaps}>{t(rights)}</p>}
+
+            {/* The text in Chicago style, to paste into a bibliography. Only
+                once there's an author -- a citation without one isn't one. */}
+            {citation && (
+              <div className="space-y-2 border-t border-border pt-6">
+                <p className={"text-muted-foreground " + smallCaps}>{t("citation.cite")}</p>
+                <p
+                  dir={sourceDir}
+                  lang={reading.language === "ar" ? "ar" : "en"}
+                  className="-indent-6 ps-6 text-start text-sm leading-relaxed text-foreground"
+                >
+                  <Citation segments={citation} />
+                </p>
+                <CopyCitation segments={citation} arabic={reading.language === "ar"} />
+              </div>
             )}
 
             {keywords.length > 0 && (

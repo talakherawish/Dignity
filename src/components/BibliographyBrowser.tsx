@@ -2,7 +2,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Download, ExternalLink, Search, X } from "lucide-react";
 import { ToggleMark } from "@/components/ActivityLedger";
 import { useLanguage, type TranslationKey } from "@/contexts/LanguageContext";
-import { Citation, sortName } from "@/lib/citation";
+import { Citation, CopyCitation } from "@/components/CopyCitation";
+import { chicago, entrySource, sortName } from "@/lib/citation";
 import { fold, keywordLabel, keywordsOf } from "@/lib/keywords";
 import {
   mediaUrl,
@@ -111,6 +112,7 @@ function Entry({
   const annotation = entry.annotation?.trim();
   const expandable = !!annotation || !!fileUrl || (entry.access !== "citation" && !!sourceUrl);
   const panelId = `entry-panel-${entry.id}`;
+  const segments = useMemo(() => chicago(entrySource(entry)), [entry]);
 
   const heading = (
     <div className="flex items-start gap-6">
@@ -122,11 +124,13 @@ function Entry({
             <span className="text-muted-foreground"> · {t(LANGUAGE_LABEL[entry.language])}</span>
           )}
         </span>
+        {/* Chicago's hanging indent: every line after the first steps in. */}
         <p
           dir={sourceDir}
-          className="text-start font-serif text-[1.05rem] leading-relaxed text-primary md:text-lg"
+          lang={entry.language === "ar" ? "ar" : "en"}
+          className="-indent-8 ps-8 text-start font-serif text-[1.05rem] leading-relaxed text-primary md:text-lg"
         >
-          <Citation entry={entry} />
+          <Citation segments={segments} />
         </p>
         {expandable && (
           <span
@@ -226,28 +230,38 @@ function Entry({
         </div>
       )}
 
-      {/* Outside the button, so each tag can be pressed on its own: it
-          narrows the list to that keyword rather than opening the entry. */}
-      {keywords.length > 0 && (
-        <ul className="-mt-3 flex flex-wrap gap-1.5 pb-7" aria-label={t("databases.keywords")}>
-          {keywords.map((keyword) => (
-            <li key={keyword.id}>
-              <button
-                type="button"
-                onClick={() => onKeyword(keyword.id)}
-                className={
-                  "rounded-full border px-2.5 py-0.5 text-xs transition-colors " +
-                  (activeKeyword === keyword.id
-                    ? "border-[color:var(--brand-magenta)] bg-[color:var(--brand-magenta)] text-white"
-                    : "border-border text-muted-foreground hover:border-[color:var(--brand-magenta)]/50 hover:text-[color:var(--brand-magenta)]")
-                }
-              >
-                {keywordLabel(keyword, isArabic)}
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
+      {/* Outside the button, so each of these can be pressed on its own: a
+          tag narrows the list to that keyword rather than opening the entry. */}
+      <div className="-mt-3 flex flex-wrap items-center gap-x-5 gap-y-3 pb-7">
+        <CopyCitation segments={segments} arabic={entry.language === "ar"} />
+        {annotation && (
+          <CopyCitation
+            segments={segments}
+            arabic={entry.language === "ar"}
+            annotation={annotation}
+          />
+        )}
+        {keywords.length > 0 && (
+          <ul className="flex flex-wrap gap-1.5" aria-label={t("databases.keywords")}>
+            {keywords.map((keyword) => (
+              <li key={keyword.id}>
+                <button
+                  type="button"
+                  onClick={() => onKeyword(keyword.id)}
+                  className={
+                    "rounded-full border px-2.5 py-0.5 text-xs transition-colors " +
+                    (activeKeyword === keyword.id
+                      ? "border-[color:var(--brand-magenta)] bg-[color:var(--brand-magenta)] text-white"
+                      : "border-border text-muted-foreground hover:border-[color:var(--brand-magenta)]/50 hover:text-[color:var(--brand-magenta)]")
+                  }
+                >
+                  {keywordLabel(keyword, isArabic)}
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </li>
   );
 }
@@ -279,7 +293,11 @@ export function BibliographyBrowser({
     onFiltersChange({ ...filters, ...patch, open: undefined });
 
   const sorted = useMemo(
-    () => [...entries].sort((a, b) => sortName(a).localeCompare(sortName(b), locale)),
+    () =>
+      entries
+        .map((entry) => ({ entry, key: sortName(entrySource(entry)) }))
+        .sort((a, b) => a.key.localeCompare(b.key, locale))
+        .map(({ entry }) => entry),
     [entries, locale],
   );
 
