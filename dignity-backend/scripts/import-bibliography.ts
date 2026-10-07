@@ -69,6 +69,27 @@ if (target === 'sandbox' && payload.db.connection.name !== SANDBOX_DATABASE) {
   process.exit(1)
 }
 
+// Atlas refuses the first writes to a brand-new collection while it is still
+// creating it ("catalog changes", labelled TransientTransactionError), so
+// every write is retried a few times before giving up. A failed write's
+// transaction is rolled back, so retrying can't leave a half-saved entry.
+for (const method of ['create', 'update'] as const) {
+  const original = payload[method].bind(payload) as (...args: unknown[]) => Promise<unknown>
+  ;(payload as unknown as Record<string, unknown>)[method] = async (...args: unknown[]) => {
+    for (let attempt = 1; ; attempt++) {
+      try {
+        return await original(...args)
+      } catch (error) {
+        const transient = (error as { errorLabelSet?: Set<string> }).errorLabelSet?.has(
+          'TransientTransactionError',
+        )
+        if (!transient || attempt === 5) throw error
+        await new Promise((resolve) => setTimeout(resolve, 1000 * attempt))
+      }
+    }
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Reading the sheet
 
