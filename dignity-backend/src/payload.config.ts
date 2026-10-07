@@ -49,6 +49,7 @@ import {
 } from './collections/Publications'
 import { ReadingsAndDocuments, Databases } from './collections/Information'
 import { BibliographyEntries, Keywords } from './collections/Bibliography'
+import { BibliographyImports } from './collections/BibliographyImports'
 import { Disclaimer, PrivacyPolicy } from './collections/LegalPages'
 import { SiteSettings } from './globals/SiteSettings'
 
@@ -130,6 +131,7 @@ export default buildConfig({
     Databases,
     BibliographyEntries,
     Keywords,
+    BibliographyImports,
 
     // Site -- shares its group with the Site Settings global, which Payload
     // lists after it.

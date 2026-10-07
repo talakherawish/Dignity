@@ -1,9 +1,8 @@
 /**
- * Just enough of an .xlsx reader for the import scripts: every sheet, by name,
+ * Just enough of an .xlsx reader for the bibliography import: every sheet, by name,
  * as rows of header -> text. No dependency -- an .xlsx is a zip of XML files,
  * and Node's zlib already inflates zip entries.
  */
-import { readFileSync } from 'fs'
 import { inflateRawSync } from 'zlib'
 
 export type Row = Record<string, string>
@@ -60,8 +59,8 @@ const textOf = (xml: string) =>
   )
 
 /** Each sheet's rows, keyed by the text in its first row. Empty rows are dropped. */
-export function readWorkbook(path: string): Map<string, Row[]> {
-  const files = unzip(readFileSync(path))
+export function readWorkbook(file: Buffer): Map<string, Row[]> {
+  const files = unzip(file)
   const read = (name: string) => files.get(name)?.toString('utf8') ?? ''
 
   const shared = [...read('xl/sharedStrings.xml').matchAll(/<si>([\s\S]*?)<\/si>/g)].map((m) =>

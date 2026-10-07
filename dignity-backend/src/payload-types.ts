@@ -93,6 +93,7 @@ export interface Config {
     databases: Database;
     'bibliography-entries': BibliographyEntry;
     keywords: Keyword;
+    'bibliography-imports': BibliographyImport;
     disclaimer: Disclaimer;
     'privacy-policy': PrivacyPolicy;
     'payload-kv': PayloadKv;
@@ -128,6 +129,7 @@ export interface Config {
     databases: DatabasesSelect<false> | DatabasesSelect<true>;
     'bibliography-entries': BibliographyEntriesSelect<false> | BibliographyEntriesSelect<true>;
     keywords: KeywordsSelect<false> | KeywordsSelect<true>;
+    'bibliography-imports': BibliographyImportsSelect<false> | BibliographyImportsSelect<true>;
     disclaimer: DisclaimerSelect<false> | DisclaimerSelect<true>;
     'privacy-policy': PrivacyPolicySelect<false> | PrivacyPolicySelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
@@ -1737,6 +1739,48 @@ export interface Keyword {
   createdAt: string;
 }
 /**
+ * Load a bibliography spreadsheet (.xlsx) into a database. Each row becomes a Bibliography Entry you can edit afterwards. The first row of the sheet must hold the column names: Type, Lang, Keywords, Names, Title, Book_title, Journal_name, Year, City, Publisher, Pages, Volume, Issue, URL, DOI, Editors, Annotations. Several names or keywords in one cell are separated by |. An optional second sheet named "Keywords", with English and Arabic columns, pairs each keyword with its translation. Rows already in the database (same title and year) are skipped, so a sheet can be imported again after adding rows to it.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "bibliography-imports".
+ */
+export interface BibliographyImport {
+  id: string;
+  /**
+   * The database the entries go into. Create it under Databases first.
+   */
+  database: string | Database;
+  /**
+   * Left unticked, every entry is saved as a draft to be checked and published one by one.
+   */
+  publish?: boolean | null;
+  /**
+   * Reads the sheet and reports what would be created, skipped and left untranslated, without changing anything.
+   */
+  dryRun?: boolean | null;
+  status?: ('running' | 'done' | 'doneWithErrors' | 'failed') | null;
+  report?: string | null;
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  updatedBy?: (string | null) | User;
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  createdBy?: (string | null) | User;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+}
+/**
  * The text of the website's Disclaimer page, linked from the bottom of every page. Open the entry below to edit it.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1975,6 +2019,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'keywords';
         value: string | Keyword;
+      } | null)
+    | ({
+        relationTo: 'bibliography-imports';
+        value: string | BibliographyImport;
       } | null)
     | ({
         relationTo: 'disclaimer';
@@ -2669,6 +2717,30 @@ export interface KeywordsSelect<T extends boolean = true> {
   createdBy?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "bibliography-imports_select".
+ */
+export interface BibliographyImportsSelect<T extends boolean = true> {
+  database?: T;
+  publish?: T;
+  dryRun?: T;
+  status?: T;
+  report?: T;
+  updatedBy?: T;
+  createdBy?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
