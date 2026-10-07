@@ -4,14 +4,30 @@
     {
       "name": "dignity-academic-hub-dev",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev"],
+      "runtimeArgs": [
+        "run",
+        "dev"
+      ],
       "port": 8080,
       "autoPort": true
     },
     {
       "name": "dignity-backend-dev",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev"],
+      "runtimeArgs": [
+        "run",
+        "dev"
+      ],
+      "cwd": "dignity-backend",
+      "port": 3000
+    },
+    {
+      "name": "dignity-backend-sandbox",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "dev:sandbox"
+      ],
       "cwd": "dignity-backend",
       "port": 3000
     }
