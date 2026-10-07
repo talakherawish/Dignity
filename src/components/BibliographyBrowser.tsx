@@ -5,6 +5,7 @@ import { useLanguage, type TranslationKey } from "@/contexts/LanguageContext";
 import { Citation, CopyCitation } from "@/components/CopyCitation";
 import { chicago, entrySource, sortName } from "@/lib/citation";
 import { fold, keywordLabel, keywordsOf } from "@/lib/keywords";
+import { PILL_BUTTON } from "@/lib/ui";
 import {
   mediaUrl,
   openFileInNewTab,
@@ -197,7 +198,7 @@ function Entry({
                       href={sourceUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 rounded-full border border-border px-4 py-2 text-sm text-foreground/80 transition-colors hover:border-accent/40 hover:text-accent"
+                      className={PILL_BUTTON}
                     >
                       <ExternalLink className="h-3.5 w-3.5" />
                       {t("databases.source")}
@@ -208,16 +209,12 @@ function Entry({
                       <button
                         type="button"
                         onClick={() => openFileInNewTab(fileUrl, entry.file?.mimeType)}
-                        className="inline-flex items-center gap-2 rounded-full border border-border px-4 py-2 text-sm text-foreground/80 transition-colors hover:border-accent/40 hover:text-accent"
+                        className={PILL_BUTTON}
                       >
                         <ExternalLink className="h-3.5 w-3.5" />
                         {t("publications.view")}
                       </button>
-                      <a
-                        href={fileUrl}
-                        download
-                        className="inline-flex items-center gap-2 rounded-full border border-border px-4 py-2 text-sm text-foreground/80 transition-colors hover:border-accent/40 hover:text-accent"
-                      >
+                      <a href={fileUrl} download className={PILL_BUTTON}>
                         <Download className="h-3.5 w-3.5" />
                         {t("publications.download")}
                       </a>

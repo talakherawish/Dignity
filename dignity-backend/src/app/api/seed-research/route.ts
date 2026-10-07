@@ -1,5 +1,6 @@
 import { getPayload } from 'payload'
 import config from '@payload-config'
+import { toSlug } from '@/lib/slug'
 
 /**
  * Seed the research areas that used to be hardcoded in the website.
@@ -29,14 +30,6 @@ const RESEARCH_SEEDS = [
   },
   { slug: 'artificial-intelligence', title: 'Artificial Intelligence', titleAr: 'الذكاء الاصطناعي' },
 ]
-
-function toSlug(value: string): string {
-  return value
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-}
 
 export async function GET() {
   const payloadConfig = await config

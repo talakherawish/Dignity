@@ -824,12 +824,19 @@ export const fetchReadings = () =>
     sort: "title",
   });
 
-/** One reading by the end of its address, or by id for one saved before slugs existed. */
-export async function fetchReading(slugOrId: string): Promise<PayloadReading | undefined> {
+/**
+ * One document by the end of its address, falling back to its id for one saved
+ * before the collection had slugs (the first databases and readings were).
+ */
+async function fetchBySlugOrId<T>(
+  collection: string,
+  slugOrId: string,
+  depth: string,
+): Promise<T | undefined> {
   for (const field of ["slug", "id"]) {
-    const [match] = await fetchCollection<PayloadReading>("readings-documents", {
+    const [match] = await fetchCollection<T>(collection, {
       [`where[${field}][equals]`]: slugOrId,
-      depth: "2",
+      depth,
       limit: "1",
     });
     if (match) return match;
@@ -837,27 +844,17 @@ export async function fetchReading(slugOrId: string): Promise<PayloadReading | u
   return undefined;
 }
 
+export const fetchReading = (slugOrId: string) =>
+  fetchBySlugOrId<PayloadReading>("readings-documents", slugOrId, "2");
+
 export const fetchDatabases = () =>
   fetchCollection<PayloadDatabase>("databases", { depth: "0", sort: "title" });
 
 /**
- * One database by the end of its address. Matched on the slug, falling back to
- * the id for a database saved before slugs existed (the first two were).
+ * One database by the end of its address (see fetchBySlugOrId).
  */
-export async function fetchDatabase(slugOrId: string): Promise<PayloadDatabase | undefined> {
-  const [bySlug] = await fetchCollection<PayloadDatabase>("databases", {
-    "where[slug][equals]": slugOrId,
-    depth: "0",
-    limit: "1",
-  });
-  if (bySlug) return bySlug;
-  const [byId] = await fetchCollection<PayloadDatabase>("databases", {
-    "where[id][equals]": slugOrId,
-    depth: "0",
-    limit: "1",
-  });
-  return byId;
-}
+export const fetchDatabase = (slugOrId: string) =>
+  fetchBySlugOrId<PayloadDatabase>("databases", slugOrId, "0");
 
 /**
  * Every published entry in one database, at once -- the filters on its page

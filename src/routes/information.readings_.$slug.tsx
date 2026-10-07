@@ -20,6 +20,7 @@ import {
   type PayloadReading,
 } from "@/lib/payload";
 import { SECTION_COLORS } from "@/lib/sectionColors";
+import { PILL_BUTTON } from "@/lib/ui";
 
 // "readings_" rather than "readings": the trailing underscore keeps this page
 // from nesting inside the list page's component, which has no <Outlet />.
@@ -32,9 +33,6 @@ const RIGHTS_LABEL: Partial<Record<NonNullable<PayloadReading["rights"]>, Transl
   openLicence: "readings.rights.openLicence",
   permission: "readings.rights.permission",
 };
-
-const button =
-  "inline-flex items-center gap-2 rounded-full border border-border px-4 py-2 text-sm text-foreground/80 transition-colors hover:border-accent/40 hover:text-accent";
 
 function ReadingPage() {
   const { slug } = Route.useParams();
@@ -160,7 +158,7 @@ function ReadingPage() {
                     <button
                       type="button"
                       onClick={() => openFileInNewTab(file, fileMedia?.mimeType)}
-                      className={button}
+                      className={PILL_BUTTON}
                     >
                       <ExternalLink className="h-3.5 w-3.5" />
                       {t("publications.view")}
@@ -169,7 +167,7 @@ function ReadingPage() {
                       href={file}
                       download
                       title={formatFileSize(fileMedia?.filesize)}
-                      className={button}
+                      className={PILL_BUTTON}
                     >
                       <Download className="h-3.5 w-3.5" />
                       {t("publications.download")}
@@ -177,7 +175,7 @@ function ReadingPage() {
                   </>
                 )}
                 {link && (
-                  <a href={link} target="_blank" rel="noopener noreferrer" className={button}>
+                  <a href={link} target="_blank" rel="noopener noreferrer" className={PILL_BUTTON}>
                     <ExternalLink className="h-3.5 w-3.5" />
                     {t("readings.readOnline")}
                   </a>
