@@ -159,10 +159,7 @@ function ResearchDetailPage() {
       />
 
       <article
-        className={
-          "max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-12 animate-fade-in" +
-          (isArabic ? " text-right" : "")
-        }
+        className={"max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-12" + (isArabic ? " text-right" : "")}
       >
         <PageIntro title={title} image={image} body={body} untranslated={untranslated} />
 
