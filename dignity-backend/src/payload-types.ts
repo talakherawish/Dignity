@@ -101,7 +101,12 @@ export interface Config {
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
   };
-  collectionsJoins: {};
+  collectionsJoins: {
+    databases: {
+      entries: 'bibliography-entries';
+      imports: 'bibliography-imports';
+    };
+  };
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
@@ -1634,7 +1639,7 @@ export interface Keyword {
   createdAt: string;
 }
 /**
- * One annotated bibliography, listed under Information → Databases. Its sources are added under Bibliography Entries.
+ * One annotated bibliography, listed under Information → Databases. Its entries, and the spreadsheets they were imported from, are managed below on its own page.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "databases".
@@ -1677,6 +1682,22 @@ export interface Database {
    * Filled in automatically from the English title. It is the end of this database's web address, so changing it after the page has been shared will break the old link.
    */
   slug?: string | null;
+  /**
+   * Every source in this database. "Add new" creates one here; click an entry to edit it. To delete many at once, open the full list at /admin/collections/bibliography-entries, filter by this database, select and delete.
+   */
+  entries?: {
+    docs?: (string | BibliographyEntry)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
+  /**
+   * "Add new" to load a bibliography spreadsheet (.xlsx) into this database: each row becomes an entry above. It runs in the background -- reload this page after a minute to see the entries and the import's report.
+   */
+  imports?: {
+    docs?: (string | BibliographyImport)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
   /**
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
@@ -2694,6 +2715,8 @@ export interface DatabasesSelect<T extends boolean = true> {
   description?: T;
   descriptionAr?: T;
   slug?: T;
+  entries?: T;
+  imports?: T;
   publicationStatus?: T;
   updatedBy?: T;
   createdBy?: T;

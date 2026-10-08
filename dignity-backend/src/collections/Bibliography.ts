@@ -131,7 +131,10 @@ export const BibliographyEntries: CollectionConfig = {
   slug: 'bibliography-entries',
   labels: { singular: 'Bibliography Entry', plural: 'Bibliography Entries' },
   admin: {
-    group: 'Information',
+    // Out of the sidebar: entries are managed from their database's own page
+    // (the "Entries" join on Databases). The list itself still works, at
+    // /admin/collections/bibliography-entries, for bulk edits and deletes.
+    group: false,
     useAsTitle: 'title',
     defaultColumns: ['title', 'database', 'entryType', 'year', 'updatedAt'],
     listSearchableFields: ['title', 'containerTitle', 'authors.name'],

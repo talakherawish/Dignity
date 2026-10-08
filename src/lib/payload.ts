@@ -811,7 +811,7 @@ export const fetchPublications = (collection: PublicationCollection) =>
   fetchCollection<PayloadPublication>(collection, { depth: "2", ...NEWEST_FIRST });
 
 export const fetchInformation = (collection: InformationCollection) =>
-  fetchCollection<PayloadInformationItem>(collection);
+  fetchCollection<PayloadInformationItem>(collection, { joins: "false" });
 
 /**
  * Every reading. depth 2: a reading's file is one hop away and its preview
@@ -838,6 +838,9 @@ async function fetchBySlugOrId<T>(
       [`where[${field}][equals]`]: slugOrId,
       depth,
       limit: "1",
+      // A database carries its entries and imports as join fields for the
+      // admin; the site fetches entries on its own, so it skips them here.
+      joins: "false",
     });
     if (match) return match;
   }
@@ -848,7 +851,7 @@ export const fetchReading = (slugOrId: string) =>
   fetchBySlugOrId<PayloadReading>("readings-documents", slugOrId, "2");
 
 export const fetchDatabases = () =>
-  fetchCollection<PayloadDatabase>("databases", { depth: "0", sort: "title" });
+  fetchCollection<PayloadDatabase>("databases", { depth: "0", sort: "title", joins: "false" });
 
 /**
  * One database by the end of its address (see fetchBySlugOrId).

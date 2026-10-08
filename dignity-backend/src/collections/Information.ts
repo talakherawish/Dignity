@@ -252,7 +252,42 @@ export const Databases = informationCollection(
   'databases',
   'Database',
   'Databases',
-  'One annotated bibliography, listed under Information → Databases. Its sources are added under Bibliography Entries.',
-  [...describedFields(), slugField('database')],
+  'One annotated bibliography, listed under Information → Databases. Its entries, and the spreadsheets they were imported from, are managed below on its own page.',
+  [
+    ...describedFields(),
+    slugField('database'),
+    // Everything about a database is managed from its own page: the entries
+    // in it, and the spreadsheets it was loaded from. Both are still their
+    // own collections underneath -- that is what lets each entry be edited,
+    // drafted and filtered on its own -- but they are kept out of the sidebar
+    // (admin.group: false on each), so Databases is the one place to go.
+    {
+      name: 'entries',
+      type: 'join',
+      collection: 'bibliography-entries',
+      on: 'database',
+      label: 'Entries',
+      defaultLimit: 25,
+      defaultSort: 'title',
+      admin: {
+        defaultColumns: ['title', 'entryType', 'year', '_status'],
+        description:
+          'Every source in this database. "Add new" creates one here; click an entry to edit it. To delete many at once, open the full list at /admin/collections/bibliography-entries, filter by this database, select and delete.',
+      },
+    },
+    {
+      name: 'imports',
+      type: 'join',
+      collection: 'bibliography-imports',
+      on: 'database',
+      label: 'Import a spreadsheet',
+      defaultSort: '-createdAt',
+      admin: {
+        defaultColumns: ['filename', 'status', 'createdAt'],
+        description:
+          '"Add new" to load a bibliography spreadsheet (.xlsx) into this database: each row becomes an entry above. It runs in the background -- reload this page after a minute to see the entries and the import\'s report.',
+      },
+    },
+  ],
   ['title', 'slug', 'updatedAt'],
 )

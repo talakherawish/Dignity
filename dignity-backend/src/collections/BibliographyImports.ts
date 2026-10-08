@@ -36,7 +36,10 @@ export const BibliographyImports: CollectionConfig = {
   slug: 'bibliography-imports',
   labels: { singular: 'Spreadsheet Import', plural: 'Spreadsheet Imports' },
   admin: {
-    group: 'Information',
+    // Out of the sidebar: an import is started from its database's own page
+    // (the "Import a spreadsheet" join on Databases), which fills in the
+    // database by itself.
+    group: false,
     useAsTitle: 'filename',
     defaultColumns: ['filename', 'database', 'status', 'createdAt'],
     description:
