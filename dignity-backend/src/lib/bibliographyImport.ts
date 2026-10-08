@@ -21,9 +21,13 @@
  * Safe to run again: an entry already in the database with the same title and
  * year is skipped, and keywords are matched to existing ones (ignoring case)
  * before any is created.
+ *
+ * exportBibliography (at the end) goes the other way: a database's entries
+ * written out as the same sheet, so a file exported here can be edited and
+ * imported again.
  */
 import type { Payload } from 'payload'
-import { readWorkbook, type Row } from './xlsx'
+import { readWorkbook, writeWorkbook, type Row } from './xlsx'
 
 export type ImportReport = {
   created: number
@@ -315,4 +319,164 @@ export function formatReport(report: ImportReport, dryRun = false): string {
     )
   }
   return lines.join('\n')
+}
+
+// ---------------------------------------------------------------------------
+// Export: the reverse of the import, column for column.
+
+/** The import's columns, in the order the team's sheets use them. */
+const EXPORT_COLUMNS = [
+  'Type',
+  'Lang',
+  'Keywords',
+  'Names',
+  'Title',
+  'Book_title',
+  'Journal_name',
+  'Report_type',
+  'Website_name',
+  'Date_accessed',
+  'Year',
+  'City',
+  'Publisher',
+  'Pages',
+  'Volume',
+  'Issue',
+  'Edition',
+  'URL',
+  'DOI',
+  'Editors',
+  'Annotations',
+  'Copyright status',
+  'website action',
+  'source/access note',
+]
+
+const TYPE_NAMES: Record<string, string> = {
+  book: 'Book',
+  bookChapter: 'Book chapter',
+  journalArticle: 'Journal article',
+  otherArticle: 'Other article',
+  report: 'Report',
+  thesis: 'Thesis',
+  website: 'From website',
+  other: 'Other',
+}
+
+const COPYRIGHT_NAMES: Record<string, string> = {
+  copyrighted: 'Copyrighted',
+  verify: 'Copyrighted / verify',
+  publicDomain: 'Public domain',
+  openAccess: 'Open access / verify licence',
+  webContent: 'Web content / verify terms',
+}
+
+const ACCESS_NAMES: Record<string, string> = {
+  citation: 'Bibliographic entry',
+  link: 'Link only',
+  upload: 'Upload',
+}
+
+type ExportedKeyword = { id: string | number; name?: string | null; nameAr?: string | null }
+type ExportedEntry = {
+  entryType?: string | null
+  language?: string | null
+  isTranslation?: boolean | null
+  title?: string | null
+  authors?: { name?: string | null }[] | null
+  editors?: { name?: string | null }[] | null
+  containerTitle?: string | null
+  year?: string | null
+  publisher?: string | null
+  city?: string | null
+  volume?: string | null
+  issue?: string | null
+  pages?: string | null
+  edition?: string | null
+  reportType?: string | null
+  url?: string | null
+  doi?: string | null
+  dateAccessed?: string | null
+  annotation?: string | null
+  keywords?: (ExportedKeyword | string | number)[] | null
+  access?: string | null
+  copyrightStatus?: string | null
+  internalNote?: string | null
+}
+
+/**
+ * Every entry in a database -- drafts included -- as an .xlsx in the import's
+ * own format, plus a "Keywords" sheet pairing each keyword used with its
+ * translation. Importing the file again into the same database skips every
+ * row already there (same title and year); into an empty one, it recreates
+ * the entries.
+ */
+export async function exportBibliography(payload: Payload, database: string): Promise<Buffer> {
+  const { docs } = await payload.find({
+    collection: 'bibliography-entries',
+    where: { database: { equals: database } },
+    draft: true,
+    pagination: false,
+    depth: 1,
+    sort: 'title',
+  })
+
+  const keywords = new Map<string, ExportedKeyword>()
+  const rows = (docs as ExportedEntry[]).map((entry) => {
+    const tags = (entry.keywords ?? []).filter(
+      (k): k is ExportedKeyword => typeof k === 'object' && k !== null,
+    )
+    for (const tag of tags) keywords.set(String(tag.id), tag)
+    const names = (list: { name?: string | null }[] | null | undefined) =>
+      (list ?? [])
+        .map((item) => item.name ?? '')
+        .filter(Boolean)
+        .join('|')
+
+    // Where the entry was published goes back into the column the import
+    // reads it from: a chapter's book, an article's journal, a page's website.
+    const type = entry.entryType ?? 'other'
+    const container = entry.containerTitle ?? ''
+    const article = type === 'journalArticle' || type === 'otherArticle'
+
+    const row: Record<string, string> = {
+      Type: TYPE_NAMES[type] ?? 'Other',
+      Lang: `${entry.language ?? 'en'}${entry.isTranslation ? ' (tr)' : ''}`,
+      Keywords: tags
+        .map((tag) => tag.name || tag.nameAr || '')
+        .filter(Boolean)
+        .join('|'),
+      Names: names(entry.authors),
+      Title: entry.title ?? '',
+      Book_title: !article && type !== 'website' ? container : '',
+      Journal_name: article ? container : '',
+      Report_type: entry.reportType ?? '',
+      Website_name: type === 'website' ? container : '',
+      Date_accessed: entry.dateAccessed ?? '',
+      Year: entry.year ?? '',
+      City: (entry.city ?? '').split(/;\s*/).filter(Boolean).join('|'),
+      Publisher: entry.publisher ?? '',
+      Pages: entry.pages ?? '',
+      Volume: entry.volume ?? '',
+      Issue: entry.issue ?? '',
+      Edition: entry.edition ?? '',
+      URL: entry.url ?? '',
+      DOI: entry.doi ?? '',
+      Editors: names(entry.editors),
+      Annotations: entry.annotation ?? '',
+      'Copyright status': COPYRIGHT_NAMES[entry.copyrightStatus ?? ''] ?? '',
+      'website action': ACCESS_NAMES[entry.access ?? ''] ?? '',
+      'source/access note': entry.internalNote ?? '',
+    }
+    return EXPORT_COLUMNS.map((column) => row[column])
+  })
+
+  const keywordRows = [...keywords.values()]
+    .map((tag) => [tag.name ?? '', tag.nameAr ?? ''])
+    .sort((a, b) => (a[0] || a[1]).localeCompare(b[0] || b[1]))
+
+  return writeWorkbook([
+    { name: 'Bibliography', rows: [EXPORT_COLUMNS, ...rows] },
+    { name: 'Keywords', rows: [['English', 'Arabic'], ...keywordRows] },
+  ])
 }

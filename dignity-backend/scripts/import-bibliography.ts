@@ -60,7 +60,6 @@ async function databaseId(): Promise<string> {
   const { docs } = await payload.find({
     collection: 'databases',
     where: { title: { equals: databaseTitle } },
-    draft: true,
     limit: 1,
     depth: 0,
   })
@@ -68,12 +67,7 @@ async function databaseId(): Promise<string> {
   if (dryRun) return 'new-database'
   const created = await payload.create({
     collection: 'databases',
-    data: {
-      title: databaseTitle!,
-      titleAr: databaseTitleAr ?? databaseTitle!,
-      _status: publish ? 'published' : 'draft',
-    },
-    draft: !publish,
+    data: { title: databaseTitle!, titleAr: databaseTitleAr ?? databaseTitle! },
   })
   console.log(`Created database "${databaseTitle}".`)
   return String(created.id)

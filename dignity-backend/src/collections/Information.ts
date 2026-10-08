@@ -1,4 +1,6 @@
 import type { CollectionConfig, Field } from 'payload'
+import { exportBibliography } from '../lib/bibliographyImport'
+import { singletonCreateAccess, singletonListView } from '../lib/singleton'
 import { toSlug } from '../lib/slug'
 
 /**
@@ -245,22 +247,31 @@ export const ReadingsAndDocuments = informationCollection(
 /**
  * Each item is one annotated bibliography -- the list itself, not a source in
  * it. Its sources are Bibliography Entries (src/collections/Bibliography.ts),
- * each pointing back at the database it belongs to. Until then a database was
- * a single item with a link and a file, like a reading; none had been created.
+ * each pointing back at the database it belongs to.
+ *
+ * Everything about a database is managed from its own page: its entries, the
+ * spreadsheets it was loaded from, and a download of the whole thing as a
+ * spreadsheet. Entries and imports are still their own collections underneath
+ * -- that is what lets each entry be edited, drafted and filtered on its own --
+ * but they are kept out of the sidebar (admin.group: false on each).
+ *
+ * There is one database for now, so the sidebar's Databases link opens it
+ * directly (singletonListView), and no draft/publish state: a database is only
+ * a title and a description, and its entries carry their own.
  */
-export const Databases = informationCollection(
+const databases = informationCollection(
   'databases',
   'Database',
   'Databases',
-  'One annotated bibliography, listed under Information → Databases. Its entries, and the spreadsheets they were imported from, are managed below on its own page.',
+  '',
   [
     ...describedFields(),
     slugField('database'),
-    // Everything about a database is managed from its own page: the entries
-    // in it, and the spreadsheets it was loaded from. Both are still their
-    // own collections underneath -- that is what lets each entry be edited,
-    // drafted and filtered on its own -- but they are kept out of the sidebar
-    // (admin.group: false on each), so Databases is the one place to go.
+    {
+      name: 'actions',
+      type: 'ui',
+      admin: { components: { Field: '/components/admin/DatabaseActions' } },
+    },
     {
       name: 'entries',
       type: 'join',
@@ -269,11 +280,7 @@ export const Databases = informationCollection(
       label: 'Entries',
       defaultLimit: 25,
       defaultSort: 'title',
-      admin: {
-        defaultColumns: ['title', 'entryType', 'year', '_status'],
-        description:
-          'Every source in this database. "Add new" creates one here; click an entry to edit it. To delete many at once, open the full list at /admin/collections/bibliography-entries, filter by this database, select and delete.',
-      },
+      admin: { defaultColumns: ['title', 'entryType', 'year', '_status'] },
     },
     {
       name: 'imports',
@@ -282,12 +289,48 @@ export const Databases = informationCollection(
       on: 'database',
       label: 'Import a spreadsheet',
       defaultSort: '-createdAt',
-      admin: {
-        defaultColumns: ['filename', 'status', 'createdAt'],
-        description:
-          '"Add new" to load a bibliography spreadsheet (.xlsx) into this database: each row becomes an entry above. It runs in the background -- reload this page after a minute to see the entries and the import\'s report.',
-      },
+      admin: { defaultColumns: ['filename', 'status', 'createdAt'] },
     },
   ],
   ['title', 'slug', 'updatedAt'],
 )
+
+export const Databases: CollectionConfig = {
+  ...databases,
+  admin: {
+    ...databases.admin,
+    description: undefined,
+    components: { views: { list: singletonListView } },
+  },
+  versions: false,
+  access: {
+    ...databases.access,
+    read: () => true,
+    create: singletonCreateAccess('databases'),
+  },
+  endpoints: [
+    {
+      // GET /api/databases/:id/export -- the database's entries as an .xlsx
+      // in the import's own format. Signed-in only: it carries the internal
+      // notes and copyright statuses the website never shows.
+      path: '/:id/export',
+      method: 'get',
+      handler: async (req) => {
+        if (!req.user) return Response.json({ error: 'Sign in first.' }, { status: 403 })
+        const id = String(req.routeParams?.id ?? '')
+        const database = await req.payload
+          .findByID({ collection: 'databases', id, depth: 0 })
+          .catch(() => null)
+        if (!database) return Response.json({ error: 'No such database.' }, { status: 404 })
+        const file = await exportBibliography(req.payload, id)
+        const name = (database.slug || 'bibliography').replace(/[^a-z0-9-]/gi, '-')
+        return new Response(new Uint8Array(file), {
+          headers: {
+            'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'Content-Disposition': `attachment; filename="${name}.xlsx"`,
+          },
+        })
+      },
+    },
+  ],
+}
