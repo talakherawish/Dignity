@@ -1,6 +1,6 @@
 # Dignity Initiative — Progress Report
-**Updated:** 2026-10-07  
-**Reporting period:** 2026-08-08 to 2026-10-07
+**Updated:** 2026-10-08  
+**Reporting period:** 2026-08-08 to 2026-10-08
 
 ---
 
@@ -16,9 +16,19 @@ Infrastructure work is finished. HTTPS renews itself, backups run nightly and ha
 
 ---
 
-## Website work — 2026-10-07 (~1¾ hrs, 15:06–16:51)
+## Website work — 2026-10-08 (~¼ hr, 08:00–08:20)
 
-The Information section, built out from two placeholder lists into a working library. It started from the 2026-09-22 email thread: Professor Mudar asked for copyright-free texts on dignity to be put under Readings with their sources, Aseel sent a draft readings list (160 rows, a Zotero export with her own format, copyright and website-action columns), and Joyce's finished cooperatives bibliography (88 annotated entries plus a 310-pair English/Arabic keyword sheet) arrived as a model. The reference for Databases was Muwatin's annotated bibliography on political corruption — liked for how it works, not how it looks. 7 code commits.
+The two security holes found in the previous evening's audit, fixed, and the whole branch merged and deployed. 2 code commits.
+
+- **`/api/seed-posters` and `/api/seed-research` deleted.** Neither checked who was asking: anyone visiting either address made the server write to the live database, recreating posters or research areas an editor had since deleted or retitled. Both were one-time migrations whose work was long done, and nothing in the website or admin called them.
+- **Admin accounts are now readable by signed-in users only.** The Users collection was open to everyone, so `/api/users` listed every admin account's email and role. The website never reads users; logging in and the admin work as before.
+- **Merged and deployed** (`main` fast-forwarded to the optimization branch, 10 commits). Checked live after the deploy: `/api/users` logged out now answers 403, and the homepage, admin login, news API and Readings page all answer 200; the new favicon is being served.
+
+---
+
+## Website work — 2026-10-07 (~2¾ hrs, 15:06–17:45)
+
+The Information section, built out from two placeholder lists into a working library. It started from the 2026-09-22 email thread: Professor Mudar asked for copyright-free texts on dignity to be put under Readings with their sources, Aseel sent a draft readings list (160 rows, a Zotero export with her own format, copyright and website-action columns), and Joyce's finished cooperatives bibliography (88 annotated entries plus a 310-pair English/Arabic keyword sheet) arrived as a model. The reference for Databases was Muwatin's annotated bibliography on political corruption — liked for how it works, not how it looks. The evening ended with a full codebase audit and cleanup (below). 15 code commits.
 
 **Databases — annotated bibliographies**
 - **New Payload collections: Bibliography Entries and Keywords.** Entries carry the spreadsheet's own columns (type, language, authors, title, book/journal, year, publisher, place, pages, URL, DOI, annotation), plus copyright status and an internal note visible only to signed-in editors. Keywords are one shared English/Arabic list (either language may be missing) with a duplicate check, so filters can't split into "Clientalism"/"Clientelism" the way Muwatin's did. A Database is now one named bibliography with its own page address.
@@ -44,12 +54,25 @@ The Information section, built out from two placeholder lists into a working lib
 **Testing locally**
 - **`npm run dev:sandbox`** in `dignity-backend` runs the admin and API against the sandbox database instead of production (also in the app's preview list as *dignity-backend-sandbox*), so imports and the new pages can be tried on Joyce's annotated data without touching the live site.
 
+**Codebase audit and cleanup (16:55–17:45)**
+
+A full audit on a separate branch (`refactor/codebase-optimization`, from `9b13ec5`), one commit per change, every phase checked with typecheck, lint, the bilingual rules and production builds; merged and deployed the next morning. The codebase turned out cleaner than expected: 0 unused imports, 0 debug statements, 0 TODOs, and one unused frontend dependency.
+
+- **Every tie to Vercel removed**, as asked — the site runs only on Oracle: both `vercel.json` files, Vercel-only `maxDuration` settings on three API routes, and comments describing Vercel as the live host. Also removed, once confirmed unused: Cloudflare's `wrangler.jsonc` (the build is identical without it), Railway's `railway.toml`/`nixpacks.toml`/`entrypoint.sh` (checked live: Payload answers from Oracle, and nothing points at Railway), the Docker files, and the superseded `deploy-backend.sh`, which had the wrong IP and would have overwritten nginx's config if run.
+- **Dead code removed:** Payload's template home page and `/my-route` in the backend (nginx never routes there), the unused `tw-animate-css` package (17 unused CSS rules), and a class no stylesheet defined.
+- **Backend lint works for the first time** — its config crashed before linting anything; now 0 errors.
+- **Three duplicates merged** (a slug-or-id lookup, the slug helper, a button style).
+- **Lighter pages:** the header logo, drawn at most 101px tall but stored at 434px, resized from 209 KB to 139 KB (-34%) with no visible difference; the favicon from 56 KB to 32 KB.
+- **No secrets in the repository or its history** — every credential-looking string ever committed was a placeholder.
+- **Measured:** tracked non-media files 189 -> 176, code lines 18,090 -> 17,787, CSS 68,794 -> 67,329 bytes; type errors 0 both before and after; frontend lint unchanged at 0 errors.
+
 **Open**
-- **Nothing shows on the live site yet:** the Dignity database and its 157 entries are drafts. They need annotations and keywords, then publishing. The database also needs opening and saving once in the admin to get its readable address (it predates the field).
+- **The bibliography is not on the live site because nothing in it is published.** The public API shows 0 databases and 0 entries: the Dignity database and its 157 entries were all imported as drafts. They need annotations and keywords, then publishing. The database also needs opening and saving once in the admin to get its readable address (it predates the field).
 - **Readings to add:** the 4 public-domain texts Aseel marked "Upload" (flagged on their entries as "Marked for upload") and the Gutenberg text she found (eBook #5682). Mudar asked for the format to be discussed; the build serves a hosted PDF plus a link to the online text.
 - **Name inversion follows rules, not real knowledge of each name.** It handles "de Greiff", "de Beauvoir", Arabic compound names like "أبو قمر", and organisation names in both languages. An unusual name could still come out wrong. The fix is to type that name surname-first with a comma in the admin, which tells the citation to leave it as written.
 - **Citations can only be as good as the data.** For example, one Arabic entry has "15 شباط، 2017" in its Year column, and that shows up as-is.
 - **Two questions for the team:** one dignity database or several themed ones, and who writes the annotations and keywords for the 157 entries.
+- **Left from the audit, for a decision:** every frontend build copies the 250 MB `public/uploads` folder (268 MB of build output) — whether nginx serves anything from it needs checking on the server first; an unused test library in the backend (needs a lockfile regenerated on Linux to remove safely); the backend's template tests, which run against production locally and one of which creates a user; adding backend lint to CI now that it works; whether to keep the one-off migration scripts; and, if a backend deploy ever fails with "Cannot find module … (frontend)/page.js", a stale cache on the server (`rm -rf dignity-backend/.next`).
 
 ---
 
@@ -671,8 +694,9 @@ Eight loose note files were removed from the repo root on 2026-09-21. Six of the
 - **2026-09-12, morning (06:52–10:27):** ~3½ hours — homepage hero replaced with a full-viewport looping background video (dark overlay added, then removed again at the client's explicit instruction); height corrected for `dvh` vs `vh` and the sticky header's own height; News & Announcements reworked to opposite-sides-per-language and a new homepage Posters section added; both capped to one screen and matched to the hero's height; a real flexbox `min-height:auto`/`justify-center` overflow bug found and fixed via live-production DOM measurement; Team section redesigned to circular photos with a centered "View All" pill; Research renamed to Research Projects with its detail page moved onto `PageHero`; a further round of Posters/View-All copy and News sizing fixes; Clippings restored to the About nav; the Pillars section removed from the homepage; Clippings reworked into a photo-gallery collage with looser required fields.
 - **2026-09-12, afternoon (13:52–17:42):** ~2 hours across two gaps — `landing.mp4` compressed from 134MB to ~6MB (H.264, audio dropped); mobile-specific layout fixes to Posters, Team, the hero/News/Posters viewport-height units, and the footer's top bar; five Clippings-related media uploads plus one later screenshot upload, both auto-committed by the server.
 - **2026-09-22 16:36 → 23:10:** ~6½ hours, one continuous stretch across two Claude Code sessions plus admin uploads between them — Forums back to the dated ledger with new Attachments and Participants fields and file cards; Partners rebuilt as a logo wall and merged into one collection (plus a same-session fix for a slug change that stranded the entered partners); the Working Group page restored after a field default hid everyone; CI now typechecks, lints and checks the bilingual rules before any deploy, with both lockfiles repaired; new CMS-editable Disclaimer and Privacy Policy pages, seeded with the supplied bilingual text; two padded forum photos cropped; footer bottom row moved; PDF and image uploads; an update email drafted for Professor Mudar. 21 code commits plus 13 server-committed uploads.
-- **2026-10-07 15:06 → 16:51:** ~1¾ hours — the Information section: Bibliography Entries and Keywords collections with an annotated-bibliography page per database (search, type, author, keyword and language filters); Aseel's 157-entry dignity list imported to production as drafts, Joyce's cooperatives bibliography loaded into a separate sandbox database for testing; spreadsheet imports from the admin with a report per import; Readings rebuilt as write-ups about a text, each with its own page; site search linked to each reading and database; Chicago-style citations on every entry and reading with copy buttons (with or without the annotation); a sandbox mode for testing locally. 7 code commits.
+- **2026-10-07 15:06 → 17:45:** ~2¾ hours — the Information section: Bibliography Entries and Keywords collections with an annotated-bibliography page per database (search, type, author, keyword and language filters); Aseel's 157-entry dignity list imported to production as drafts, Joyce's cooperatives bibliography loaded into a separate sandbox database for testing; spreadsheet imports from the admin with a report per import; Readings rebuilt as write-ups about a text, each with its own page; site search linked to each reading and database; Chicago-style citations on every entry and reading with copy buttons (with or without the annotation); a sandbox mode for testing locally; then a full codebase audit and cleanup on a separate branch — every Vercel, Cloudflare, Railway and Docker tie removed, dead template pages and an unused package dropped, backend lint fixed, duplicates merged, logo and favicon resized. 15 code commits.
+- **2026-10-08 08:00 → 08:20:** ~¼ hour — the two security holes from the audit fixed (open seed routes deleted, admin accounts made staff-only), the branch merged and deployed, and the live site checked after the deploy. 2 code commits.
 
-**Total project time to date: at least ~162 hours.** `PROGRESS.md` logs ~80 hours for sessions 1–14 (2026-05-31 → 2026-08-03); this file adds ~82 hours for 2026-08-08 → 2026-10-07, now that the 08-09/08-10/08-11-daytime gaps are estimated from the work recorded above instead of left blank. The two logs are reconciled into this one master total.
+**Total project time to date: at least ~163¼ hours.** `PROGRESS.md` logs ~80 hours for sessions 1–14 (2026-05-31 → 2026-08-03); this file adds ~83¼ hours for 2026-08-08 → 2026-10-08, now that the 08-09/08-10/08-11-daytime gaps are estimated from the work recorded above instead of left blank. The two logs are reconciled into this one master total.
 
-**This is a floor, not a ceiling.** Neither log tracked hours in real time — both were reconstructed after the fact from commits and memory — and there is at least one confirmed dead zone in the reconstruction: **2026-06-07 to 2026-07-05, four weeks, zero commits in either the repo or `PROGRESS.md`.** Whatever happened in that window (and general day-to-day work throughout the project that never produced a commit or a note — research, dead ends, learning Payload/Oracle/nginx/certbot from scratch, coordinating with the team) isn't in the 162. The real number is higher; 162 is what's actually documented and traceable, not a cap on what was worked.
+**This is a floor, not a ceiling.** Neither log tracked hours in real time — both were reconstructed after the fact from commits and memory — and there is at least one confirmed dead zone in the reconstruction: **2026-06-07 to 2026-07-05, four weeks, zero commits in either the repo or `PROGRESS.md`.** Whatever happened in that window (and general day-to-day work throughout the project that never produced a commit or a note — research, dead ends, learning Payload/Oracle/nginx/certbot from scratch, coordinating with the team) isn't in the 163¼. The real number is higher; 163¼ is what's actually documented and traceable, not a cap on what was worked.
