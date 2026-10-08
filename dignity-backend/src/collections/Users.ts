@@ -41,7 +41,11 @@ export const Users: CollectionConfig = {
   access: {
     create: ({ req }) => req.user?.role === 'content-manager',
     delete: ({ req }) => req.user?.role === 'content-manager',
-    read: () => true,
+    // Signed-in only. This was `() => true`, which let anyone list every
+    // admin account's email and role at /api/users. The website never reads
+    // users; logging in and /api/users/me are unaffected (Payload loads the
+    // account itself, and a signed-in request passes this check).
+    read: ({ req }) => !!req.user,
     update: ({ req }) => !!req.user,
   },
 }
