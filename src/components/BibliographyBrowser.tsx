@@ -75,7 +75,7 @@ function FilterSelect({
         value={value ?? ""}
         onChange={(event) => onChange(event.target.value || undefined)}
         className={
-          "h-10 w-full min-w-0 rounded-sm border border-border bg-background px-3 text-sm text-foreground focus:border-[color:var(--brand-magenta)] focus:outline-none " +
+          "h-10 w-full min-w-0 rounded-full border border-border bg-background px-4 text-sm text-foreground focus:border-[color:var(--brand-magenta)] focus:outline-none " +
           (value ? "border-[color:var(--brand-magenta)]/60" : "")
         }
       >
@@ -377,7 +377,7 @@ export function BibliographyBrowser({
           <span className="sr-only">{t("databases.search")}</span>
           <Search
             aria-hidden="true"
-            className="pointer-events-none absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+            className="pointer-events-none absolute start-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
           />
           <input
             type="search"
@@ -387,7 +387,7 @@ export function BibliographyBrowser({
               setQuery(event.target.value);
               set({ q: event.target.value || undefined });
             }}
-            className="h-11 w-full rounded-sm border border-border bg-background ps-10 pe-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-[color:var(--brand-magenta)] focus:outline-none"
+            className="h-11 w-full rounded-full border border-border bg-background ps-11 pe-4 text-sm text-foreground placeholder:text-muted-foreground focus:border-[color:var(--brand-magenta)] focus:outline-none"
           />
         </label>
         <div className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-4">

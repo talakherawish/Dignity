@@ -89,7 +89,7 @@ function ReadingsPage() {
               <span className="sr-only">{t("readings.search")}</span>
               <Search
                 aria-hidden="true"
-                className="pointer-events-none absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+                className="pointer-events-none absolute start-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
               />
               <input
                 type="search"
@@ -99,7 +99,7 @@ function ReadingsPage() {
                   setQuery(event.target.value);
                   setFilters({ q: event.target.value || undefined });
                 }}
-                className="h-11 w-full rounded-sm border border-border bg-background pe-3 ps-10 text-sm text-foreground placeholder:text-muted-foreground focus:border-[color:var(--brand-magenta)] focus:outline-none"
+                className="h-11 w-full rounded-full border border-border bg-background pe-4 ps-11 text-sm text-foreground placeholder:text-muted-foreground focus:border-[color:var(--brand-magenta)] focus:outline-none"
               />
             </label>
             {keywords.length > 0 && (
