@@ -40,14 +40,20 @@ const FULL_SCREEN_SECTION =
 const STICK_BELOW_HEADER = "top-[62px] sm:top-[82px] lg:top-[103px]";
 
 /**
- * Posters used to share FULL_SCREEN_SECTION too, forcing a full screen of
- * height on mobile even after the cards themselves were capped much
- * shorter (see the max-h comment below) -- leaving a slab of dead grey
- * space under the row. It only needs to match the hero/News height from
- * sm: up, where the cards are sized to fill it; on mobile it's auto,
- * content-sized by the heading and the (now short) card row.
+ * Phones: every homepage section is at least one screen, like the hero, so
+ * the page reads as a sequence of screens rather than short bands of mixed
+ * heights. A minimum, not a fixed height -- see NEWS_SECTION_HEIGHT for why
+ * News can't be capped at one screen there.
  */
-const POSTERS_SECTION_HEIGHT = "sm:h-[calc(100svh-82px)] lg:h-[calc(100svh-103px)]";
+const PHONE_SCREEN_MIN = "min-h-[calc(100svh-62px)] sm:min-h-0";
+
+/**
+ * Posters is exactly one screen at every width, like the hero. On a phone the
+ * card row keeps its own short explicit height (see the h-[48svh] comment
+ * below) and the section centres it, rather than stretching the cards to fill
+ * the screen -- a full-height 3:4 card would be wider than the phone.
+ */
+const POSTERS_SECTION_HEIGHT = FULL_SCREEN_SECTION;
 
 /**
  * News & Announcements is only a fixed one screen from md: up, where the image
@@ -55,10 +61,10 @@ const POSTERS_SECTION_HEIGHT = "sm:h-[calc(100svh-82px)] lg:h-[calc(100svh-103px
  * two-line section title, a cover image and four multi-line headlines add up
  * to well more than one screen, so a fixed height there just makes the list
  * overflow its box (centred, so it spilled up underneath the image and off
- * the bottom). Below md the section is auto height and simply as tall as its
- * content.
+ * the bottom). Below md it is at least one screen and otherwise as tall as
+ * its content.
  */
-const NEWS_SECTION_HEIGHT = "md:h-[calc(100svh-82px)] lg:h-[calc(100svh-103px)]";
+const NEWS_SECTION_HEIGHT = `${PHONE_SCREEN_MIN} md:h-[calc(100svh-82px)] lg:h-[calc(100svh-103px)]`;
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -415,11 +421,13 @@ function TeamSection() {
 
   return (
     <>
-      <section>
+      {/* At least a screen on phones (PHONE_SCREEN_MIN), with the content
+          centred in it like the hero's. */}
+      <section className={`flex flex-col justify-center ${PHONE_SCREEN_MIN}`}>
         {/* pt/pb split, not py-14: less air above the eyebrow specifically --
             the bottom side keeps roughly its old amount, tightened further
             by the button's own mt-6 below. */}
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-10 text-center">
+        <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-10 text-center">
           <div
             className={
               "uppercase tracking-[0.22em] text-[color:var(--brand-magenta)] font-semibold mb-2 " +
@@ -546,18 +554,17 @@ function PostersShowcase() {
     <>
       {/* The gap above the band stays opaque page background -- only the band
         itself is a window onto the pinned hero video (see Home). */}
-      <div aria-hidden className="h-8 bg-background md:h-14" />
-      {/* POSTERS_SECTION_HEIGHT, not FULL_SCREEN_SECTION: from sm: up this
-        still matches the hero/News height exactly, since the cards there
-        are sized to fill it. On mobile the cards are capped well short of a
-        full screen (see the max-h comment below), so forcing the section
-        itself to a full screen would just leave dead space beneath them --
-        auto lets it size to its own (short) content instead.
+      {/* Not on phones: there every section is its own full screen, and a
+          gap between them would just be a white sliver on the way in. */}
+      <div aria-hidden className="hidden bg-background sm:block sm:h-8 md:h-14" />
+      {/* One screen, like the hero (see POSTERS_SECTION_HEIGHT). From sm:
+        up the cards are sized to fill it; on a phone they keep their own
+        short height and justify-center sits heading + row in the middle.
 
         No background of its own: the hero video stays pinned behind the
         page, so a transparent band shows it again as you scroll past. */}
       <section
-        className={`flex w-full flex-col overflow-hidden py-6 md:py-8 ${POSTERS_SECTION_HEIGHT}`}
+        className={`flex w-full flex-col justify-center overflow-hidden py-6 sm:justify-start md:py-8 ${POSTERS_SECTION_HEIGHT}`}
       >
         {/* Heading stays in a readable centered column like every other
           section's text; the row below it deliberately breaks out of that
@@ -583,7 +590,7 @@ function PostersShowcase() {
           extra height except overflow above and below it. This exact bug is
           what a user report of "posters are huge, overriding above and
           below the grey background" traced back to. */}
-        {/* h-[30svh] (a real height, not flex-1 capped by max-h) is load-
+        {/* h-[48svh] (a real height, not flex-1 capped by max-h) is load-
           bearing: max-height on a flex-grown item clamps the box you see,
           but browsers don't reliably treat that clamped size as *definite*
           for descendants resolving h-full against it -- the wrapper
@@ -591,11 +598,12 @@ function PostersShowcase() {
           scroller, then each h-full aspect-[3/4] card) ignored it and
           sized off the section's full flex-1 space anyway, right back to
           a card wider than the phone screen. An explicit height has no
-          such ambiguity. 30svh keeps a card at roughly half the screen
-          width, so the next one visibly peeks in as a scroll hint. Only
+          such ambiguity. 48svh fills the one-screen section without a card
+          getting as wide as the phone, so the next one still peeks in as a
+          scroll hint. Only
           below sm: -- desktop already showed a sane size before this, via
           the flex-1/min-h-0 pairing restored there. */}
-        <div className="relative w-full h-[30svh] sm:h-auto sm:min-h-0 sm:flex-1">
+        <div className="relative w-full h-[48svh] sm:h-auto sm:min-h-0 sm:flex-1">
           <div
             ref={scrollerRef}
             className="scrollbar-none flex h-full snap-x snap-mandatory scroll-px-4 gap-6 overflow-x-auto px-4 pb-2 sm:scroll-px-6 sm:px-6 md:gap-8 lg:scroll-px-8 lg:px-8"
