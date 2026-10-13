@@ -544,10 +544,10 @@ function PostersShowcase() {
 
   return (
     <>
-    {/* The gap above the band stays opaque page background -- only the band
+      {/* The gap above the band stays opaque page background -- only the band
         itself is a window onto the pinned hero video (see Home). */}
-    <div aria-hidden className="h-8 bg-background md:h-14" />
-    {/* POSTERS_SECTION_HEIGHT, not FULL_SCREEN_SECTION: from sm: up this
+      <div aria-hidden className="h-8 bg-background md:h-14" />
+      {/* POSTERS_SECTION_HEIGHT, not FULL_SCREEN_SECTION: from sm: up this
         still matches the hero/News height exactly, since the cards there
         are sized to fill it. On mobile the cards are capped well short of a
         full screen (see the max-h comment below), so forcing the section
@@ -556,25 +556,25 @@ function PostersShowcase() {
 
         No background of its own: the hero video stays pinned behind the
         page, so a transparent band shows it again as you scroll past. */}
-    <section
-      className={`flex w-full flex-col overflow-hidden py-6 md:py-8 ${POSTERS_SECTION_HEIGHT}`}
-    >
-      {/* Heading stays in a readable centered column like every other
+      <section
+        className={`flex w-full flex-col overflow-hidden py-6 md:py-8 ${POSTERS_SECTION_HEIGHT}`}
+      >
+        {/* Heading stays in a readable centered column like every other
           section's text; the row below it deliberately breaks out of that
           same max-w-7xl column to run full-bleed, edge to edge like the
           hero video -- that contrast (boxed text, full-width media) is the
           same pattern News & Announcements uses right above it. */}
-      <div className="mx-auto mb-4 flex w-full max-w-7xl shrink-0 flex-col items-center px-4 text-center sm:px-6 md:mb-6 lg:px-8">
-        <h2 className="mb-4 font-serif text-2xl text-white md:text-3xl">{t("posters.title")}</h2>
-        <Link
-          to="/publications"
-          className="inline-flex items-center gap-1.5 rounded-full border border-white/40 px-3.5 py-2 text-xs font-medium text-white transition-colors hover:bg-white/10"
-        >
-          {t("posters.viewAll")} <span aria-hidden>{isArabic ? "←" : "→"}</span>
-        </Link>
-      </div>
+        <div className="mx-auto mb-4 flex w-full max-w-7xl shrink-0 flex-col items-center px-4 text-center sm:px-6 md:mb-6 lg:px-8">
+          <h2 className="mb-4 font-serif text-2xl text-white md:text-3xl">{t("posters.title")}</h2>
+          <Link
+            to="/publications"
+            className="inline-flex items-center gap-1.5 rounded-full border border-white/40 px-3.5 py-2 text-xs font-medium text-white transition-colors hover:bg-white/10"
+          >
+            {t("posters.viewAll")} <span aria-hidden>{isArabic ? "←" : "→"}</span>
+          </Link>
+        </div>
 
-      {/* min-h-0 is load-bearing, not decorative: without it, a flex child's
+        {/* min-h-0 is load-bearing, not decorative: without it, a flex child's
           default min-height:auto refuses to shrink below its own content's
           size -- and since the cards inside are sized off *this* box's
           height, that turns into a feedback loop where the row inflates to
@@ -583,7 +583,7 @@ function PostersShowcase() {
           extra height except overflow above and below it. This exact bug is
           what a user report of "posters are huge, overriding above and
           below the grey background" traced back to. */}
-      {/* h-[30svh] (a real height, not flex-1 capped by max-h) is load-
+        {/* h-[30svh] (a real height, not flex-1 capped by max-h) is load-
           bearing: max-height on a flex-grown item clamps the box you see,
           but browsers don't reliably treat that clamped size as *definite*
           for descendants resolving h-full against it -- the wrapper
@@ -595,21 +595,21 @@ function PostersShowcase() {
           width, so the next one visibly peeks in as a scroll hint. Only
           below sm: -- desktop already showed a sane size before this, via
           the flex-1/min-h-0 pairing restored there. */}
-      <div className="relative w-full h-[30svh] sm:h-auto sm:min-h-0 sm:flex-1">
-        <div
-          ref={scrollerRef}
-          className="scrollbar-none flex h-full snap-x snap-mandatory scroll-px-4 gap-6 overflow-x-auto px-4 pb-2 sm:scroll-px-6 sm:px-6 md:gap-8 lg:scroll-px-8 lg:px-8"
-          dir={isArabic ? "rtl" : "ltr"}
-        >
-          {posters.map((poster) => (
-            <a
-              key={poster.id}
-              href={poster.fileUrl || poster.image}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group block h-full aspect-[3/4] shrink-0 snap-start"
-            >
-              {/* The card itself grows on hover, not the picture inside it --
+        <div className="relative w-full h-[30svh] sm:h-auto sm:min-h-0 sm:flex-1">
+          <div
+            ref={scrollerRef}
+            className="scrollbar-none flex h-full snap-x snap-mandatory scroll-px-4 gap-6 overflow-x-auto px-4 pb-2 sm:scroll-px-6 sm:px-6 md:gap-8 lg:scroll-px-8 lg:px-8"
+            dir={isArabic ? "rtl" : "ltr"}
+          >
+            {posters.map((poster) => (
+              <a
+                key={poster.id}
+                href={poster.fileUrl || poster.image}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group block h-full aspect-[3/4] shrink-0 snap-start"
+              >
+                {/* The card itself grows on hover, not the picture inside it --
                   scaling the frame (not the img) means the image is never
                   zoomed/cropped tighter against its own rounded edge, it just
                   gets bigger as one piece along with the frame around it.
@@ -626,45 +626,45 @@ function PostersShowcase() {
                   of them), so on a phone connection cards used to be invisible
                   -- transparent over the dark band -- until their image
                   arrived, which read as a row with one poster and then nothing. */}
-              <div className="h-full w-full overflow-hidden rounded-2xl bg-white/10 shadow-xl transition-transform duration-500 group-hover:scale-105">
-                <img
-                  src={poster.image}
-                  alt={isArabic ? (poster.titleAr ?? poster.title) : poster.title}
-                  decoding="async"
-                  className="h-full w-full object-cover"
-                />
-              </div>
-            </a>
-          ))}
-        </div>
+                <div className="h-full w-full overflow-hidden rounded-2xl bg-white/10 shadow-xl transition-transform duration-500 group-hover:scale-105">
+                  <img
+                    src={poster.image}
+                    alt={isArabic ? (poster.titleAr ?? poster.title) : poster.title}
+                    decoding="async"
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+              </a>
+            ))}
+          </div>
 
-        {/* Discoverability nudge for pointer users who might not notice
+          {/* Discoverability nudge for pointer users who might not notice
             the row scrolls -- touch/trackpad/shift+wheel already work
             without these. Inset (not offset outside the row) now that the
             row itself runs to the screen edge -- there's no longer any
             margin outside it to sit in. */}
-        {posters.length > 1 && (
-          <>
-            <button
-              type="button"
-              onClick={() => nudge(-320)}
-              aria-label="Previous"
-              className="absolute left-2 top-1/2 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white text-foreground shadow-lg transition-transform hover:scale-105 md:flex md:left-4"
-            >
-              <ChevronLeft className="h-5 w-5" />
-            </button>
-            <button
-              type="button"
-              onClick={() => nudge(320)}
-              aria-label="Next"
-              className="absolute right-2 top-1/2 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white text-foreground shadow-lg transition-transform hover:scale-105 md:right-4 md:flex"
-            >
-              <ChevronRight className="h-5 w-5" />
-            </button>
-          </>
-        )}
-      </div>
-    </section>
+          {posters.length > 1 && (
+            <>
+              <button
+                type="button"
+                onClick={() => nudge(-320)}
+                aria-label="Previous"
+                className="absolute left-2 top-1/2 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white text-foreground shadow-lg transition-transform hover:scale-105 md:flex md:left-4"
+              >
+                <ChevronLeft className="h-5 w-5" />
+              </button>
+              <button
+                type="button"
+                onClick={() => nudge(320)}
+                aria-label="Next"
+                className="absolute right-2 top-1/2 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white text-foreground shadow-lg transition-transform hover:scale-105 md:right-4 md:flex"
+              >
+                <ChevronRight className="h-5 w-5" />
+              </button>
+            </>
+          )}
+        </div>
+      </section>
     </>
   );
 }
