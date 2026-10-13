@@ -84,6 +84,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     ],
     links: [
       { rel: "icon", type: "image/png", href: "/dignity-icon.png" },
+      // Home-screen shortcuts: iOS reads apple-touch-icon, Android the
+      // manifest. Both are square on white -- iOS fills a transparent icon
+      // with black, and the logo itself isn't square.
+      { rel: "apple-touch-icon", sizes: "180x180", href: "/apple-touch-icon.png" },
+      { rel: "manifest", href: "/manifest.webmanifest" },
       { rel: "stylesheet", href: appCss },
     ],
   }),
