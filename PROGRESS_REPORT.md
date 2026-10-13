@@ -1,6 +1,6 @@
 # Dignity Initiative — Progress Report
-**Updated:** 2026-10-08  
-**Reporting period:** 2026-08-08 to 2026-10-08
+**Updated:** 2026-10-13  
+**Reporting period:** 2026-08-08 to 2026-10-13
 
 ---
 
@@ -13,6 +13,19 @@ Infrastructure work is finished. HTTPS renews itself, backups run nightly and ha
 **Oracle is the permanent home.** The university has no hosting capacity; they will only map a domain to this IP. Backups, uptime and deployment are therefore ours to own.
 
 **Engineering didn't stop after that.** 2026-08-17 to 2026-08-28 added a real content-model consolidation (Seminars/Conferences/Meetings merged into one "Forums" collection, Announcements folded into News), a homepage and navigation redesign, and several new features — mailing-list signup, bidirectional research-to-output linking, photo tagging. See *Website work — 2026-08-17 to 2026-08-28*, below. **Two migration scripts from that work still need to run against production**, and one schema change has no migration at all yet — both flagged at the top of that section, and worth resolving before treating this as settled history.
+
+---
+
+## Website work — 2026-10-13 (3 hrs)
+
+Searching an annotated bibliography now shows where the search matched, not only which entries it matched. 5 code commits.
+
+- **The search box names everything it searches**: titles, authors, keywords and annotations (the placeholder left keywords out, in both languages).
+- **Entries open on an annotation match.** An entry whose annotation holds the search opens by itself so the match can be seen; the reader can still close it until the search changes.
+- **Matches are marked wherever they are**: in the annotation, and anywhere in the citation (title, authors, journal, publisher). A keyword tag that matches is marked whole, since it may match on its name in the other language.
+- **Marked like a highlighter pen.** The logo's blue sweeps in behind the text in the direction the line reads (left to right in English, right to left in Arabic), with the text kept dark; each new search sweeps in again, and devices set to reduce motion skip the animation.
+- **Matched as the search matches**: the mark ignores case, accents, the Arabic letter variants (أ/إ/آ, ة, ى) and vowel marks, and covers the original spelling, so `كرامه` marks `كَرامةُ` with its vowels.
+- **Names in either order.** "John Smith" finds and marks "Smith, John" — the way a citation leads with its first author — and "Smith, John" finds "John Smith"; Arabic names too ("فيرنر بونفيلد" ↔ "بونفيلد، فيرنر"), using the same surname rules the citations use.
 
 ---
 
@@ -708,7 +721,8 @@ Eight loose note files were removed from the repo root on 2026-09-21. Six of the
 - **2026-09-22 16:36 → 23:10:** ~6½ hours, one continuous stretch across two Claude Code sessions plus admin uploads between them — Forums back to the dated ledger with new Attachments and Participants fields and file cards; Partners rebuilt as a logo wall and merged into one collection (plus a same-session fix for a slug change that stranded the entered partners); the Working Group page restored after a field default hid everyone; CI now typechecks, lints and checks the bilingual rules before any deploy, with both lockfiles repaired; new CMS-editable Disclaimer and Privacy Policy pages, seeded with the supplied bilingual text; two padded forum photos cropped; footer bottom row moved; PDF and image uploads; an update email drafted for Professor Mudar. 21 code commits plus 13 server-committed uploads.
 - **2026-10-07 15:06 → 17:45:** ~2¾ hours — the Information section: Bibliography Entries and Keywords collections with an annotated-bibliography page per database (search, type, author, keyword and language filters); Aseel's 157-entry dignity list imported to production as drafts, Joyce's cooperatives bibliography loaded into a separate sandbox database for testing; spreadsheet imports from the admin with a report per import; Readings rebuilt as write-ups about a text, each with its own page; site search linked to each reading and database; Chicago-style citations on every entry and reading with copy buttons (with or without the annotation); a sandbox mode for testing locally; then a full codebase audit and cleanup on a separate branch — every Vercel, Cloudflare, Railway and Docker tie removed, dead template pages and an unused package dropped, backend lint fixed, duplicates merged, logo and favicon resized. 15 code commits.
 - **2026-10-08 08:00 → 09:50:** ~1¾ hours — the two security holes from the audit fixed (open seed routes deleted, admin accounts made staff-only), the branch merged and deployed, and the live site checked after the deploy; the Databases admin reshaped into one page per database (entries, imports, bulk select/delete, download as spreadsheet), the import run end to end on the live admin with Aseel's sheet now published (157 entries); search and filter controls rounded. 5 code commits.
+- **2026-10-13:** 3 hours — annotated-bibliography search shows its matches: entries open when their annotation matches, and matches are marked in the annotation, the citation and the keyword tags with an animated highlighter in the logo's blue; names match in either order ("John Smith" ↔ "Smith, John", English and Arabic). 5 code commits.
 
-**Total project time to date: at least ~164¾ hours.** `PROGRESS.md` logs ~80 hours for sessions 1–14 (2026-05-31 → 2026-08-03); this file adds ~84¾ hours for 2026-08-08 → 2026-10-08, now that the 08-09/08-10/08-11-daytime gaps are estimated from the work recorded above instead of left blank. The two logs are reconciled into this one master total.
+**Total project time to date: at least ~167¾ hours.** `PROGRESS.md` logs ~80 hours for sessions 1–14 (2026-05-31 → 2026-08-03); this file adds ~87¾ hours for 2026-08-08 → 2026-10-13, now that the 08-09/08-10/08-11-daytime gaps are estimated from the work recorded above instead of left blank. The two logs are reconciled into this one master total.
 
-**This is a floor, not a ceiling.** Neither log tracked hours in real time — both were reconstructed after the fact from commits and memory — and there is at least one confirmed dead zone in the reconstruction: **2026-06-07 to 2026-07-05, four weeks, zero commits in either the repo or `PROGRESS.md`.** Whatever happened in that window (and general day-to-day work throughout the project that never produced a commit or a note — research, dead ends, learning Payload/Oracle/nginx/certbot from scratch, coordinating with the team) isn't in the 164¾. The real number is higher; 164¾ is what's actually documented and traceable, not a cap on what was worked.
+**This is a floor, not a ceiling.** Neither log tracked hours in real time — both were reconstructed after the fact from commits and memory — and there is at least one confirmed dead zone in the reconstruction: **2026-06-07 to 2026-07-05, four weeks, zero commits in either the repo or `PROGRESS.md`.** Whatever happened in that window (and general day-to-day work throughout the project that never produced a commit or a note — research, dead ends, learning Payload/Oracle/nginx/certbot from scratch, coordinating with the team) isn't in the 167¾. The real number is higher; 167¾ is what's actually documented and traceable, not a cap on what was worked.
