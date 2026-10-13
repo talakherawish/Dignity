@@ -712,12 +712,34 @@ function HeroVideo() {
     videoRef.current?.play().catch(() => {});
   }, []);
 
+  // The video shows a second time through the transparent Posters band; the
+  // hero text shouldn't come with it. Once the page has scrolled a full hero
+  // height, News has completely covered the hero, so hiding the text then
+  // is never visible -- it's simply gone by the time the band reaches it,
+  // and back again when you scroll up to the top.
+  const sectionRef = useRef<HTMLElement>(null);
+  const [covered, setCovered] = useState(false);
+  useEffect(() => {
+    const update = () => {
+      const height = sectionRef.current?.offsetHeight ?? 0;
+      setCovered(height > 0 && window.scrollY >= height);
+    };
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
+    return () => {
+      window.removeEventListener("scroll", update);
+      window.removeEventListener("resize", update);
+    };
+  }, []);
+
   return (
     // sticky + z-0: the hero stays pinned under the header while everything
     // after it (the z-10 wrapper in Home) scrolls up over it, so the video
     // is covered rather than scrolled away. It unpins on its own once <main>
     // ends, by which point the wrapper fully covers it.
     <section
+      ref={sectionRef}
       className={`sticky z-0 w-full overflow-hidden bg-black ${STICK_BELOW_HEADER} ${FULL_SCREEN_SECTION}`}
     >
       <video
@@ -734,7 +756,9 @@ function HeroVideo() {
         controlsList="nodownload noremoteplayback nofullscreen"
         aria-hidden="true"
       />
-      <div className="relative z-10 flex h-full flex-col items-center justify-center px-4 text-center">
+      <div
+        className={`relative z-10 flex h-full flex-col items-center justify-center px-4 text-center ${covered ? "invisible" : ""}`}
+      >
         {/* Reveal is the same fade-up-on-appear wrapper used for Pillars and
             Team below -- here it's already in view on page load, so it
             simply fades the whole text block in as soon as the video mounts
