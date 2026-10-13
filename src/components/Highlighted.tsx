@@ -1,17 +1,17 @@
 import type { ReactNode } from "react";
 import { foldedMatches } from "@/lib/keywords";
 
-/** The text with every match of a folded search marked, in the words as written. */
-export function Highlighted({ text, needle }: { text: string; needle: string }) {
+/**
+ * The text with every match of the folded search marked, in the words as
+ * written. Each new search draws its marks afresh, so they sweep in again.
+ */
+export function Highlighted({ text, needles }: { text: string; needles: string[] }) {
   const parts: ReactNode[] = [];
   let at = 0;
-  for (const [start, end] of foldedMatches(text, needle)) {
+  for (const [start, end] of foldedMatches(text, needles)) {
     if (start > at) parts.push(text.slice(at, start));
     parts.push(
-      <mark
-        key={start}
-        className="rounded-sm bg-[color:var(--brand-magenta)]/15 text-[color:var(--brand-magenta)]"
-      >
+      <mark key={`${needles[0]}:${start}`} className="search-mark rounded-sm">
         {text.slice(start, end)}
       </mark>,
     );

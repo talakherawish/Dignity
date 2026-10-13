@@ -5,7 +5,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { copyCitation, type Segment } from "@/lib/citation";
 
 /** The citation as the page shows it, with any match of a folded search marked. */
-export function Citation({ segments, needle = "" }: { segments: Segment[]; needle?: string }) {
+export function Citation({ segments, needles = [] }: { segments: Segment[]; needles?: string[] }) {
   return (
     <>
       {segments.map((segment, i) =>
@@ -13,10 +13,10 @@ export function Citation({ segments, needle = "" }: { segments: Segment[]; needl
           // Arabic has no italic; a browser's slanted Arabic reads as broken,
           // so Arabic titles are set in bold, as Arabic bibliographies do.
           <cite key={i} className="italic [&:lang(ar)]:font-semibold [&:lang(ar)]:not-italic">
-            <Highlighted text={segment.text} needle={needle} />
+            <Highlighted text={segment.text} needles={needles} />
           </cite>
         ) : (
-          <Highlighted key={i} text={segment.text} needle={needle} />
+          <Highlighted key={i} text={segment.text} needles={needles} />
         ),
       )}
     </>

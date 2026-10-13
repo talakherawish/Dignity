@@ -23,13 +23,20 @@ export function fold(text: string): string {
     .toLowerCase();
 }
 
+/** Whether the text, folded, holds any of the folded needles. */
+export function containsAny(text: string, needles: string[]): boolean {
+  const folded = fold(text);
+  return needles.some((needle) => folded.includes(needle));
+}
+
 /**
- * Where a folded needle occurs in the original text, as [start, end) offsets
- * into that text -- so a match found through `fold` can be marked in the words
- * as written, accents and short vowels included.
+ * Where any of the folded needles occur in the original text, as [start, end)
+ * offsets into that text in reading order -- so a match found through `fold`
+ * can be marked in the words as written, accents and short vowels included.
+ * Where two needles overlap, the earlier match wins.
  */
-export function foldedMatches(text: string, needle: string): [number, number][] {
-  if (!needle) return [];
+export function foldedMatches(text: string, needles: string[]): [number, number][] {
+  if (needles.length === 0) return [];
 
   // Fold character by character, keeping the span of text each folded unit
   // came from. A mark that folds away joins the span of the letter before it.
@@ -48,11 +55,17 @@ export function foldedMatches(text: string, needle: string): [number, number][] 
     start = end;
   }
 
+  const found: [number, number][] = [];
+  for (const needle of needles) {
+    for (let at = folded.indexOf(needle); at !== -1; at = folded.indexOf(needle, at + 1)) {
+      found.push([spans[at][0], spans[at + needle.length - 1][1]]);
+    }
+  }
+  found.sort((a, b) => a[0] - b[0] || b[1] - a[1]);
+
   const ranges: [number, number][] = [];
-  let at = folded.indexOf(needle);
-  while (at !== -1) {
-    ranges.push([spans[at][0], spans[at + needle.length - 1][1]]);
-    at = folded.indexOf(needle, at + needle.length);
+  for (const range of found) {
+    if (range[0] >= (ranges.at(-1)?.[1] ?? 0)) ranges.push(range);
   }
   return ranges;
 }

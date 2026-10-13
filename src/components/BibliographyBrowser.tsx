@@ -4,8 +4,8 @@ import { ToggleMark } from "@/components/ActivityLedger";
 import { useLanguage, type TranslationKey } from "@/contexts/LanguageContext";
 import { Citation, CopyCitation } from "@/components/CopyCitation";
 import { Highlighted } from "@/components/Highlighted";
-import { chicago, entrySource, sortName } from "@/lib/citation";
-import { fold, keywordLabel, keywordsOf } from "@/lib/keywords";
+import { chicago, entrySource, invert, sortName } from "@/lib/citation";
+import { containsAny, fold, keywordLabel, keywordsOf } from "@/lib/keywords";
 import { PILL_BUTTON } from "@/lib/ui";
 import {
   mediaUrl,
@@ -91,6 +91,17 @@ function FilterSelect({
   );
 }
 
+/**
+ * The search, folded, in each form it can be written in a citation: as typed,
+ * and -- for a name -- surname first, the way a citation leads with its first
+ * author ("John Smith" also finds "Smith, John").
+ */
+function searchNeedles(query: string | undefined): string[] {
+  const typed = query?.trim();
+  if (!typed) return [];
+  return [...new Set([typed, invert(typed, false), invert(typed, true)].map(fold))];
+}
+
 /** A setState updater that adds the id to the set, or takes it out. */
 const toggleIn = (id: string) => (current: Set<string>) => {
   const next = new Set(current);
@@ -105,7 +116,7 @@ function Entry({
   onToggle,
   onKeyword,
   activeKeyword,
-  needle,
+  needles,
   entryRef,
 }: {
   entry: PayloadBibliographyEntry;
@@ -113,8 +124,8 @@ function Entry({
   onToggle: () => void;
   onKeyword: (id: string) => void;
   activeKeyword?: string;
-  /** The folded search, marked wherever it appears in the citation or annotation. */
-  needle: string;
+  /** The folded search forms, marked wherever they appear in the citation or annotation. */
+  needles: string[];
   entryRef: (el: HTMLLIElement | null) => void;
 }) {
   const { t, isArabic } = useLanguage();
@@ -122,7 +133,7 @@ function Entry({
   const keywords = keywordsOf(entry);
   // A tag is marked whole, since it may match on its name in the other language.
   const matchesSearch = (keyword: PayloadKeyword) =>
-    !!needle && [keyword.name, keyword.nameAr].some((name) => name && fold(name).includes(needle));
+    [keyword.name, keyword.nameAr].some((name) => name && containsAny(name, needles));
   const fileUrl = entry.access === "upload" ? mediaUrl(entry.file) : "";
   const sourceUrl = entry.url || (entry.doi ? `https://doi.org/${entry.doi}` : "");
   const annotation = entry.annotation?.trim();
@@ -146,7 +157,7 @@ function Entry({
           lang={entry.language === "ar" ? "ar" : "en"}
           className="-indent-8 ps-8 text-start font-serif text-[1.05rem] leading-relaxed text-primary md:text-lg"
         >
-          <Citation segments={segments} needle={needle} />
+          <Citation segments={segments} needles={needles} />
         </p>
         {expandable && (
           <span
@@ -203,7 +214,7 @@ function Entry({
                   dir={sourceDir}
                   className="max-w-3xl whitespace-pre-line text-start text-sm leading-relaxed text-foreground"
                 >
-                  <Highlighted text={annotation} needle={needle} />
+                  <Highlighted text={annotation} needles={needles} />
                 </p>
               )}
               {(fileUrl || (entry.access !== "citation" && sourceUrl)) && (
@@ -265,7 +276,7 @@ function Entry({
                     (activeKeyword === keyword.id
                       ? "border-[color:var(--brand-magenta)] bg-[color:var(--brand-magenta)] text-white"
                       : matchesSearch(keyword)
-                        ? "border-[color:var(--brand-magenta)]/50 bg-[color:var(--brand-magenta)]/15 text-[color:var(--brand-magenta)]"
+                        ? "search-mark border-[color:var(--brand-cyan)]"
                         : "border-border text-muted-foreground hover:border-[color:var(--brand-magenta)]/50 hover:text-[color:var(--brand-magenta)]")
                   }
                 >
@@ -341,7 +352,7 @@ export function BibliographyBrowser({
     };
   }, [entries, isArabic, locale, t]);
 
-  const needle = fold(filters.q?.trim() ?? "");
+  const needles = useMemo(() => searchNeedles(filters.q), [filters.q]);
 
   const visible = useMemo(() => {
     return sorted.filter((entry) => {
@@ -350,7 +361,7 @@ export function BibliographyBrowser({
       if (filters.author && !(entry.authors ?? []).some((a) => a.name.trim() === filters.author))
         return false;
       if (filters.keyword && !keywordsOf(entry).some((k) => k.id === filters.keyword)) return false;
-      if (!needle) return true;
+      if (needles.length === 0) return true;
       const haystack = [
         entry.title,
         entry.containerTitle,
@@ -362,25 +373,23 @@ export function BibliographyBrowser({
       ]
         .filter(Boolean)
         .join(" ");
-      return fold(haystack).includes(needle);
+      return containsAny(haystack, needles);
     });
-  }, [sorted, filters, needle]);
+  }, [sorted, filters, needles]);
 
   // An entry whose annotation holds the search opens by itself so the match
   // can be seen; the reader can still close it until the search changes.
   const annotationHits = useMemo(
     () =>
       new Set(
-        needle
-          ? visible
-              .filter((entry) => entry.annotation && fold(entry.annotation).includes(needle))
-              .map((entry) => entry.id)
-          : [],
+        visible
+          .filter((entry) => entry.annotation && containsAny(entry.annotation, needles))
+          .map((entry) => entry.id),
       ),
-    [visible, needle],
+    [visible, needles],
   );
   const [closedHits, setClosedHits] = useState<Set<string>>(new Set());
-  useEffect(() => setClosedHits(new Set()), [needle]);
+  useEffect(() => setClosedHits(new Set()), [needles]);
   const isOpen = (id: string) => (annotationHits.has(id) ? !closedHits.has(id) : openIds.has(id));
 
   useEffect(() => {
@@ -497,7 +506,7 @@ export function BibliographyBrowser({
               entry={entry}
               open={isOpen(entry.id)}
               activeKeyword={filters.keyword}
-              needle={needle}
+              needles={needles}
               onKeyword={(keyword) => {
                 set({ keyword: filters.keyword === keyword ? undefined : keyword });
                 filtersRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });

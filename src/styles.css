@@ -213,6 +213,37 @@
   }
 }
 
+/* A search match, drawn like a highlighter pen: the logo's blue sweeps in
+   behind the text in the direction it reads. The ink stays dark in both
+   themes, since the blue is light in both. */
+.search-mark {
+  color: oklch(0.18 0.01 270);
+  background-color: transparent;
+  background-image: linear-gradient(var(--brand-cyan), var(--brand-cyan));
+  background-repeat: no-repeat;
+  background-position: left center;
+  background-size: 100% 100%;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  animation: search-mark-sweep 0.6s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+.search-mark:dir(rtl) {
+  background-position: right center;
+}
+
+@keyframes search-mark-sweep {
+  from {
+    background-size: 0% 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .search-mark {
+    animation: none;
+  }
+}
+
 /* Forum poster cards grow and shrink in place -- see ForumGrid.tsx. Only the
    cards animate (each carries its own view-transition-name); the page around
    them just takes its new layout rather than cross-fading between the two,
