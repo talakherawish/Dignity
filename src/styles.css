@@ -232,8 +232,8 @@
   background-position: right center;
 }
 
-/* Marks inside text sweep from script instead (Highlighted.tsx), so a match
-   that grows as you type only sweeps over its new letters. */
+/* Marks inside text sweep from script instead (Highlighted.tsx), once per
+   match, so a match that grows as you type doesn't sweep again. */
 mark.search-mark {
   animation: none;
 }

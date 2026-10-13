@@ -3,8 +3,8 @@ import { foldedMatches } from "@/lib/keywords";
 
 /**
  * The text with every match of the folded search marked, in the words as
- * written. A mark stays put while its match grows, so typing on only sweeps
- * the highlighter over the newly matched letters.
+ * written. A mark sweeps in once, when its match first appears, then stays
+ * put and simply takes on each letter as the search is typed.
  */
 export function Highlighted({ text, needles }: { text: string; needles: string[] }) {
   const parts: ReactNode[] = [];
@@ -28,16 +28,14 @@ function SearchMark({ text }: { text: string }) {
     const el = ref.current;
     const before = shown.current;
     shown.current = text;
-    if (!el || before === text) return;
-    // Shrinking (backspace) just cuts the mark back; no sweep.
-    if (before.startsWith(text)) return;
+    // Only a new mark sweeps in. One that grows or shrinks as the search is
+    // typed just takes its new letters, with no animation.
+    if (!el || before) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    // Carry on from where the last sweep reached, if this match extends it.
-    const from = before && text.startsWith(before) ? before.length / text.length : 0;
-    el.animate(
-      [{ backgroundSize: `${from * 100}% 100%` }, { backgroundSize: "100% 100%" }],
-      { duration: from ? 300 : 600, easing: SWEEP_EASING },
-    );
+    el.animate([{ backgroundSize: "0% 100%" }, { backgroundSize: "100% 100%" }], {
+      duration: 600,
+      easing: SWEEP_EASING,
+    });
   }, [text]);
 
   return (
