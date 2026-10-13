@@ -729,26 +729,37 @@ function HeroVideo() {
   }, []);
 
   // The video shows a second time through the transparent Posters band; the
-  // hero text shouldn't come with it. News slides up over the hero from the
-  // bottom, and the text sits in the hero's middle, so it is already hidden
-  // under News by about three quarters of the way -- hiding it there is
-  // never visible. Waiting for the full hero height was too late on phones:
-  // with the address bar collapsed the screen is taller than the svh-sized
-  // sections, so the Posters band starts showing before News has scrolled a
-  // full hero height, and the text was still there in it.
+  // hero text shouldn't come with it. Rather than switching off at some
+  // scroll point (which on phones still landed late enough to be seen), the
+  // text fades and drifts up continuously as you start scrolling, fully gone
+  // by the time News covers 40% of the hero -- long before the Posters band
+  // can come into view -- and fades back in the same way on the way up.
+  // Written straight to the element's style once per frame, not through
+  // React state, so it tracks the scroll without re-rendering the hero.
   const sectionRef = useRef<HTMLElement>(null);
-  const [covered, setCovered] = useState(false);
+  const textRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    const update = () => {
+    let frame = 0;
+    const apply = () => {
+      frame = 0;
       const height = sectionRef.current?.offsetHeight ?? 0;
-      setCovered(height > 0 && window.scrollY >= height * 0.75);
+      const text = textRef.current;
+      if (!text || height === 0) return;
+      const progress = Math.min(1, Math.max(0, window.scrollY / (height * 0.4)));
+      text.style.opacity = String(1 - progress);
+      text.style.transform = `translateY(${-progress * 40}px)`;
+      text.style.visibility = progress >= 1 ? "hidden" : "";
     };
-    update();
-    window.addEventListener("scroll", update, { passive: true });
-    window.addEventListener("resize", update);
+    const schedule = () => {
+      if (!frame) frame = requestAnimationFrame(apply);
+    };
+    apply();
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
     return () => {
-      window.removeEventListener("scroll", update);
-      window.removeEventListener("resize", update);
+      cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
     };
   }, []);
 
@@ -776,7 +787,8 @@ function HeroVideo() {
         aria-hidden="true"
       />
       <div
-        className={`relative z-10 flex h-full flex-col items-center justify-center px-4 text-center ${covered ? "invisible" : ""}`}
+        ref={textRef}
+        className="relative z-10 flex h-full flex-col items-center justify-center px-4 text-center will-change-[opacity,transform]"
       >
         {/* Reveal is the same fade-up-on-appear wrapper used for Pillars and
             Team below -- here it's already in view on page load, so it
