@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { Download, ExternalLink, Search, X } from "lucide-react";
 import { ToggleMark } from "@/components/ActivityLedger";
 import { useLanguage, type TranslationKey } from "@/contexts/LanguageContext";
@@ -71,6 +71,45 @@ function SourceTip() {
     >
       {t("databases.source")}
     </span>
+  );
+}
+
+/** An entry's source, opened in a new tab: its link, or else its uploaded file. */
+function SourceLink({
+  href,
+  file,
+  mimeType,
+  className,
+  label,
+  children,
+}: {
+  href: string;
+  file: string;
+  mimeType?: string;
+  className: string;
+  /** For when the children don't name it themselves. */
+  label?: string;
+  children: ReactNode;
+}) {
+  return href ? (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={label}
+      className={className}
+    >
+      {children}
+    </a>
+  ) : (
+    <button
+      type="button"
+      onClick={() => openFileInNewTab(file, mimeType)}
+      aria-label={label}
+      className={className}
+    >
+      {children}
+    </button>
   );
 }
 
@@ -160,6 +199,8 @@ function Entry({
   const annotation = entry.annotation?.trim();
   const sourceLink = entry.access !== "citation" ? sourceUrl : "";
   const expandable = !!annotation || !!fileUrl || !!sourceLink;
+  const hasSource = !!sourceLink || !!fileUrl;
+  const source = { href: sourceLink, file: fileUrl, mimeType: entry.file?.mimeType };
   const panelId = `entry-panel-${entry.id}`;
   const segments = useMemo(() => chicago(entrySource(entry)), [entry]);
 
@@ -224,30 +265,12 @@ function Entry({
 
       {/* The source in one press, just under the open/close mark -- outside
           the button, since a link can't sit inside one. */}
-      {(sourceLink || fileUrl) && (
+      {hasSource && (
         <div className="absolute end-0 top-[5.75rem] hidden md:block">
-          {sourceLink ? (
-            <a
-              href={sourceLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={t("databases.source")}
-              className={SOURCE_MARK}
-            >
-              <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
-              <SourceTip />
-            </a>
-          ) : (
-            <button
-              type="button"
-              onClick={() => openFileInNewTab(fileUrl, entry.file?.mimeType)}
-              aria-label={t("databases.source")}
-              className={SOURCE_MARK}
-            >
-              <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
-              <SourceTip />
-            </button>
-          )}
+          <SourceLink {...source} className={SOURCE_MARK} label={t("databases.source")}>
+            <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
+            <SourceTip />
+          </SourceLink>
         </div>
       )}
 
@@ -310,6 +333,20 @@ function Entry({
       {/* Outside the button, so each of these can be pressed on its own: a
           tag narrows the list to that keyword rather than opening the entry. */}
       <div className="-mt-3 flex flex-wrap items-center gap-x-5 gap-y-3 pb-7">
+        {/* Phones have no open/close mark to sit the source under, and no
+            hover to name it, so here it's named outright. */}
+        {hasSource && (
+          <SourceLink
+            {...source}
+            className={
+              "inline-flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-[color:var(--brand-magenta)] md:hidden" +
+              (isArabic ? " font-arabic" : "")
+            }
+          >
+            <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
+            {t("databases.source")}
+          </SourceLink>
+        )}
         <CopyCitation segments={segments} arabic={entry.language === "ar"} />
         {annotation && (
           <CopyCitation
