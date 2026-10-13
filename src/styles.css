@@ -188,14 +188,26 @@
     border-color: var(--color-border);
   }
 
+  /* overflow-x: clip is the safety net for phones: anything that still ends
+     up wider than the screen is cut off instead of widening the page, which
+     is what let phones zoom out onto empty space on the right. clip, not
+     hidden, so the page doesn't become a scroll container and the sticky
+     header and hero keep working. */
   html {
     scroll-behavior: smooth;
+    overflow-x: clip;
   }
 
+  /* overflow-wrap is the actual fix: a long unbroken string -- the DOI links
+     in the bibliographies were the case found -- breaks onto the next line
+     instead of running off the right edge. Only kicks in when a word
+     doesn't fit, so ordinary text wraps exactly as before. */
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
+    overflow-x: clip;
+    overflow-wrap: break-word;
   }
 }
 
