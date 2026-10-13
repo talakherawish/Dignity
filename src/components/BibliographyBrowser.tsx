@@ -4,7 +4,7 @@ import { ToggleMark } from "@/components/ActivityLedger";
 import { useLanguage, type TranslationKey } from "@/contexts/LanguageContext";
 import { Citation, CopyCitation } from "@/components/CopyCitation";
 import { Highlighted } from "@/components/Highlighted";
-import { chicago, entrySource, invert, sortName } from "@/lib/citation";
+import { chicago, entrySource, invert, sortName, uninvert } from "@/lib/citation";
 import { containsAny, fold, keywordLabel, keywordsOf } from "@/lib/keywords";
 import { PILL_BUTTON } from "@/lib/ui";
 import {
@@ -93,13 +93,14 @@ function FilterSelect({
 
 /**
  * The search, folded, in each form it can be written in a citation: as typed,
- * and -- for a name -- surname first, the way a citation leads with its first
- * author ("John Smith" also finds "Smith, John").
+ * and -- for a name -- in the other order, since a citation leads with its
+ * first author surname first ("John Smith" and "Smith, John" find each other).
  */
 function searchNeedles(query: string | undefined): string[] {
   const typed = query?.trim();
   if (!typed) return [];
-  return [...new Set([typed, invert(typed, false), invert(typed, true)].map(fold))];
+  const forms = [typed, invert(typed, false), invert(typed, true), uninvert(typed)];
+  return [...new Set(forms.map(fold))];
 }
 
 /** A setState updater that adds the id to the set, or takes it out. */

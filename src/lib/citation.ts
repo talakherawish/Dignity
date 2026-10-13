@@ -138,6 +138,17 @@ export function invert(name: string, arabic: boolean): string {
   return `${surname}${arabic ? "، " : ", "}${given}`;
 }
 
+/**
+ * "Bonefeld, Werner" -> "Werner Bonefeld": invert run backwards. A name
+ * without exactly one comma is returned as it is.
+ */
+export function uninvert(name: string): string {
+  const parts = name.split(/[,،]/);
+  if (parts.length !== 2) return name.trim();
+  const [surname, given] = parts.map((part) => part.trim());
+  return given && surname ? `${given} ${surname}` : name.trim();
+}
+
 /** "A", "A and B", "A, B, and C" -- the first inverted, the rest as written. */
 function names(list: string[], words: Words, invertFirst: boolean, arabic: boolean): string {
   const shown = list.map((name, i) =>
