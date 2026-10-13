@@ -543,14 +543,21 @@ function PostersShowcase() {
   };
 
   return (
-    // POSTERS_SECTION_HEIGHT, not FULL_SCREEN_SECTION: from sm: up this
-    // still matches the hero/News height exactly, since the cards there
-    // are sized to fill it. On mobile the cards are capped well short of a
-    // full screen (see the max-h comment below), so forcing the section
-    // itself to a full screen would just leave dead space beneath them --
-    // auto lets it size to its own (short) content instead.
+    <>
+    {/* The gap above the band stays opaque page background -- only the band
+        itself is a window onto the pinned hero video (see Home). */}
+    <div aria-hidden className="h-8 bg-background md:h-14" />
+    {/* POSTERS_SECTION_HEIGHT, not FULL_SCREEN_SECTION: from sm: up this
+        still matches the hero/News height exactly, since the cards there
+        are sized to fill it. On mobile the cards are capped well short of a
+        full screen (see the max-h comment below), so forcing the section
+        itself to a full screen would just leave dead space beneath them --
+        auto lets it size to its own (short) content instead.
+
+        No background of its own: the hero video stays pinned behind the
+        page, so a transparent band shows it again as you scroll past. */}
     <section
-      className={`mt-8 flex w-full flex-col overflow-hidden bg-[var(--footer-bg)] py-6 md:mt-14 md:py-8 ${POSTERS_SECTION_HEIGHT}`}
+      className={`flex w-full flex-col overflow-hidden py-6 md:py-8 ${POSTERS_SECTION_HEIGHT}`}
     >
       {/* Heading stays in a readable centered column like every other
           section's text; the row below it deliberately breaks out of that
@@ -658,6 +665,7 @@ function PostersShowcase() {
         )}
       </div>
     </section>
+    </>
   );
 }
 
@@ -782,11 +790,11 @@ function Home() {
           through the page. vh-based offsets rather than fixed pixels, since
           the sections below are variable height.
 
-          relative z-10 + an opaque bg-background is what makes this the
-          layer that slides over the pinned hero video: without the solid
-          background the video would show through the gaps between sections
-          (and the transparent end of News' gradient). */}
-      <div className="relative z-10 overflow-hidden bg-background">
+          relative z-10 is what makes this the layer that slides over the
+          pinned hero video. The opaque bg-background lives on News and Team
+          individually rather than on this wrapper, so the Posters band
+          between them can stay transparent and let the video show through. */}
+      <div className="relative z-10 overflow-hidden">
         <div
           className="absolute -top-16 -right-32 h-96 w-96 rounded-full opacity-25 blur-3xl pointer-events-none"
           style={{ background: "var(--brand-cyan)" }}
@@ -819,7 +827,7 @@ function Home() {
             screen. Below md it is content height instead -- see
             NEWS_SECTION_HEIGHT for why. */}
         <section
-          className={`flex w-full flex-col overflow-hidden bg-gradient-to-b from-secondary/5 to-transparent ${NEWS_SECTION_HEIGHT}`}
+          className={`flex w-full flex-col overflow-hidden bg-background bg-gradient-to-b from-secondary/5 to-transparent ${NEWS_SECTION_HEIGHT}`}
         >
           {/* Heading in a readable centered column, same as the site's other
               section headers; the row below breaks out of that column to
@@ -857,10 +865,13 @@ function Home() {
         {/* Posters */}
         <PostersShowcase />
 
-        {/* Meet the Team */}
-        <Reveal>
-          <TeamSection />
-        </Reveal>
+        {/* Meet the Team -- the background sits outside Reveal so it's
+            opaque from the start, not fading in over the video. */}
+        <div className="bg-background">
+          <Reveal>
+            <TeamSection />
+          </Reveal>
+        </div>
       </div>
     </PageLayout>
   );
