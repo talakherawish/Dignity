@@ -232,6 +232,12 @@
   background-position: right center;
 }
 
+/* Marks inside text sweep from script instead (Highlighted.tsx), so a match
+   that grows as you type only sweeps over its new letters. */
+mark.search-mark {
+  animation: none;
+}
+
 @keyframes search-mark-sweep {
   from {
     background-size: 0% 100%;
