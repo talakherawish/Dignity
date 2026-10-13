@@ -54,6 +54,26 @@ const LANGUAGE_LABEL: Record<PayloadBibliographyEntry["language"], TranslationKe
   other: "databases.lang.other",
 };
 
+/** A round mark the size of the open/close mark, for the entry's source. */
+const SOURCE_MARK =
+  "group/source relative grid h-8 w-8 place-items-center rounded-full border border-border text-muted-foreground transition-colors duration-300 hover:border-[color:var(--brand-magenta)] hover:text-[color:var(--brand-magenta)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--brand-magenta)]";
+
+/** "Go to source", shown beside the source mark while it's hovered or focused. */
+function SourceTip() {
+  const { t, isArabic } = useLanguage();
+  return (
+    <span
+      aria-hidden="true"
+      className={
+        "pointer-events-none absolute end-full top-1/2 me-2 -translate-y-1/2 whitespace-nowrap rounded-full bg-primary px-3 py-1 text-xs text-primary-foreground opacity-0 transition-opacity duration-200 group-hover/source:opacity-100 group-focus-visible/source:opacity-100" +
+        (isArabic ? " font-arabic" : "")
+      }
+    >
+      {t("databases.source")}
+    </span>
+  );
+}
+
 const smallCaps = (isArabic: boolean) =>
   "uppercase tracking-[0.2em] " + (isArabic ? "text-[15px]" : "text-[10px] md:text-[11px]");
 
@@ -138,7 +158,8 @@ function Entry({
   const fileUrl = entry.access === "upload" ? mediaUrl(entry.file) : "";
   const sourceUrl = entry.url || (entry.doi ? `https://doi.org/${entry.doi}` : "");
   const annotation = entry.annotation?.trim();
-  const expandable = !!annotation || !!fileUrl || (entry.access !== "citation" && !!sourceUrl);
+  const sourceLink = entry.access !== "citation" ? sourceUrl : "";
+  const expandable = !!annotation || !!fileUrl || !!sourceLink;
   const panelId = `entry-panel-${entry.id}`;
   const segments = useMemo(() => chicago(entrySource(entry)), [entry]);
 
@@ -183,7 +204,10 @@ function Entry({
   );
 
   return (
-    <li ref={entryRef} className="group scroll-mt-28 border-t border-border first:border-t-0">
+    <li
+      ref={entryRef}
+      className="group relative scroll-mt-28 border-t border-border first:border-t-0"
+    >
       {expandable ? (
         <button
           type="button"
@@ -196,6 +220,35 @@ function Entry({
         </button>
       ) : (
         <div className="py-7">{heading}</div>
+      )}
+
+      {/* The source in one press, just under the open/close mark -- outside
+          the button, since a link can't sit inside one. */}
+      {(sourceLink || fileUrl) && (
+        <div className="absolute end-0 top-[5.75rem] hidden md:block">
+          {sourceLink ? (
+            <a
+              href={sourceLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={t("databases.source")}
+              className={SOURCE_MARK}
+            >
+              <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
+              <SourceTip />
+            </a>
+          ) : (
+            <button
+              type="button"
+              onClick={() => openFileInNewTab(fileUrl, entry.file?.mimeType)}
+              aria-label={t("databases.source")}
+              className={SOURCE_MARK}
+            >
+              <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
+              <SourceTip />
+            </button>
+          )}
+        </div>
       )}
 
       {expandable && (
@@ -218,11 +271,11 @@ function Entry({
                   <Highlighted text={annotation} needles={needles} />
                 </p>
               )}
-              {(fileUrl || (entry.access !== "citation" && sourceUrl)) && (
+              {(fileUrl || sourceLink) && (
                 <div className="mt-6 flex flex-wrap gap-2">
-                  {entry.access !== "citation" && sourceUrl && (
+                  {sourceLink && (
                     <a
-                      href={sourceUrl}
+                      href={sourceLink}
                       target="_blank"
                       rel="noopener noreferrer"
                       className={PILL_BUTTON}
@@ -330,12 +383,10 @@ export function BibliographyBrowser({
   // Only what the database actually contains is offered as a filter.
   const options = useMemo(() => {
     const types = new Set<BibliographyEntryType>();
-    const languages = new Set<PayloadBibliographyEntry["language"]>();
     const authors = new Set<string>();
     const keywords = new Map<string, PayloadKeyword>();
     for (const entry of entries) {
       types.add(entry.entryType);
-      languages.add(entry.language);
       for (const author of entry.authors ?? []) authors.add(author.name.trim());
       for (const keyword of keywordsOf(entry)) keywords.set(keyword.id, keyword);
     }
@@ -345,7 +396,12 @@ export function BibliographyBrowser({
       types: [...types]
         .map((value) => ({ value, label: t(TYPE_LABEL[value] ?? "databases.type.other") }))
         .sort(byLabel),
-      languages: [...languages].map((value) => ({ value, label: t(LANGUAGE_LABEL[value]) })),
+      // Always English and Arabic, whatever the database holds; "Any" covers
+      // every other language an entry might be in.
+      languages: (["en", "ar"] as const).map((value) => ({
+        value,
+        label: t(LANGUAGE_LABEL[value]),
+      })),
       authors: [...authors].map((name) => ({ value: name, label: name })).sort(byLabel),
       keywords: [...keywords.values()]
         .map((keyword) => ({ value: keyword.id, label: keywordLabel(keyword, isArabic) }))
