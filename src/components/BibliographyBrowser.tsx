@@ -120,6 +120,9 @@ function Entry({
   const { t, isArabic } = useLanguage();
   const sourceDir = entry.language === "ar" ? "rtl" : "ltr";
   const keywords = keywordsOf(entry);
+  // A tag is marked whole, since it may match on its name in the other language.
+  const matchesSearch = (keyword: PayloadKeyword) =>
+    !!needle && [keyword.name, keyword.nameAr].some((name) => name && fold(name).includes(needle));
   const fileUrl = entry.access === "upload" ? mediaUrl(entry.file) : "";
   const sourceUrl = entry.url || (entry.doi ? `https://doi.org/${entry.doi}` : "");
   const annotation = entry.annotation?.trim();
@@ -261,7 +264,9 @@ function Entry({
                     "rounded-full border px-2.5 py-0.5 text-xs transition-colors " +
                     (activeKeyword === keyword.id
                       ? "border-[color:var(--brand-magenta)] bg-[color:var(--brand-magenta)] text-white"
-                      : "border-border text-muted-foreground hover:border-[color:var(--brand-magenta)]/50 hover:text-[color:var(--brand-magenta)]")
+                      : matchesSearch(keyword)
+                        ? "border-[color:var(--brand-magenta)]/50 bg-[color:var(--brand-magenta)]/15 text-[color:var(--brand-magenta)]"
+                        : "border-border text-muted-foreground hover:border-[color:var(--brand-magenta)]/50 hover:text-[color:var(--brand-magenta)]")
                   }
                 >
                   {keywordLabel(keyword, isArabic)}
