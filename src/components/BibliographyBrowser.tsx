@@ -1,10 +1,11 @@
-import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Download, ExternalLink, Search, X } from "lucide-react";
 import { ToggleMark } from "@/components/ActivityLedger";
 import { useLanguage, type TranslationKey } from "@/contexts/LanguageContext";
 import { Citation, CopyCitation } from "@/components/CopyCitation";
+import { Highlighted } from "@/components/Highlighted";
 import { chicago, entrySource, sortName } from "@/lib/citation";
-import { fold, foldedMatches, keywordLabel, keywordsOf } from "@/lib/keywords";
+import { fold, keywordLabel, keywordsOf } from "@/lib/keywords";
 import { PILL_BUTTON } from "@/lib/ui";
 import {
   mediaUrl,
@@ -98,26 +99,6 @@ const toggleIn = (id: string) => (current: Set<string>) => {
   return next;
 };
 
-/** The text with every match of the search marked, in the words as written. */
-function Highlighted({ text, needle }: { text: string; needle: string }) {
-  const parts: ReactNode[] = [];
-  let at = 0;
-  for (const [start, end] of foldedMatches(text, needle)) {
-    if (start > at) parts.push(text.slice(at, start));
-    parts.push(
-      <mark
-        key={start}
-        className="rounded-sm bg-[color:var(--brand-magenta)]/15 px-0.5 text-[color:var(--brand-magenta)]"
-      >
-        {text.slice(start, end)}
-      </mark>,
-    );
-    at = end;
-  }
-  if (at < text.length) parts.push(text.slice(at));
-  return <>{parts}</>;
-}
-
 function Entry({
   entry,
   open,
@@ -132,7 +113,7 @@ function Entry({
   onToggle: () => void;
   onKeyword: (id: string) => void;
   activeKeyword?: string;
-  /** The folded search, marked wherever it appears in the annotation. */
+  /** The folded search, marked wherever it appears in the citation or annotation. */
   needle: string;
   entryRef: (el: HTMLLIElement | null) => void;
 }) {
@@ -162,7 +143,7 @@ function Entry({
           lang={entry.language === "ar" ? "ar" : "en"}
           className="-indent-8 ps-8 text-start font-serif text-[1.05rem] leading-relaxed text-primary md:text-lg"
         >
-          <Citation segments={segments} />
+          <Citation segments={segments} needle={needle} />
         </p>
         {expandable && (
           <span

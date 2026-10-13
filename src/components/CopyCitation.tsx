@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { Check, Copy } from "lucide-react";
+import { Highlighted } from "@/components/Highlighted";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { copyCitation, type Segment } from "@/lib/citation";
 
-/** The citation as the page shows it. */
-export function Citation({ segments }: { segments: Segment[] }) {
+/** The citation as the page shows it, with any match of a folded search marked. */
+export function Citation({ segments, needle = "" }: { segments: Segment[]; needle?: string }) {
   return (
     <>
       {segments.map((segment, i) =>
@@ -12,10 +13,10 @@ export function Citation({ segments }: { segments: Segment[] }) {
           // Arabic has no italic; a browser's slanted Arabic reads as broken,
           // so Arabic titles are set in bold, as Arabic bibliographies do.
           <cite key={i} className="italic [&:lang(ar)]:font-semibold [&:lang(ar)]:not-italic">
-            {segment.text}
+            <Highlighted text={segment.text} needle={needle} />
           </cite>
         ) : (
-          segment.text
+          <Highlighted key={i} text={segment.text} needle={needle} />
         ),
       )}
     </>
