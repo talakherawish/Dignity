@@ -56,20 +56,20 @@ const LANGUAGE_LABEL: Record<PayloadBibliographyEntry["language"], TranslationKe
 
 /** A round mark the size of the open/close mark, for the entry's source. */
 const SOURCE_MARK =
-  "group/source relative grid h-8 w-8 place-items-center rounded-full border border-border text-muted-foreground transition-colors duration-300 hover:border-[color:var(--brand-magenta)] hover:text-[color:var(--brand-magenta)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--brand-magenta)]";
+  "group/mark relative grid h-8 w-8 place-items-center rounded-full border border-border text-muted-foreground transition-colors duration-300 hover:border-[color:var(--brand-magenta)] hover:text-[color:var(--brand-magenta)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--brand-magenta)]";
 
-/** "Go to source", shown beside the source mark while it's hovered or focused. */
-function SourceTip() {
-  const { t, isArabic } = useLanguage();
+/** What a round mark does, shown beside it while it's hovered or focused. */
+function MarkTip({ children }: { children: ReactNode }) {
+  const { isArabic } = useLanguage();
   return (
     <span
       aria-hidden="true"
       className={
-        "pointer-events-none absolute end-full top-1/2 me-2 -translate-y-1/2 whitespace-nowrap rounded-full bg-primary px-3 py-1 text-xs text-primary-foreground opacity-0 transition-opacity duration-200 group-hover/source:opacity-100 group-focus-visible/source:opacity-100" +
+        "pointer-events-none absolute end-full top-1/2 me-2 -translate-y-1/2 whitespace-nowrap rounded-full bg-primary px-3 py-1 text-xs text-primary-foreground opacity-0 transition-opacity duration-200 group-hover/mark:opacity-100 group-focus-visible/mark:opacity-100" +
         (isArabic ? " font-arabic" : "")
       }
     >
-      {t("databases.source")}
+      {children}
     </span>
   );
 }
@@ -198,7 +198,9 @@ function Entry({
   const sourceUrl = entry.url || (entry.doi ? `https://doi.org/${entry.doi}` : "");
   const annotation = entry.annotation?.trim();
   const sourceLink = entry.access !== "citation" ? sourceUrl : "";
-  const expandable = !!annotation || !!fileUrl || !!sourceLink;
+  // Only an annotation opens: the source has its own mark, so there's nothing
+  // else to open onto.
+  const expandable = !!annotation;
   const hasSource = !!sourceLink || !!fileUrl;
   const source = { href: sourceLink, file: fileUrl, mimeType: entry.file?.mimeType };
   const panelId = `entry-panel-${entry.id}`;
@@ -232,13 +234,19 @@ function Entry({
                 : " text-muted-foreground group-hover:text-[color:var(--brand-magenta)]")
             }
           >
-            {open ? (isArabic ? "إغلاق" : "Close") : isArabic ? "التفاصيل" : "Details"}
+            {open ? (isArabic ? "إغلاق" : "Close") : t("databases.annotation")}
           </span>
         )}
       </div>
-      {expandable && (
-        <div className="hidden pt-6 md:block">
-          <ToggleMark open={open} />
+      {/* Kept even without the open/close mark, as room for the source mark. */}
+      {(expandable || hasSource) && (
+        <div className="hidden w-8 shrink-0 pt-6 md:block">
+          {expandable && (
+            <span className="group/mark relative block">
+              <ToggleMark open={open} />
+              <MarkTip>{t("databases.annotation")}</MarkTip>
+            </span>
+          )}
         </div>
       )}
     </div>
@@ -263,13 +271,17 @@ function Entry({
         <div className="py-7">{heading}</div>
       )}
 
-      {/* The source in one press, just under the open/close mark -- outside
-          the button, since a link can't sit inside one. */}
+      {/* The source in one press, just under the open/close mark (or in its
+          place) -- outside the button, since a link can't sit inside one. */}
       {hasSource && (
-        <div className="absolute end-0 top-[5.75rem] hidden md:block">
+        <div
+          className={
+            "absolute end-0 hidden md:block " + (expandable ? "top-[5.75rem]" : "top-[3.25rem]")
+          }
+        >
           <SourceLink {...source} className={SOURCE_MARK} label={t("databases.source")}>
             <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
-            <SourceTip />
+            <MarkTip>{t("databases.source")}</MarkTip>
           </SourceLink>
         </div>
       )}
@@ -294,35 +306,13 @@ function Entry({
                   <Highlighted text={annotation} needles={needles} />
                 </p>
               )}
-              {(fileUrl || sourceLink) && (
+              {/* The source has its own mark; only the download is left to offer. */}
+              {fileUrl && (
                 <div className="mt-6 flex flex-wrap gap-2">
-                  {sourceLink && (
-                    <a
-                      href={sourceLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={PILL_BUTTON}
-                    >
-                      <ExternalLink className="h-3.5 w-3.5" />
-                      {t("databases.source")}
-                    </a>
-                  )}
-                  {fileUrl && (
-                    <>
-                      <button
-                        type="button"
-                        onClick={() => openFileInNewTab(fileUrl, entry.file?.mimeType)}
-                        className={PILL_BUTTON}
-                      >
-                        <ExternalLink className="h-3.5 w-3.5" />
-                        {t("publications.view")}
-                      </button>
-                      <a href={fileUrl} download className={PILL_BUTTON}>
-                        <Download className="h-3.5 w-3.5" />
-                        {t("publications.download")}
-                      </a>
-                    </>
-                  )}
+                  <a href={fileUrl} download className={PILL_BUTTON}>
+                    <Download className="h-3.5 w-3.5" />
+                    {t("publications.download")}
+                  </a>
                 </div>
               )}
             </div>
