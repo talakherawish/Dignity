@@ -22,3 +22,37 @@ export function fold(text: string): string {
     .replace(/ى/g, "ي")
     .toLowerCase();
 }
+
+/**
+ * Where a folded needle occurs in the original text, as [start, end) offsets
+ * into that text -- so a match found through `fold` can be marked in the words
+ * as written, accents and short vowels included.
+ */
+export function foldedMatches(text: string, needle: string): [number, number][] {
+  if (!needle) return [];
+
+  // Fold character by character, keeping the span of text each folded unit
+  // came from. A mark that folds away joins the span of the letter before it.
+  let folded = "";
+  const spans: [number, number][] = [];
+  let start = 0;
+  for (const char of text) {
+    const end = start + char.length;
+    const units = fold(char);
+    if (units) {
+      folded += units;
+      for (let i = 0; i < units.length; i++) spans.push([start, end]);
+    } else if (spans.length) {
+      spans[spans.length - 1][1] = end;
+    }
+    start = end;
+  }
+
+  const ranges: [number, number][] = [];
+  let at = folded.indexOf(needle);
+  while (at !== -1) {
+    ranges.push([spans[at][0], spans[at + needle.length - 1][1]]);
+    at = folded.indexOf(needle, at + needle.length);
+  }
+  return ranges;
+}

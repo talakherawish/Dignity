@@ -1,10 +1,10 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { Download, ExternalLink, Search, X } from "lucide-react";
 import { ToggleMark } from "@/components/ActivityLedger";
 import { useLanguage, type TranslationKey } from "@/contexts/LanguageContext";
 import { Citation, CopyCitation } from "@/components/CopyCitation";
 import { chicago, entrySource, sortName } from "@/lib/citation";
-import { fold, keywordLabel, keywordsOf } from "@/lib/keywords";
+import { fold, foldedMatches, keywordLabel, keywordsOf } from "@/lib/keywords";
 import { PILL_BUTTON } from "@/lib/ui";
 import {
   mediaUrl,
@@ -90,12 +90,41 @@ function FilterSelect({
   );
 }
 
+/** A setState updater that adds the id to the set, or takes it out. */
+const toggleIn = (id: string) => (current: Set<string>) => {
+  const next = new Set(current);
+  if (next.has(id)) next.delete(id);
+  else next.add(id);
+  return next;
+};
+
+/** The text with every match of the search marked, in the words as written. */
+function Highlighted({ text, needle }: { text: string; needle: string }) {
+  const parts: ReactNode[] = [];
+  let at = 0;
+  for (const [start, end] of foldedMatches(text, needle)) {
+    if (start > at) parts.push(text.slice(at, start));
+    parts.push(
+      <mark
+        key={start}
+        className="rounded-sm bg-[color:var(--brand-magenta)]/15 px-0.5 text-[color:var(--brand-magenta)]"
+      >
+        {text.slice(start, end)}
+      </mark>,
+    );
+    at = end;
+  }
+  if (at < text.length) parts.push(text.slice(at));
+  return <>{parts}</>;
+}
+
 function Entry({
   entry,
   open,
   onToggle,
   onKeyword,
   activeKeyword,
+  needle,
   entryRef,
 }: {
   entry: PayloadBibliographyEntry;
@@ -103,6 +132,8 @@ function Entry({
   onToggle: () => void;
   onKeyword: (id: string) => void;
   activeKeyword?: string;
+  /** The folded search, marked wherever it appears in the annotation. */
+  needle: string;
   entryRef: (el: HTMLLIElement | null) => void;
 }) {
   const { t, isArabic } = useLanguage();
@@ -188,7 +219,7 @@ function Entry({
                   dir={sourceDir}
                   className="max-w-3xl whitespace-pre-line text-start text-sm leading-relaxed text-foreground"
                 >
-                  {annotation}
+                  <Highlighted text={annotation} needle={needle} />
                 </p>
               )}
               {(fileUrl || (entry.access !== "citation" && sourceUrl)) && (
@@ -324,8 +355,9 @@ export function BibliographyBrowser({
     };
   }, [entries, isArabic, locale, t]);
 
+  const needle = fold(filters.q?.trim() ?? "");
+
   const visible = useMemo(() => {
-    const needle = fold(filters.q?.trim() ?? "");
     return sorted.filter((entry) => {
       if (filters.type && entry.entryType !== filters.type) return false;
       if (filters.lang && entry.language !== filters.lang) return false;
@@ -346,7 +378,24 @@ export function BibliographyBrowser({
         .join(" ");
       return fold(haystack).includes(needle);
     });
-  }, [sorted, filters]);
+  }, [sorted, filters, needle]);
+
+  // An entry whose annotation holds the search opens by itself so the match
+  // can be seen; the reader can still close it until the search changes.
+  const annotationHits = useMemo(
+    () =>
+      new Set(
+        needle
+          ? visible
+              .filter((entry) => entry.annotation && fold(entry.annotation).includes(needle))
+              .map((entry) => entry.id)
+          : [],
+      ),
+    [visible, needle],
+  );
+  const [closedHits, setClosedHits] = useState<Set<string>>(new Set());
+  useEffect(() => setClosedHits(new Set()), [needle]);
+  const isOpen = (id: string) => (annotationHits.has(id) ? !closedHits.has(id) : openIds.has(id));
 
   useEffect(() => {
     const target = filters.open;
@@ -460,8 +509,9 @@ export function BibliographyBrowser({
             <Entry
               key={entry.id}
               entry={entry}
-              open={openIds.has(entry.id)}
+              open={isOpen(entry.id)}
               activeKeyword={filters.keyword}
+              needle={needle}
               onKeyword={(keyword) => {
                 set({ keyword: filters.keyword === keyword ? undefined : keyword });
                 filtersRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -471,12 +521,9 @@ export function BibliographyBrowser({
                 else entryElements.current.delete(entry.id);
               }}
               onToggle={() =>
-                setOpenIds((current) => {
-                  const next = new Set(current);
-                  if (next.has(entry.id)) next.delete(entry.id);
-                  else next.add(entry.id);
-                  return next;
-                })
+                annotationHits.has(entry.id)
+                  ? setClosedHits(toggleIn(entry.id))
+                  : setOpenIds(toggleIn(entry.id))
               }
             />
           ))}
