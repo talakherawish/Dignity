@@ -609,7 +609,7 @@ function PostersShowcase() {
             className="scrollbar-none flex h-full snap-x snap-mandatory scroll-px-4 gap-6 overflow-x-auto px-4 pb-2 sm:scroll-px-6 sm:px-6 md:gap-8 lg:scroll-px-8 lg:px-8"
             dir={isArabic ? "rtl" : "ltr"}
           >
-            {posters.map((poster) => (
+            {posters.map((poster, index) => (
               <a
                 key={poster.id}
                 href={poster.fileUrl || poster.image}
@@ -638,6 +638,14 @@ function PostersShowcase() {
                   <img
                     src={poster.image}
                     alt={isArabic ? (poster.titleAr ?? poster.title) : poster.title}
+                    // All ten used to download at once (~4 MB of PNGs), so
+                    // the first card -- the one you actually see -- shared
+                    // the bandwidth with nine off-screen ones and arrived
+                    // last-ish. Only the first few, the ones on screen when
+                    // the band scrolls in, load up front; the rest wait
+                    // until the row is scrolled toward them.
+                    loading={index < 4 ? "eager" : "lazy"}
+                    fetchPriority={index === 0 ? "high" : "auto"}
                     decoding="async"
                     className="h-full w-full object-cover"
                   />
@@ -721,16 +729,19 @@ function HeroVideo() {
   }, []);
 
   // The video shows a second time through the transparent Posters band; the
-  // hero text shouldn't come with it. Once the page has scrolled a full hero
-  // height, News has completely covered the hero, so hiding the text then
-  // is never visible -- it's simply gone by the time the band reaches it,
-  // and back again when you scroll up to the top.
+  // hero text shouldn't come with it. News slides up over the hero from the
+  // bottom, and the text sits in the hero's middle, so it is already hidden
+  // under News by about three quarters of the way -- hiding it there is
+  // never visible. Waiting for the full hero height was too late on phones:
+  // with the address bar collapsed the screen is taller than the svh-sized
+  // sections, so the Posters band starts showing before News has scrolled a
+  // full hero height, and the text was still there in it.
   const sectionRef = useRef<HTMLElement>(null);
   const [covered, setCovered] = useState(false);
   useEffect(() => {
     const update = () => {
       const height = sectionRef.current?.offsetHeight ?? 0;
-      setCovered(height > 0 && window.scrollY >= height);
+      setCovered(height > 0 && window.scrollY >= height * 0.75);
     };
     update();
     window.addEventListener("scroll", update, { passive: true });
