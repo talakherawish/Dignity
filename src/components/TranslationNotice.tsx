@@ -1,4 +1,5 @@
 import { useLanguage } from "@/contexts/LanguageContext";
+import { emphasis } from "@/lib/text";
 
 /**
  * Stands in for a body that exists in the other language only.
@@ -31,7 +32,7 @@ export function TranslationNotice({
     return (
       <p
         className={
-          "text-xs leading-relaxed text-muted-foreground " + (isArabic ? "" : "italic ") + className
+          "text-xs leading-relaxed text-muted-foreground " + emphasis(isArabic) + " " + className
         }
       >
         {t("content.untranslated")}
@@ -44,8 +45,10 @@ export function TranslationNotice({
       className={
         "rounded-e-sm border-s-2 border-[color:var(--brand-magenta)]/40 bg-secondary/30 px-4 py-3 font-serif text-sm leading-relaxed text-muted-foreground " +
         // Arabic has no true italic form -- see containsArabic in lib/text --
-        // and this notice itself renders in Arabic for an Arabic reader.
-        (isArabic ? "" : "italic ") +
+        // and this notice itself renders in Arabic for an Arabic reader, so
+        // there it is set in bold instead.
+        emphasis(isArabic) +
+        " " +
         className
       }
     >
