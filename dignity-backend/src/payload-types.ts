@@ -466,9 +466,18 @@ export interface Photo {
    */
   relatedActivity?: (string | null) | Forum;
   /**
-   * People shown in this photo. Each one appears as a clickable tag linking to their profile under About → Participants.
+   * People shown in this photo. Pick them here, then place each one on the photo just below. Each tag links to their profile under About → Participants.
    */
   taggedParticipants?: (string | Participant)[] | null;
+  tagPositions?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   /**
    * Which research line(s) this photo is from. Shows up on that research line's page automatically.
    */
@@ -2244,6 +2253,7 @@ export interface PhotosSelect<T extends boolean = true> {
   image?: T;
   relatedActivity?: T;
   taggedParticipants?: T;
+  tagPositions?: T;
   researchLines?: T;
   publicationStatus?: T;
   updatedBy?: T;

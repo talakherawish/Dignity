@@ -73,7 +73,33 @@ export const Photos: CollectionConfig = {
       label: 'Tagged People (optional)',
       admin: {
         description:
-          'People shown in this photo. Each one appears as a clickable tag linking to their profile under About → Participants.',
+          'People shown in this photo. Pick them here, then place each one on the photo just below. Each tag links to their profile under About → Participants.',
+      },
+    },
+    {
+      name: 'tagPositions',
+      type: 'json',
+      label: 'Tags on the photo',
+      admin: {
+        components: { Field: '/components/admin/PhotoTagger' },
+      },
+      hooks: {
+        // Drop spots for anyone no longer in Tagged People.
+        beforeChange: [
+          ({ value, siblingData }) => {
+            if (!value || typeof value !== 'object') return null
+            const tagged = new Set(
+              (Array.isArray(siblingData?.taggedParticipants) ? siblingData.taggedParticipants : []).map(
+                (person: unknown) =>
+                  String(person && typeof person === 'object' && 'id' in person ? person.id : person),
+              ),
+            )
+            const kept = Object.fromEntries(
+              Object.entries(value as Record<string, unknown>).filter(([id]) => tagged.has(id)),
+            )
+            return Object.keys(kept).length > 0 ? kept : null
+          },
+        ],
       },
     },
     {

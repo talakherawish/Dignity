@@ -123,6 +123,8 @@ export type PayloadPhoto = {
   relatedActivity?: PayloadActivity | string;
   /** People shown in this photo, if any were tagged in the admin. */
   taggedParticipants?: (PayloadParticipant | string)[];
+  /** Where each tagged person sits on the photo, in percent, keyed by participant id. */
+  tagPositions?: Record<string, { x: number; y: number }> | null;
 };
 
 export type PayloadClipping = {

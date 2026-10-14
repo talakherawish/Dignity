@@ -53,11 +53,13 @@ export type GalleryPhoto = {
    */
   activity?: { id: string; title: string; forumType?: ForumType };
   /**
-   * People tagged in this photo, if any. Shown in the lightbox as clickable
-   * tags linking to each person's profile under About → Participants,
-   * already resolved to the visitor's language by the caller.
+   * People tagged in this photo, if any, each linking to their profile under
+   * About → Participants, already resolved to the visitor's language by the
+   * caller. Those placed in the admin carry `x`/`y` (percent of the photo)
+   * and appear as Facebook-style tags on the photo itself; the rest are
+   * listed under it.
    */
-  people?: { id: string; name: string }[];
+  people?: { id: string; name: string; x?: number; y?: number }[];
 };
 
 /**
@@ -87,6 +89,7 @@ export function toGalleryPhoto(photo: PayloadPhoto, lang: "en" | "ar"): GalleryP
   const people = populated<PayloadParticipant>(photo.taggedParticipants).map((person) => ({
     id: person.id,
     name: lang === "ar" ? (person.nameAr ?? person.name) : person.name,
+    ...photo.tagPositions?.[person.id],
   }));
 
   return {
@@ -232,6 +235,11 @@ export function PhotoGallery({ photos }: { photos: GalleryPhoto[] }) {
     };
   }, []);
 
+  // Tags on the photo show while hovering it; on a touch screen, where there
+  // is no hover, tapping the photo toggles them. Hidden again on every new photo.
+  const [showTags, setShowTags] = useState(false);
+  useEffect(() => setShowTags(false), [openIndex]);
+
   const close = useCallback(() => setOpenIndex(null), []);
   const step = useCallback(
     (delta: number) =>
@@ -262,6 +270,8 @@ export function PhotoGallery({ photos }: { photos: GalleryPhoto[] }) {
   }, [openIndex, close, step, isArabic]);
 
   const open = openIndex === null ? null : photos[openIndex];
+  const placedPeople = open?.people?.filter((p) => p.x !== undefined && p.y !== undefined) ?? [];
+  const listedPeople = open?.people?.filter((p) => p.x === undefined || p.y === undefined) ?? [];
 
   // Before the first measurement there is no width to justify against, so the
   // gallery renders nothing rather than a wrong layout that visibly resettles.
@@ -397,14 +407,45 @@ export function PhotoGallery({ photos }: { photos: GalleryPhoto[] }) {
           )}
 
           {/* Clicking the photo itself shouldn't dismiss — only the backdrop. */}
-          <img
-            src={open.url}
-            alt={open.caption ?? ""}
-            onClick={(e) => e.stopPropagation()}
-            className="max-h-[85vh] max-w-full object-contain"
-          />
+          <div
+            className="group relative"
+            onClick={(e) => {
+              e.stopPropagation();
+              if (placedPeople.length > 0) setShowTags((shown) => !shown);
+            }}
+          >
+            <img
+              src={open.url}
+              alt={open.caption ?? ""}
+              className="block max-h-[85vh] max-w-[calc(100vw-2rem)] object-contain"
+            />
+            {placedPeople.map((person) => (
+              <Link
+                key={person.id}
+                to="/about/participants"
+                search={{ participant: person.id }}
+                onClick={(e) => e.stopPropagation()}
+                // Positions are physical (measured from the photo's left edge
+                // in the admin), so `left` rather than a logical start, in
+                // both languages. The pill hangs below the spot, its little
+                // arrow pointing up at the face.
+                style={{ left: `${person.x}%`, top: `${person.y}%` }}
+                className={
+                  "absolute -translate-x-1/2 flex flex-col items-center transition-opacity duration-200 " +
+                  (showTags
+                    ? "opacity-100"
+                    : "pointer-events-none opacity-0 [@media(hover:hover)]:group-hover:pointer-events-auto [@media(hover:hover)]:group-hover:opacity-100")
+                }
+              >
+                <span className="h-0 w-0 border-x-[6px] border-b-[6px] border-x-transparent border-b-black/80" />
+                <span className="max-w-[40vw] truncate rounded bg-black/80 px-2.5 py-1 text-xs text-white hover:bg-black">
+                  {person.name}
+                </span>
+              </Link>
+            ))}
+          </div>
 
-          {(open.caption || open.date || (open.people && open.people.length > 0)) && (
+          {(open.caption || open.date || open.people?.length) && (
             <div
               className="mt-3 max-w-2xl text-center text-white/80"
               onClick={(e) => e.stopPropagation()}
@@ -415,10 +456,25 @@ export function PhotoGallery({ photos }: { photos: GalleryPhoto[] }) {
                   {formatDate(open.date, lang === "ar" ? "ar" : "en")}
                 </p>
               )}
-              {open.people && open.people.length > 0 && (
+              {placedPeople.length > 0 && (
+                <p className="mt-2 text-[12px] text-white/50">
+                  <span className="[@media(hover:hover)]:hidden">
+                    {isArabic
+                      ? "اضغط على الصورة لرؤية من فيها"
+                      : "Tap the photo to see who's in it"}
+                  </span>
+                  <span className="hidden [@media(hover:hover)]:inline">
+                    {isArabic
+                      ? "مرّر المؤشر على الصورة لرؤية من فيها"
+                      : "Hover over the photo to see who's in it"}
+                  </span>
+                </p>
+              )}
+              {/* Tagged in the admin but never placed on the photo. */}
+              {listedPeople.length > 0 && (
                 <p className="mt-2 text-xs text-white/70">
                   {isArabic ? "مع: " : "With: "}
-                  {open.people.map((person, index) => (
+                  {listedPeople.map((person, index) => (
                     <span key={person.id}>
                       <Link
                         to="/about/participants"
@@ -427,7 +483,7 @@ export function PhotoGallery({ photos }: { photos: GalleryPhoto[] }) {
                       >
                         {person.name}
                       </Link>
-                      {index < open.people!.length - 1 ? ", " : ""}
+                      {index < listedPeople.length - 1 ? ", " : ""}
                     </span>
                   ))}
                 </p>
