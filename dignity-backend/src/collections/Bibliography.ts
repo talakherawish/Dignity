@@ -6,6 +6,7 @@ import type {
   TextField,
   Validate,
 } from 'payload'
+import { mergeKeywords } from '../lib/mergeKeywords'
 
 /**
  * The annotated bibliographies behind Information → Databases.
@@ -84,6 +85,34 @@ export const Keywords: CollectionConfig = {
     update: ({ req }) => !!req.user,
     delete: ({ req }) => !!req.user,
   },
+  endpoints: [
+    {
+      // POST /api/keywords/:id/merge  { "into": "<keyword id>" } -- see
+      // src/lib/mergeKeywords.ts. Used by the merge controls in the admin.
+      path: '/:id/merge',
+      method: 'post',
+      handler: async (req) => {
+        if (!req.user) return Response.json({ error: 'Sign in first.' }, { status: 403 })
+        const from = String(req.routeParams?.id ?? '')
+        const body = (await Promise.resolve(req.json?.()).catch(() => undefined)) as
+          | { into?: string }
+          | undefined
+        if (!body?.into) return Response.json({ error: 'Say which keyword to merge into.' }, { status: 400 })
+        try {
+          const result = await mergeKeywords({
+            payload: req.payload,
+            from,
+            into: String(body.into),
+            user: req.user,
+          })
+          return Response.json(result)
+        } catch (error) {
+          req.payload.logger.error({ err: error }, `Merging keyword ${from} failed`)
+          return Response.json({ error: (error as Error).message }, { status: 400 })
+        }
+      },
+    },
+  ],
   hooks: {
     beforeChange: [
       ({ data }) => {
@@ -116,6 +145,11 @@ export const Keywords: CollectionConfig = {
       name: 'similar',
       type: 'ui',
       admin: { components: { Field: '/components/admin/KeywordSimilarNotice' } },
+    },
+    {
+      name: 'merge',
+      type: 'ui',
+      admin: { components: { Field: '/components/admin/KeywordMerge' } },
     },
     {
       // Set from the two names above on save; it's what the admin shows in
