@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { Download, ExternalLink, Search, X } from "lucide-react";
+import { ChevronDown, Download, ExternalLink, Search, X } from "lucide-react";
 import { ToggleMark } from "@/components/ActivityLedger";
 import { useLanguage, type TranslationKey } from "@/contexts/LanguageContext";
 import { Citation, CopyCitation } from "@/components/CopyCitation";
@@ -131,21 +131,29 @@ export function FilterSelect({
   return (
     <label className="flex min-w-0 flex-col gap-1.5">
       <span className={"text-muted-foreground " + smallCaps(isArabic)}>{label}</span>
-      <select
-        value={value ?? ""}
-        onChange={(event) => onChange(event.target.value || undefined)}
-        className={
-          "h-10 w-full min-w-0 rounded-full border border-border bg-background px-4 text-sm text-foreground focus:border-[color:var(--brand-magenta)] focus:outline-none " +
-          (value ? "border-[color:var(--brand-magenta)]/60" : "")
-        }
-      >
-        <option value="">{t("databases.filter.any")}</option>
-        {options.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </select>
+      {/* The browser's own arrow sits hard against the rounded edge, so it is
+          hidden (appearance-none) and drawn here instead, inset like the text. */}
+      <span className="relative block">
+        <select
+          value={value ?? ""}
+          onChange={(event) => onChange(event.target.value || undefined)}
+          className={
+            "h-10 w-full min-w-0 appearance-none rounded-full border border-border bg-background ps-4 pe-10 text-sm text-foreground focus:border-[color:var(--brand-magenta)] focus:outline-none " +
+            (value ? "border-[color:var(--brand-magenta)]/60" : "")
+          }
+        >
+          <option value="">{t("databases.filter.any")}</option>
+          {options.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+        <ChevronDown
+          aria-hidden="true"
+          className="pointer-events-none absolute end-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+        />
+      </span>
     </label>
   );
 }
