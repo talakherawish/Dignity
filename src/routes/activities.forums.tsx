@@ -13,7 +13,7 @@ type FilterValue = "all" | ForumType;
  * ?type=seminar (etc) preselects a tab -- used by the old /activities/seminars
  * and /activities/conferences links, which redirect here (see those routes).
  * ?open=<id> deep-links to one entry -- used by a photo tagged with the
- * activity it's from (see PhotoGallery's "Enter" link) -- opening it and
+ * activity it's from (see PhotoGallery's "Read more" button) -- opening it and
  * scrolling it into view once the list has loaded.
  */
 type ForumsSearch = { type?: FilterValue; open?: string };

@@ -48,7 +48,7 @@ export type GalleryPhoto = {
   /**
    * The Forums activity (seminar, roundtable, workshop, conference) this
    * photo is from, if one was linked in the admin. Shown in the lightbox as
-   * an "Enter" link to that activity, already resolved to the visitor's
+   * a "Read more" button to that activity, already resolved to the visitor's
    * language by the caller.
    */
   activity?: { id: string; title: string; forumType?: ForumType };
@@ -355,6 +355,20 @@ export function PhotoGallery({ photos }: { photos: GalleryPhoto[] }) {
             <X className="h-5 w-5" />
           </button>
 
+          {open.activity && (
+            // Up beside the close button rather than under the photo, so it
+            // takes no height away from the picture itself.
+            <Link
+              to="/activities/forums"
+              search={{ type: open.activity.forumType, open: open.activity.id }}
+              onClick={(e) => e.stopPropagation()}
+              title={open.activity.title}
+              className="absolute top-4 end-16 inline-flex h-10 items-center rounded-full border border-white/30 px-4 text-sm text-white/90 hover:text-white hover:bg-white/10 transition-colors"
+            >
+              {isArabic ? "اقرأ المزيد ←" : "Read more →"}
+            </Link>
+          )}
+
           {photos.length > 1 && (
             <>
               <button
@@ -390,10 +404,7 @@ export function PhotoGallery({ photos }: { photos: GalleryPhoto[] }) {
             className="max-h-[85vh] max-w-full object-contain"
           />
 
-          {(open.caption ||
-            open.date ||
-            open.activity ||
-            (open.people && open.people.length > 0)) && (
+          {(open.caption || open.date || (open.people && open.people.length > 0)) && (
             <div
               className="mt-3 max-w-2xl text-center text-white/80"
               onClick={(e) => e.stopPropagation()}
@@ -420,17 +431,6 @@ export function PhotoGallery({ photos }: { photos: GalleryPhoto[] }) {
                     </span>
                   ))}
                 </p>
-              )}
-              {open.activity && (
-                <Link
-                  to="/activities/forums"
-                  search={{ type: open.activity.forumType, open: open.activity.id }}
-                  className="mt-3 inline-block text-xs uppercase tracking-widest text-white underline underline-offset-4 hover:text-white/80"
-                >
-                  {isArabic
-                    ? `الدخول إلى ${open.activity.title} ←`
-                    : `Enter ${open.activity.title} →`}
-                </Link>
               )}
             </div>
           )}
