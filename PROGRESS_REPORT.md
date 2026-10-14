@@ -18,16 +18,16 @@ Infrastructure work is finished. HTTPS renews itself, backups run nightly and ha
 
 ## Website work — 2026-10-14 (~12 hrs, 09:00–21:00)
 
-The Databases admin rebuilt for more than one bibliography, then duplicate checking across the whole bibliography workflow: spreadsheet imports, keywords and hand-entered entries, with a way to merge keywords that turn out to be the same. 4 code commits. Every change typechecks and the backend production build passes; none of it has been tried in the live admin yet.
+The Databases admin rebuilt for more than one bibliography, then duplicate checking across the whole bibliography workflow: spreadsheet imports, keywords and hand-entered entries, with a way to merge keywords that turn out to be the same. Then Readings and Documents rebuilt on the same lines as its own section, filled with the two existing readings and the Research Ethics Learning Platform's reference documents, which also turned up and fixed a bug in how uploaded files are stored. 8 code commits. Every change typechecks and both production builds pass; the admin pieces have not yet been tried by hand in the live admin.
 
-**09:00–13:00 — Databases admin: the landing page, several subjects, and an entries table for each**
+**09:00–11:00 — Databases admin: the landing page, several subjects, and an entries table for each**
 
 - **The Databases page's own text is edited first.** Opening Databases in the admin now starts with the title and introduction of the website's Information → Databases page, in English and Arabic, edited in place and saved with one button. The website shows them above the list of databases; with the title left empty it still reads "Databases".
 - **More than one database.** Databases was limited to a single item, since there was only one bibliography. It is now an ordinary list with Create New, so each subject gets its own database and its own page on the site, like `/information/databases/annotated-bibliography-on-dignity`.
 - **Clicking a subject opens its entries.** Each database has an Entries tab: Payload's full list view (search, filters, column choices, select-many, bulk delete and edit, paging), locked to that database, so clearing the filters never shows another subject's entries. Create New there starts the entry with the subject already filled in.
 - **The subject's details sit one tab over**, under Edit: title, description, page address, Download as spreadsheet and the spreadsheet imports. The old Entries table and "Select, edit or delete entries" button on that page are gone, replaced by the tab.
 
-**13:00–16:30 — Duplicate and similarity checks in spreadsheet imports and keywords**
+**11:00–12:30 — Duplicate and similarity checks in spreadsheet imports and keywords**
 
 - **One shared notion of "similar"**, used everywhere below. It ignores capitals, punctuation and accents, and treats commonly interchanged Arabic letters as the same (أ/إ/آ/ا, ة/ه, ى/ي, vowel marks). Similar means a letter or two off, singular/plural, a hyphen for a space, or the same title with a subtitle added. Short words that merely look alike ("Law"/"War") and related but different words ("Islam"/"Islamic") are not flagged. Tried on sample pairs: "Clientalism"/"Clientelism", "Demorcratization"/"Democratization" and "الكرامة"/"الكرامه" match; "On Dignity"/"On Liberty" does not.
 - **Imports skip exact duplicates more reliably.** A row is skipped if an entry with the same title (ignoring capitals and punctuation) and year is already in the database, or appears earlier in the same sheet, which was not caught before. Skipped, failed and flagged rows now give their row number in the sheet.
@@ -35,17 +35,36 @@ The Databases admin rebuilt for more than one bibliography, then duplicate check
 - **The Keywords form warns while typing.** Under a keyword's names, any existing keyword spelled nearly the same is listed with a link. It is a warning, not a block; exact duplicates are still refused as before.
 - **The Keywords list shows every similar pair** already in the collection, at the top, each linking to both keywords.
 
-**16:30–19:30 — Merging keywords**
+**12:30–13:30 — Merging keywords**
 
 - **Keep one, merge the other.** Each similar pair at the top of the Keywords list has two buttons, "Keep …" for each spelling; each keyword's own page also has a "Merge into another keyword" box with similar spellings listed first. Both ask for confirmation, since a merge cannot be undone.
 - **What a merge does:** every bibliography entry and reading tagged with the merged keyword is retagged with the kept one (with no double tag where it had both), the kept keyword takes any English or Arabic name it was missing, and the merged keyword is deleted.
 - **Unpublished edits survive.** An entry can have a published version and a newer unpublished draft; both are retagged, and the draft stays an unpublished draft rather than being overwritten by the published version.
 
-**19:30–21:00 — Similar-title warning for entries added by hand, and wrap-up**
+**13:30–14:00 — Similar-title warning for entries added by hand**
 
 - **Entries warn while their title is typed.** Under the title, any entry in the same database with a matching or nearly matching title is listed, linked, with its year. A similar title shows in yellow; the same title and year shows in red as "looks like it is already in this database". Neither stops a save, since two sources can share a title (a book and its review, a new edition).
-- **Checked and pushed:** typecheck, lint and a backend production build before each push; all four commits are on `main` and deploy on push.
-- **Still to do:** try each piece in the live admin. Test the merge on two throwaway keywords first, since it cannot be undone.
+
+**14:00–19:00 — Readings and Documents, rebuilt as its own section**
+
+- **What the section is for.** The team's explanation: Databases holds sources they have read and annotated; Readings and Documents holds sources and documents that support a subject, read but not annotated, often added in bulk, mostly links. The May 2026 meeting minutes in the team's files describe it the same way, as the Information Centre's "Sources" (YouTube, readings, books and other reference material), beside "Databases" (organised knowledge built around a research concept). The minutes' approval-before-publishing step has since been dropped: anyone with a Payload account can publish.
+- **Its own place in the admin, not a switch.** Readings and Documents is a separate sidebar item from Databases rather than one list with a "kind" to choose, since the people editing aren't all technical and a switch that decides where something appears is easy to get wrong. It works exactly like Databases: the page's title and introduction edited at the top, subjects as a list, a Readings tab per subject with the full searchable table, spreadsheet import and download, and the same duplicate, similar-title and similar-keyword warnings. Keyword merging covers readings too.
+- **A simpler item than a bibliography entry.** A reading has a type (book, chapter, article, report, document such as a declaration or code, thesis, video, website), its title, authors or issuing body, where it is from, the year, a link and/or a file, an optional one-line note, and keywords. No annotation and no citation style: a reading is there to be opened, not cited, and what the row shows is still enough to cite it by.
+- **Both languages in one reading.** A reading can hold the same source in the other language (title, link, file) — the Belmont Report in English and in Arabic, Kant on Gutenberg and on an Arabic site. Arabic readers see the Arabic version first, with "Also in English" beside it, and the reverse for English readers.
+- **Bulk import** needs only a Title column, and also reads Type, Lang, Names, Source, Year, URL, Keywords and Note — and the team's Zotero-style bibliography sheets, so the readings list drafted earlier can be loaded as it is.
+- **On the website**, Readings and Documents lists subjects as cards, like Databases (the two pages now share one component). Each subject's page lists its readings with search and filters by type, author, keyword and language, each row showing its type, the title linked to the source, a byline, the note, a download for hosted files, and its keywords.
+- **Shared underneath.** The admin pieces, the spreadsheet import and the import helpers were made generic, so Databases and Readings run on one set of code rather than two copies.
+
+**19:00–21:00 — Loading the existing readings and documents, and a file-storage fix**
+
+- **A one-off setup script** (`scripts/set-up-readings.ts`) created two subjects and published six readings:
+  - **Philosophical Texts** — Kant's *Perpetual Peace* and *Fundamental Principles of the Metaphysic of Morals*, moved over from the old one-page-per-reading collection, with Kant as author, their years and Project Gutenberg as source; the Arabic link kept as the Arabic version.
+  - **Research Ethics** — from the Research Ethics Learning Platform's reference documents: the Belmont Report, the WMA Declaration of Helsinki and the Nuremberg Code, each with its English and Arabic PDF, and Sunaina Maira's *Research Ethics: A Review of Relevant Research Literature*. Titles, years and Arabic titles taken from the PDFs themselves.
+- **Three problems met on the way, fixed:**
+  - Atlas refused the first save into the brand-new readings collection while still creating it; the script now retries, as the spreadsheet imports already did.
+  - The PDF preview step (each PDF's first page as an image) only worked inside a website request and crashed when files were uploaded from a script; it now runs straight away when there is no request.
+  - **A real storage bug:** uploaded files are saved as commits on the same GitHub branch, and an image is saved in several sizes at once, so all but one of those saves were refused (GitHub's 409 "branch moved" conflict). This hit every PDF preview in the run, and could hit any image uploaded in the admin. Files are now sent one at a time, and a conflict is retried.
+- **Left to do:** the PDF previews that failed in this run can be filled in by visiting the existing `/api/backfill-thumbnails` address once the fix is deployed; nothing on the Readings page shows them, so it is optional. One unused copy of the English Belmont PDF may sit in file storage from a failed run. And the new admin pages, the merge (test it on two throwaway keywords first) and the imports still need trying by hand in the live admin.
 
 ---
 
