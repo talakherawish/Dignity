@@ -26,6 +26,12 @@ name: Deploy
 on:
   push:
     branches: [main]
+    # Uploads from the admin panel are committed here one file at a time, and
+    # the site serves them straight from raw.githubusercontent.com, so a push
+    # that only adds uploads has nothing to deploy. Without this, one PDF
+    # upload with its preview sizes queued a burst of deploy runs.
+    paths-ignore:
+      - 'public/uploads/**'
   # So a deploy can be re-run from the Actions tab without an empty commit.
   workflow_dispatch:
 
