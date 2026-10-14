@@ -1,19 +1,18 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Search, X, Mail } from "lucide-react";
+import { Search } from "lucide-react";
 import { PageLayout, PageHero } from "@/components/PageLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { fetchParticipants, type PayloadParticipant } from "@/lib/payload";
 import {
-  fetchParticipants,
-  mediaUrl,
-  PARTICIPANT_ROLE_LABEL,
-  type PayloadParticipant,
-} from "@/lib/payload";
+  mapPayloadParticipant,
+  ParticipantModal,
+  type Participant,
+} from "@/components/ParticipantModal";
 import { SECTION_COLORS } from "@/lib/sectionColors";
 
-/** ?participant=<id> deep-links to one profile -- used by a photo's tagged
- * people (see PhotoGallery's "With: ..." tags) -- opening that person's
+/** ?participant=<id> deep-links to one profile, opening that person's
  * modal once the list has loaded. */
 type ParticipantsSearch = { participant?: string };
 
@@ -23,27 +22,6 @@ export const Route = createFileRoute("/about/participants")({
   }),
   component: ParticipantsPage,
 });
-
-type Participant = {
-  id: string;
-  name: string;
-  nameAr: string;
-  title: string;
-  titleAr: string;
-  category:
-    | "researcher"
-    | "visitor"
-    | "student"
-    | "speaker"
-    | "author"
-    | "team_member"
-    | "intern"
-    | "practical_support";
-  email: string;
-  bio: string;
-  bioAr: string;
-  photo?: string;
-};
 
 /**
  * Speakers and Authors have their own toggle (see isVisible) and no pill of
@@ -89,109 +67,6 @@ function matchesCategory(category: Participant["category"], activeCategory: stri
     return category === "practical_support" || category === "team_member";
   }
   return category === activeCategory;
-}
-
-function mapPayloadParticipant(p: PayloadParticipant): Participant {
-  const role = PARTICIPANT_ROLE_LABEL[p.category];
-  return {
-    id: p.id,
-    name: p.name,
-    nameAr: p.nameAr ?? p.name,
-    title: p.title ?? role.en,
-    titleAr: p.titleAr ?? p.title ?? role.ar,
-    category: p.category,
-    email: p.email ?? "",
-    bio: p.bio ?? "",
-    bioAr: p.bioAr ?? p.bio ?? "",
-    photo: mediaUrl(p.photo) || undefined,
-  };
-}
-
-function ParticipantModal({
-  participant,
-  onClose,
-  isArabic,
-  lang,
-}: {
-  participant: Participant;
-  onClose: () => void;
-  isArabic: boolean;
-  lang: string;
-}) {
-  return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
-      onClick={(e) => e.target === e.currentTarget && onClose()}
-    >
-      {/* The avatar overlaps the card: its vertical center sits on the
-          card's top edge, half poking up above it. The spacer above the
-          card reserves exactly that top half's height (h-20/sm:h-24, half
-          of the avatar's own h-40/sm:h-48) so the photo has room to float
-          there; the card's matching pt-24/sm:pt-28 leaves the same amount
-          of clearance inside so its bottom half doesn't sit under the name.
-          Unlike the earlier version of this layout (see git history), the
-          whole wrapper is capped at max-h-[90vh] via flex-col + flex-1
-          min-h-0 on the card, so only the card scrolls internally -- a long
-          bio can't push the avatar or the modal itself past the viewport.
-          Matches TeamModal on the homepage. */}
-      <div className="relative w-full max-w-3xl max-h-[90vh] flex flex-col">
-        {participant.photo && <div className="h-20 sm:h-24 shrink-0" aria-hidden />}
-        <div
-          className={
-            "relative flex-1 min-h-0 bg-card border border-border rounded-lg shadow-2xl overflow-y-auto" +
-            (isArabic ? " text-right" : "")
-          }
-        >
-          <div className="absolute top-4 right-4 z-20 flex items-center gap-1">
-            {participant.email && (
-              <a
-                href={"mailto:" + participant.email}
-                title={participant.email}
-                aria-label={participant.email}
-                className="p-1.5 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
-              >
-                <Mail className="h-4 w-4" />
-              </a>
-            )}
-            <button
-              onClick={onClose}
-              className="p-1.5 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
-              aria-label="Close"
-            >
-              <X className="h-4 w-4" />
-            </button>
-          </div>
-          <div
-            className={
-              "flex flex-col items-center px-8 pb-8 text-center " +
-              (participant.photo ? "pt-24 sm:pt-28" : "pt-12")
-            }
-          >
-            <h2 className="font-serif text-2xl text-primary">
-              {lang === "ar" ? participant.nameAr : participant.name}
-            </h2>
-            <p className="text-muted-foreground text-sm mt-1">
-              {lang === "ar" ? participant.titleAr : participant.title}
-            </p>
-            {(participant.bio || participant.bioAr) && (
-              <p className="mt-6 text-sm text-muted-foreground leading-relaxed">
-                {lang === "ar" ? participant.bioAr : participant.bio}
-              </p>
-            )}
-          </div>
-        </div>
-        {participant.photo && (
-          <div className="absolute left-1/2 top-0 -translate-x-1/2 z-10 h-40 w-40 sm:h-48 sm:w-48 rounded-full overflow-hidden shadow-lg bg-secondary">
-            <img
-              src={participant.photo}
-              alt={participant.name}
-              className="h-full w-full object-cover"
-            />
-          </div>
-        )}
-      </div>
-    </div>
-  );
 }
 
 function ParticipantCard({

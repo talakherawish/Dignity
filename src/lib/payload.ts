@@ -794,7 +794,10 @@ export async function fetchActivityLine(
   return docs[0];
 }
 
-export const fetchPhotos = () => fetchCollection<PayloadPhoto>("photos", NEWEST_FIRST);
+export const fetchPhotos = () =>
+  // depth 2 so a tagged person's own photo comes back as a full Media object
+  // for their profile card, not a bare id.
+  fetchCollection<PayloadPhoto>("photos", { ...NEWEST_FIRST, depth: "2" });
 
 export const fetchClippings = () =>
   // depth: 2 so item.image.thumbnail (the auto-generated PDF preview) resolves

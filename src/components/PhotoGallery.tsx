@@ -10,6 +10,11 @@ import {
   type PayloadParticipant,
   type PayloadPhoto,
 } from "@/lib/payload";
+import {
+  mapPayloadParticipant,
+  ParticipantModal,
+  type Participant,
+} from "@/components/ParticipantModal";
 
 /**
  * The photo gallery, shared by the Photos page and a research entry's photos.
@@ -53,13 +58,13 @@ export type GalleryPhoto = {
    */
   activity?: { id: string; title: string; forumType?: ForumType };
   /**
-   * People tagged in this photo, if any, each linking to their profile under
-   * About → Participants, already resolved to the visitor's language by the
+   * People tagged in this photo, if any, each opening their profile card
+   * over the photo, already resolved to the visitor's language by the
    * caller. Those placed in the admin carry `x`/`y` (percent of the photo)
    * and appear as Facebook-style tags on the photo itself; the rest are
    * listed under it.
    */
-  people?: { id: string; name: string; x?: number; y?: number }[];
+  people?: { id: string; name: string; x?: number; y?: number; profile: Participant }[];
 };
 
 /**
@@ -89,6 +94,7 @@ export function toGalleryPhoto(photo: PayloadPhoto, lang: "en" | "ar"): GalleryP
   const people = populated<PayloadParticipant>(photo.taggedParticipants).map((person) => ({
     id: person.id,
     name: lang === "ar" ? (person.nameAr ?? person.name) : person.name,
+    profile: mapPayloadParticipant(person),
     ...photo.tagPositions?.[person.id],
   }));
 
@@ -240,6 +246,10 @@ export function PhotoGallery({ photos }: { photos: GalleryPhoto[] }) {
   const [showTags, setShowTags] = useState(false);
   useEffect(() => setShowTags(false), [openIndex]);
 
+  // A tagged person's profile card, opened over the photo rather than
+  // sending the visitor off to the Working Group page.
+  const [profile, setProfile] = useState<Participant | null>(null);
+
   const close = useCallback(() => setOpenIndex(null), []);
   const step = useCallback(
     (delta: number) =>
@@ -254,6 +264,12 @@ export function PhotoGallery({ photos }: { photos: GalleryPhoto[] }) {
   useEffect(() => {
     if (openIndex === null) return;
     const onKey = (event: KeyboardEvent) => {
+      // With a profile card open, Escape closes just the card, and the
+      // arrows leave the photo behind it alone.
+      if (profile) {
+        if (event.key === "Escape") setProfile(null);
+        return;
+      }
       if (event.key === "Escape") close();
       // In RTL the left arrow points at the next photo, not the previous one.
       if (event.key === "ArrowRight") step(isArabic ? -1 : 1);
@@ -267,7 +283,7 @@ export function PhotoGallery({ photos }: { photos: GalleryPhoto[] }) {
       document.removeEventListener("keydown", onKey);
       document.body.style.overflow = previousOverflow;
     };
-  }, [openIndex, close, step, isArabic]);
+  }, [openIndex, close, step, isArabic, profile]);
 
   const open = openIndex === null ? null : photos[openIndex];
   const placedPeople = open?.people?.filter((p) => p.x !== undefined && p.y !== undefined) ?? [];
@@ -420,11 +436,13 @@ export function PhotoGallery({ photos }: { photos: GalleryPhoto[] }) {
               className="block max-h-[85vh] max-w-[calc(100vw-2rem)] object-contain"
             />
             {placedPeople.map((person) => (
-              <Link
+              <button
+                type="button"
                 key={person.id}
-                to="/about/participants"
-                search={{ participant: person.id }}
-                onClick={(e) => e.stopPropagation()}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setProfile(person.profile);
+                }}
                 // Positions are physical (measured from the photo's left edge
                 // in the admin), so `left` rather than a logical start, in
                 // both languages. The pill hangs below the spot, its little
@@ -441,7 +459,7 @@ export function PhotoGallery({ photos }: { photos: GalleryPhoto[] }) {
                 <span className="max-w-[40vw] truncate rounded bg-black/80 px-2.5 py-1 text-xs text-white hover:bg-black">
                   {person.name}
                 </span>
-              </Link>
+              </button>
             ))}
           </div>
 
@@ -476,13 +494,13 @@ export function PhotoGallery({ photos }: { photos: GalleryPhoto[] }) {
                   {isArabic ? "مع: " : "With: "}
                   {listedPeople.map((person, index) => (
                     <span key={person.id}>
-                      <Link
-                        to="/about/participants"
-                        search={{ participant: person.id }}
+                      <button
+                        type="button"
+                        onClick={() => setProfile(person.profile)}
                         className="underline underline-offset-4 hover:text-white"
                       >
                         {person.name}
-                      </Link>
+                      </button>
                       {index < listedPeople.length - 1 ? ", " : ""}
                     </span>
                   ))}
@@ -491,6 +509,16 @@ export function PhotoGallery({ photos }: { photos: GalleryPhoto[] }) {
             </div>
           )}
         </div>
+      )}
+
+      {/* After the lightbox, so it stacks on top of it at the same z-index. */}
+      {open && profile && (
+        <ParticipantModal
+          participant={profile}
+          onClose={() => setProfile(null)}
+          isArabic={isArabic}
+          lang={lang}
+        />
       )}
     </>
   );
