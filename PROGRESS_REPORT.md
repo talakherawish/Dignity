@@ -1,6 +1,6 @@
 # Dignity Initiative — Progress Report
-**Updated:** 2026-10-13  
-**Reporting period:** 2026-08-08 to 2026-10-13
+**Updated:** 2026-10-14  
+**Reporting period:** 2026-08-08 to 2026-10-14
 
 ---
 
@@ -13,6 +13,39 @@ Infrastructure work is finished. HTTPS renews itself, backups run nightly and ha
 **Oracle is the permanent home.** The university has no hosting capacity; they will only map a domain to this IP. Backups, uptime and deployment are therefore ours to own.
 
 **Engineering didn't stop after that.** 2026-08-17 to 2026-08-28 added a real content-model consolidation (Seminars/Conferences/Meetings merged into one "Forums" collection, Announcements folded into News), a homepage and navigation redesign, and several new features — mailing-list signup, bidirectional research-to-output linking, photo tagging. See *Website work — 2026-08-17 to 2026-08-28*, below. **Two migration scripts from that work still need to run against production**, and one schema change has no migration at all yet — both flagged at the top of that section, and worth resolving before treating this as settled history.
+
+---
+
+## Website work — 2026-10-14 (~12 hrs, 09:00–21:00)
+
+The Databases admin rebuilt for more than one bibliography, then duplicate checking across the whole bibliography workflow: spreadsheet imports, keywords and hand-entered entries, with a way to merge keywords that turn out to be the same. 4 code commits. Every change typechecks and the backend production build passes; none of it has been tried in the live admin yet.
+
+**09:00–13:00 — Databases admin: the landing page, several subjects, and an entries table for each**
+
+- **The Databases page's own text is edited first.** Opening Databases in the admin now starts with the title and introduction of the website's Information → Databases page, in English and Arabic, edited in place and saved with one button. The website shows them above the list of databases; with the title left empty it still reads "Databases".
+- **More than one database.** Databases was limited to a single item, since there was only one bibliography. It is now an ordinary list with Create New, so each subject gets its own database and its own page on the site, like `/information/databases/annotated-bibliography-on-dignity`.
+- **Clicking a subject opens its entries.** Each database has an Entries tab: Payload's full list view (search, filters, column choices, select-many, bulk delete and edit, paging), locked to that database, so clearing the filters never shows another subject's entries. Create New there starts the entry with the subject already filled in.
+- **The subject's details sit one tab over**, under Edit: title, description, page address, Download as spreadsheet and the spreadsheet imports. The old Entries table and "Select, edit or delete entries" button on that page are gone, replaced by the tab.
+
+**13:00–16:30 — Duplicate and similarity checks in spreadsheet imports and keywords**
+
+- **One shared notion of "similar"**, used everywhere below. It ignores capitals, punctuation and accents, and treats commonly interchanged Arabic letters as the same (أ/إ/آ/ا, ة/ه, ى/ي, vowel marks). Similar means a letter or two off, singular/plural, a hyphen for a space, or the same title with a subtitle added. Short words that merely look alike ("Law"/"War") and related but different words ("Islam"/"Islamic") are not flagged. Tried on sample pairs: "Clientalism"/"Clientelism", "Demorcratization"/"Democratization" and "الكرامة"/"الكرامه" match; "On Dignity"/"On Liberty" does not.
+- **Imports skip exact duplicates more reliably.** A row is skipped if an entry with the same title (ignoring capitals and punctuation) and year is already in the database, or appears earlier in the same sheet, which was not caught before. Skipped, failed and flagged rows now give their row number in the sheet.
+- **Imports flag near-duplicates without dropping them.** Rows whose title is close to an existing entry, and new keywords spelled close to an existing one, are imported but listed in the report under "Similar entries" and "Similar keywords" for the team to check. "Check only" shows all of it before anything is written.
+- **The Keywords form warns while typing.** Under a keyword's names, any existing keyword spelled nearly the same is listed with a link. It is a warning, not a block; exact duplicates are still refused as before.
+- **The Keywords list shows every similar pair** already in the collection, at the top, each linking to both keywords.
+
+**16:30–19:30 — Merging keywords**
+
+- **Keep one, merge the other.** Each similar pair at the top of the Keywords list has two buttons, "Keep …" for each spelling; each keyword's own page also has a "Merge into another keyword" box with similar spellings listed first. Both ask for confirmation, since a merge cannot be undone.
+- **What a merge does:** every bibliography entry and reading tagged with the merged keyword is retagged with the kept one (with no double tag where it had both), the kept keyword takes any English or Arabic name it was missing, and the merged keyword is deleted.
+- **Unpublished edits survive.** An entry can have a published version and a newer unpublished draft; both are retagged, and the draft stays an unpublished draft rather than being overwritten by the published version.
+
+**19:30–21:00 — Similar-title warning for entries added by hand, and wrap-up**
+
+- **Entries warn while their title is typed.** Under the title, any entry in the same database with a matching or nearly matching title is listed, linked, with its year. A similar title shows in yellow; the same title and year shows in red as "looks like it is already in this database". Neither stops a save, since two sources can share a title (a book and its review, a new edition).
+- **Checked and pushed:** typecheck, lint and a backend production build before each push; all four commits are on `main` and deploy on push.
+- **Still to do:** try each piece in the live admin. Test the merge on two throwaway keywords first, since it cannot be undone.
 
 ---
 
