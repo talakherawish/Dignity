@@ -3,7 +3,12 @@ import { useQuery } from "@tanstack/react-query";
 import { ArrowRight } from "lucide-react";
 import { PageLayout, PageHero } from "@/components/PageLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { extractText, fetchBibliographyCounts, fetchDatabases } from "@/lib/payload";
+import {
+  extractText,
+  fetchBibliographyCounts,
+  fetchDatabases,
+  fetchDatabasesPage,
+} from "@/lib/payload";
 import { SECTION_COLORS } from "@/lib/sectionColors";
 
 export const Route = createFileRoute("/information/databases")({
@@ -26,13 +31,22 @@ function DatabasesPage() {
     queryKey: ["bibliography-counts"],
     queryFn: fetchBibliographyCounts,
   });
+  // The heading and introduction, edited at the top of the Databases list in
+  // the CMS; either may be empty, and the title falls back to the menu label.
+  const { data: page } = useQuery({
+    queryKey: ["databases-page"],
+    queryFn: fetchDatabasesPage,
+  });
+  const pageTitle = (isArabic ? page?.titleAr : page?.title)?.trim();
+  const pageIntro = (isArabic ? page?.introAr : page?.intro)?.trim();
 
   return (
     <PageLayout>
       <PageHero
         eyebrow={t("information")}
         eyebrowColor={SECTION_COLORS.information}
-        title={t("information.databases")}
+        title={pageTitle || t("information.databases")}
+        description={pageIntro || undefined}
       />
       <section className="mx-auto max-w-5xl px-4 py-10 sm:px-6 md:py-14 lg:px-8">
         {isLoading ? (

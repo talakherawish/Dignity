@@ -103,7 +103,6 @@ export interface Config {
   };
   collectionsJoins: {
     databases: {
-      entries: 'bibliography-entries';
       imports: 'bibliography-imports';
     };
   };
@@ -148,9 +147,11 @@ export interface Config {
   fallbackLocale: null;
   globals: {
     'site-settings': SiteSetting;
+    'databases-page': DatabasesPage;
   };
   globalsSelect: {
     'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
+    'databases-page': DatabasesPageSelect<false> | DatabasesPageSelect<true>;
   };
   locale: null;
   widgets: {
@@ -1674,6 +1675,8 @@ export interface Keyword {
   createdAt: string;
 }
 /**
+ * Each database is one subject, with its own page on the website. Click a database to see and edit its entries.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "databases".
  */
@@ -1715,11 +1718,6 @@ export interface Database {
    * Filled in automatically from the English title. It is the end of this database's web address, so changing it after the page has been shared will break the old link.
    */
   slug?: string | null;
-  entries?: {
-    docs?: (string | BibliographyEntry)[];
-    hasNextPage?: boolean;
-    totalDocs?: number;
-  };
   imports?: {
     docs?: (string | BibliographyImport)[];
     hasNextPage?: boolean;
@@ -1735,6 +1733,48 @@ export interface Database {
   createdBy?: (string | null) | User;
   updatedAt: string;
   createdAt: string;
+}
+/**
+ * Load a bibliography spreadsheet (.xlsx) into a database. Each row becomes a Bibliography Entry you can edit afterwards. The first row of the sheet must hold the column names: Type, Lang, Keywords, Names, Title, Book_title, Journal_name, Year, City, Publisher, Pages, Volume, Issue, URL, DOI, Editors, Annotations. Several names or keywords in one cell are separated by |. An optional second sheet named "Keywords", with English and Arabic columns, pairs each keyword with its translation. Rows already in the database (same title and year) are skipped, so a sheet can be imported again after adding rows to it.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "bibliography-imports".
+ */
+export interface BibliographyImport {
+  id: string;
+  /**
+   * The database the entries go into. Create it under Databases first.
+   */
+  database: string | Database;
+  /**
+   * Left unticked, every entry is saved as a draft to be checked and published one by one.
+   */
+  publish?: boolean | null;
+  /**
+   * Reads the sheet and reports what would be created, skipped and left untranslated, without changing anything.
+   */
+  dryRun?: boolean | null;
+  status?: ('running' | 'done' | 'doneWithErrors' | 'failed') | null;
+  report?: string | null;
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  updatedBy?: (string | null) | User;
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  createdBy?: (string | null) | User;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
 }
 /**
  * One source in an annotated bibliography. Shows on the website inside its database, under Information → Databases.
@@ -1809,48 +1849,6 @@ export interface BibliographyEntry {
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
-}
-/**
- * Load a bibliography spreadsheet (.xlsx) into a database. Each row becomes a Bibliography Entry you can edit afterwards. The first row of the sheet must hold the column names: Type, Lang, Keywords, Names, Title, Book_title, Journal_name, Year, City, Publisher, Pages, Volume, Issue, URL, DOI, Editors, Annotations. Several names or keywords in one cell are separated by |. An optional second sheet named "Keywords", with English and Arabic columns, pairs each keyword with its translation. Rows already in the database (same title and year) are skipped, so a sheet can be imported again after adding rows to it.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "bibliography-imports".
- */
-export interface BibliographyImport {
-  id: string;
-  /**
-   * The database the entries go into. Create it under Databases first.
-   */
-  database: string | Database;
-  /**
-   * Left unticked, every entry is saved as a draft to be checked and published one by one.
-   */
-  publish?: boolean | null;
-  /**
-   * Reads the sheet and reports what would be created, skipped and left untranslated, without changing anything.
-   */
-  dryRun?: boolean | null;
-  status?: ('running' | 'done' | 'doneWithErrors' | 'failed') | null;
-  report?: string | null;
-  /**
-   * Set automatically -- not editable by hand.
-   */
-  updatedBy?: (string | null) | User;
-  /**
-   * Set automatically -- not editable by hand.
-   */
-  createdBy?: (string | null) | User;
-  updatedAt: string;
-  createdAt: string;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
 }
 /**
  * The text of the website's Disclaimer page, linked from the bottom of every page. Open the entry below to edit it.
@@ -2772,7 +2770,6 @@ export interface DatabasesSelect<T extends boolean = true> {
   description?: T;
   descriptionAr?: T;
   slug?: T;
-  entries?: T;
   imports?: T;
   updatedBy?: T;
   createdBy?: T;
@@ -3072,6 +3069,23 @@ export interface SiteSetting {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "databases-page".
+ */
+export interface DatabasesPage {
+  id: string;
+  title?: string | null;
+  titleAr?: string | null;
+  intro?: string | null;
+  introAr?: string | null;
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  updatedBy?: (string | null) | User;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "site-settings_select".
  */
 export interface SiteSettingsSelect<T extends boolean = true> {
@@ -3192,6 +3206,20 @@ export interface SiteSettingsSelect<T extends boolean = true> {
   forumTypeConferenceAr?: T;
   forumTypeEncounters?: T;
   forumTypeEncountersAr?: T;
+  updatedBy?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "databases-page_select".
+ */
+export interface DatabasesPageSelect<T extends boolean = true> {
+  title?: T;
+  titleAr?: T;
+  intro?: T;
+  introAr?: T;
   updatedBy?: T;
   updatedAt?: T;
   createdAt?: T;

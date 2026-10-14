@@ -131,9 +131,10 @@ export const BibliographyEntries: CollectionConfig = {
   slug: 'bibliography-entries',
   labels: { singular: 'Bibliography Entry', plural: 'Bibliography Entries' },
   admin: {
-    // Out of the sidebar: entries are managed from their database's own page
-    // (the "Entries" join on Databases). The list itself still works, at
-    // /admin/collections/bibliography-entries, for bulk edits and deletes.
+    // Out of the sidebar: entries are managed from their database's own
+    // Entries tab (src/components/admin/DatabaseEntriesView.tsx). The list of
+    // every database's entries together still works, at
+    // /admin/collections/bibliography-entries.
     group: false,
     useAsTitle: 'title',
     defaultColumns: ['title', 'database', 'entryType', 'year', 'updatedAt'],
@@ -159,6 +160,9 @@ export const BibliographyEntries: CollectionConfig = {
       type: 'relationship',
       relationTo: 'databases',
       required: true,
+      // "Create New" on a database's Entries tab opens the form with
+      // ?database=<id>, so a new entry starts out in that database.
+      defaultValue: ({ req }) => req.searchParams?.get('database') || undefined,
       admin: { position: 'sidebar' },
     },
     {

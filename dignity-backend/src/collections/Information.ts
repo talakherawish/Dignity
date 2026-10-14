@@ -1,6 +1,5 @@
 import type { CollectionConfig, Field } from 'payload'
 import { exportBibliography } from '../lib/bibliographyImport'
-import { singletonCreateAccess, singletonListView } from '../lib/singleton'
 import { toSlug } from '../lib/slug'
 
 /**
@@ -245,42 +244,44 @@ export const ReadingsAndDocuments = informationCollection(
 )
 
 /**
- * Each item is one annotated bibliography -- the list itself, not a source in
- * it. Its sources are Bibliography Entries (src/collections/Bibliography.ts),
- * each pointing back at the database it belongs to.
+ * Each item is one annotated bibliography -- one subject, with its own page on
+ * the website under Information → Databases. Its sources are Bibliography
+ * Entries (src/collections/Bibliography.ts), each pointing back at the
+ * database it belongs to.
  *
- * Everything about a database is managed from its own page: its entries, the
- * spreadsheets it was loaded from, and a download of the whole thing as a
- * spreadsheet. Entries and imports are still their own collections underneath
- * -- that is what lets each entry be edited, drafted and filtered on its own --
- * but they are kept out of the sidebar (admin.group: false on each).
+ * The Databases list opens with the heading and introduction of the website's
+ * Databases page itself (the Databases Page global, edited in place by
+ * DatabasesLandingPanel), then lists the databases. Clicking one opens its
+ * Entries tab: the full entries table -- search, filters, select, delete --
+ * limited to that database (DatabaseEntriesView). Its title, description and
+ * spreadsheet imports are on the "Edit" tab beside it.
  *
- * There is one database for now, so the sidebar's Databases link opens it
- * directly (singletonListView), and no draft/publish state: a database is only
- * a title and a description, and its entries carry their own.
+ * Entries and imports are still their own collections underneath -- that is
+ * what lets each entry be edited, drafted and filtered on its own -- but they
+ * are kept out of the sidebar (admin.group: false on each).
+ *
+ * No draft/publish state: a database is only a title and a description, and
+ * its entries carry their own.
  */
 const databases = informationCollection(
   'databases',
   'Database',
   'Databases',
-  '',
+  'Each database is one subject, with its own page on the website. Click a database to see and edit its entries.',
   [
-    ...describedFields(),
+    ...describedFields().map((field) =>
+      'name' in field && field.name === 'title'
+        ? ({
+            ...field,
+            admin: { ...field.admin, components: { Cell: '/components/admin/DatabaseTitleCell' } },
+          } as Field)
+        : field,
+    ),
     slugField('database'),
     {
       name: 'actions',
       type: 'ui',
       admin: { components: { Field: '/components/admin/DatabaseActions' } },
-    },
-    {
-      name: 'entries',
-      type: 'join',
-      collection: 'bibliography-entries',
-      on: 'database',
-      label: 'Entries',
-      defaultLimit: 25,
-      defaultSort: 'title',
-      admin: { defaultColumns: ['title', 'entryType', 'year', '_status'] },
     },
     {
       name: 'imports',
@@ -299,14 +300,23 @@ export const Databases: CollectionConfig = {
   ...databases,
   admin: {
     ...databases.admin,
-    description: undefined,
-    components: { views: { list: singletonListView } },
+    components: {
+      beforeList: ['/components/admin/DatabasesLandingPanel'],
+      views: {
+        edit: {
+          entries: {
+            Component: '/components/admin/DatabaseEntriesView',
+            path: '/entries',
+            tab: { label: 'Entries', href: '/entries', order: 50 },
+          },
+        },
+      },
+    },
   },
   versions: false,
   access: {
     ...databases.access,
     read: () => true,
-    create: singletonCreateAccess('databases'),
   },
   endpoints: [
     {

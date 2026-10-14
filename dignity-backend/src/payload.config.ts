@@ -52,6 +52,7 @@ import { BibliographyEntries, Keywords } from './collections/Bibliography'
 import { BibliographyImports } from './collections/BibliographyImports'
 import { Disclaimer, PrivacyPolicy } from './collections/LegalPages'
 import { SiteSettings } from './globals/SiteSettings'
+import { DatabasesPage } from './globals/DatabasesPage'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -141,7 +142,7 @@ export default buildConfig({
     .map(withPublicationStatus)
     .map(enforceBilingual)
     .map(withEditTracking),
-  globals: [SiteSettings].map(enforceBilingualGlobal).map(withEditTrackingGlobal),
+  globals: [SiteSettings, DatabasesPage].map(enforceBilingualGlobal).map(withEditTrackingGlobal),
   editor: lexicalEditor(),
   cors: process.env.CORS_ORIGINS
   ? process.env.CORS_ORIGINS.split(',').map((s) => s.trim())

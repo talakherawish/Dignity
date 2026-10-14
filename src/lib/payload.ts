@@ -931,8 +931,8 @@ async function fetchBySlugOrId<T>(
       [`where[${field}][equals]`]: slugOrId,
       depth,
       limit: "1",
-      // A database carries its entries and imports as join fields for the
-      // admin; the site fetches entries on its own, so it skips them here.
+      // A database carries its spreadsheet imports as a join field for the
+      // admin; the site has no use for them, so it skips them here.
       joins: "false",
     });
     if (match) return match;
@@ -1025,6 +1025,30 @@ export async function fetchSiteSettings(): Promise<PayloadSiteSettings | null> {
     });
     if (!res.ok) return null;
     return (await res.json()) as PayloadSiteSettings;
+  } catch {
+    return null;
+  }
+}
+
+export type PayloadDatabasesPage = {
+  title?: string | null;
+  titleAr?: string | null;
+  intro?: string | null;
+  introAr?: string | null;
+};
+
+/**
+ * The heading and introduction of Information → Databases, edited at the top
+ * of the Databases list in the CMS. Returns null if unreachable, and every
+ * field may be empty -- the page falls back to its built-in title.
+ */
+export async function fetchDatabasesPage(): Promise<PayloadDatabasesPage | null> {
+  try {
+    const res = await fetch(`${PAYLOAD_URL}/api/globals/databases-page?depth=0`, {
+      headers: { "Content-Type": "application/json" },
+    });
+    if (!res.ok) return null;
+    return (await res.json()) as PayloadDatabasesPage;
   } catch {
     return null;
   }
