@@ -256,6 +256,12 @@ export const BibliographyEntries: CollectionConfig = {
           "In the source's own language. For a chapter or article, the chapter or article; for a whole book, the book.",
       },
     },
+    {
+      // Same or similar titles already in this database, as the title is typed.
+      name: 'similar',
+      type: 'ui',
+      admin: { components: { Field: '/components/admin/EntrySimilarNotice' } },
+    },
     nameList('authors', 'Authors', 'Author'),
     {
       name: 'containerTitle',
