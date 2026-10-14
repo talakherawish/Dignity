@@ -21,6 +21,7 @@
  *     --relp "C:/Users/tala/Desktop/dignity/Research & Activities/Research Projects/Research Ethics Learning Platform (RELP)/Reference Documents"
  */
 import path from 'path'
+import { retried } from '../src/lib/importShared'
 
 const SANDBOX_DATABASE = 'dignity-sandbox'
 
@@ -60,13 +61,17 @@ async function subject(title: string, titleAr: string): Promise<string> {
     depth: 0,
   })
   if (docs[0]) return String(docs[0].id)
-  const created = await payload.create({ collection: 'reading-lists', data: { title, titleAr } })
+  const created = await retried(() =>
+    payload.create({ collection: 'reading-lists', data: { title, titleAr } }),
+  )
   console.log(`Created subject "${title}".`)
   return String(created.id)
 }
 
 async function upload(file: string, alt: string): Promise<string> {
-  const media = await payload.create({ collection: 'media', data: { alt }, filePath: file })
+  const media = await retried(() =>
+    payload.create({ collection: 'media', data: { alt }, filePath: file }),
+  )
   return String(media.id)
 }
 
@@ -88,7 +93,9 @@ async function add(subjectId: string, reading: Reading, files?: { file?: string;
     otherVersion.file = await upload(files.other, String(otherVersion.title ?? reading.title))
   }
   if (Object.keys(otherVersion).length) data.otherVersion = otherVersion
-  await payload.create({ collection: 'readings', data: data as never })
+  // Retried: Atlas refuses the first writes to a brand-new collection while it
+  // is still creating it ("catalog changes"); see retried in importShared.ts.
+  await retried(() => payload.create({ collection: 'readings', data: data as never }))
   console.log(`  added: ${reading.title}`)
 }
 
