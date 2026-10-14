@@ -310,7 +310,7 @@ export const generatePdfThumbnail: CollectionAfterChangeHook = async ({ doc, req
   // response is sent, instead of racing the function's teardown. Any
   // failure here is caught locally and logged; it can never surface as a
   // failed upload to the editor.
-  after(async () => {
+  const makeThumbnail = async () => {
     try {
       if (!sourceFileBuffer) {
         throw new Error('req.file.data was not available when the afterChange hook ran — cannot generate thumbnail without it.')
@@ -345,7 +345,15 @@ export const generatePdfThumbnail: CollectionAfterChangeHook = async ({ doc, req
         `PDF thumbnail generation failed for "${docFilename}": ${error instanceof Error ? error.message : String(error)}`,
       )
     }
-  })
+  }
+  // Outside a web request -- a script uploading files, such as
+  // scripts/set-up-readings.ts -- there is no response to run after, and
+  // after() throws; the thumbnail is made before the upload returns instead.
+  try {
+    after(makeThumbnail)
+  } catch {
+    await makeThumbnail()
+  }
 
   return doc
 }
