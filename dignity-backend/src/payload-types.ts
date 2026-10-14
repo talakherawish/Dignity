@@ -1621,7 +1621,7 @@ export interface ReadingList {
   createdAt: string;
 }
 /**
- * Load a list of readings and documents (.xlsx) into a subject. Each row becomes a Reading you can edit afterwards. The first row of the sheet must hold the column names; Title is the only one required. Also read: Type, Lang, Names (authors), Source, Year, URL, Keywords, Note, Internal note, and Other_title and Other_URL for the same source in the other language. A bibliography export (Book_title, Journal_name, Website_name, Publisher, Page_url ...) is read too. Several names or keywords in one cell are separated by |. An optional second sheet named "Keywords", with English and Arabic columns, pairs each keyword with its translation. Rows already there, or repeated in the sheet (same title and year, ignoring capitals and punctuation), are skipped, so a sheet can be imported again after adding rows to it. Rows and keywords that are only similar to existing ones (a typo, a hyphen, a dropped subtitle) are imported but listed in the report for checking.
+ * Load a list of readings and documents (.xlsx) into a subject. Each row becomes a Reading you can edit afterwards. The first row of the sheet must hold the column names; Title is the only one required. Also read: Type, Lang, Names (authors), Source, Year, URL, Keywords, Note, Note_ar, Internal note, and Other_title and Other_URL for the same source in the other language. A bibliography export (Book_title, Journal_name, Website_name, Publisher, Page_url ...) is read too. Several names or keywords in one cell are separated by |. An optional second sheet named "Keywords", with English and Arabic columns, pairs each keyword with its translation. Rows already there, or repeated in the sheet (same title and year, ignoring capitals and punctuation), are skipped, so a sheet can be imported again after adding rows to it. Rows and keywords that are only similar to existing ones (a typo, a hyphen, a dropped subtitle) are imported but listed in the report for checking.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "reading-imports".
@@ -1697,9 +1697,10 @@ export interface Reading {
    */
   file?: (string | null) | Media;
   /**
-   * Optional: a line on what it is or why it is here. Shown under the title on the website.
+   * Optional: a line on what it is or why it is here. Shown under the title on the website. Written in one language only, it is shown on both.
    */
   note?: string | null;
+  noteAr?: string | null;
   /**
    * If the source also exists in Arabic (or, for an Arabic source, in English) -- a translation or the official other-language edition. Readers of that language see this version first.
    */
@@ -2847,6 +2848,7 @@ export interface ReadingsSelect<T extends boolean = true> {
   link?: T;
   file?: T;
   note?: T;
+  noteAr?: T;
   otherVersion?:
     | T
     | {

@@ -123,19 +123,33 @@ function ReadingRow({
   const { t, isArabic } = useLanguage();
   const { shown, alternate } = versions(reading, isArabic ? "ar" : "en");
   // A version with only a title (no link or file of its own) opens the other.
-  const source = opens(shown) ? target(shown) : target(alternate);
-  const hasSource = !!(source.href || source.file);
+  const opened = opens(shown) ? target(shown) : target(alternate);
+  const hasSource = !!(opened.href || opened.file);
   const alternateOpens = opens(alternate) && opens(shown);
   const fileUrl = mediaUrl(shown.file) || (!opens(shown) ? mediaUrl(alternate?.file) : "");
   const dir = shown.language === "ar" ? "rtl" : "ltr";
   const keywords = keywordsOf(reading);
   const matchesSearch = (keyword: PayloadKeyword) =>
     [keyword.name, keyword.nameAr].some((name) => name && containsAny(name, needles));
-  const byline = [
-    (reading.authors ?? []).map((a) => a.name).join(", "),
-    reading.year,
-    reading.source,
-  ].filter(Boolean);
+  const authors = (reading.authors ?? []).map((a) => a.name);
+  // An organisation is often both the author and where it's from (the World
+  // Medical Association); it's named once.
+  const source =
+    reading.source &&
+    !authors.some((a) => a.trim().toLowerCase() === reading.source!.trim().toLowerCase())
+      ? reading.source
+      : undefined;
+  const byline = [authors.join(", "), reading.year, source].filter(Boolean);
+  // The note is the team's own words, so it comes in both languages; one
+  // written in only one language is shown on both pages.
+  const note = (
+    (isArabic ? reading.noteAr || reading.note : reading.note || reading.noteAr) ?? ""
+  ).trim();
+  // The byline and the note may be in either language whatever the page's:
+  // names stay as the source gives them. dir="auto" lays each out in its own
+  // direction -- so an English note on the Arabic page keeps its full stop at
+  // the end -- while it stays aligned to the page's side.
+  const pageSide = isArabic ? "text-right" : "text-left";
 
   const title = <Highlighted text={shown.title} needles={needles} />;
 
@@ -157,7 +171,7 @@ function ReadingRow({
           >
             {hasSource ? (
               <SourceLink
-                {...source}
+                {...opened}
                 className="text-start transition-colors duration-300 hover:text-[color:var(--brand-magenta)]"
               >
                 {title}
@@ -167,19 +181,25 @@ function ReadingRow({
             )}
           </h2>
           {byline.length > 0 && (
-            <p dir={dir} className="mt-1.5 text-start text-sm text-muted-foreground">
+            <p dir="auto" className={"mt-1.5 text-sm text-muted-foreground " + pageSide}>
               <Highlighted text={byline.join(" · ")} needles={needles} />
             </p>
           )}
-          {reading.note?.trim() && (
-            <p className="mt-3 max-w-3xl whitespace-pre-line text-start text-sm leading-relaxed text-foreground">
-              <Highlighted text={reading.note.trim()} needles={needles} />
+          {note && (
+            <p
+              dir="auto"
+              className={
+                "mt-3 max-w-3xl whitespace-pre-line text-sm leading-relaxed text-foreground " +
+                pageSide
+              }
+            >
+              <Highlighted text={note} needles={needles} />
             </p>
           )}
         </div>
         {hasSource && (
           <div className="hidden w-8 shrink-0 pt-6 md:block">
-            <SourceLink {...source} className={SOURCE_MARK} label={t("databases.source")}>
+            <SourceLink {...opened} className={SOURCE_MARK} label={t("databases.source")}>
               <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
               <MarkTip>{t("databases.source")}</MarkTip>
             </SourceLink>
@@ -191,7 +211,7 @@ function ReadingRow({
         {/* Phones have no hover to name the round mark, so it's named here. */}
         {hasSource && (
           <SourceLink
-            {...source}
+            {...opened}
             className={
               "inline-flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-[color:var(--brand-magenta)] md:hidden" +
               (isArabic ? " font-arabic" : "")
@@ -325,6 +345,7 @@ export function ReadingsBrowser({
         reading.otherVersion?.title,
         reading.source,
         reading.note,
+        reading.noteAr,
         reading.year,
         ...(reading.authors ?? []).map((a) => a.name),
         ...keywordsOf(reading).flatMap((k) => [k.name, k.nameAr]),

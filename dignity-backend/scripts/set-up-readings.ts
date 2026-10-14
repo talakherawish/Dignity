@@ -215,5 +215,33 @@ await add(
   { file: en('Research Ethics Literature Review.pdf') },
 )
 
+// ── 3. Arabic notes ──────────────────────────────────────────────────────────
+// The notes above were first written in English only. Filled in where still
+// empty, so an Arabic note an editor has since written or changed is kept.
+
+const notesAr: Record<string, string> = {
+  'The Belmont Report: Ethical Principles and Guidelines for the Protection of Human Subjects of Research':
+    'الجزء الثاني: المبادئ الأخلاقية الأساسية -- احترام الأشخاص، والإحسان، والعدالة.',
+  'WMA Declaration of Helsinki: Ethical Principles for Medical Research Involving Human Subjects':
+    'اعتُمد في هلسنكي عام 1964؛ وهذا النص بصيغته المعدّلة في فورتاليزا، البرازيل، في تشرين الأول/أكتوبر 2013.',
+  'The Nuremberg Code': 'عشرة مبادئ للتجارب الطبية المسموح بها على البشر، أولها الموافقة الطوعية.',
+  'Research Ethics: A Review of Relevant Research Literature':
+    'أعدّت بتكليف من لجنة أخلاقيات البحث العلمي في جامعة بيرزيت عام 2012، مع تركيز على أخلاقيات البحث في الجنوب العالمي.',
+}
+for (const [title, noteAr] of Object.entries(notesAr)) {
+  const { docs } = await payload.find({
+    collection: 'readings',
+    where: { title: { equals: title } },
+    limit: 1,
+    depth: 0,
+  })
+  const reading = docs[0]
+  if (!reading || reading.noteAr) continue
+  await retried(() =>
+    payload.update({ collection: 'readings', id: reading.id, data: { noteAr }, depth: 0 }),
+  )
+  console.log(`  Arabic note added: ${title}`)
+}
+
 console.log('Done.')
 process.exit(0)

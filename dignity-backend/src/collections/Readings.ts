@@ -147,12 +147,18 @@ export const Readings: CollectionConfig = {
     {
       name: 'note',
       type: 'textarea',
-      label: 'Short note',
+      label: 'Short note (English)',
       admin: {
         rows: 2,
         description:
-          'Optional: a line on what it is or why it is here. Shown under the title on the website.',
+          'Optional: a line on what it is or why it is here. Shown under the title on the website. Written in one language only, it is shown on both.',
       },
+    },
+    {
+      name: 'noteAr',
+      type: 'textarea',
+      label: 'Short note (Arabic / ملاحظة قصيرة)',
+      admin: { rows: 2, rtl: true },
     },
     {
       name: 'otherVersion',

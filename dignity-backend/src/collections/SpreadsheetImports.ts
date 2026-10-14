@@ -187,6 +187,6 @@ export const ReadingImports = spreadsheetImports({
   field: 'subject',
   relationTo: 'reading-lists',
   items: 'readings',
-  description: `Load a list of readings and documents (.xlsx) into a subject. Each row becomes a Reading you can edit afterwards. The first row of the sheet must hold the column names; Title is the only one required. Also read: Type, Lang, Names (authors), Source, Year, URL, Keywords, Note, Internal note, and Other_title and Other_URL for the same source in the other language. A bibliography export (Book_title, Journal_name, Website_name, Publisher, Page_url ...) is read too. ${SHARED_RULES}`,
+  description: `Load a list of readings and documents (.xlsx) into a subject. Each row becomes a Reading you can edit afterwards. The first row of the sheet must hold the column names; Title is the only one required. Also read: Type, Lang, Names (authors), Source, Year, URL, Keywords, Note, Note_ar, Internal note, and Other_title and Other_URL for the same source in the other language. A bibliography export (Book_title, Journal_name, Website_name, Publisher, Page_url ...) is read too. ${SHARED_RULES}`,
   run: importReadings,
 })

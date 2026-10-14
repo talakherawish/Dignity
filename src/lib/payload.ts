@@ -350,6 +350,8 @@ export type PayloadReading = {
   link?: string;
   file?: PayloadMedia;
   note?: string;
+  /** The note in Arabic; either may be missing. */
+  noteAr?: string;
   otherVersion?: { title?: string; link?: string; file?: PayloadMedia };
   keywords?: (PayloadKeyword | string)[];
 };

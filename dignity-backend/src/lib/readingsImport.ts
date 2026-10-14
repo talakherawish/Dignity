@@ -8,7 +8,7 @@
  *
  * The sheet needs a Title column; everything else is optional:
  *   Type, Lang, Names (authors, |-separated), Source, Year, URL, Keywords
- *   (|-separated), Note, Other_title and Other_URL (the same source in the
+ *   (|-separated), Note, Note_ar, Other_title and Other_URL (the same source in the
  *   other language), Internal note.
  * A bibliography export works too -- the team's Zotero sheets: where it was
  * published is read from Journal_name, Website_name, Book_title or Publisher,
@@ -146,6 +146,7 @@ export async function importReadings({
         year: year || undefined,
         link: firstOf(row, 'URL', 'Link', 'Page_url') || undefined,
         note: (row.Note ?? row.Notes ?? '').trim() || undefined,
+        noteAr: (row.Note_ar ?? '').trim() || undefined,
         otherVersion:
           otherTitle || otherLink
             ? { title: otherTitle || undefined, link: otherLink || undefined }
@@ -184,6 +185,7 @@ const EXPORT_COLUMNS = [
   'URL',
   'Keywords',
   'Note',
+  'Note_ar',
   'Other_title',
   'Other_URL',
   'File',
@@ -214,6 +216,7 @@ type ExportedReading = {
   year?: string | null
   link?: string | null
   note?: string | null
+  noteAr?: string | null
   file?: Media
   otherVersion?: { title?: string | null; link?: string | null; file?: Media } | null
   keywords?: (Keyword | string | number)[] | null
@@ -260,6 +263,7 @@ export async function exportReadings(payload: Payload, subject: string): Promise
         .filter(Boolean)
         .join('|'),
       Note: reading.note ?? '',
+      Note_ar: reading.noteAr ?? '',
       Other_title: reading.otherVersion?.title ?? '',
       Other_URL: reading.otherVersion?.link ?? '',
       File: fileUrl(reading.file),
