@@ -27,6 +27,8 @@ import { default as default_fe796a063c78133a219ae9532ba9e850 } from '../../../co
 import { default as default_7620b2e5b38009d30336ace2ce236f9d } from '../../../components/admin/DatabaseActions'
 import { default as default_b2370b07a34732b9bb1a00ec7ce432b6 } from '../../../components/admin/DatabasesLandingPanel'
 import { default as default_54c2f028b23ff21ab61a0fc219afe4a5 } from '../../../components/admin/DatabaseEntriesView'
+import { default as default_ca4923a18b3f5c175d39388f998e3453 } from '../../../components/admin/KeywordSimilarNotice'
+import { default as default_5682062984cceade4b8bd0a1db2a53bb } from '../../../components/admin/KeywordDuplicatesPanel'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
 /** @type import('payload').ImportMap */
@@ -60,5 +62,7 @@ export const importMap = {
   "/components/admin/DatabaseActions#default": default_7620b2e5b38009d30336ace2ce236f9d,
   "/components/admin/DatabasesLandingPanel#default": default_b2370b07a34732b9bb1a00ec7ce432b6,
   "/components/admin/DatabaseEntriesView#default": default_54c2f028b23ff21ab61a0fc219afe4a5,
+  "/components/admin/KeywordSimilarNotice#default": default_ca4923a18b3f5c175d39388f998e3453,
+  "/components/admin/KeywordDuplicatesPanel#default": default_5682062984cceade4b8bd0a1db2a53bb,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
 }

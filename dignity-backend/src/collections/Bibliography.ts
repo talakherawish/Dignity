@@ -74,6 +74,9 @@ export const Keywords: CollectionConfig = {
     defaultColumns: ['name', 'nameAr', 'updatedAt'],
     description:
       'The shared tag list for Databases and Readings. Pick from it rather than creating near-duplicates -- every keyword becomes a filter on the website.',
+    // Near-duplicates (src/lib/similarity.ts): every similar pair above the
+    // list, and any similar existing keyword under the names while typing.
+    components: { beforeList: ['/components/admin/KeywordDuplicatesPanel'] },
   },
   access: {
     read: () => true,
@@ -108,6 +111,11 @@ export const Keywords: CollectionConfig = {
       admin: { rtl: true },
       validate: (async (value, { req, id }) =>
         notTaken('nameAr', value, req, id)) satisfies KeywordValidation,
+    },
+    {
+      name: 'similar',
+      type: 'ui',
+      admin: { components: { Field: '/components/admin/KeywordSimilarNotice' } },
     },
     {
       // Set from the two names above on save; it's what the admin shows in

@@ -43,7 +43,7 @@ export const BibliographyImports: CollectionConfig = {
     useAsTitle: 'filename',
     defaultColumns: ['filename', 'database', 'status', 'createdAt'],
     description:
-      'Load a bibliography spreadsheet (.xlsx) into a database. Each row becomes a Bibliography Entry you can edit afterwards. The first row of the sheet must hold the column names: Type, Lang, Keywords, Names, Title, Book_title, Journal_name, Year, City, Publisher, Pages, Volume, Issue, URL, DOI, Editors, Annotations. Several names or keywords in one cell are separated by |. An optional second sheet named "Keywords", with English and Arabic columns, pairs each keyword with its translation. Rows already in the database (same title and year) are skipped, so a sheet can be imported again after adding rows to it.',
+      'Load a bibliography spreadsheet (.xlsx) into a database. Each row becomes a Bibliography Entry you can edit afterwards. The first row of the sheet must hold the column names: Type, Lang, Keywords, Names, Title, Book_title, Journal_name, Year, City, Publisher, Pages, Volume, Issue, URL, DOI, Editors, Annotations. Several names or keywords in one cell are separated by |. An optional second sheet named "Keywords", with English and Arabic columns, pairs each keyword with its translation. Rows already in the database, or repeated in the sheet (same title and year, ignoring capitals and punctuation), are skipped, so a sheet can be imported again after adding rows to it. Rows and keywords that are only similar to existing ones (a typo, a hyphen, a dropped subtitle) are imported but listed in the report for checking.',
   },
   upload: {
     mimeTypes: [XLSX],
@@ -123,7 +123,7 @@ export const BibliographyImports: CollectionConfig = {
       label: 'Check only -- create nothing',
       admin: {
         description:
-          'Reads the sheet and reports what would be created, skipped and left untranslated, without changing anything.',
+          'Reads the sheet and reports what would be created, skipped, flagged as similar and left untranslated, without changing anything.',
       },
     },
     {

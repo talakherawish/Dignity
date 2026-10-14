@@ -18,15 +18,22 @@
  *   - the "Copyright status", "website actiom", "format" and "source/access
  *     note" columns from the readings list, kept on each entry for the team.
  *
- * Safe to run again: an entry already in the database with the same title and
- * year is skipped, and keywords are matched to existing ones (ignoring case)
- * before any is created.
+ * Safe to run again: an entry already in the database -- or earlier in the
+ * same sheet -- with the same title and year is skipped, and keywords are
+ * matched to existing ones (ignoring case) before any is created.
+ *
+ * Near misses are imported but reported (src/lib/similarity.ts): a row whose
+ * title is close to one already there, or a new keyword spelled close to an
+ * existing one ("Clientalism" beside "Clientelism"), so the team can check
+ * whether they are the same thing. A "Check only" import shows all of this
+ * before anything is written.
  *
  * exportBibliography (at the end) goes the other way: a database's entries
  * written out as the same sheet, so a file exported here can be edited and
  * imported again.
  */
 import type { Payload } from 'payload'
+import { sameTitle, similarKeywords, similarTitles } from './similarity'
 import { readWorkbook, writeWorkbook, type Row } from './xlsx'
 
 export type ImportReport = {
@@ -36,6 +43,10 @@ export type ImportReport = {
   keywordsUsed: number
   /** Keywords the sheet gave in one language only, so created without a translation. */
   unpaired: string[]
+  /** Rows imported whose title is close to another entry's. */
+  similarEntries: string[]
+  /** New keywords spelled close to another keyword. */
+  similarKeywords: string[]
 }
 
 export const ENTRY_COLUMNS = ['Type', 'Names']
@@ -143,40 +154,61 @@ export async function importBibliography({
 
   const unpaired = new Set<string>()
   const keywordIds = new Map<string, string>()
+  const similarKeywordNotes: string[] = []
+
+  // Every keyword there is, loaded once -- a few hundred short names -- so
+  // each word in the sheet is checked against all of them, and against the
+  // ones this import creates, for near misses as well as exact matches.
+  type Known = { id: string; name?: string; nameAr?: string; isNew?: boolean }
+  const known: Known[] = (
+    await payload.find({ collection: 'keywords', pagination: false, depth: 0 })
+  ).docs.map((doc) => ({
+    id: String(doc.id),
+    name: doc.name ?? undefined,
+    nameAr: doc.nameAr ?? undefined,
+  }))
 
   /** The id of the keyword spelled this way, creating it (and its pair) if new. */
   async function keywordId(raw: string): Promise<string> {
     const text = tidy(raw)
-    const known = keywordIds.get(key(text))
-    if (known) return known
+    const already = keywordIds.get(key(text))
+    if (already) return already
 
     const pair: Pair =
       pairByKey.get(key(text)) ?? (isArabic(text) ? { nameAr: text } : { name: text })
     if (!pairByKey.has(key(text))) unpaired.add(text)
 
     const sides = (['name', 'nameAr'] as const).filter((side) => pair[side])
-    let id: string | undefined
+    let match: Known | undefined
     for (const side of sides) {
-      const { docs } = await payload.find({
-        collection: 'keywords',
-        where: { [side]: { like: pair[side] } },
-        pagination: false,
-        depth: 0,
-      })
-      const match = docs.find((doc) => key(String(doc[side] ?? '')) === key(pair[side]!))
+      match = known.find((k) => k[side] && key(k[side]!) === key(pair[side]!))
       if (!match) continue
-      id = String(match.id)
       // Fill in a missing translation on a keyword that already exists.
       const other = side === 'name' ? 'nameAr' : 'name'
-      if (pair[other] && !match[other] && !dryRun) {
-        await retried(() =>
-          payload.update({ collection: 'keywords', id: match.id, data: { [other]: pair[other] } }),
-        )
+      if (pair[other] && !match[other]) {
+        if (!dryRun) {
+          const id = match.id
+          await retried(() =>
+            payload.update({ collection: 'keywords', id, data: { [other]: pair[other] } }),
+          )
+        }
+        match[other] = pair[other]
       }
       break
     }
-    if (!id) {
-      id = dryRun
+
+    if (!match) {
+      // Not the same as any keyword -- but maybe one letter or a hyphen away.
+      const label = [pair.name, pair.nameAr].filter(Boolean).join(' / ')
+      for (const side of sides) {
+        for (const k of known) {
+          if (k[side] && similarKeywords(k[side]!, pair[side]!)) {
+            const whose = k.isNew ? 'another new keyword from this sheet' : 'the existing keyword'
+            similarKeywordNotes.push(`"${label}" looks like ${whose} "${k[side]}"`)
+          }
+        }
+      }
+      const id = dryRun
         ? `new:${text}`
         : String(
             (
@@ -188,9 +220,11 @@ export async function importBibliography({
               )
             ).id,
           )
+      match = { id, name: pair.name, nameAr: pair.nameAr, isNew: true }
+      known.push(match)
     }
-    for (const side of sides) keywordIds.set(key(pair[side]!), id)
-    return id
+    for (const side of sides) keywordIds.set(key(pair[side]!), match.id)
+    return match.id
   }
 
   // --- Entries ---
@@ -201,35 +235,53 @@ export async function importBibliography({
     failed: [],
     keywordsUsed: 0,
     unpaired: [],
+    similarEntries: [],
+    similarKeywords: [],
   }
 
-  for (const row of entrySheet) {
+  // Every entry already in the database, drafts included, then each row as
+  // it is imported -- what each row is checked against for duplicates.
+  type Seen = { title: string; year: string; where: string }
+  const seen: Seen[] = (
+    await payload.find({
+      collection: 'bibliography-entries',
+      where: { database: { equals: database } },
+      draft: true,
+      pagination: false,
+      depth: 0,
+      select: { title: true, year: true },
+    })
+  ).docs.map((doc) => ({
+    title: doc.title ?? '',
+    year: tidy(doc.year ?? ''),
+    where: 'already in this database',
+  }))
+
+  for (const [index, row] of entrySheet.entries()) {
+    // The sheet's own row number: its first row holds the column names.
+    const rowNumber = index + 2
     const ownTitle = tidy(row.Title)
     const bookTitle = tidy(row.Book_title)
     const title = ownTitle || bookTitle
     if (!title) {
-      report.skipped.push(`No title: ${tidy(row.Names) || '(empty row)'}`)
+      report.skipped.push(`Row ${rowNumber}, no title: ${tidy(row.Names) || '(empty row)'}`)
       continue
     }
     const year = tidy(row.Year)
 
     try {
-      const { docs: existing } = await payload.find({
-        collection: 'bibliography-entries',
-        where: {
-          and: [
-            { database: { equals: database } },
-            { title: { equals: title } },
-            { year: { equals: year } },
-          ],
-        },
-        draft: true,
-        limit: 1,
-        depth: 0,
-      })
-      if (existing[0]) {
-        report.skipped.push(`Already in this database: ${title}`)
+      // The same title (ignoring case, punctuation and letter variants) and year.
+      const duplicate = seen.find((s) => s.year === year && sameTitle(s.title, title))
+      if (duplicate) {
+        report.skipped.push(`Row ${rowNumber}, ${duplicate.where}: ${title}`)
         continue
+      }
+      // Close but not the same -- imported anyway, and listed for checking.
+      for (const s of seen.filter((s) => similarTitles(s.title, title))) {
+        const yearOf = (y: string) => (y ? ` (${y})` : '')
+        report.similarEntries.push(
+          `Row ${rowNumber}: "${title}"${yearOf(year)} looks like "${s.title}"${yearOf(s.year)}, ${s.where}`,
+        )
       }
 
       const lang = key(row.Lang)
@@ -292,13 +344,15 @@ export async function importBibliography({
         )
       }
       report.created++
+      seen.push({ title, year, where: `as row ${rowNumber} of this sheet` })
     } catch (error) {
-      report.failed.push(`${title}: ${(error as Error).message}`)
+      report.failed.push(`Row ${rowNumber}, ${title}: ${(error as Error).message}`)
     }
   }
 
   report.keywordsUsed = new Set(keywordIds.values()).size
   report.unpaired = [...unpaired].sort((a, b) => a.localeCompare(b))
+  report.similarKeywords = [...new Set(similarKeywordNotes)]
   return report
 }
 
@@ -309,8 +363,33 @@ export function formatReport(report: ImportReport, dryRun = false): string {
     `Skipped ${report.skipped.length}. Failed ${report.failed.length}.`,
     `Keywords used: ${report.keywordsUsed}.`,
   ]
+  if (report.similarEntries.length || report.similarKeywords.length) {
+    lines.push(
+      `To check: ${report.similarEntries.length} similar entries, ${report.similarKeywords.length} similar keywords (listed below).`,
+    )
+  }
   if (report.failed.length) lines.push('', 'Failed:', ...report.failed.map((l) => `  ${l}`))
-  if (report.skipped.length) lines.push('', 'Skipped:', ...report.skipped.map((l) => `  ${l}`))
+  if (report.skipped.length) {
+    lines.push(
+      '',
+      'Skipped -- exact duplicates (same title and year) or rows without a title:',
+      ...report.skipped.map((l) => `  ${l}`),
+    )
+  }
+  if (report.similarEntries.length) {
+    lines.push(
+      '',
+      `Similar entries -- ${dryRun ? 'would be imported' : 'imported'}, but check whether each is the same source as the one it looks like, and delete one if so:`,
+      ...report.similarEntries.map((l) => `  ${l}`),
+    )
+  }
+  if (report.similarKeywords.length) {
+    lines.push(
+      '',
+      `Similar keywords -- ${dryRun ? 'would be created' : 'created'}, but check whether each means the same as the one it looks like (the Keywords list shows every such pair at the top):`,
+      ...report.similarKeywords.map((l) => `  ${l}`),
+    )
+  }
   if (report.unpaired.length) {
     lines.push(
       '',
