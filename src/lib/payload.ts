@@ -703,9 +703,54 @@ export function openFileInNewTab(url: string, mimeType?: string): void {
 
 // ── Core fetch ─────────────────────────────────────────────────────────────
 
+/**
+ * Trims documents that arrive *nested* inside another one (Payload's
+ * `populate` option -- it never touches the top-level documents asked for).
+ *
+ * Research lines and Forums/Publications link to each other in both
+ * directions, so every extra level of depth walked the loop again: a forum
+ * pulled in its Idea Factory line, which pulled in all of that line's forums,
+ * each with its full write-up. Idea Factory came back at 1.7 MB after ~45
+ * seconds, Research at 930 KB, and a Brochures listing spent 355 KB of its
+ * 371 KB on research lines it only shows the names of.
+ *
+ * A nested line needs no more than its name and slug (the publication filter
+ * chips are all that read one), and a nested forum, publication, photo or
+ * clipping never reads its own back-links -- so those are left out. Measured
+ * on the live API: Idea Factory 1.7 MB -> 124 KB, Brochures 13 s -> 1 s,
+ * Posters 11 s -> 0.9 s, Research 930 KB -> 108 KB.
+ */
+const LINE_COLLECTIONS = ["research", "idea-factory", "task-force-ai", "windsor-birzeit"];
+const BACKLINK_FIELDS = [
+  "researchLines",
+  "taskForceAILines",
+  "ideaFactoryLines",
+  "windsorBirzeitLines",
+];
+const LINKED_COLLECTIONS = [
+  "forums",
+  "books",
+  "papers",
+  "reports",
+  "brochures",
+  "theses",
+  "audiovisual",
+  "posters",
+  "photos",
+  "clippings",
+];
+const NESTED_POPULATE: Record<string, string> = Object.fromEntries([
+  ...LINE_COLLECTIONS.flatMap((line) =>
+    ["title", "titleAr", "slug"].map((field) => [`populate[${line}][${field}]`, "true"]),
+  ),
+  ...LINKED_COLLECTIONS.flatMap((collection) =>
+    BACKLINK_FIELDS.map((field) => [`populate[${collection}][${field}]`, "false"]),
+  ),
+]);
+
 async function fetchCollection<T>(slug: string, extra: Record<string, string> = {}): Promise<T[]> {
   try {
-    const params = new URLSearchParams({ depth: "1", limit: "100", ...extra });
+    const params = new URLSearchParams({ depth: "1", limit: "100", ...NESTED_POPULATE, ...extra });
     const res = await fetch(`${PAYLOAD_URL}/api/${slug}?${params}`, {
       headers: { "Content-Type": "application/json" },
     });
@@ -764,8 +809,14 @@ export const fetchForums = () =>
  */
 const RESEARCH_DEPTH = "3";
 
+/**
+ * Every research area, for the Research listing and site search. depth 1, not
+ * RESEARCH_DEPTH: neither shows an output's preview image -- the listing reads
+ * each area's own image and counts its outputs, search reads titles and
+ * write-ups -- and the two extra levels made this the slowest call on the site.
+ */
 export const fetchResearch = () =>
-  fetchCollection<PayloadResearchActivity>("research", { depth: RESEARCH_DEPTH });
+  fetchCollection<PayloadResearchActivity>("research", { depth: "1" });
 
 /** One research area by its slug, for its own page. Undefined if no match. */
 export async function fetchResearchBySlug(
