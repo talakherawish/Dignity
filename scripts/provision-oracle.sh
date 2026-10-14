@@ -160,8 +160,14 @@ http {
   include /etc/nginx/mime.types;
   default_type application/octet-stream;
 
+  # text/javascript is what the website's server labels its JS bundles with;
+  # without it the 390 KB main bundle went out uncompressed. gzip_proxied any
+  # compresses responses that came through proxy_pass -- i.e. everything here.
   gzip on;
-  gzip_types text/plain text/css application/json application/javascript
+  gzip_proxied any;
+  gzip_vary on;
+  gzip_comp_level 5;
+  gzip_types text/plain text/css text/javascript application/json application/javascript
              application/x-javascript text/xml application/xml image/svg+xml;
   gzip_min_length 1024;
 
