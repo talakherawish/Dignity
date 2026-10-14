@@ -7,7 +7,8 @@ export const Stickers: CollectionConfig = {
     group: 'Publications',
     useAsTitle: 'title',
     defaultColumns: ['title', 'date', 'status'],
-    description: 'Shows on the website under Publications → Stickers & Bookmarks. Upload one sticker or bookmark image per entry (click the Image field below to upload).',
+    description:
+      'Shows on the website under Publications → Stickers & Bookmarks. Upload one sticker or bookmark image per entry (click the Image field below to upload).',
   },
   versions: {
     drafts: true,

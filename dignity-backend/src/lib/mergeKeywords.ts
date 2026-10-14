@@ -16,7 +16,7 @@ import type { Payload, TypedUser } from 'payload'
  * few hundred updates in one transaction is what Atlas times out.
  */
 
-const TAGGED = ['bibliography-entries', 'readings-documents'] as const
+const TAGGED = ['bibliography-entries', 'readings'] as const
 
 type Ref = string | number | { id: string | number }
 const idOf = (ref: Ref) => String(typeof ref === 'object' ? ref.id : ref)

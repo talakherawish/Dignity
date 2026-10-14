@@ -7,13 +7,20 @@ export const Photos: CollectionConfig = {
     group: 'About the Dignity Initiative',
     useAsTitle: 'title',
     defaultColumns: ['title', 'date', 'status'],
-    description: 'Shows on the website under About the Dignity Initiative → Photos. Upload one photo per entry (click the Image field below to upload).',
+    description:
+      'Shows on the website under About the Dignity Initiative → Photos. Upload one photo per entry (click the Image field below to upload).',
   },
   versions: {
     drafts: true,
   },
   hooks: {
-    afterChange: [mirrorLinksOnChange({ field: 'researchLines', relationTo: 'research', mirrorField: 'relatedPhotos' })],
+    afterChange: [
+      mirrorLinksOnChange({
+        field: 'researchLines',
+        relationTo: 'research',
+        mirrorField: 'relatedPhotos',
+      }),
+    ],
     afterDelete: [mirrorLinksOnDelete({ relationTo: 'research', mirrorField: 'relatedPhotos' })],
   },
   access: {
@@ -89,9 +96,11 @@ export const Photos: CollectionConfig = {
           ({ value, siblingData }) => {
             if (!value || typeof value !== 'object') return null
             const tagged = new Set(
-              (Array.isArray(siblingData?.taggedParticipants) ? siblingData.taggedParticipants : []).map(
-                (person: unknown) =>
-                  String(person && typeof person === 'object' && 'id' in person ? person.id : person),
+              (Array.isArray(siblingData?.taggedParticipants)
+                ? siblingData.taggedParticipants
+                : []
+              ).map((person: unknown) =>
+                String(person && typeof person === 'object' && 'id' in person ? person.id : person),
               ),
             )
             const kept = Object.fromEntries(
@@ -110,7 +119,8 @@ export const Photos: CollectionConfig = {
       label: 'Research Line(s)',
       admin: {
         position: 'sidebar',
-        description: 'Which research line(s) this photo is from. Shows up on that research line\'s page automatically.',
+        description:
+          "Which research line(s) this photo is from. Shows up on that research line's page automatically.",
       },
     },
   ],

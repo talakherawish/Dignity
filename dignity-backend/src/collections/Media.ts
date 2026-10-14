@@ -7,7 +7,8 @@ export const Media: CollectionConfig = {
   slug: 'media',
   admin: {
     group: 'Admin',
-    description: 'All uploaded images and files across the whole site live here. You usually don\'t need to open this directly — upload from the "Image" or "File" field on the entry you\'re editing instead.',
+    description:
+      'All uploaded images and files across the whole site live here. You usually don\'t need to open this directly — upload from the "Image" or "File" field on the entry you\'re editing instead.',
   },
   access: {
     read: () => true,
@@ -23,7 +24,8 @@ export const Media: CollectionConfig = {
       type: 'upload',
       relationTo: 'media',
       admin: {
-        description: 'Preview image shown on the site for PDF uploads (auto-generated from page 1). Left empty for non-PDF files. Pick a different image here to override the auto-generated one.',
+        description:
+          'Preview image shown on the site for PDF uploads (auto-generated from page 1). Left empty for non-PDF files. Pick a different image here to override the auto-generated one.',
       },
     },
     {

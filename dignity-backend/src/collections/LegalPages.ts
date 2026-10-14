@@ -14,7 +14,7 @@ export const Disclaimer = pageCollection(
   'disclaimer',
   'Disclaimer',
   'Disclaimer',
-  'The text of the website\'s Disclaimer page, linked from the bottom of every page. Open the entry below to edit it.',
+  "The text of the website's Disclaimer page, linked from the bottom of every page. Open the entry below to edit it.",
   'Site',
 )
 
@@ -23,6 +23,6 @@ export const PrivacyPolicy = pageCollection(
   'privacy-policy',
   'Privacy Policy',
   'Privacy Policy',
-  'The text of the website\'s Privacy Policy page, linked from the bottom of every page. Open the entry below to edit it.',
+  "The text of the website's Privacy Policy page, linked from the bottom of every page. Open the entry below to edit it.",
   'Site',
 )

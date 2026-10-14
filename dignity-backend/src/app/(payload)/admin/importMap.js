@@ -23,11 +23,11 @@ import { BoldFeatureClient as BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864
 import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { default as default_6af2e4ec27d0cc42b85ea86dff6e6bb0 } from '../../../components/admin/SingletonListView'
 import { default as default_f1a766711852d5c8121b5b52ffd6ad0b } from '../../../components/admin/PhotoTagger'
-import { default as default_fe796a063c78133a219ae9532ba9e850 } from '../../../components/admin/DatabaseTitleCell'
-import { default as default_7620b2e5b38009d30336ace2ce236f9d } from '../../../components/admin/DatabaseActions'
-import { default as default_b2370b07a34732b9bb1a00ec7ce432b6 } from '../../../components/admin/DatabasesLandingPanel'
-import { default as default_54c2f028b23ff21ab61a0fc219afe4a5 } from '../../../components/admin/DatabaseEntriesView'
-import { default as default_a3ca5fc50caa046587def2c7e7a508eb } from '../../../components/admin/EntrySimilarNotice'
+import { default as default_c3e7cb14ab8f6f3c5a94d92c111abef2 } from '../../../components/admin/SubjectTitleCell'
+import { default as default_6db129b3884f297b8b4b113ca6caeb86 } from '../../../components/admin/SubjectActions'
+import { default as default_26c98d4a38c76e7254ee325c3187dc4e } from '../../../components/admin/PageTextPanel'
+import { default as default_0886976399416d1f984424ee717f1707 } from '../../../components/admin/SubjectEntriesView'
+import { default as default_c670e2f65f35473aab9a3db82dc12888 } from '../../../components/admin/SimilarTitleNotice'
 import { default as default_ca4923a18b3f5c175d39388f998e3453 } from '../../../components/admin/KeywordSimilarNotice'
 import { default as default_8624662b00b2d37aef2305906c7abb27 } from '../../../components/admin/KeywordMerge'
 import { default as default_5682062984cceade4b8bd0a1db2a53bb } from '../../../components/admin/KeywordDuplicatesPanel'
@@ -60,11 +60,11 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#ItalicFeatureClient": ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "/components/admin/SingletonListView#default": default_6af2e4ec27d0cc42b85ea86dff6e6bb0,
   "/components/admin/PhotoTagger#default": default_f1a766711852d5c8121b5b52ffd6ad0b,
-  "/components/admin/DatabaseTitleCell#default": default_fe796a063c78133a219ae9532ba9e850,
-  "/components/admin/DatabaseActions#default": default_7620b2e5b38009d30336ace2ce236f9d,
-  "/components/admin/DatabasesLandingPanel#default": default_b2370b07a34732b9bb1a00ec7ce432b6,
-  "/components/admin/DatabaseEntriesView#default": default_54c2f028b23ff21ab61a0fc219afe4a5,
-  "/components/admin/EntrySimilarNotice#default": default_a3ca5fc50caa046587def2c7e7a508eb,
+  "/components/admin/SubjectTitleCell#default": default_c3e7cb14ab8f6f3c5a94d92c111abef2,
+  "/components/admin/SubjectActions#default": default_6db129b3884f297b8b4b113ca6caeb86,
+  "/components/admin/PageTextPanel#default": default_26c98d4a38c76e7254ee325c3187dc4e,
+  "/components/admin/SubjectEntriesView#default": default_0886976399416d1f984424ee717f1707,
+  "/components/admin/SimilarTitleNotice#default": default_c670e2f65f35473aab9a3db82dc12888,
   "/components/admin/KeywordSimilarNotice#default": default_ca4923a18b3f5c175d39388f998e3453,
   "/components/admin/KeywordMerge#default": default_8624662b00b2d37aef2305906c7abb27,
   "/components/admin/KeywordDuplicatesPanel#default": default_5682062984cceade4b8bd0a1db2a53bb,

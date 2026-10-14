@@ -71,7 +71,7 @@ function activityLineFields(): Field[] {
       label: 'Activities (Forums)',
       admin: {
         description:
-          'Seminars, roundtables, workshops, and conferences related to this. Shown under this page\'s Activities section.',
+          "Seminars, roundtables, workshops, and conferences related to this. Shown under this page's Activities section.",
       },
     },
     {
@@ -176,7 +176,7 @@ export const TaskForceAI = activityLineCollection(
   'task-force-ai',
   'Task Force on AI',
   'Task Force on AI',
-  'Shows on the website under Activities → Task Force on AI. Holds a single document -- edit the one that\'s there rather than adding another. The Forums/Publications selected below appear on its page, split into Activities and Publications.',
+  "Shows on the website under Activities → Task Force on AI. Holds a single document -- edit the one that's there rather than adding another. The Forums/Publications selected below appear on its page, split into Activities and Publications.",
   'taskForceAILines',
 )
 
@@ -184,7 +184,7 @@ export const IdeaFactory = activityLineCollection(
   'idea-factory',
   'Idea Factory',
   'Idea Factory',
-  'Shows on the website under Activities → Idea Factory. Holds a single document -- edit the one that\'s there rather than adding another. The Forums/Publications selected below appear on its page, split into Activities and Publications.',
+  "Shows on the website under Activities → Idea Factory. Holds a single document -- edit the one that's there rather than adding another. The Forums/Publications selected below appear on its page, split into Activities and Publications.",
   'ideaFactoryLines',
 )
 
@@ -192,6 +192,6 @@ export const WindsorBirzeit = activityLineCollection(
   'windsor-birzeit',
   'The Windsor Birzeit Dignity Initiative',
   'The Windsor Birzeit Dignity Initiative',
-  'Shows on the website under Activities → The Windsor Birzeit Dignity Initiative. Holds a single document -- edit the one that\'s there rather than adding another. The Title field here is the page\'s own heading; the Forums/Publications selected below appear on its page, split into Activities and Publications.',
+  "Shows on the website under Activities → The Windsor Birzeit Dignity Initiative. Holds a single document -- edit the one that's there rather than adding another. The Title field here is the page's own heading; the Forums/Publications selected below appear on its page, split into Activities and Publications.",
   'windsorBirzeitLines',
 )

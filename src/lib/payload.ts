@@ -305,7 +305,7 @@ export function isYoutubeLink(url: string | undefined): boolean {
 }
 
 /** Same again for the Information menu: one collection per page. */
-export type InformationCollection = "readings-documents" | "databases";
+export type InformationCollection = "reading-lists" | "databases";
 
 export type PayloadInformationItem = {
   id: string;
@@ -321,26 +321,43 @@ export type PayloadInformationItem = {
   fileAr?: PayloadMedia;
 };
 
+export type ReadingType =
+  | "book"
+  | "bookChapter"
+  | "article"
+  | "report"
+  | "document"
+  | "thesis"
+  | "video"
+  | "website"
+  | "other";
+
 /**
- * A text the team has read and written about, under Information → Readings
- * and Documents. The write-up is bilingual; the citation fields describe the
- * text itself and aren't translated.
+ * One reading or document in a Readings and Documents subject: a source that
+ * supports the subject, without an annotation. `otherVersion` is the same
+ * source in the other language (an Arabic translation of an English
+ * declaration, say), which readers of that language are shown first.
  */
-export type PayloadReading = PayloadInformationItem & {
-  /** End of the reading's URL, generated from the English title in the admin. */
-  slug?: string;
+export type PayloadReading = {
+  id: string;
+  itemType: ReadingType;
+  language: "en" | "ar" | "other";
+  title: string;
   authors?: { name: string }[];
+  /** The publisher, journal, website or organisation it is from. */
+  source?: string;
   year?: string;
-  language?: "en" | "ar" | "other";
-  translator?: string;
-  /** Where the text comes from, e.g. "Project Gutenberg, eBook #5682". */
-  sourceName?: string;
-  rights?: "publicDomain" | "openLicence" | "permission" | "linkOnly";
+  link?: string;
+  file?: PayloadMedia;
+  note?: string;
+  otherVersion?: { title?: string; link?: string; file?: PayloadMedia };
   keywords?: (PayloadKeyword | string)[];
-  writtenBy?: (PayloadParticipant | string)[];
 };
 
-/** One annotated bibliography under Information → Databases. */
+/**
+ * One subject: an annotated bibliography under Information → Databases, or a
+ * list of readings under Information → Readings and Documents.
+ */
 export type PayloadDatabase = {
   id: string;
   /** End of the database's URL, generated from the English title in the admin. */
@@ -350,6 +367,9 @@ export type PayloadDatabase = {
   description?: unknown;
   descriptionAr?: unknown;
 };
+
+/** A Readings and Documents subject -- shaped exactly like a database. */
+export type PayloadReadingList = PayloadDatabase;
 
 /** A tag from the shared Keywords collection -- may exist in one language only. */
 export type PayloadKeyword = {
@@ -907,17 +927,6 @@ export const fetchInformation = (collection: InformationCollection) =>
   fetchCollection<PayloadInformationItem>(collection, { joins: "false" });
 
 /**
- * Every reading. depth 2: a reading's file is one hop away and its preview
- * image (the PDF's first page, generated on upload) is a second.
- */
-export const fetchReadings = () =>
-  fetchCollection<PayloadReading>("readings-documents", {
-    depth: "2",
-    pagination: "false",
-    sort: "title",
-  });
-
-/**
  * One document by the end of its address, falling back to its id for one saved
  * before the collection had slugs (the first databases and readings were).
  */
@@ -940,8 +949,28 @@ async function fetchBySlugOrId<T>(
   return undefined;
 }
 
-export const fetchReading = (slugOrId: string) =>
-  fetchBySlugOrId<PayloadReading>("readings-documents", slugOrId, "2");
+export const fetchReadingLists = () =>
+  fetchCollection<PayloadReadingList>("reading-lists", {
+    depth: "0",
+    sort: "title",
+    joins: "false",
+  });
+
+/** One Readings and Documents subject by the end of its address. */
+export const fetchReadingList = (slugOrId: string) =>
+  fetchBySlugOrId<PayloadReadingList>("reading-lists", slugOrId, "0");
+
+/**
+ * Every published reading in one subject, at once -- filtered in the browser,
+ * like a database's entries. depth 1 brings keywords and files as objects.
+ */
+export const fetchReadingItems = (subjectId: string) =>
+  fetchCollection<PayloadReading>("readings", {
+    "where[subject][equals]": subjectId,
+    depth: "1",
+    pagination: "false",
+    sort: "title",
+  });
 
 export const fetchDatabases = () =>
   fetchCollection<PayloadDatabase>("databases", { depth: "0", sort: "title", joins: "false" });
@@ -965,19 +994,23 @@ export const fetchBibliographyEntries = (databaseId: string) =>
     sort: "title",
   });
 
-/** How many published entries each database holds, by database id. */
-export async function fetchBibliographyCounts(): Promise<Record<string, number>> {
-  const entries = await fetchCollection<{ database?: string }>("bibliography-entries", {
+/** How many published items each subject holds, by subject id. */
+async function countBySubject(collection: string, field: string): Promise<Record<string, number>> {
+  const items = await fetchCollection<Record<string, string | undefined>>(collection, {
     depth: "0",
     pagination: "false",
-    "select[database]": "true",
+    [`select[${field}]`]: "true",
   });
   const counts: Record<string, number> = {};
-  for (const entry of entries) {
-    if (entry.database) counts[entry.database] = (counts[entry.database] ?? 0) + 1;
+  for (const item of items) {
+    const subject = item[field];
+    if (subject) counts[subject] = (counts[subject] ?? 0) + 1;
   }
   return counts;
 }
+
+export const fetchBibliographyCounts = () => countBySubject("bibliography-entries", "database");
+export const fetchReadingCounts = () => countBySubject("readings", "subject");
 
 /**
  * The two standalone pages under About — the initiative's own page and
@@ -1030,7 +1063,7 @@ export async function fetchSiteSettings(): Promise<PayloadSiteSettings | null> {
   }
 }
 
-export type PayloadDatabasesPage = {
+export type PayloadPageText = {
   title?: string | null;
   titleAr?: string | null;
   intro?: string | null;
@@ -1038,17 +1071,20 @@ export type PayloadDatabasesPage = {
 };
 
 /**
- * The heading and introduction of Information → Databases, edited at the top
- * of the Databases list in the CMS. Returns null if unreachable, and every
- * field may be empty -- the page falls back to its built-in title.
+ * The heading and introduction of a page listing subjects (Databases,
+ * Readings and Documents), edited at the top of its list in the CMS. Returns
+ * null if unreachable, and every field may be empty -- the page falls back to
+ * its built-in title.
  */
-export async function fetchDatabasesPage(): Promise<PayloadDatabasesPage | null> {
+export async function fetchPageText(
+  global: "databases-page" | "readings-page",
+): Promise<PayloadPageText | null> {
   try {
-    const res = await fetch(`${PAYLOAD_URL}/api/globals/databases-page?depth=0`, {
+    const res = await fetch(`${PAYLOAD_URL}/api/globals/${global}?depth=0`, {
       headers: { "Content-Type": "application/json" },
     });
     if (!res.ok) return null;
-    return (await res.json()) as PayloadDatabasesPage;
+    return (await res.json()) as PayloadPageText;
   } catch {
     return null;
   }

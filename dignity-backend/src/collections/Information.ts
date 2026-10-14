@@ -1,18 +1,37 @@
-import type { CollectionConfig, Field } from 'payload'
+import type { CollectionConfig, CollectionSlug, Field, PayloadRequest } from 'payload'
 import { exportBibliography } from '../lib/bibliographyImport'
+import { exportReadings } from '../lib/readingsImport'
 import { toSlug } from '../lib/slug'
 
 /**
- * The two Information collections, matching the website's Information menu.
+ * The two Information sections, matching the website's Information menu:
+ * Databases and Readings and Documents. Each is a list of subjects, and each
+ * subject has its own page on the website listing its items:
  *
- * They were one `information` collection with a `type` select whose description
- * told editors to "use the Type column/filter to switch between them" — a
- * sidebar line that did not exist on the site, hiding two pages behind a filter.
- * Nothing had ever been added to it, so the split cost no content.
+ * - a database's items are Bibliography Entries (src/collections/Bibliography.ts):
+ *   sources the team has read and annotated, cited in full;
+ * - a Readings and Documents subject's items are Readings
+ *   (src/collections/Readings.ts): sources and documents that support the
+ *   subject, without annotations -- mostly links, sometimes hosted files.
+ *
+ * They are two collections, with their own sidebar links, rather than one with
+ * a "kind" switch: the people editing aren't all technical, and a switch that
+ * decides which page something lands on is easy to get wrong.
+ *
+ * Both work the same way in the admin. The list opens with the heading and
+ * introduction of the website page itself (a page-text global, edited in place
+ * by PageTextPanel), then lists the subjects. Clicking one opens its items tab:
+ * the full items table -- search, filters, select, delete -- limited to that
+ * subject (SubjectEntriesView). Its title, description, spreadsheet download
+ * and spreadsheet imports are on the "Edit" tab beside it. Items and imports
+ * are their own collections underneath, kept out of the sidebar.
+ *
+ * No draft/publish state on a subject: it is only a title and a description,
+ * and its items carry their own.
  */
 
 /** Title and description in both languages. */
-function describedFields(descriptionLabel = 'Description'): Field[] {
+function describedFields(): Field[] {
   return [
     {
       name: 'title',
@@ -29,17 +48,17 @@ function describedFields(descriptionLabel = 'Description'): Field[] {
     {
       name: 'description',
       type: 'richText',
-      label: `${descriptionLabel} (English)`,
+      label: 'Description (English)',
     },
     {
       name: 'descriptionAr',
       type: 'richText',
-      label: `${descriptionLabel} (Arabic / بالعربية)`,
+      label: 'Description (Arabic / بالعربية)',
     },
   ]
 }
 
-/** The end of the item's web address, filled in from the English title. */
+/** The end of the subject's web address, filled in from the English title. */
 const slugField = (noun: string): Field => ({
   name: 'slug',
   type: 'text',
@@ -60,31 +79,65 @@ const fillSlug: NonNullable<NonNullable<CollectionConfig['hooks']>['beforeValida
   return data
 }
 
-function informationCollection(
-  slug: string,
-  singular: string,
-  plural: string,
-  description: string,
-  fields: Field[],
-  defaultColumns: string[],
-): CollectionConfig {
+function subjectCollection({
+  slug,
+  singular,
+  plural,
+  description,
+  pageText,
+  items,
+  field,
+  imports,
+  tab,
+  exportFile,
+}: {
+  slug: CollectionSlug
+  singular: string
+  plural: string
+  description: string
+  /** The page-text global for the website page listing these subjects. */
+  pageText: string
+  /** The items collection, and the field on it naming the subject. */
+  items: CollectionSlug
+  field: string
+  /** The spreadsheet-imports collection for these items. */
+  imports: CollectionSlug
+  /** The items tab: its label, and its path under the subject. */
+  tab: { label: string; path: string }
+  /** The subject's items as an .xlsx, in the import's own format. */
+  exportFile: (req: PayloadRequest, id: string) => Promise<Buffer>
+}): CollectionConfig {
   return {
     slug,
     labels: { singular, plural },
     admin: {
       group: 'Information',
       useAsTitle: 'title',
-      defaultColumns,
+      defaultColumns: ['title', 'slug', 'updatedAt'],
       description,
-    },
-    versions: {
-      drafts: true,
+      components: {
+        beforeList: [
+          {
+            path: '/components/admin/PageTextPanel',
+            clientProps: { global: pageText, pageName: plural, listed: plural.toLowerCase() },
+          },
+        ],
+        views: {
+          edit: {
+            items: {
+              Component: {
+                path: '/components/admin/SubjectEntriesView',
+                serverProps: { items, field },
+              },
+              path: `/${tab.path}`,
+              tab: { label: tab.label, href: `/${tab.path}`, order: 50 },
+            },
+          },
+        },
+      },
     },
     access: {
-      read: ({ req }) => {
-        if (req.user) return true
-        return { _status: { equals: 'published' } }
-      },
+      read: () => true,
       create: ({ req }) => !!req.user,
       update: ({ req }) => !!req.user,
       delete: ({ req }) => !!req.user,
@@ -92,255 +145,94 @@ function informationCollection(
     hooks: {
       beforeValidate: [fillSlug],
     },
-    fields,
+    fields: [
+      ...describedFields().map((f) =>
+        'name' in f && f.name === 'title'
+          ? ({
+              ...f,
+              admin: {
+                ...f.admin,
+                components: {
+                  Cell: {
+                    path: '/components/admin/SubjectTitleCell',
+                    clientProps: { tab: tab.path },
+                  },
+                },
+              },
+            } as Field)
+          : f,
+      ),
+      slugField(singular.toLowerCase()),
+      {
+        name: 'actions',
+        type: 'ui',
+        admin: { components: { Field: '/components/admin/SubjectActions' } },
+      },
+      {
+        name: 'imports',
+        type: 'join',
+        collection: imports,
+        on: field,
+        label: 'Import a spreadsheet',
+        defaultSort: '-createdAt',
+        admin: { defaultColumns: ['filename', 'status', 'createdAt'] },
+      },
+    ],
+    endpoints: [
+      {
+        // GET /api/<subjects>/:id/export -- the subject's items as an .xlsx in
+        // the import's own format. Signed-in only: it carries the internal
+        // notes the website never shows.
+        path: '/:id/export',
+        method: 'get',
+        handler: async (req) => {
+          if (!req.user) return Response.json({ error: 'Sign in first.' }, { status: 403 })
+          const id = String(req.routeParams?.id ?? '')
+          const subject = await req.payload
+            .findByID({ collection: slug, id, depth: 0 })
+            .catch(() => null)
+          if (!subject) return Response.json({ error: 'Not found.' }, { status: 404 })
+          const file = await exportFile(req, id)
+          const name = String((subject as { slug?: string }).slug || slug).replace(
+            /[^a-z0-9-]/gi,
+            '-',
+          )
+          return new Response(new Uint8Array(file), {
+            headers: {
+              'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+              'Content-Disposition': `attachment; filename="${name}.xlsx"`,
+            },
+          })
+        },
+      },
+    ],
   }
 }
 
-/**
- * A reading: one text the team has read and written about -- the write-up in
- * both languages, the text itself where it can be hosted (a public-domain
- * book from Project Gutenberg, say), where it came from, and keywords from
- * the same list the Databases use.
- *
- * Built on the collection's original fields (title, description, link, file
- * and their Arabic halves), relabelled, so anything entered before keeps its
- * place. The citation is kept on the reading itself rather than pointing at a
- * Bibliography Entry: a reading is a curated handful, and making an editor
- * create an entry in some database first, just to cite one book, is a detour.
- */
-export const ReadingsAndDocuments = informationCollection(
-  'readings-documents',
-  'Reading',
-  'Readings and Documents',
-  'A text the team has read and written about. Shows on the website under Information → Readings and Documents, each with its own page.',
-  [
-    ...describedFields('Write-up'),
-    slugField('reading'),
-    {
-      type: 'collapsible',
-      label: 'The text',
-      fields: [
-        {
-          name: 'authors',
-          type: 'array',
-          label: 'Author(s) of the text',
-          labels: { singular: 'Author', plural: 'Authors' },
-          fields: [{ name: 'name', type: 'text', required: true }],
-        },
-        {
-          type: 'row',
-          fields: [
-            {
-              name: 'year',
-              type: 'text',
-              label: 'Year first published',
-              admin: { width: '25%' },
-            },
-            {
-              name: 'language',
-              type: 'select',
-              label: 'Language of the text',
-              defaultValue: 'en',
-              admin: { width: '25%' },
-              options: [
-                { label: 'English', value: 'en' },
-                { label: 'Arabic', value: 'ar' },
-                { label: 'Other', value: 'other' },
-              ],
-            },
-            {
-              name: 'translator',
-              type: 'text',
-              label: 'Translated by',
-              admin: { width: '50%', description: 'If the text is a translation.' },
-            },
-          ],
-        },
-        {
-          name: 'sourceName',
-          type: 'text',
-          label: 'Source',
-          admin: {
-            description:
-              'Where the text comes from, as readers should see it -- e.g. "Project Gutenberg, eBook #5682".',
-          },
-        },
-        {
-          name: 'rights',
-          type: 'select',
-          label: 'Why it can be shared',
-          admin: {
-            description:
-              'Shown to readers next to the file. Only host a file that is public domain, openly licensed, or shared with permission -- otherwise give the link alone.',
-          },
-          options: [
-            { label: 'Public domain', value: 'publicDomain' },
-            { label: 'Open licence', value: 'openLicence' },
-            { label: 'Shared with permission', value: 'permission' },
-            { label: 'Link only -- not hosted here', value: 'linkOnly' },
-          ],
-        },
-        {
-          name: 'file',
-          type: 'upload',
-          relationTo: 'media',
-          label: 'The text (PDF)',
-          admin: {
-            description:
-              'Shown to readers in both languages unless an Arabic-only file is set below.',
-          },
-        },
-        {
-          name: 'fileAr',
-          type: 'upload',
-          relationTo: 'media',
-          label: 'The text in Arabic, if different (نسخة عربية مختلفة)',
-          admin: {
-            description:
-              'Only needed when there is a separate Arabic edition or translation. Leave empty to show the same file to everyone.',
-          },
-        },
-        {
-          name: 'link',
-          type: 'text',
-          label: 'Link to the source (URL)',
-          admin: {
-            description:
-              'The text online, e.g. its Project Gutenberg page. Shown in both languages unless an Arabic-only link is set below.',
-          },
-        },
-        {
-          name: 'linkAr',
-          type: 'text',
-          label: 'Link to the source (Arabic only, if different / رابط عربي مختلف)',
-          admin: {
-            rtl: true,
-            description: 'Only needed when the Arabic destination differs from the link above.',
-          },
-        },
-      ],
-    },
-    {
-      name: 'keywords',
-      type: 'relationship',
-      relationTo: 'keywords',
-      hasMany: true,
-      admin: { position: 'sidebar' },
-    },
-    {
-      name: 'writtenBy',
-      type: 'relationship',
-      relationTo: 'participants',
-      hasMany: true,
-      label: 'Write-up by',
-      admin: {
-        position: 'sidebar',
-        description:
-          'Who read the text and wrote this up. Pick from the Working Group, or Create New.',
-      },
-    },
-  ],
-  ['title', 'year', 'updatedAt'],
-)
+export const Databases = subjectCollection({
+  slug: 'databases',
+  singular: 'Database',
+  plural: 'Databases',
+  description:
+    'Each database is one subject: sources the team has read and annotated, with its own page on the website. Click a database to see and edit its entries.',
+  pageText: 'databases-page',
+  items: 'bibliography-entries',
+  field: 'database',
+  imports: 'bibliography-imports',
+  tab: { label: 'Entries', path: 'entries' },
+  exportFile: (req, id) => exportBibliography(req.payload, id),
+})
 
-/**
- * Each item is one annotated bibliography -- one subject, with its own page on
- * the website under Information → Databases. Its sources are Bibliography
- * Entries (src/collections/Bibliography.ts), each pointing back at the
- * database it belongs to.
- *
- * The Databases list opens with the heading and introduction of the website's
- * Databases page itself (the Databases Page global, edited in place by
- * DatabasesLandingPanel), then lists the databases. Clicking one opens its
- * Entries tab: the full entries table -- search, filters, select, delete --
- * limited to that database (DatabaseEntriesView). Its title, description and
- * spreadsheet imports are on the "Edit" tab beside it.
- *
- * Entries and imports are still their own collections underneath -- that is
- * what lets each entry be edited, drafted and filtered on its own -- but they
- * are kept out of the sidebar (admin.group: false on each).
- *
- * No draft/publish state: a database is only a title and a description, and
- * its entries carry their own.
- */
-const databases = informationCollection(
-  'databases',
-  'Database',
-  'Databases',
-  'Each database is one subject, with its own page on the website. Click a database to see and edit its entries.',
-  [
-    ...describedFields().map((field) =>
-      'name' in field && field.name === 'title'
-        ? ({
-            ...field,
-            admin: { ...field.admin, components: { Cell: '/components/admin/DatabaseTitleCell' } },
-          } as Field)
-        : field,
-    ),
-    slugField('database'),
-    {
-      name: 'actions',
-      type: 'ui',
-      admin: { components: { Field: '/components/admin/DatabaseActions' } },
-    },
-    {
-      name: 'imports',
-      type: 'join',
-      collection: 'bibliography-imports',
-      on: 'database',
-      label: 'Import a spreadsheet',
-      defaultSort: '-createdAt',
-      admin: { defaultColumns: ['filename', 'status', 'createdAt'] },
-    },
-  ],
-  ['title', 'slug', 'updatedAt'],
-)
-
-export const Databases: CollectionConfig = {
-  ...databases,
-  admin: {
-    ...databases.admin,
-    components: {
-      beforeList: ['/components/admin/DatabasesLandingPanel'],
-      views: {
-        edit: {
-          entries: {
-            Component: '/components/admin/DatabaseEntriesView',
-            path: '/entries',
-            tab: { label: 'Entries', href: '/entries', order: 50 },
-          },
-        },
-      },
-    },
-  },
-  versions: false,
-  access: {
-    ...databases.access,
-    read: () => true,
-  },
-  endpoints: [
-    {
-      // GET /api/databases/:id/export -- the database's entries as an .xlsx
-      // in the import's own format. Signed-in only: it carries the internal
-      // notes and copyright statuses the website never shows.
-      path: '/:id/export',
-      method: 'get',
-      handler: async (req) => {
-        if (!req.user) return Response.json({ error: 'Sign in first.' }, { status: 403 })
-        const id = String(req.routeParams?.id ?? '')
-        const database = await req.payload
-          .findByID({ collection: 'databases', id, depth: 0 })
-          .catch(() => null)
-        if (!database) return Response.json({ error: 'No such database.' }, { status: 404 })
-        const file = await exportBibliography(req.payload, id)
-        const name = (database.slug || 'bibliography').replace(/[^a-z0-9-]/gi, '-')
-        return new Response(new Uint8Array(file), {
-          headers: {
-            'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            'Content-Disposition': `attachment; filename="${name}.xlsx"`,
-          },
-        })
-      },
-    },
-  ],
-}
+export const ReadingLists = subjectCollection({
+  slug: 'reading-lists',
+  singular: 'Subject',
+  plural: 'Readings and Documents',
+  description:
+    'Each subject has its own page on the website listing readings and documents that support it -- links and files, without annotations. Click a subject to see and edit its readings.',
+  pageText: 'readings-page',
+  items: 'readings',
+  field: 'subject',
+  imports: 'reading-imports',
+  tab: { label: 'Readings', path: 'readings' },
+  exportFile: (req, id) => exportReadings(req.payload, id),
+})

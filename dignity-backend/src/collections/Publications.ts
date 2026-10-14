@@ -34,7 +34,8 @@ function publicationFields(): Field[] {
       type: 'text',
       label: 'Author/Authors (English)',
       admin: {
-        description: 'Type a name freehand, or leave this blank and pick people from Participants below instead.',
+        description:
+          'Type a name freehand, or leave this blank and pick people from Participants below instead.',
       },
     },
     {
@@ -51,7 +52,7 @@ function publicationFields(): Field[] {
       label: 'Author(s) from Participants',
       admin: {
         description:
-          'Pick existing people instead of typing a name above. When this is set, these are shown in place of the typed Author field, each linking to that person\'s profile under About → Participants.',
+          "Pick existing people instead of typing a name above. When this is set, these are shown in place of the typed Author field, each linking to that person's profile under About → Participants.",
       },
     },
     {
@@ -64,7 +65,8 @@ function publicationFields(): Field[] {
         category: { equals: 'speaker' },
       },
       admin: {
-        description: 'Pick people tagged as Speaker under About → Participants, if this item credits any.',
+        description:
+          'Pick people tagged as Speaker under About → Participants, if this item credits any.',
       },
     },
     {
@@ -135,7 +137,8 @@ function publicationFields(): Field[] {
       label: 'Research Line(s)',
       admin: {
         position: 'sidebar',
-        description: 'Which research line(s) this is an output of. Shows up on that research line\'s page automatically.',
+        description:
+          "Which research line(s) this is an output of. Shows up on that research line's page automatically.",
       },
     },
     {
@@ -146,7 +149,7 @@ function publicationFields(): Field[] {
       label: 'Task Force on AI',
       admin: {
         position: 'sidebar',
-        description: 'Shows up under that page\'s Publications section automatically.',
+        description: "Shows up under that page's Publications section automatically.",
       },
     },
     {
@@ -157,7 +160,7 @@ function publicationFields(): Field[] {
       label: 'Idea Factory',
       admin: {
         position: 'sidebar',
-        description: 'Shows up under that page\'s Publications section automatically.',
+        description: "Shows up under that page's Publications section automatically.",
       },
     },
     {
@@ -168,7 +171,7 @@ function publicationFields(): Field[] {
       label: 'Windsor-Birzeit',
       admin: {
         position: 'sidebar',
-        description: 'Shows up under that page\'s Publications section automatically.',
+        description: "Shows up under that page's Publications section automatically.",
       },
     },
   ]
@@ -205,10 +208,26 @@ function publicationCollection(
     },
     hooks: {
       afterChange: [
-        mirrorLinksOnChange({ field: 'researchLines', relationTo: 'research', mirrorField: relatedField }),
-        mirrorLinksOnChange({ field: 'taskForceAILines', relationTo: 'task-force-ai', mirrorField: relatedField }),
-        mirrorLinksOnChange({ field: 'ideaFactoryLines', relationTo: 'idea-factory', mirrorField: relatedField }),
-        mirrorLinksOnChange({ field: 'windsorBirzeitLines', relationTo: 'windsor-birzeit', mirrorField: relatedField }),
+        mirrorLinksOnChange({
+          field: 'researchLines',
+          relationTo: 'research',
+          mirrorField: relatedField,
+        }),
+        mirrorLinksOnChange({
+          field: 'taskForceAILines',
+          relationTo: 'task-force-ai',
+          mirrorField: relatedField,
+        }),
+        mirrorLinksOnChange({
+          field: 'ideaFactoryLines',
+          relationTo: 'idea-factory',
+          mirrorField: relatedField,
+        }),
+        mirrorLinksOnChange({
+          field: 'windsorBirzeitLines',
+          relationTo: 'windsor-birzeit',
+          mirrorField: relatedField,
+        }),
       ],
       afterDelete: [
         mirrorLinksOnDelete({ relationTo: 'research', mirrorField: relatedField }),

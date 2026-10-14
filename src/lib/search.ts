@@ -114,7 +114,7 @@ export async function buildSearchIndex(): Promise<SearchResult[]> {
     fetchResearch(),
     fetchParticipants(),
     fetchClippings(),
-    fetchInformation("readings-documents"),
+    fetchInformation("reading-lists"),
     fetchInformation("databases"),
     fetchAboutInitiative(),
     fetchPartners(),
@@ -201,8 +201,8 @@ export async function buildSearchIndex(): Promise<SearchResult[]> {
     );
   }
 
-  // Each reading and database has its own page, at its slug (or its id, for
-  // one saved before slugs existed).
+  // Each Readings and Documents subject and each database has its own page,
+  // at its slug (or its id, for one saved before slugs existed).
   const infoGroups: { items: typeof readings; typeKey: TranslationKey; to: string }[] = [
     { items: readings, typeKey: "information.readings", to: "/information/readings/" },
     { items: databases, typeKey: "information.databases", to: "/information/databases/" },

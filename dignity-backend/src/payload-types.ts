@@ -89,7 +89,9 @@ export interface Config {
     theses: Thesis;
     audiovisual: Audiovisual;
     posters: Poster;
-    'readings-documents': ReadingsDocument;
+    'reading-lists': ReadingList;
+    readings: Reading;
+    'reading-imports': ReadingImport;
     databases: Database;
     'bibliography-entries': BibliographyEntry;
     keywords: Keyword;
@@ -102,6 +104,9 @@ export interface Config {
     'payload-migrations': PayloadMigration;
   };
   collectionsJoins: {
+    'reading-lists': {
+      imports: 'reading-imports';
+    };
     databases: {
       imports: 'bibliography-imports';
     };
@@ -129,7 +134,9 @@ export interface Config {
     theses: ThesesSelect<false> | ThesesSelect<true>;
     audiovisual: AudiovisualSelect<false> | AudiovisualSelect<true>;
     posters: PostersSelect<false> | PostersSelect<true>;
-    'readings-documents': ReadingsDocumentsSelect<false> | ReadingsDocumentsSelect<true>;
+    'reading-lists': ReadingListsSelect<false> | ReadingListsSelect<true>;
+    readings: ReadingsSelect<false> | ReadingsSelect<true>;
+    'reading-imports': ReadingImportsSelect<false> | ReadingImportsSelect<true>;
     databases: DatabasesSelect<false> | DatabasesSelect<true>;
     'bibliography-entries': BibliographyEntriesSelect<false> | BibliographyEntriesSelect<true>;
     keywords: KeywordsSelect<false> | KeywordsSelect<true>;
@@ -148,10 +155,12 @@ export interface Config {
   globals: {
     'site-settings': SiteSetting;
     'databases-page': DatabasesPage;
+    'readings-page': ReadingsPage;
   };
   globalsSelect: {
     'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
     'databases-page': DatabasesPageSelect<false> | DatabasesPageSelect<true>;
+    'readings-page': ReadingsPageSelect<false> | ReadingsPageSelect<true>;
   };
   locale: null;
   widgets: {
@@ -1552,12 +1561,12 @@ export interface PartnerItem {
   _status?: ('draft' | 'published') | null;
 }
 /**
- * A text the team has read and written about. Shows on the website under Information → Readings and Documents, each with its own page.
+ * Each subject has its own page on the website listing readings and documents that support it -- links and files, without annotations. Click a subject to see and edit its readings.
  *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "readings-documents".
+ * via the `definition` "reading-lists".
  */
-export interface ReadingsDocument {
+export interface ReadingList {
   id: string;
   title: string;
   titleAr: string;
@@ -1592,50 +1601,118 @@ export interface ReadingsDocument {
     [k: string]: unknown;
   } | null;
   /**
-   * Filled in automatically from the English title. It is the end of this reading's web address, so changing it after the page has been shared will break the old link.
+   * Filled in automatically from the English title. It is the end of this subject's web address, so changing it after the page has been shared will break the old link.
    */
   slug?: string | null;
+  imports?: {
+    docs?: (string | ReadingImport)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  updatedBy?: (string | null) | User;
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  createdBy?: (string | null) | User;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Load a list of readings and documents (.xlsx) into a subject. Each row becomes a Reading you can edit afterwards. The first row of the sheet must hold the column names; Title is the only one required. Also read: Type, Lang, Names (authors), Source, Year, URL, Keywords, Note, Internal note, and Other_title and Other_URL for the same source in the other language. A bibliography export (Book_title, Journal_name, Website_name, Publisher, Page_url ...) is read too. Several names or keywords in one cell are separated by |. An optional second sheet named "Keywords", with English and Arabic columns, pairs each keyword with its translation. Rows already there, or repeated in the sheet (same title and year, ignoring capitals and punctuation), are skipped, so a sheet can be imported again after adding rows to it. Rows and keywords that are only similar to existing ones (a typo, a hyphen, a dropped subtitle) are imported but listed in the report for checking.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "reading-imports".
+ */
+export interface ReadingImport {
+  id: string;
+  /**
+   * Where the readings go.
+   */
+  subject: string | ReadingList;
+  /**
+   * Left unticked, the readings are saved as drafts to be checked and published one by one.
+   */
+  publish?: boolean | null;
+  /**
+   * Reads the sheet and reports what would be created, skipped, flagged as similar and left untranslated, without changing anything.
+   */
+  dryRun?: boolean | null;
+  status?: ('running' | 'done' | 'doneWithErrors' | 'failed') | null;
+  report?: string | null;
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  updatedBy?: (string | null) | User;
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  createdBy?: (string | null) | User;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+}
+/**
+ * A reading or document in a Readings and Documents subject. Shows on the website in its subject’s list.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "readings".
+ */
+export interface Reading {
+  id: string;
+  subject: string | ReadingList;
+  itemType: 'book' | 'bookChapter' | 'article' | 'report' | 'document' | 'thesis' | 'video' | 'website' | 'other';
+  language: 'en' | 'ar' | 'other';
+  /**
+   * In the source's own language.
+   */
+  title: string;
   authors?:
     | {
         name: string;
         id?: string | null;
       }[]
     | null;
+  /**
+   * The publisher, journal, website or organisation, e.g. "Project Gutenberg" or "World Medical Association".
+   */
+  source?: string | null;
   year?: string | null;
-  language?: ('en' | 'ar' | 'other') | null;
   /**
-   * If the text is a translation.
-   */
-  translator?: string | null;
-  /**
-   * Where the text comes from, as readers should see it -- e.g. "Project Gutenberg, eBook #5682".
-   */
-  sourceName?: string | null;
-  /**
-   * Shown to readers next to the file. Only host a file that is public domain, openly licensed, or shared with permission -- otherwise give the link alone.
-   */
-  rights?: ('publicDomain' | 'openLicence' | 'permission' | 'linkOnly') | null;
-  /**
-   * Shown to readers in both languages unless an Arabic-only file is set below.
-   */
-  file?: (string | null) | Media;
-  /**
-   * Only needed when there is a separate Arabic edition or translation. Leave empty to show the same file to everyone.
-   */
-  fileAr?: (string | null) | Media;
-  /**
-   * The text online, e.g. its Project Gutenberg page. Shown in both languages unless an Arabic-only link is set below.
+   * Where the source can be read or watched online.
    */
   link?: string | null;
   /**
-   * Only needed when the Arabic destination differs from the link above.
+   * Only for documents that are public domain, openly licensed, or shared with permission. If there is both a link and a file, the file is offered as a download.
    */
-  linkAr?: string | null;
+  file?: (string | null) | Media;
+  /**
+   * Optional: a line on what it is or why it is here. Shown under the title on the website.
+   */
+  note?: string | null;
+  /**
+   * If the source also exists in Arabic (or, for an Arabic source, in English) -- a translation or the official other-language edition. Readers of that language see this version first.
+   */
+  otherVersion?: {
+    title?: string | null;
+    link?: string | null;
+    file?: (string | null) | Media;
+  };
   keywords?: (string | Keyword)[] | null;
   /**
-   * Who read the text and wrote this up. Pick from the Working Group, or Create New.
+   * For the team only -- never shown on the website.
    */
-  writtenBy?: (string | Participant)[] | null;
+  internalNote?: string | null;
   /**
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
@@ -1675,7 +1752,7 @@ export interface Keyword {
   createdAt: string;
 }
 /**
- * Each database is one subject, with its own page on the website. Click a database to see and edit its entries.
+ * Each database is one subject: sources the team has read and annotated, with its own page on the website. Click a database to see and edit its entries.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "databases".
@@ -1735,7 +1812,7 @@ export interface Database {
   createdAt: string;
 }
 /**
- * Load a bibliography spreadsheet (.xlsx) into a database. Each row becomes a Bibliography Entry you can edit afterwards. The first row of the sheet must hold the column names: Type, Lang, Keywords, Names, Title, Book_title, Journal_name, Year, City, Publisher, Pages, Volume, Issue, URL, DOI, Editors, Annotations. Several names or keywords in one cell are separated by |. An optional second sheet named "Keywords", with English and Arabic columns, pairs each keyword with its translation. Rows already in the database (same title and year) are skipped, so a sheet can be imported again after adding rows to it.
+ * Load a bibliography spreadsheet (.xlsx) into a database. Each row becomes a Bibliography Entry you can edit afterwards. The first row of the sheet must hold the column names: Type, Lang, Keywords, Names, Title, Book_title, Journal_name, Year, City, Publisher, Pages, Volume, Issue, URL, DOI, Editors, Annotations. Several names or keywords in one cell are separated by |. An optional second sheet named "Keywords", with English and Arabic columns, pairs each keyword with its translation. Rows already there, or repeated in the sheet (same title and year, ignoring capitals and punctuation), are skipped, so a sheet can be imported again after adding rows to it. Rows and keywords that are only similar to existing ones (a typo, a hyphen, a dropped subtitle) are imported but listed in the report for checking.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "bibliography-imports".
@@ -1743,15 +1820,15 @@ export interface Database {
 export interface BibliographyImport {
   id: string;
   /**
-   * The database the entries go into. Create it under Databases first.
+   * Where the entries go.
    */
   database: string | Database;
   /**
-   * Left unticked, every entry is saved as a draft to be checked and published one by one.
+   * Left unticked, the entries are saved as drafts to be checked and published one by one.
    */
   publish?: boolean | null;
   /**
-   * Reads the sheet and reports what would be created, skipped and left untranslated, without changing anything.
+   * Reads the sheet and reports what would be created, skipped, flagged as similar and left untranslated, without changing anything.
    */
   dryRun?: boolean | null;
   status?: ('running' | 'done' | 'doneWithErrors' | 'failed') | null;
@@ -2075,8 +2152,16 @@ export interface PayloadLockedDocument {
         value: string | Poster;
       } | null)
     | ({
-        relationTo: 'readings-documents';
-        value: string | ReadingsDocument;
+        relationTo: 'reading-lists';
+        value: string | ReadingList;
+      } | null)
+    | ({
+        relationTo: 'readings';
+        value: string | Reading;
+      } | null)
+    | ({
+        relationTo: 'reading-imports';
+        value: string | ReadingImport;
       } | null)
     | ({
         relationTo: 'databases';
@@ -2728,37 +2813,79 @@ export interface PostersSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "readings-documents_select".
+ * via the `definition` "reading-lists_select".
  */
-export interface ReadingsDocumentsSelect<T extends boolean = true> {
+export interface ReadingListsSelect<T extends boolean = true> {
   title?: T;
   titleAr?: T;
   description?: T;
   descriptionAr?: T;
   slug?: T;
+  imports?: T;
+  updatedBy?: T;
+  createdBy?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "readings_select".
+ */
+export interface ReadingsSelect<T extends boolean = true> {
+  subject?: T;
+  itemType?: T;
+  language?: T;
+  title?: T;
   authors?:
     | T
     | {
         name?: T;
         id?: T;
       };
+  source?: T;
   year?: T;
-  language?: T;
-  translator?: T;
-  sourceName?: T;
-  rights?: T;
-  file?: T;
-  fileAr?: T;
   link?: T;
-  linkAr?: T;
+  file?: T;
+  note?: T;
+  otherVersion?:
+    | T
+    | {
+        title?: T;
+        link?: T;
+        file?: T;
+      };
   keywords?: T;
-  writtenBy?: T;
+  internalNote?: T;
   publicationStatus?: T;
   updatedBy?: T;
   createdBy?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "reading-imports_select".
+ */
+export interface ReadingImportsSelect<T extends boolean = true> {
+  subject?: T;
+  publish?: T;
+  dryRun?: T;
+  status?: T;
+  report?: T;
+  updatedBy?: T;
+  createdBy?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -3086,6 +3213,23 @@ export interface DatabasesPage {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "readings-page".
+ */
+export interface ReadingsPage {
+  id: string;
+  title?: string | null;
+  titleAr?: string | null;
+  intro?: string | null;
+  introAr?: string | null;
+  /**
+   * Set automatically -- not editable by hand.
+   */
+  updatedBy?: (string | null) | User;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "site-settings_select".
  */
 export interface SiteSettingsSelect<T extends boolean = true> {
@@ -3216,6 +3360,20 @@ export interface SiteSettingsSelect<T extends boolean = true> {
  * via the `definition` "databases-page_select".
  */
 export interface DatabasesPageSelect<T extends boolean = true> {
+  title?: T;
+  titleAr?: T;
+  intro?: T;
+  introAr?: T;
+  updatedBy?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "readings-page_select".
+ */
+export interface ReadingsPageSelect<T extends boolean = true> {
   title?: T;
   titleAr?: T;
   intro?: T;

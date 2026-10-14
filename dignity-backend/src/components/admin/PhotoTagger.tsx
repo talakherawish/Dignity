@@ -112,8 +112,8 @@ export default function PhotoTagger({ path }: { path: string }) {
       ) : (
         <>
           <p style={{ ...muted, marginBottom: 'calc(var(--base) / 2)' }}>
-            Click a name, then click on that person in the photo. Click again somewhere else to
-            move them. People you don’t place are still tagged and listed under the photo.
+            Click a name, then click on that person in the photo. Click again somewhere else to move
+            them. People you don’t place are still tagged and listed under the photo.
           </p>
           <div
             style={{
@@ -134,7 +134,9 @@ export default function PhotoTagger({ path }: { path: string }) {
                     alignItems: 'center',
                     borderRadius: 999,
                     border: `1px solid ${isSelected ? 'var(--theme-success-500)' : 'var(--theme-elevation-200)'}`,
-                    background: isSelected ? 'var(--theme-success-100)' : 'var(--theme-elevation-50)',
+                    background: isSelected
+                      ? 'var(--theme-success-100)'
+                      : 'var(--theme-elevation-50)',
                     fontSize: 13,
                   }}
                 >

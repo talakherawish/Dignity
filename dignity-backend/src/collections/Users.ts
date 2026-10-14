@@ -27,7 +27,7 @@ export const Users: CollectionConfig = {
       },
       admin: {
         description:
-          'Only a Content Manager can change this. Editors can do everything else — including editing other users\' profiles — except add or remove accounts.',
+          "Only a Content Manager can change this. Editors can do everything else — including editing other users' profiles — except add or remove accounts.",
       },
       options: [
         { label: 'Content Manager', value: 'content-manager' },

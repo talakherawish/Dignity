@@ -1,4 +1,4 @@
-import type { PayloadBibliographyEntry, PayloadReading } from "@/lib/payload";
+import type { PayloadBibliographyEntry } from "@/lib/payload";
 
 /**
  * Citations in Chicago bibliography style (17th ed., notes-and-bibliography),
@@ -20,7 +20,7 @@ import type { PayloadBibliographyEntry, PayloadReading } from "@/lib/payload";
 /** One run of a citation; italic runs are the titles of whole works. */
 export type Segment = { text: string; italic?: boolean };
 
-/** What a citation is built from -- a bibliography entry or a reading. */
+/** What a citation is built from -- a bibliography entry. */
 export type CitationSource = {
   kind: "book" | "chapter" | "article" | "report" | "thesis" | "website";
   arabic: boolean;
@@ -321,19 +321,6 @@ export const entrySource = (entry: PayloadBibliographyEntry): CitationSource => 
   reportType: entry.reportType,
   url: entry.url,
   doi: entry.doi,
-});
-
-/** A reading's text, cited as a book from its source (e.g. Project Gutenberg). */
-export const readingSource = (reading: PayloadReading): CitationSource => ({
-  kind: "book",
-  arabic: reading.language === "ar",
-  title: reading.language === "ar" ? (reading.titleAr ?? reading.title) : reading.title,
-  authors: (reading.authors ?? []).map((a) => a.name),
-  editors: [],
-  translator: reading.translator,
-  year: reading.year,
-  publisher: reading.sourceName,
-  url: reading.link,
 });
 
 const escape = (text: string) =>

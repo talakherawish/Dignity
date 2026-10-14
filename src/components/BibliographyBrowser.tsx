@@ -55,11 +55,11 @@ const LANGUAGE_LABEL: Record<PayloadBibliographyEntry["language"], TranslationKe
 };
 
 /** A round mark the size of the open/close mark, for the entry's source. */
-const SOURCE_MARK =
+export const SOURCE_MARK =
   "group/mark relative grid h-8 w-8 place-items-center rounded-full border border-border text-muted-foreground transition-colors duration-300 hover:border-[color:var(--brand-magenta)] hover:text-[color:var(--brand-magenta)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--brand-magenta)]";
 
 /** What a round mark does, shown beside it while it's hovered or focused. */
-function MarkTip({ children }: { children: ReactNode }) {
+export function MarkTip({ children }: { children: ReactNode }) {
   const { isArabic } = useLanguage();
   return (
     <span
@@ -75,7 +75,7 @@ function MarkTip({ children }: { children: ReactNode }) {
 }
 
 /** An entry's source, opened in a new tab: its link, or else its uploaded file. */
-function SourceLink({
+export function SourceLink({
   href,
   file,
   mimeType,
@@ -113,10 +113,10 @@ function SourceLink({
   );
 }
 
-const smallCaps = (isArabic: boolean) =>
+export const smallCaps = (isArabic: boolean) =>
   "uppercase tracking-[0.2em] " + (isArabic ? "text-[15px]" : "text-[10px] md:text-[11px]");
 
-function FilterSelect({
+export function FilterSelect({
   label,
   value,
   options,
@@ -155,7 +155,7 @@ function FilterSelect({
  * and -- for a name -- in the other order, since a citation leads with its
  * first author surname first ("John Smith" and "Smith, John" find each other).
  */
-function searchNeedles(query: string | undefined): string[] {
+export function searchNeedles(query: string | undefined): string[] {
   const typed = query?.trim();
   if (!typed) return [];
   const forms = [typed, invert(typed, false), invert(typed, true), uninvert(typed)];

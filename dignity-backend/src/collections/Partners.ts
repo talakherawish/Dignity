@@ -119,7 +119,7 @@ export const Partners: CollectionConfig = {
       max: YEAR_MAX,
       admin: {
         description:
-          'Leave empty if the year isn\'t known. On its own it shows as a single year; fill in the one below as well to show a span.',
+          "Leave empty if the year isn't known. On its own it shows as a single year; fill in the one below as well to show a span.",
       },
     },
     {
@@ -129,7 +129,8 @@ export const Partners: CollectionConfig = {
       min: YEAR_MIN,
       max: YEAR_MAX,
       admin: {
-        description: 'Only for a partnership that has ended, or one with an agreed end. Leave empty for an ongoing one.',
+        description:
+          'Only for a partnership that has ended, or one with an agreed end. Leave empty for an ongoing one.',
       },
       validate: (value: unknown, { siblingData }: { siblingData?: unknown }): string | true => {
         if (typeof value !== 'number') return true

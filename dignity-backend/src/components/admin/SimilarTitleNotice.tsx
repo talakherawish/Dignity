@@ -4,35 +4,48 @@ import { useEffect, useState } from 'react'
 import { sameTitle, similarTitles } from '../../lib/similarity'
 
 /**
- * Under an entry's title, as it is typed: any entry in the same database with
- * the same or a nearly identical title -- the check the spreadsheet import
- * makes (src/lib/bibliographyImport.ts), for entries added by hand. Only a
- * warning: two sources can share a title (a book and its review, a new
- * edition), so saving stays possible.
+ * Under an item's title, as it is typed: any item in the same subject with the
+ * same or a nearly identical title -- the check the spreadsheet imports make
+ * (src/lib/bibliographyImport.ts, src/lib/readingsImport.ts), for items added
+ * by hand. Used by bibliography entries (subject field `database`) and
+ * readings (`subject`), set as clientProps in each config. Only a warning:
+ * two sources can share a title (a book and its review, a new edition), so
+ * saving stays possible.
  */
 
-type Entry = { id: string; title?: string | null; year?: string | null }
+type Item = { id: string; title?: string | null; year?: string | null }
 
-export default function EntrySimilarNotice() {
-  const { id } = useDocumentInfo()
+export default function SimilarTitleNotice({
+  field,
+  item,
+  subject,
+}: {
+  /** The field tying an item to its subject. */
+  field: string
+  /** What an item is called, e.g. 'entry'. */
+  item: string
+  /** What a subject is called, e.g. 'database'. */
+  subject: string
+}) {
+  const { id, collectionSlug } = useDocumentInfo()
   const title = useFormFields(([fields]) => fields.title?.value as string | undefined)
   const year = useFormFields(([fields]) => fields.year?.value as string | undefined)
-  const database = useFormFields(([fields]) => fields.database?.value) as
+  const parent = useFormFields(([fields]) => fields[field]?.value) as
     string | { id?: string; value?: string } | undefined
-  const databaseId =
-    typeof database === 'object' ? (database?.value ?? database?.id) : (database ?? undefined)
+  const parentId =
+    typeof parent === 'object' ? (parent?.value ?? parent?.id) : (parent ?? undefined)
   const {
     config: {
       serverURL,
       routes: { admin, api },
     },
   } = useConfig()
-  const [entries, setEntries] = useState<{ database: string; docs: Entry[] }>()
+  const [items, setItems] = useState<{ parent: string; docs: Item[] }>()
 
   useEffect(() => {
-    if (!databaseId) return
+    if (!parentId || !collectionSlug) return
     const query = new URLSearchParams({
-      'where[database][equals]': String(databaseId),
+      [`where[${field}][equals]`]: String(parentId),
       pagination: 'false',
       limit: '0',
       depth: '0',
@@ -40,16 +53,16 @@ export default function EntrySimilarNotice() {
       'select[title]': 'true',
       'select[year]': 'true',
     })
-    fetch(`${serverURL}${api}/bibliography-entries?${query}`, { credentials: 'include' })
+    fetch(`${serverURL}${api}/${collectionSlug}?${query}`, { credentials: 'include' })
       .then((res) => res.json())
-      .then((data) => setEntries({ database: String(databaseId), docs: data.docs ?? [] }))
+      .then((data) => setItems({ parent: String(parentId), docs: data.docs ?? [] }))
       .catch(() => undefined)
-  }, [serverURL, api, databaseId])
+  }, [serverURL, api, collectionSlug, field, parentId])
 
   const text = title?.trim()
-  if (!text || !entries || entries.database !== String(databaseId)) return null
+  if (!text || !items || items.parent !== String(parentId)) return null
   const yearText = (year ?? '').trim()
-  const matches = entries.docs
+  const matches = items.docs
     .filter((e) => String(e.id) !== String(id) && e.title && similarTitles(e.title, text))
     .map((e) => ({
       ...e,
@@ -70,13 +83,13 @@ export default function EntrySimilarNotice() {
     >
       <strong>
         {duplicate
-          ? 'This entry looks like it is already in this database:'
-          : 'Similar entries already in this database:'}
+          ? `This ${item} looks like it is already in this ${subject}:`
+          : `Similar titles already in this ${subject}:`}
       </strong>
       <ul style={{ margin: 'calc(var(--base) / 4) 0', paddingInlineStart: 'var(--base)' }}>
         {matches.map((m) => (
           <li key={m.id}>
-            <Link href={`${admin}/collections/bibliography-entries/${m.id}`}>{m.title}</Link>
+            <Link href={`${admin}/collections/${collectionSlug}/${m.id}`}>{m.title}</Link>
             {m.year ? ` (${m.year})` : ''}
             {m.duplicate ? ' -- same title and year' : ''}
           </li>

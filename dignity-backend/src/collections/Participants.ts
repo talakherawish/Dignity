@@ -22,7 +22,8 @@ export const Participants: CollectionConfig = {
     group: 'About the Dignity Initiative',
     useAsTitle: 'name',
     defaultColumns: ['name', 'category', 'status'],
-    description: 'Shows on the website under About the Dignity Initiative → Working Group. Add a new entry here for each person. Everyone added from now on is kept off that page until "Keep off the Working Group Page" is unchecked -- they are still saved, and still shown wherever they are credited. Authors and Speakers have their own, older switch as well ("Show on Working Group Page").',
+    description:
+      'Shows on the website under About the Dignity Initiative → Working Group. Add a new entry here for each person. Everyone added from now on is kept off that page until "Keep off the Working Group Page" is unchecked -- they are still saved, and still shown wherever they are credited. Authors and Speakers have their own, older switch as well ("Show on Working Group Page").',
   },
   versions: {
     drafts: true,

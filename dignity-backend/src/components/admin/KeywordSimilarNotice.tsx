@@ -47,8 +47,8 @@ export default function KeywordSimilarNotice() {
           </Link>
         </span>
       ))}
-      . If one of them means the same thing, use it instead -- every keyword becomes its own
-      filter on the website.
+      . If one of them means the same thing, use it instead -- every keyword becomes its own filter
+      on the website.
     </div>
   )
 }

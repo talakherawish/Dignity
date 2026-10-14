@@ -47,12 +47,13 @@ import {
   Audiovisual,
   Posters,
 } from './collections/Publications'
-import { ReadingsAndDocuments, Databases } from './collections/Information'
+import { ReadingLists, Databases } from './collections/Information'
+import { Readings } from './collections/Readings'
 import { BibliographyEntries, Keywords } from './collections/Bibliography'
-import { BibliographyImports } from './collections/BibliographyImports'
+import { BibliographyImports, ReadingImports } from './collections/SpreadsheetImports'
 import { Disclaimer, PrivacyPolicy } from './collections/LegalPages'
 import { SiteSettings } from './globals/SiteSettings'
-import { DatabasesPage } from './globals/DatabasesPage'
+import { DatabasesPage, ReadingsPage } from './globals/PageText'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -128,7 +129,11 @@ export default buildConfig({
     Posters,
 
     // Information
-    ReadingsAndDocuments,
+    // Readings and Documents: subjects in the sidebar; their readings and
+    // imports are reached through each subject (admin.group: false on both).
+    ReadingLists,
+    Readings,
+    ReadingImports,
     Databases,
     BibliographyEntries,
     Keywords,
@@ -142,7 +147,7 @@ export default buildConfig({
     .map(withPublicationStatus)
     .map(enforceBilingual)
     .map(withEditTracking),
-  globals: [SiteSettings, DatabasesPage].map(enforceBilingualGlobal).map(withEditTrackingGlobal),
+  globals: [SiteSettings, DatabasesPage, ReadingsPage].map(enforceBilingualGlobal).map(withEditTrackingGlobal),
   editor: lexicalEditor(),
   cors: process.env.CORS_ORIGINS
   ? process.env.CORS_ORIGINS.split(',').map((s) => s.trim())

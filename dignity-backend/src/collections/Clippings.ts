@@ -7,13 +7,20 @@ export const Clippings: CollectionConfig = {
     group: 'About the Dignity Initiative',
     useAsTitle: 'title',
     defaultColumns: ['title', 'date', 'status'],
-    description: 'Shows on the website under About the Dignity Initiative → Clippings (press mentions, newspaper scans, etc). Upload a scanned image of the clipping in the Image field.',
+    description:
+      'Shows on the website under About the Dignity Initiative → Clippings (press mentions, newspaper scans, etc). Upload a scanned image of the clipping in the Image field.',
   },
   versions: {
     drafts: true,
   },
   hooks: {
-    afterChange: [mirrorLinksOnChange({ field: 'researchLines', relationTo: 'research', mirrorField: 'relatedClippings' })],
+    afterChange: [
+      mirrorLinksOnChange({
+        field: 'researchLines',
+        relationTo: 'research',
+        mirrorField: 'relatedClippings',
+      }),
+    ],
     afterDelete: [mirrorLinksOnDelete({ relationTo: 'research', mirrorField: 'relatedClippings' })],
   },
   access: {
@@ -31,7 +38,8 @@ export const Clippings: CollectionConfig = {
       type: 'text',
       label: 'Title (English)',
       admin: {
-        description: 'Optional — the headline or name of the publication this clipping is from. Not shown on the site; only used to identify the clipping here in the admin.',
+        description:
+          'Optional — the headline or name of the publication this clipping is from. Not shown on the site; only used to identify the clipping here in the admin.',
       },
     },
     {
@@ -59,7 +67,8 @@ export const Clippings: CollectionConfig = {
       label: 'Research Line(s)',
       admin: {
         position: 'sidebar',
-        description: 'Which research line(s) this clipping is about. Shows up on that research line\'s page automatically.',
+        description:
+          "Which research line(s) this clipping is about. Shows up on that research line's page automatically.",
       },
     },
   ],

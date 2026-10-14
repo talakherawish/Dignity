@@ -94,4 +94,3 @@ export const DignityResearchInitiative = pageCollection(
   'The Dignity Research Initiative',
   'The heading, intro and full text of the website\'s "The Dignity Research Initiative" page. Open the entry below to edit it.',
 )
-

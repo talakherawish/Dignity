@@ -7,14 +7,15 @@ function pair(name: string, label: string, textarea?: boolean): Field[] {
   return [
     { name, type, label: label + ' (English)' } as Field,
     { name: name + 'Ar', type, label: label + ' (Arabic)', admin: { rtl: true } } as Field,
-    ]
+  ]
 }
 
 export const SiteSettings: GlobalConfig = {
   slug: 'site-settings',
   admin: {
     group: 'Site',
-    description: 'Site-wide text: navigation menu, homepage hero, footer, and small UI labels. Editing a field here updates it everywhere it appears on the site.',
+    description:
+      'Site-wide text: navigation menu, homepage hero, footer, and small UI labels. Editing a field here updates it everywhere it appears on the site.',
   },
   access: {
     read: () => true,
@@ -68,7 +69,7 @@ export const SiteSettings: GlobalConfig = {
             ...pair('navInformation', 'Information — menu heading'),
             ...pair('navInformationReadings', 'Information: Readings and Documents'),
             ...pair('navInformationDatabases', 'Information: Databases'),
-            ],
+          ],
         },
         {
           label: 'Homepage',
@@ -88,8 +89,7 @@ export const SiteSettings: GlobalConfig = {
                 _status: { equals: 'published' },
               },
               admin: {
-                description:
-                  `Who shows in the "Meet the Participants" row on the homepage. Pick up to ${MAX_FEATURED_PARTICIPANTS} people from the Working Group -- drag to reorder, or remove one and add another to swap them out. Leave empty and the homepage falls back to the first ${MAX_FEATURED_PARTICIPANTS} people in the Working Group automatically.`,
+                description: `Who shows in the "Meet the Participants" row on the homepage. Pick up to ${MAX_FEATURED_PARTICIPANTS} people from the Working Group -- drag to reorder, or remove one and add another to swap them out. Leave empty and the homepage falls back to the first ${MAX_FEATURED_PARTICIPANTS} people in the Working Group automatically.`,
               },
               validate: (value: unknown) => {
                 if (Array.isArray(value) && value.length > MAX_FEATURED_PARTICIPANTS) {
@@ -100,7 +100,7 @@ export const SiteSettings: GlobalConfig = {
             },
             ...pair('teamBtn', 'Team Section Button'),
             ...pair('newsViewAll', 'View All Link Text'),
-            ],
+          ],
         },
         {
           label: 'Footer',
@@ -122,7 +122,7 @@ export const SiteSettings: GlobalConfig = {
             ...pair('footerStudying', 'Studying Materials Link'),
             ...pair('footerLibrary', 'Library Link'),
             ...pair('footerDatabases', 'Databases Link'),
-            ],
+          ],
         },
         {
           label: 'Small UI Labels',
@@ -136,9 +136,9 @@ export const SiteSettings: GlobalConfig = {
             ...pair('forumTypeWorkshop', 'Forum Type: Workshop'),
             ...pair('forumTypeConference', 'Forum Type: Conference'),
             ...pair('forumTypeEncounters', 'Forum Type: Encounters'),
-            ],
+          ],
         },
-        ],
+      ],
     },
-    ],
+  ],
 }

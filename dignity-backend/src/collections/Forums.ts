@@ -15,10 +15,26 @@ export const Forums: CollectionConfig = {
   },
   hooks: {
     afterChange: [
-      mirrorLinksOnChange({ field: 'researchLines', relationTo: 'research', mirrorField: 'relatedForums' }),
-      mirrorLinksOnChange({ field: 'taskForceAILines', relationTo: 'task-force-ai', mirrorField: 'relatedForums' }),
-      mirrorLinksOnChange({ field: 'ideaFactoryLines', relationTo: 'idea-factory', mirrorField: 'relatedForums' }),
-      mirrorLinksOnChange({ field: 'windsorBirzeitLines', relationTo: 'windsor-birzeit', mirrorField: 'relatedForums' }),
+      mirrorLinksOnChange({
+        field: 'researchLines',
+        relationTo: 'research',
+        mirrorField: 'relatedForums',
+      }),
+      mirrorLinksOnChange({
+        field: 'taskForceAILines',
+        relationTo: 'task-force-ai',
+        mirrorField: 'relatedForums',
+      }),
+      mirrorLinksOnChange({
+        field: 'ideaFactoryLines',
+        relationTo: 'idea-factory',
+        mirrorField: 'relatedForums',
+      }),
+      mirrorLinksOnChange({
+        field: 'windsorBirzeitLines',
+        relationTo: 'windsor-birzeit',
+        mirrorField: 'relatedForums',
+      }),
     ],
     afterDelete: [
       mirrorLinksOnDelete({ relationTo: 'research', mirrorField: 'relatedForums' }),
@@ -200,7 +216,8 @@ export const Forums: CollectionConfig = {
       label: 'Research Line(s)',
       admin: {
         position: 'sidebar',
-        description: 'Which research line(s) this forum came out of. Shows up on that research line\'s page automatically.',
+        description:
+          "Which research line(s) this forum came out of. Shows up on that research line's page automatically.",
       },
     },
     {
@@ -211,7 +228,7 @@ export const Forums: CollectionConfig = {
       label: 'Task Force on AI',
       admin: {
         position: 'sidebar',
-        description: 'Shows up under that page\'s Activities section automatically.',
+        description: "Shows up under that page's Activities section automatically.",
       },
     },
     {
@@ -222,7 +239,7 @@ export const Forums: CollectionConfig = {
       label: 'Idea Factory',
       admin: {
         position: 'sidebar',
-        description: 'Shows up under that page\'s Activities section automatically.',
+        description: "Shows up under that page's Activities section automatically.",
       },
     },
     {
@@ -233,7 +250,7 @@ export const Forums: CollectionConfig = {
       label: 'Windsor-Birzeit',
       admin: {
         position: 'sidebar',
-        description: 'Shows up under that page\'s Activities section automatically.',
+        description: "Shows up under that page's Activities section automatically.",
       },
     },
   ],

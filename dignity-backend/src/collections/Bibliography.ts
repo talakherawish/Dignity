@@ -95,9 +95,9 @@ export const Keywords: CollectionConfig = {
         if (!req.user) return Response.json({ error: 'Sign in first.' }, { status: 403 })
         const from = String(req.routeParams?.id ?? '')
         const body = (await Promise.resolve(req.json?.()).catch(() => undefined)) as
-          | { into?: string }
-          | undefined
-        if (!body?.into) return Response.json({ error: 'Say which keyword to merge into.' }, { status: 400 })
+          { into?: string } | undefined
+        if (!body?.into)
+          return Response.json({ error: 'Say which keyword to merge into.' }, { status: 400 })
         try {
           const result = await mergeKeywords({
             payload: req.payload,
@@ -174,7 +174,7 @@ export const BibliographyEntries: CollectionConfig = {
   labels: { singular: 'Bibliography Entry', plural: 'Bibliography Entries' },
   admin: {
     // Out of the sidebar: entries are managed from their database's own
-    // Entries tab (src/components/admin/DatabaseEntriesView.tsx). The list of
+    // Entries tab (src/components/admin/SubjectEntriesView.tsx). The list of
     // every database's entries together still works, at
     // /admin/collections/bibliography-entries.
     group: false,
@@ -203,8 +203,8 @@ export const BibliographyEntries: CollectionConfig = {
       relationTo: 'databases',
       required: true,
       // "Create New" on a database's Entries tab opens the form with
-      // ?database=<id>, so a new entry starts out in that database.
-      defaultValue: ({ req }) => req.searchParams?.get('database') || undefined,
+      // ?subject=<id>, so a new entry starts out in that database.
+      defaultValue: ({ req }) => req.searchParams?.get('subject') || undefined,
       admin: { position: 'sidebar' },
     },
     {
@@ -260,7 +260,14 @@ export const BibliographyEntries: CollectionConfig = {
       // Same or similar titles already in this database, as the title is typed.
       name: 'similar',
       type: 'ui',
-      admin: { components: { Field: '/components/admin/EntrySimilarNotice' } },
+      admin: {
+        components: {
+          Field: {
+            path: '/components/admin/SimilarTitleNotice',
+            clientProps: { field: 'database', item: 'entry', subject: 'database' },
+          },
+        },
+      },
     },
     nameList('authors', 'Authors', 'Author'),
     {
