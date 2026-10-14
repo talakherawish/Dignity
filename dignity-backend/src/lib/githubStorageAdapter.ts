@@ -166,6 +166,30 @@ async function getExistingFileSha(
   return json.sha
 }
 
+/**
+ * Every write is a commit on one branch, and GitHub refuses a commit whose
+ * branch moved while it was being made (409, "is at <sha> but expected
+ * <sha>"). An image upload writes several files at once -- the original and
+ * each resized copy -- so those writes would race each other; they are made
+ * one after another instead, through this queue. Something else can still
+ * move the branch in between (a code push, another server), so a 409 is also
+ * retried a few times.
+ */
+let writeQueue: Promise<unknown> = Promise.resolve()
+function oneAtATime<T>(write: () => Promise<T>): Promise<T> {
+  const run = writeQueue.then(write, write)
+  writeQueue = run.catch(() => undefined)
+  return run
+}
+
+async function retryConflicts(write: () => Promise<Response>): Promise<Response> {
+  for (let attempt = 1; ; attempt++) {
+    const response = await write()
+    if (response.status !== 409 || attempt === 4) return response
+    await new Promise((resolve) => setTimeout(resolve, 500 * attempt))
+  }
+}
+
 export function createGithubStorageAdapter({
   token,
   owner,
@@ -186,24 +210,28 @@ export function createGithubStorageAdapter({
       const repoPath = buildRepoPath(uploadsPath, filename)
       const base64Content = buffer.toString('base64')
 
-      // If a file already exists at this path (e.g. same filename reused),
-      // GitHub requires the current blob's sha to overwrite it.
-      const existingSha = await getExistingFileSha(owner, repo, branch, repoPath, token)
-
       const url = `${GITHUB_API_BASE}/repos/${owner}/${repo}/contents/${repoPath}`
-      const response = await githubApiRequest(
-        url,
-        {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            message: `Add media upload: ${filename}`,
-            content: base64Content,
-            branch,
-            ...(existingSha ? { sha: existingSha } : {}),
-          }),
-        },
-        token,
+      const response = await oneAtATime(() =>
+        retryConflicts(async () => {
+          // If a file already exists at this path (e.g. same filename reused),
+          // GitHub requires the current blob's sha to overwrite it. Read on
+          // every attempt, since a retry may follow a change to it.
+          const existingSha = await getExistingFileSha(owner, repo, branch, repoPath, token)
+          return githubApiRequest(
+            url,
+            {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                message: `Add media upload: ${filename}`,
+                content: base64Content,
+                branch,
+                ...(existingSha ? { sha: existingSha } : {}),
+              }),
+            },
+            token,
+          )
+        }),
       )
 
       if (!response.ok) {
@@ -220,26 +248,28 @@ export function createGithubStorageAdapter({
 
     handleDelete: async ({ filename }) => {
       const repoPath = buildRepoPath(uploadsPath, filename)
-      const sha = await getExistingFileSha(owner, repo, branch, repoPath, token)
-
-      // Nothing to delete if the file was never actually committed —
-      // don't throw, just no-op so a Payload document delete never fails
-      // because of a missing remote file.
-      if (!sha) return
-
       const url = `${GITHUB_API_BASE}/repos/${owner}/${repo}/contents/${repoPath}`
-      const response = await githubApiRequest(
-        url,
-        {
-          method: 'DELETE',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            message: `Remove media upload: ${filename}`,
-            sha,
-            branch,
-          }),
-        },
-        token,
+      const response = await oneAtATime(() =>
+        retryConflicts(async () => {
+          const sha = await getExistingFileSha(owner, repo, branch, repoPath, token)
+          // Nothing to delete if the file was never actually committed —
+          // don't throw, just no-op so a Payload document delete never fails
+          // because of a missing remote file.
+          if (!sha) return new Response(null, { status: 204 })
+          return githubApiRequest(
+            url,
+            {
+              method: 'DELETE',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                message: `Remove media upload: ${filename}`,
+                sha,
+                branch,
+              }),
+            },
+            token,
+          )
+        }),
       )
 
       if (!response.ok) {
