@@ -11,6 +11,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import {
   fetchResearchBySlug,
   hasProse,
+  mediaSrcSet,
   mediaUrl,
   populated,
   type PayloadActivity,
@@ -161,7 +162,13 @@ function ResearchDetailPage() {
       <article
         className={"max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-12" + (isArabic ? " text-right" : "")}
       >
-        <PageIntro title={title} image={image} body={body} untranslated={untranslated} />
+        <PageIntro
+          title={title}
+          image={image}
+          imageSrcSet={mediaSrcSet(research.image)}
+          body={body}
+          untranslated={untranslated}
+        />
 
         {hasOutputs && (
           <section className="mt-16">
@@ -201,6 +208,7 @@ function ResearchDetailPage() {
                           titleAr={c.titleAr}
                           date={c.date}
                           previewUrl={mediaUrl(previewSource)}
+                          previewSrcSet={mediaSrcSet(previewSource)}
                           previewWidth={previewSource?.width}
                           previewHeight={previewSource?.height}
                           preview={url ? "clipping" : "none"}

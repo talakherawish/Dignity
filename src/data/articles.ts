@@ -1,5 +1,5 @@
 import type { Language } from "@/contexts/LanguageContext";
-import { extractText, formatDate, mediaUrl, type PayloadNews } from "@/lib/payload";
+import { extractText, formatDate, mediaSrcSet, mediaUrl, type PayloadNews } from "@/lib/payload";
 
 /** The languages an article carries. Mirrors the site's active language set. */
 export type ArticleLang = Language;
@@ -7,6 +7,8 @@ export type ArticleLang = Language;
 export type Article = {
   id: string;
   image: string;
+  /** Smaller copies of `image` for an <img srcset> -- see mediaSrcSet. */
+  imageSrcSet?: string;
   date: Record<ArticleLang, string>;
   title: Record<ArticleLang, string>;
   excerpt: Record<ArticleLang, string>;
@@ -21,6 +23,7 @@ export function mapPayloadNews(pa: PayloadNews): Article {
   return {
     id: pa.id,
     image,
+    imageSrcSet: mediaSrcSet(pa.image),
     date: { en: formatDate(pa.date, "en"), ar: formatDate(pa.date, "ar") },
     title: { en: pa.title, ar: pa.titleAr ?? pa.title },
     excerpt: { en: pa.excerpt ?? "", ar: pa.excerptAr ?? pa.excerpt ?? "" },

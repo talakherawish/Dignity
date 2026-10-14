@@ -108,6 +108,8 @@ function ArticleRow({
               <div className="mb-6 overflow-hidden rounded-sm border border-border">
                 <img
                   src={article.image}
+                  srcSet={article.imageSrcSet}
+                  sizes="(min-width: 768px) 720px, 100vw"
                   alt={getField(article, "title", lang)}
                   loading="lazy"
                   className={ARTICLE_IMAGE}

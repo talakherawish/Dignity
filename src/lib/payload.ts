@@ -26,6 +26,14 @@ export type PayloadMedia = {
   /** Bytes, recorded by Payload for every upload -- see formatFileSize. */
   filesize?: number;
   thumbnail?: PayloadMedia;
+  /** Smaller WebP copies of an image -- see mediaSrcSet. Null fields where the original was too small. */
+  sizes?: Record<string, PayloadImageSize | undefined>;
+};
+
+export type PayloadImageSize = {
+  url?: string | null;
+  width?: number | null;
+  height?: number | null;
 };
 
 export type PayloadNews = {
@@ -653,12 +661,41 @@ export function resolveAttachment<T>(
  * replaced file arrives as a URL nothing has cached yet.
  */
 export function mediaUrl(media: PayloadMedia | undefined): string {
-  if (!media?.url) return "";
-  const base = media.url.startsWith("http") ? media.url : `${PAYLOAD_URL}${media.url}`;
-  if (!media.updatedAt) return base;
-  const version = Date.parse(media.updatedAt);
+  return versionedUrl(media?.url, media?.updatedAt);
+}
+
+function versionedUrl(url: string | null | undefined, updatedAt: string | undefined): string {
+  if (!url) return "";
+  const base = url.startsWith("http") ? url : `${PAYLOAD_URL}${url}`;
+  if (!updatedAt) return base;
+  const version = Date.parse(updatedAt);
   if (Number.isNaN(version)) return base;
   return `${base}${base.includes("?") ? "&" : "?"}v=${version}`;
+}
+
+/**
+ * An <img srcset> listing an image's smaller WebP copies alongside the
+ * original, so the browser downloads the smallest one that is still sharp at
+ * the size it is shown (high-DPI screens included) instead of always the
+ * original -- some of which are 5 MB PNGs filling a 350px card.
+ *
+ * The copies are made by Payload (dignity-backend/src/lib/imageSizes.ts).
+ * Undefined when there are none -- PDFs, SVGs, an image smaller than every
+ * copy -- and the <img> just uses its src as before. Pair it with a `sizes`
+ * attribute saying roughly how wide the image is shown; without one the
+ * browser assumes the full window width and over-fetches.
+ */
+export function mediaSrcSet(media: PayloadMedia | undefined): string | undefined {
+  if (!media?.sizes) return undefined;
+  const candidates = Object.values(media.sizes)
+    .filter((size): size is PayloadImageSize & { url: string; width: number } =>
+      Boolean(size?.url && size.width),
+    )
+    .map((size) => `${versionedUrl(size.url, media.updatedAt)} ${size.width}w`);
+  if (candidates.length === 0) return undefined;
+  // The original stays in the list, so the largest displays can still use it.
+  if (media.url && media.width) candidates.push(`${mediaUrl(media)} ${media.width}w`);
+  return candidates.join(", ");
 }
 
 /**

@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { GalleryPage } from "@/components/GalleryPage";
 import type { GalleryPhoto } from "@/components/PhotoGallery";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { fetchClippings, mediaUrl, type PayloadClipping } from "@/lib/payload";
+import { fetchClippings, mediaSrcSet, mediaUrl, type PayloadClipping } from "@/lib/payload";
 import { SECTION_COLORS } from "@/lib/sectionColors";
 
 export const Route = createFileRoute("/media/clippings")({
@@ -19,6 +19,7 @@ function toGalleryClipping(item: PayloadClipping): GalleryPhoto {
   return {
     id: item.id,
     url: mediaUrl(previewSource),
+    srcSet: mediaSrcSet(previewSource),
     width: previewSource?.width,
     height: previewSource?.height,
   };

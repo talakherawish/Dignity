@@ -3,11 +3,13 @@ import { Download, FileText } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import {
   formatFileSize,
+  mediaSrcSet,
   mediaUrl,
   openFileInNewTab,
   populated,
   type PayloadActivity,
   type PayloadForumAttachment,
+  type PayloadMedia,
   type PayloadParticipant,
 } from "@/lib/payload";
 
@@ -29,10 +31,10 @@ import {
  */
 
 /** The page-1 image Payload rasterises for a PDF; an image file is its own preview. */
-function previewOf(file: PayloadForumAttachment["file"]): string {
-  if (!file) return "";
-  if (file.mimeType?.startsWith("image/")) return mediaUrl(file);
-  return file.thumbnail ? mediaUrl(file.thumbnail) : "";
+function previewOf(file: PayloadForumAttachment["file"]): PayloadMedia | undefined {
+  if (!file) return undefined;
+  if (file.mimeType?.startsWith("image/")) return file;
+  return file.thumbnail;
 }
 
 /**
@@ -52,7 +54,7 @@ function AttachmentCard({ attachment }: { attachment: PayloadForumAttachment }) 
   const file = attachment.file;
   const url = mediaUrl(file);
   const title = lang === "ar" ? (attachment.titleAr ?? attachment.title) : attachment.title;
-  const preview = previewOf(file);
+  const preview = mediaUrl(previewOf(file));
   const size = formatFileSize(file?.filesize);
 
   if (!url) return null;
@@ -90,6 +92,8 @@ function AttachmentCard({ attachment }: { attachment: PayloadForumAttachment }) 
         {preview ? (
           <img
             src={preview}
+            srcSet={mediaSrcSet(previewOf(file))}
+            sizes="144px"
             alt=""
             loading="lazy"
             /* Page one of a document, cropped from the top: the title block is

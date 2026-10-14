@@ -7,6 +7,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import {
   fetchActivityLine,
   hasProse,
+  mediaSrcSet,
   mediaUrl,
   populated,
   type ActivityLine,
@@ -81,7 +82,13 @@ export function ActivityLinePage({
       <article
         className={"max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-12" + (isArabic ? " text-right" : "")}
       >
-        <PageIntro title={title} image={image} body={body} untranslated={untranslated} />
+        <PageIntro
+          title={title}
+          image={image}
+          imageSrcSet={mediaSrcSet(item?.image)}
+          body={body}
+          untranslated={untranslated}
+        />
 
         {(forums.length > 0 || publications.length > 0) && (
           <div className="mt-16 border-t border-border/60">

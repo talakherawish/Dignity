@@ -13,10 +13,12 @@ import {
   fetchParticipants,
   fetchPublications,
   fetchSiteSettings,
+  mediaSrcSet,
   mediaUrl,
   populated,
   PARTICIPANT_ROLE_LABEL,
   type PayloadParticipant,
+  type PayloadMedia,
   type PayloadPublication,
 } from "@/lib/payload";
 
@@ -89,6 +91,7 @@ type TeamPerson = {
   bio: string;
   bioAr: string;
   photo?: string;
+  photoSrcSet?: string;
 };
 
 function mapPayloadToTeamPerson(p: PayloadParticipant): TeamPerson {
@@ -103,6 +106,7 @@ function mapPayloadToTeamPerson(p: PayloadParticipant): TeamPerson {
     bio: p.bio ?? "",
     bioAr: p.bioAr ?? p.bio ?? "",
     photo: mediaUrl(p.photo) || undefined,
+    photoSrcSet: mediaSrcSet(p.photo),
   };
 }
 
@@ -195,6 +199,8 @@ function ImageCarousel({ articles }: { articles: Article[] }) {
       <img
         key={article.id}
         src={article.image}
+        srcSet={article.imageSrcSet}
+        sizes="(min-width: 1024px) 50vw, 100vw"
         alt={getField(article, "title", lang)}
         className="absolute inset-0 h-full w-full animate-[fadeIn_0.5s_ease-out] object-cover transition-transform duration-[900ms] ease-out group-hover:scale-[1.03]"
       />
@@ -382,7 +388,13 @@ function TeamModal({
         </div>
         {person.photo && (
           <div className="absolute left-1/2 top-0 -translate-x-1/2 z-10 h-40 w-40 sm:h-48 sm:w-48 rounded-full overflow-hidden shadow-lg bg-secondary">
-            <img src={person.photo} alt={person.name} className="h-full w-full object-cover" />
+            <img
+              src={person.photo}
+              srcSet={person.photoSrcSet}
+              sizes="192px"
+              alt={person.name}
+              className="h-full w-full object-cover"
+            />
           </div>
         )}
       </div>
@@ -460,6 +472,8 @@ function TeamSection() {
                   {person.photo ? (
                     <img
                       src={person.photo}
+                      srcSet={person.photoSrcSet}
+                      sizes="192px"
                       alt={person.name}
                       className="h-full w-full object-cover"
                     />
@@ -508,10 +522,9 @@ const POSTER_COUNT = 10;
 
 /** Same preview-source fallback PublicationsPage uses: a real image if the
  * upload is one, otherwise the auto-generated PDF page-1 thumbnail. */
-function posterPreviewUrl(item: PayloadPublication): string {
+function posterPreview(item: PayloadPublication): PayloadMedia | undefined {
   const imageIsPhoto = item.image?.mimeType?.startsWith("image/") ?? false;
-  const previewSource = imageIsPhoto ? item.image : (item.image?.thumbnail ?? item.file?.thumbnail);
-  return previewSource ? mediaUrl(previewSource) : "";
+  return imageIsPhoto ? item.image : (item.image?.thumbnail ?? item.file?.thumbnail);
 }
 
 function PostersShowcase() {
@@ -530,7 +543,8 @@ function PostersShowcase() {
       id: item.id,
       title: item.title,
       titleAr: item.titleAr,
-      image: posterPreviewUrl(item),
+      image: mediaUrl(posterPreview(item)),
+      imageSrcSet: mediaSrcSet(posterPreview(item)),
       fileUrl: mediaUrl(item.file),
     }))
     .filter((p) => p.image)
@@ -637,6 +651,8 @@ function PostersShowcase() {
                 <div className="h-full w-full overflow-hidden rounded-2xl bg-white/10 shadow-xl transition-transform duration-500 group-hover:scale-105">
                   <img
                     src={poster.image}
+                    srcSet={poster.imageSrcSet}
+                    sizes="(min-width: 768px) 480px, 320px"
                     alt={isArabic ? (poster.titleAr ?? poster.title) : poster.title}
                     // All ten used to download at once (~4 MB of PNGs), so
                     // the first card -- the one you actually see -- shared

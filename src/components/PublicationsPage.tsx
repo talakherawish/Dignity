@@ -9,6 +9,7 @@ import {
 import { useLanguage, type TranslationKey } from "@/contexts/LanguageContext";
 import {
   fetchPublications,
+  mediaSrcSet,
   mediaUrl,
   populated,
   youtubeThumbnail,
@@ -38,6 +39,7 @@ type DisplayPublication = {
   fileSize?: number;
   fileSizeAr?: number;
   previewUrl: string;
+  previewSrcSet?: string;
   previewWidth?: number;
   previewHeight?: number;
   /** External destination (YouTube) for items that aren't uploads. */
@@ -140,6 +142,7 @@ function fromPayload(item: PayloadPublication): DisplayPublication {
     fileSize: item.file?.filesize,
     fileSizeAr: item.fileAr?.filesize,
     previewUrl,
+    previewSrcSet: mediaSrcSet(previewSource),
     previewWidth: previewSource?.width,
     previewHeight: previewSource?.height,
     researchLines: populated<PayloadResearchActivity>(item.researchLines).map((r) => ({
@@ -163,6 +166,7 @@ function PublicationsGrid({ items }: { items: DisplayPublication[] }) {
           authorParticipants={item.authorParticipants}
           date={item.date}
           previewUrl={item.previewUrl}
+          previewSrcSet={item.previewSrcSet}
           previewWidth={item.previewWidth}
           previewHeight={item.previewHeight}
           fileUrl={item.fileUrl}

@@ -1,5 +1,6 @@
 import type { CollectionConfig } from 'payload'
 
+import { imageSizes } from '../lib/imageSizes'
 import { generatePdfThumbnail, trackManualThumbnail } from '../lib/pdfThumbnail'
 
 export const Media: CollectionConfig = {
@@ -37,7 +38,10 @@ export const Media: CollectionConfig = {
       },
     },
   ],
-  upload: true,
+  upload: {
+    // Smaller WebP copies for the website -- see src/lib/imageSizes.ts.
+    imageSizes,
+  },
   hooks: {
     beforeChange: [trackManualThumbnail],
     afterChange: [generatePdfThumbnail],

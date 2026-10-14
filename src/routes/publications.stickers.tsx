@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { GalleryPage } from "@/components/GalleryPage";
 import type { GalleryPhoto } from "@/components/PhotoGallery";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { fetchStickers, mediaUrl, type PayloadSticker } from "@/lib/payload";
+import { fetchStickers, mediaSrcSet, mediaUrl, type PayloadSticker } from "@/lib/payload";
 import { SECTION_COLORS } from "@/lib/sectionColors";
 
 export const Route = createFileRoute("/publications/stickers")({
@@ -15,6 +15,7 @@ function toGallerySticker(sticker: PayloadSticker, lang: "en" | "ar"): GalleryPh
   return {
     id: sticker.id,
     url: mediaUrl(sticker.image),
+    srcSet: mediaSrcSet(sticker.image),
     caption: caption || undefined,
     date: sticker.date,
     width: sticker.image?.width,

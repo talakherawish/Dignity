@@ -9,6 +9,7 @@ import { useLanguage, type TranslationKey } from "@/contexts/LanguageContext";
 import {
   formatDate,
   hasProse,
+  mediaSrcSet,
   mediaUrl,
   type ForumType,
   type PayloadActivity,
@@ -219,7 +220,7 @@ function withViewTransition(update: () => void): Promise<void> {
   return document.startViewTransition(update).finished.then(done, done);
 }
 
-type Figure = { url: string; alt: string; caption?: string };
+type Figure = { url: string; srcSet?: string; alt: string; caption?: string };
 
 /** The photographs only -- the poster is shown separately, and larger. */
 function galleryOf(item: PayloadActivity, isArabic: boolean): Figure[] {
@@ -228,7 +229,12 @@ function galleryOf(item: PayloadActivity, isArabic: boolean): Figure[] {
     const url = mediaUrl(entry.image);
     if (!url) continue;
     const caption = isArabic ? (entry.captionAr ?? entry.caption) : entry.caption;
-    figures.push({ url, alt: entry.image?.alt ?? "", caption: caption?.trim() || undefined });
+    figures.push({
+      url,
+      srcSet: mediaSrcSet(entry.image),
+      alt: entry.image?.alt ?? "",
+      caption: caption?.trim() || undefined,
+    });
   }
   return figures;
 }
@@ -291,7 +297,13 @@ function ForumCardClosed({
           className="relative overflow-hidden bg-secondary/20"
           style={{ aspectRatio: cardRatio }}
         >
-          <img src={image} alt="" className="h-full w-full object-cover object-top" />
+          <img
+            src={image}
+            srcSet={mediaSrcSet(item.image)}
+            sizes="(min-width: 1024px) 600px, (min-width: 640px) 50vw, 100vw"
+            alt=""
+            className="h-full w-full object-cover object-top"
+          />
           {expandable && (
             <span className="absolute bottom-2.5 end-2.5">
               <ToggleChip />
@@ -414,6 +426,8 @@ function ForumCardOpen({
           <div className={wide ? "" : "bg-secondary/20"}>
             <img
               src={poster}
+              srcSet={mediaSrcSet(item.image)}
+              sizes={wide ? "(min-width: 1280px) 1200px, 100vw" : "(min-width: 768px) 416px, 100vw"}
               alt={item.image?.alt || title}
               className="block h-auto w-full object-contain"
               style={wide ? undefined : { maxHeight: POSTER_MAX_HEIGHT }}
@@ -465,6 +479,8 @@ function ForumCardOpen({
                     <div className="overflow-hidden rounded-sm border border-border bg-secondary/40">
                       <img
                         src={figure.url}
+                        srcSet={figure.srcSet}
+                        sizes={gallery.length === 1 ? "448px" : "(min-width: 1024px) 300px, 50vw"}
                         alt={figure.alt}
                         loading="lazy"
                         className="aspect-[4/3] w-full object-cover"

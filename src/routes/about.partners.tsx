@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { ArrowUpRight } from "lucide-react";
 import { PageLayout, PageHero } from "@/components/PageLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { fetchPartners, mediaUrl, type PayloadPartner } from "@/lib/payload";
+import { fetchPartners, mediaSrcSet, mediaUrl, type PayloadPartner } from "@/lib/payload";
 import { SECTION_COLORS } from "@/lib/sectionColors";
 
 export const Route = createFileRoute("/about/partners")({
@@ -69,6 +69,8 @@ function PartnerCard({ partner }: { partner: PayloadPartner }) {
       {logo ? (
         <img
           src={logo}
+          srcSet={mediaSrcSet(partner.logo)}
+          sizes="240px"
           alt={partner.logo?.alt || name}
           loading="lazy"
           className="max-h-full max-w-full object-contain"

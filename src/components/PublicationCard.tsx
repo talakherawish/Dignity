@@ -82,6 +82,8 @@ export type PublicationCardProps = {
   date?: string;
   /** Thumbnail to show in the preview well; a file icon stands in when absent. */
   previewUrl?: string;
+  /** Smaller copies of `previewUrl` -- see mediaSrcSet. */
+  previewSrcSet?: string;
   /**
    * Pixel dimensions of `previewUrl`, when known. The well is sized to this
    * ratio so the image shows in full rather than being cropped into a shape
@@ -124,6 +126,7 @@ export function PublicationCard({
   authorParticipants,
   date,
   previewUrl,
+  previewSrcSet,
   previewWidth,
   previewHeight,
   preview = "document",
@@ -173,6 +176,8 @@ export function PublicationCard({
   const thumbnail = previewUrl ? (
     <img
       src={previewUrl}
+      srcSet={previewSrcSet}
+      sizes="(min-width: 1024px) 300px, (min-width: 640px) 50vw, 100vw"
       alt=""
       // Cover only stands in for a ratio we don't actually know; once the well
       // is sized to the image's own ratio there is nothing left to crop, and

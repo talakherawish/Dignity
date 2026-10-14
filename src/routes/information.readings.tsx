@@ -5,7 +5,13 @@ import { Search } from "lucide-react";
 import { PageLayout, PageHero } from "@/components/PageLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { fold, keywordLabel, keywordsOf } from "@/lib/keywords";
-import { extractText, fetchReadings, mediaUrl, type PayloadReading } from "@/lib/payload";
+import {
+  extractText,
+  fetchReadings,
+  mediaSrcSet,
+  mediaUrl,
+  type PayloadReading,
+} from "@/lib/payload";
 import { SECTION_COLORS } from "@/lib/sectionColors";
 
 type ReadingsSearch = { q?: string; keyword?: string };
@@ -174,6 +180,8 @@ function ReadingCard({ reading }: { reading: PayloadReading }) {
           {cover ? (
             <img
               src={cover}
+              srcSet={mediaSrcSet(file?.thumbnail)}
+              sizes="(min-width: 640px) 240px, 50vw"
               alt=""
               loading="lazy"
               className="h-full w-full object-cover object-top"

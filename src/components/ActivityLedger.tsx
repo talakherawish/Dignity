@@ -7,6 +7,7 @@ import {
   arabicDualMonthName,
   formatDate,
   hasProse,
+  mediaSrcSet,
   mediaUrl,
   type ForumType,
   type PayloadActivity,
@@ -83,7 +84,7 @@ function groupByYear(items: PayloadActivity[], lang: Lang): YearGroup[] {
   return groups;
 }
 
-type Figure = { url: string; alt: string; caption?: string };
+type Figure = { url: string; srcSet?: string; alt: string; caption?: string };
 
 /** The featured image first, then the gallery, skipping anything unresolved. */
 function figuresOf(item: PayloadActivity, lang: Lang): Figure[] {
@@ -91,7 +92,12 @@ function figuresOf(item: PayloadActivity, lang: Lang): Figure[] {
   const add = (media: PayloadMedia | undefined, caption?: string) => {
     const url = mediaUrl(media);
     if (!url) return;
-    figures.push({ url, alt: media?.alt ?? "", caption: caption?.trim() || undefined });
+    figures.push({
+      url,
+      srcSet: mediaSrcSet(media),
+      alt: media?.alt ?? "",
+      caption: caption?.trim() || undefined,
+    });
   };
 
   add(item.image);
@@ -274,6 +280,12 @@ function ActivityEntry({
                       <div className="overflow-hidden rounded-sm border border-border bg-secondary/40">
                         <img
                           src={figure.url}
+                          srcSet={figure.srcSet}
+                          sizes={
+                            figures.length === 1
+                              ? "(min-width: 1024px) 760px, 100vw"
+                              : "(min-width: 768px) 260px, 50vw"
+                          }
                           alt={figure.alt}
                           loading="lazy"
                           // A lone image runs the full width of the column, so

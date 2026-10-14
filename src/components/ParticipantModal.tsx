@@ -1,5 +1,10 @@
 import { X, Mail } from "lucide-react";
-import { mediaUrl, PARTICIPANT_ROLE_LABEL, type PayloadParticipant } from "@/lib/payload";
+import {
+  mediaSrcSet,
+  mediaUrl,
+  PARTICIPANT_ROLE_LABEL,
+  type PayloadParticipant,
+} from "@/lib/payload";
 
 /**
  * A person's profile card, shown over whatever page opened it: the Working
@@ -25,6 +30,7 @@ export type Participant = {
   bio: string;
   bioAr: string;
   photo?: string;
+  photoSrcSet?: string;
 };
 
 export function mapPayloadParticipant(p: PayloadParticipant): Participant {
@@ -40,6 +46,7 @@ export function mapPayloadParticipant(p: PayloadParticipant): Participant {
     bio: p.bio ?? "",
     bioAr: p.bioAr ?? p.bio ?? "",
     photo: mediaUrl(p.photo) || undefined,
+    photoSrcSet: mediaSrcSet(p.photo),
   };
 }
 
@@ -120,6 +127,8 @@ export function ParticipantModal({
           <div className="absolute left-1/2 top-0 -translate-x-1/2 z-10 h-40 w-40 sm:h-48 sm:w-48 rounded-full overflow-hidden shadow-lg bg-secondary">
             <img
               src={participant.photo}
+              srcSet={participant.photoSrcSet}
+              sizes="192px"
               alt={participant.name}
               className="h-full w-full object-cover"
             />

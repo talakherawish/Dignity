@@ -4,6 +4,7 @@ import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import {
   formatDate,
+  mediaSrcSet,
   mediaUrl,
   populated,
   type ForumType,
@@ -45,6 +46,8 @@ import {
 export type GalleryPhoto = {
   id: string;
   url: string;
+  /** Smaller copies of `url` for the grid -- see mediaSrcSet. */
+  srcSet?: string;
   /** Optional — an untitled photo simply shows no caption. */
   caption?: string;
   date?: string;
@@ -101,6 +104,7 @@ export function toGalleryPhoto(photo: PayloadPhoto, lang: "en" | "ar"): GalleryP
   return {
     id: photo.id,
     url: mediaUrl(photo.image),
+    srcSet: mediaSrcSet(photo.image),
     caption: caption || undefined,
     date: photo.date,
     width: photo.image?.width,
@@ -330,6 +334,11 @@ export function PhotoGallery({ photos }: { photos: GalleryPhoto[] }) {
                 >
                   <img
                     src={photo.url}
+                    // Each tile is the row's height times the photo's own
+                    // proportions wide, so that is the size to fetch for.
+                    // The full-screen viewer below keeps the original.
+                    srcSet={photo.srcSet}
+                    sizes={`${Math.ceil(row.height * ratio)}px`}
                     alt={photo.caption ?? ""}
                     width={photo.width}
                     height={photo.height}

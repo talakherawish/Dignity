@@ -2,6 +2,7 @@ import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { PublicationCard, PublicationCardGrid } from "./PublicationCard";
 import {
+  mediaSrcSet,
   mediaUrl,
   populated,
   youtubeThumbnail,
@@ -86,6 +87,7 @@ export function PublicationGrid({
             }))}
             date={p.date}
             previewUrl={previewUrl}
+            previewSrcSet={mediaSrcSet(previewSource)}
             previewWidth={previewSource?.width}
             previewHeight={previewSource?.height}
             fileUrl={showDownload && p.file ? mediaUrl(p.file) : ""}

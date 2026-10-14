@@ -103,7 +103,7 @@ function explainGithubWriteFailure(status: number, body: string): string | undef
   return undefined
 }
 
-function buildRepoPath(uploadsPath: string, filename: string): string {
+export function buildRepoPath(uploadsPath: string, filename: string): string {
   // Normalize slashes and strip any leading/trailing slash so we always end
   // up with a clean "public/uploads/filename.ext" style path, regardless of
   // how uploadsPath was configured.
@@ -112,7 +112,7 @@ function buildRepoPath(uploadsPath: string, filename: string): string {
   return `${cleanedUploadsPath}/${cleanedFilename}`
 }
 
-function buildRawUrl(owner: string, repo: string, branch: string, repoPath: string): string {
+export function buildRawUrl(owner: string, repo: string, branch: string, repoPath: string): string {
   const encodedPath = repoPath
     .split('/')
     .map((segment) => encodeURIComponent(segment))
@@ -120,7 +120,7 @@ function buildRawUrl(owner: string, repo: string, branch: string, repoPath: stri
   return `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${encodedPath}`
 }
 
-async function githubApiRequest(
+export async function githubApiRequest(
   url: string,
   init: RequestInit,
   token: string,

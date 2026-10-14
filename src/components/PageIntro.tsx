@@ -13,12 +13,15 @@ import { hasProse } from "@/lib/payload";
 export function PageIntro({
   title,
   image,
+  imageSrcSet,
   body,
   untranslated,
 }: {
   title: string;
   /** Resolved URL; nothing is shown when empty. */
   image: string;
+  /** Smaller copies of `image` -- see mediaSrcSet. */
+  imageSrcSet?: string;
   /** The write-up in the visitor's own language. */
   body: unknown;
   /** Written up only in the other language, as opposed to not written at all. */
@@ -31,6 +34,8 @@ export function PageIntro({
       {image && (
         <img
           src={image}
+          srcSet={imageSrcSet}
+          sizes="(min-width: 1024px) 1024px, 100vw"
           alt={title}
           className="w-full rounded-lg mt-8 object-cover"
           style={{ maxHeight: "26rem" }}

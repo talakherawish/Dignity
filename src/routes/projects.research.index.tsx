@@ -3,7 +3,13 @@ import { useQuery } from "@tanstack/react-query";
 import { ArrowRight } from "lucide-react";
 import { PageLayout, PageHero } from "@/components/PageLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { fetchResearch, mediaUrl, populated, type PayloadResearchActivity } from "@/lib/payload";
+import {
+  fetchResearch,
+  mediaSrcSet,
+  mediaUrl,
+  populated,
+  type PayloadResearchActivity,
+} from "@/lib/payload";
 import { SECTION_COLORS } from "@/lib/sectionColors";
 export const Route = createFileRoute("/projects/research/")({
   component: ResearchPage,
@@ -93,6 +99,8 @@ function ResearchPage() {
                     >
                       <img
                         src={image}
+                        srcSet={mediaSrcSet(item.image)}
+                        sizes="(min-width: 640px) 500px, 100vw"
                         alt={title}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
