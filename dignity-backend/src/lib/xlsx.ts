@@ -213,7 +213,30 @@ function headerText(value: string): string {
     : `<t xml:space="preserve">${escapeXml(value)}</t>`
 }
 
-function sheetXml(rows: string[][]): string {
+/** A column whose cells can only hold one of the given options, picked from a dropdown. */
+export type ColumnList = { column: number; options: string[] }
+
+/** Dropdowns from the second row down, refusing anything typed that isn't an option. */
+function listsXml(lists: ColumnList[]): string {
+  if (!lists.length) return ''
+  return (
+    `<dataValidations count="${lists.length}">` +
+    lists
+      .map(({ column, options }) => {
+        const letter = columnName(column)
+        return (
+          `<dataValidation type="list" allowBlank="1" showErrorMessage="1" ` +
+          `errorTitle="Pick from the list" error="Choose one of the options in the dropdown." ` +
+          `sqref="${letter}2:${letter}1048576">` +
+          `<formula1>${escapeXml(`"${options.join(',')}"`)}</formula1></dataValidation>`
+        )
+      })
+      .join('') +
+    '</dataValidations>'
+  )
+}
+
+function sheetXml(rows: string[][], lists: ColumnList[] = []): string {
   const cells = (row: string[], r: number) =>
     row
       .map((value, c) =>
@@ -232,16 +255,21 @@ function sheetXml(rows: string[][]): string {
     '</sheetView></sheetViews>' +
     '<sheetData>' +
     rows.map((row, r) => `<row r="${r + 1}">${cells(row, r)}</row>`).join('') +
-    '</sheetData></worksheet>'
+    '</sheetData>' +
+    listsXml(lists) +
+    '</worksheet>'
   )
 }
 
 /**
  * An .xlsx of the given sheets, every cell plain text -- the same shape
  * `readWorkbook` reads, so a written file can be imported straight back.
- * Each sheet's first row is bold and frozen, as a header.
+ * Each sheet's first row is bold and frozen, as a header; `lists` turns
+ * columns into dropdowns.
  */
-export function writeWorkbook(sheets: { name: string; rows: string[][] }[]): Buffer {
+export function writeWorkbook(
+  sheets: { name: string; rows: string[][]; lists?: ColumnList[] }[],
+): Buffer {
   const files: { name: string; xml: string }[] = [
     {
       name: '[Content_Types].xml',
@@ -313,7 +341,7 @@ export function writeWorkbook(sheets: { name: string; rows: string[][] }[]): Buf
     },
     ...sheets.map((sheet, i) => ({
       name: `xl/worksheets/sheet${i + 1}.xml`,
-      xml: sheetXml(sheet.rows),
+      xml: sheetXml(sheet.rows, sheet.lists),
     })),
   ]
   return zip(files.map((file) => ({ name: file.name, data: Buffer.from(file.xml, 'utf8') })))

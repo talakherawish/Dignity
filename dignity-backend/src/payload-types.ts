@@ -1901,6 +1901,7 @@ export interface BibliographyEntry {
   doi?: string | null;
   dateAccessed?: string | null;
   annotation?: string | null;
+  annotationAr?: string | null;
   keywords?: (string | Keyword)[] | null;
   access: 'citation' | 'link' | 'upload';
   /**
@@ -2940,6 +2941,7 @@ export interface BibliographyEntriesSelect<T extends boolean = true> {
   doi?: T;
   dateAccessed?: T;
   annotation?: T;
+  annotationAr?: T;
   keywords?: T;
   access?: T;
   file?: T;

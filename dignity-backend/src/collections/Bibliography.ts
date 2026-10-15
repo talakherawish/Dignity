@@ -307,12 +307,18 @@ export const BibliographyEntries: CollectionConfig = {
       ],
     },
     {
-      // One annotation, written in whichever language it was written in --
-      // the team annotates Arabic sources in Arabic and English ones in
-      // English, so an EN/AR pair here would always be half empty.
+      // The team's own words, so in both languages, like a reading's note;
+      // one written in only one language is shown on both pages.
       name: 'annotation',
       type: 'textarea',
+      label: 'Annotation (English)',
       admin: { rows: 10 },
+    },
+    {
+      name: 'annotationAr',
+      type: 'textarea',
+      label: 'Annotation (Arabic / الملخص بالعربية)',
+      admin: { rows: 10, rtl: true },
     },
     {
       name: 'keywords',

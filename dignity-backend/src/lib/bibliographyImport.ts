@@ -11,7 +11,7 @@
  * The sheet is the team's Zotero export: Type, Lang, Keywords, Names, Title,
  * Book_title, Journal_name, Report_type, Website_name, Date_accessed, Year,
  * City, Publisher, Page_url, Pages, Volume, Issue, Edition, URL, DOI, Editors,
- * Annotations -- multiple names, places and keywords separated by "|". Two
+ * Annotations, Annotations_ar (the Arabic annotation), Internal note -- multiple names, places and keywords separated by "|". Two
  * optional extras are understood too:
  *   - a sheet named "Keywords" with English and Arabic columns, which pairs
  *     up the two languages of each keyword;
@@ -144,6 +144,7 @@ export async function importBibliography({
       const { access: accessValue, note } = access(row)
       const internalNote = [
         note,
+        tidy(row['Internal note']),
         tidy(row['source/access note']),
         tidy(row.format) && `Format: ${tidy(row.format)}`,
       ]
@@ -156,7 +157,7 @@ export async function importBibliography({
         database,
         entryType: TYPES[key(row.Type)] ?? 'other',
         language: lang.startsWith('ar') ? 'ar' : lang.startsWith('en') || !lang ? 'en' : 'other',
-        isTranslation: /\(tr\)/.test(lang),
+        isTranslation: /\(tr\)|translation/.test(lang),
         title,
         authors: split(row.Names).map((name) => ({ name })),
         // A whole book's title is the title itself; a chapter's book, or an
@@ -179,6 +180,7 @@ export async function importBibliography({
         doi: tidy(row.DOI) || undefined,
         dateAccessed: tidy(row.Date_accessed) || undefined,
         annotation: (row.Annotations ?? '').trim() || undefined,
+        annotationAr: (row.Annotations_ar ?? '').trim() || undefined,
         keywords: dryRun ? [] : keywordIds,
         access: accessValue,
         copyrightStatus: COPYRIGHT[key(row['Copyright status'] ?? '')] || undefined,
@@ -232,9 +234,10 @@ const EXPORT_COLUMNS = [
   'DOI',
   'Editors',
   'Annotations',
+  'Annotations_ar',
   'Copyright status',
   'website action',
-  'source/access note',
+  'Internal note',
 ]
 
 const TYPE_NAMES: Record<string, string> = {
@@ -283,6 +286,7 @@ type ExportedEntry = {
   doi?: string | null
   dateAccessed?: string | null
   annotation?: string | null
+  annotationAr?: string | null
   keywords?: (ExportedKeyword | string | number)[] | null
   access?: string | null
   copyrightStatus?: string | null
@@ -349,9 +353,10 @@ export async function exportBibliography(payload: Payload, database: string): Pr
       DOI: entry.doi ?? '',
       Editors: names(entry.editors),
       Annotations: entry.annotation ?? '',
+      Annotations_ar: entry.annotationAr ?? '',
       'Copyright status': COPYRIGHT_NAMES[entry.copyrightStatus ?? ''] ?? '',
       'website action': ACCESS_NAMES[entry.access ?? ''] ?? '',
-      'source/access note': entry.internalNote ?? '',
+      'Internal note': entry.internalNote ?? '',
     }
     return EXPORT_COLUMNS.map((column) => row[column])
   })

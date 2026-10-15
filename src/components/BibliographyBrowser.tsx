@@ -204,7 +204,11 @@ function Entry({
     [keyword.name, keyword.nameAr].some((name) => name && containsAny(name, needles));
   const fileUrl = entry.access === "upload" ? mediaUrl(entry.file) : "";
   const sourceUrl = entry.url || (entry.doi ? `https://doi.org/${entry.doi}` : "");
-  const annotation = entry.annotation?.trim();
+  // The annotation is the team's own words, so it comes in both languages; one
+  // written in only one language is shown on both pages.
+  const annotation = (
+    (isArabic ? entry.annotationAr || entry.annotation : entry.annotation || entry.annotationAr) ?? ""
+  ).trim();
   const sourceLink = entry.access !== "citation" ? sourceUrl : "";
   // Only an annotation opens: the source has its own mark, so there's nothing
   // else to open onto.
@@ -308,7 +312,7 @@ function Entry({
             <div className="pb-8">
               {annotation && (
                 <p
-                  dir={sourceDir}
+                  dir="auto"
                   className="max-w-3xl whitespace-pre-line text-start text-sm leading-relaxed text-foreground"
                 >
                   <Highlighted text={annotation} needles={needles} />
@@ -458,6 +462,7 @@ export function BibliographyBrowser({
         entry.title,
         entry.containerTitle,
         entry.annotation,
+        entry.annotationAr,
         entry.publisher,
         ...(entry.authors ?? []).map((a) => a.name),
         ...(entry.editors ?? []).map((e) => e.name),

@@ -391,9 +391,9 @@ export type BibliographyEntryType =
   | "other";
 
 /**
- * One source in a database. Its citation and annotation are in the source's
- * own language (`language`), not translated -- see the Bibliography
- * collection in the backend.
+ * One source in a database. Its citation is in the source's own language
+ * (`language`), not translated; its annotation, the team's own words, may come
+ * in English, Arabic or both -- see the Bibliography collection in the backend.
  */
 export type PayloadBibliographyEntry = {
   id: string;
@@ -416,6 +416,7 @@ export type PayloadBibliographyEntry = {
   url?: string;
   doi?: string;
   annotation?: string;
+  annotationAr?: string;
   keywords?: (PayloadKeyword | string)[];
   access: "citation" | "link" | "upload";
   file?: PayloadMedia;
