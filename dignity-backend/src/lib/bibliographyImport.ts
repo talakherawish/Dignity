@@ -11,8 +11,10 @@
  * The sheet is the team's Zotero export: Type, Lang, Keywords, Names, Title,
  * Book_title, Journal_name, Report_type, Website_name, Date_accessed, Year,
  * City, Publisher, Page_url, Pages, Volume, Issue, Edition, URL, DOI, Editors,
- * Annotations, Annotations_ar (the Arabic annotation), Internal note -- multiple names, places and keywords separated by "|". Two
- * optional extras are understood too:
+ * Annotations, Annotations_ar (the Arabic annotation), Internal note --
+ * multiple names, places and keywords separated by "|". Keywords may instead
+ * come one per cell in "Keyword 1", "Keyword 2" ... columns. Two optional
+ * extras are understood too:
  *   - a sheet named "Keywords" with English and Arabic columns, which pairs
  *     up the two languages of each keyword;
  *   - the "Copyright status", "website actiom", "format" and "source/access
@@ -151,7 +153,18 @@ export async function importBibliography({
         .filter(Boolean)
         .join('\n')
 
-      const keywordIds = await keywords.keywordIdsFor(row.Keywords)
+      // One "Keywords" cell of |-separated words, or the template's one-per-cell
+      // "Keyword 1", "Keyword 2" ... dropdown columns -- or both.
+      const keywordIds = await keywords.keywordIdsFor(
+        [
+          row.Keywords,
+          ...Object.keys(row)
+            .filter((c) => /^Keyword \d+$/.test(c))
+            .map((c) => row[c]),
+        ]
+          .filter(Boolean)
+          .join('|'),
+      )
 
       const data = {
         database,

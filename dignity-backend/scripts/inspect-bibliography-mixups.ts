@@ -5,6 +5,8 @@
  *
  *   npm run payload -- run scripts/inspect-bibliography-mixups.ts
  */
+export {}
+
 const { getPayload } = await import('payload')
 const { default: config } = await import('../src/payload.config')
 const payload = await getPayload({ config })
@@ -27,7 +29,7 @@ for (const title of ['A Dignity Economy', 'Human Dignity: Social Autonomy', 'Dec
       depth: 0,
     })
     for (const v of versions.docs) {
-      const e = v.version as Record<string, unknown>
+      const e = v.version as unknown as Record<string, unknown>
       console.log(
         `  ${v.createdAt} ${e._status}`,
         JSON.stringify({
