@@ -101,7 +101,10 @@ export function readWorkbook(file: Buffer): Map<string, Row[]> {
         .map((cells) => {
           const row: Row = {}
           for (const [column, title] of Object.entries(header)) {
-            if (title.trim()) row[title.trim()] = (cells[column] ?? '').trim()
+            // A trailing "*" marks a required column in the templates; the
+            // column is the same without it.
+            const named = title.replace(/\*\s*$/, '').trim()
+            if (named) row[named] = (cells[column] ?? '').trim()
           }
           return row
         })
@@ -197,13 +200,26 @@ const PACKAGE_RELS = 'http://schemas.openxmlformats.org/package/2006/relationshi
 const DOC_RELS = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships'
 const SHEET_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml'
 
+/** A bold run of text, in the given colour (ARGB) if any. */
+const boldRun = (text: string, color?: string) =>
+  `<r><rPr><b/><sz val="11"/>${color ? `<color rgb="${color}"/>` : ''}<rFont val="Calibri"/></rPr>` +
+  `<t xml:space="preserve">${escapeXml(text)}</t></r>`
+
+/** A header cell's text; a trailing "*" (a required column) is drawn in red. */
+function headerText(value: string): string {
+  const starred = value.match(/^(.*?)(\s*\*)$/)
+  return starred
+    ? boldRun(starred[1]) + boldRun(starred[2], 'FFFF0000')
+    : `<t xml:space="preserve">${escapeXml(value)}</t>`
+}
+
 function sheetXml(rows: string[][]): string {
   const cells = (row: string[], r: number) =>
     row
       .map((value, c) =>
         value
           ? `<c r="${columnName(c)}${r + 1}" t="inlineStr"${r === 0 ? ' s="1"' : ''}>` +
-            `<is><t xml:space="preserve">${escapeXml(value)}</t></is></c>`
+            `<is>${r === 0 ? headerText(value) : `<t xml:space="preserve">${escapeXml(value)}</t>`}</is></c>`
           : '',
       )
       .join('')
