@@ -40,7 +40,13 @@ type MediaRow = {
   mimeType?: string
 }
 
-const NULL_SIZE: SizeData = { filename: null, width: null, height: null, mimeType: null, filesize: null }
+const NULL_SIZE: SizeData = {
+  filename: null,
+  width: null,
+  height: null,
+  mimeType: null,
+  filesize: null,
+}
 
 function page(title: string, body: string, refresh: boolean): Response {
   const html = `<!doctype html><meta charset="utf-8">${refresh ? '<meta http-equiv="refresh" content="1">' : ''}
@@ -57,7 +63,11 @@ export async function GET(request: Request) {
 
   const { user } = await payload.auth({ headers: request.headers })
   if (!user) {
-    return page('Log in first', '<p>Log in to the admin panel in this browser, then open this page again.</p>', false)
+    return page(
+      'Log in first',
+      '<p>Log in to the admin panel in this browser, then open this page again.</p>',
+      false,
+    )
   }
 
   const storage = resolveGithubStorageConfig()
@@ -76,7 +86,11 @@ export async function GET(request: Request) {
     .toArray()) as MediaRow[]
 
   if (pending.length === 0) {
-    return page('All done', '<p>Every image has its smaller copies. This page has nothing left to do.</p>', false)
+    return page(
+      'All done',
+      '<p>Every image has its smaller copies. This page has nothing left to do.</p>',
+      false,
+    )
   }
 
   const batch = pending.slice(0, BATCH_SIZE)
@@ -87,7 +101,22 @@ export async function GET(request: Request) {
   for (const doc of batch) {
     const filename = doc.filename ?? ''
     try {
-      const source = await fetch(buildRawUrl(owner, repo, branch, buildRepoPath(uploadsPath, filename)))
+      const source = await fetch(
+        buildRawUrl(owner, repo, branch, buildRepoPath(uploadsPath, filename)),
+      )
+      // A record whose file isn't in the repo (uploaded before GitHub storage,
+      // or the file removed by hand) has nothing to resize. Record empty
+      // copies so it isn't picked again, rather than stopping on it forever.
+      if (source.status === 404) {
+        updates.push({
+          id: doc._id,
+          sizes: Object.fromEntries(Object.keys(IMAGE_SIZE_WIDTHS).map((n) => [n, NULL_SIZE])),
+        })
+        lines.push(
+          `<li style="color:#a60">${escapeHtml(filename)} — file missing from storage, skipped</li>`,
+        )
+        continue
+      }
       if (!source.ok) throw new Error(`fetching the original returned ${source.status}`)
       const original = Buffer.from(await source.arrayBuffer())
       const { width: originalWidth = 0 } = await sharp(original).rotate().metadata()
@@ -147,7 +176,11 @@ export async function GET(request: Request) {
     // worked (an editor uploading, a push), rebuild on the new tip and retry.
     let committed = false
     for (let attempt = 0; attempt < 3 && !committed; attempt++) {
-      const refRes = await githubApiRequest(`${api}/git/ref/heads/${branch}`, { method: 'GET' }, token)
+      const refRes = await githubApiRequest(
+        `${api}/git/ref/heads/${branch}`,
+        { method: 'GET' },
+        token,
+      )
       const parent = ((await refRes.json()) as { object: { sha: string } }).object.sha
       const commitInfo = (await (
         await githubApiRequest(`${api}/git/commits/${parent}`, { method: 'GET' }, token)
@@ -223,7 +256,9 @@ export async function GET(request: Request) {
   return page(
     remaining > 0 ? `Working… ${remaining} images left` : 'Finished',
     `<ul>${lines.join('')}</ul>` +
-      (remaining > 0 ? '<p>This page reloads itself. Leave it open until it says Finished.</p>' : ''),
+      (remaining > 0
+        ? '<p>This page reloads itself. Leave it open until it says Finished.</p>'
+        : ''),
     remaining > 0,
   )
 }
