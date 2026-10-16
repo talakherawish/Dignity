@@ -207,7 +207,8 @@ function Entry({
   // The annotation is the team's own words, so it comes in both languages; one
   // written in only one language is shown on both pages.
   const annotation = (
-    (isArabic ? entry.annotationAr || entry.annotation : entry.annotation || entry.annotationAr) ?? ""
+    (isArabic ? entry.annotationAr || entry.annotation : entry.annotation || entry.annotationAr) ??
+    ""
   ).trim();
   const sourceLink = entry.access !== "citation" ? sourceUrl : "";
   // Only an annotation opens: the source has its own mark, so there's nothing
