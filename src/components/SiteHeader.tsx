@@ -425,8 +425,11 @@ export function SiteHeader() {
             ))}
           </nav>
 
-          {/* Search + Language switcher + mobile menu toggle — vertically centered */}
-          <div className="self-center pe-2 sm:pe-4 lg:pe-8 flex items-center gap-1 sm:gap-2 lg:gap-3 shrink-0">
+          {/* Search + Language switcher + mobile menu toggle — vertically centered.
+              col-start-3: below lg the nav is display:none and takes no grid
+              cell, so without it this cluster would fall into the 1fr middle
+              column and sit right beside the logo instead of the far edge. */}
+          <div className="col-start-3 justify-self-end self-center pe-2 sm:pe-4 lg:pe-8 flex items-center gap-1 sm:gap-2 lg:gap-3 shrink-0">
             <SearchToggle open={searchOpen} onToggle={() => setSearchOpen((o) => !o)} />
             <LanguageSwitcher />
             <button
