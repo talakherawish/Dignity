@@ -201,13 +201,7 @@ export interface User {
    * Only a Content Manager can change this. Editors can do everything else — including editing other users' profiles — except add or remove accounts.
    */
   role: 'content-manager' | 'editor';
-  /**
-   * Set automatically -- not editable by hand.
-   */
   updatedBy?: (string | null) | User;
-  /**
-   * Set automatically -- not editable by hand.
-   */
   createdBy?: (string | null) | User;
   updatedAt: string;
   createdAt: string;
@@ -242,13 +236,7 @@ export interface Media {
    */
   thumbnail?: (string | null) | Media;
   thumbnailIsAuto?: boolean | null;
-  /**
-   * Set automatically -- not editable by hand.
-   */
   updatedBy?: (string | null) | User;
-  /**
-   * Set automatically -- not editable by hand.
-   */
   createdBy?: (string | null) | User;
   updatedAt: string;
   createdAt: string;
@@ -300,13 +288,7 @@ export interface Recipient {
   lastName: string;
   email: string;
   phone: string;
-  /**
-   * Set automatically -- not editable by hand.
-   */
   updatedBy?: (string | null) | User;
-  /**
-   * Set automatically -- not editable by hand.
-   */
   createdBy?: (string | null) | User;
   updatedAt: string;
   createdAt: string;
@@ -355,21 +337,13 @@ export interface AboutInitiative {
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
   publicationStatus?: string | null;
-  /**
-   * Set automatically -- not editable by hand.
-   */
   updatedBy?: (string | null) | User;
-  /**
-   * Set automatically -- not editable by hand.
-   */
   createdBy?: (string | null) | User;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
 }
 /**
- * Shows on the website under About the Dignity Initiative → Working Group. Add a new entry here for each person. Everyone added from now on is kept off that page until "Keep off the Working Group Page" is unchecked -- they are still saved, and still shown wherever they are credited. Authors and Speakers have their own, older switch as well ("Show on Working Group Page").
- *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "participants".
  */
@@ -403,21 +377,13 @@ export interface Participant {
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
   publicationStatus?: string | null;
-  /**
-   * Set automatically -- not editable by hand.
-   */
   updatedBy?: (string | null) | User;
-  /**
-   * Set automatically -- not editable by hand.
-   */
   createdBy?: (string | null) | User;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
 }
 /**
- * Shows on the website under About the Dignity Initiative → News & Announcements. Add a new entry here for each news post or announcement.
- *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "news".
  */
@@ -459,37 +425,23 @@ export interface News {
     [k: string]: unknown;
   } | null;
   image?: (string | null) | Media;
-  /**
-   * Which side of the homepage News & Announcements section this appears in: the rotating photo carousel, or the plain headline list. Leave blank to let it follow whether a Cover Image is set.
-   */
   displayMode?: ('withImage' | 'textOnly') | null;
   /**
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
   publicationStatus?: string | null;
-  /**
-   * Set automatically -- not editable by hand.
-   */
   updatedBy?: (string | null) | User;
-  /**
-   * Set automatically -- not editable by hand.
-   */
   createdBy?: (string | null) | User;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
 }
 /**
- * Shows on the website under About the Dignity Initiative → Photos. Upload one photo per entry (click the Image field below to upload).
- *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "photos".
  */
 export interface Photo {
   id: string;
-  /**
-   * Optional caption, e.g. "Seminar on Dignity and Praxis, March 2026". A photo that speaks for itself can be left untitled — the gallery just shows the picture.
-   */
   title?: string | null;
   titleAr?: string | null;
   /**
@@ -497,9 +449,6 @@ export interface Photo {
    */
   date?: string | null;
   image: string | Media;
-  /**
-   * If this photo is from a specific seminar, roundtable, workshop, or conference, link it here — the gallery will show an "Enter" link to that activity.
-   */
   relatedActivity?: (string | null) | Forum;
   /**
    * People shown in this photo. Pick them here, then place each one on the photo just below. Each tag links to their profile under About → Participants.
@@ -522,13 +471,7 @@ export interface Photo {
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
   publicationStatus?: string | null;
-  /**
-   * Set automatically -- not editable by hand.
-   */
   updatedBy?: (string | null) | User;
-  /**
-   * Set automatically -- not editable by hand.
-   */
   createdBy?: (string | null) | User;
   updatedAt: string;
   createdAt: string;
@@ -623,21 +566,13 @@ export interface Forum {
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
   publicationStatus?: string | null;
-  /**
-   * Set automatically -- not editable by hand.
-   */
   updatedBy?: (string | null) | User;
-  /**
-   * Set automatically -- not editable by hand.
-   */
   createdBy?: (string | null) | User;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
 }
 /**
- * Shows on the website under Activities → Research. Each entry gets its own page, where the publications, clippings and photos selected below appear alongside it.
- *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "research".
  */
@@ -700,21 +635,13 @@ export interface Research {
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
   publicationStatus?: string | null;
-  /**
-   * Set automatically -- not editable by hand.
-   */
   updatedBy?: (string | null) | User;
-  /**
-   * Set automatically -- not editable by hand.
-   */
   createdBy?: (string | null) | User;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
 }
 /**
- * Shows on the website under Publications → Books.
- *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "books".
  */
@@ -775,21 +702,13 @@ export interface Book {
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
   publicationStatus?: string | null;
-  /**
-   * Set automatically -- not editable by hand.
-   */
   updatedBy?: (string | null) | User;
-  /**
-   * Set automatically -- not editable by hand.
-   */
   createdBy?: (string | null) | User;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
 }
 /**
- * Shows on the website under Activities → Task Force on AI. Holds a single document -- edit the one that's there rather than adding another. The Forums/Publications selected below appear on its page, split into Activities and Publications.
- *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "task-force-ai".
  */
@@ -843,21 +762,13 @@ export interface TaskForceAi {
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
   publicationStatus?: string | null;
-  /**
-   * Set automatically -- not editable by hand.
-   */
   updatedBy?: (string | null) | User;
-  /**
-   * Set automatically -- not editable by hand.
-   */
   createdBy?: (string | null) | User;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
 }
 /**
- * Shows on the website under Publications → Papers.
- *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "papers".
  */
@@ -918,21 +829,13 @@ export interface Paper {
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
   publicationStatus?: string | null;
-  /**
-   * Set automatically -- not editable by hand.
-   */
   updatedBy?: (string | null) | User;
-  /**
-   * Set automatically -- not editable by hand.
-   */
   createdBy?: (string | null) | User;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
 }
 /**
- * Shows on the website under Activities → Idea Factory. Holds a single document -- edit the one that's there rather than adding another. The Forums/Publications selected below appear on its page, split into Activities and Publications.
- *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "idea-factory".
  */
@@ -986,21 +889,13 @@ export interface IdeaFactory {
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
   publicationStatus?: string | null;
-  /**
-   * Set automatically -- not editable by hand.
-   */
   updatedBy?: (string | null) | User;
-  /**
-   * Set automatically -- not editable by hand.
-   */
   createdBy?: (string | null) | User;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
 }
 /**
- * Shows on the website under Publications → Reports.
- *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "reports".
  */
@@ -1061,21 +956,13 @@ export interface Report {
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
   publicationStatus?: string | null;
-  /**
-   * Set automatically -- not editable by hand.
-   */
   updatedBy?: (string | null) | User;
-  /**
-   * Set automatically -- not editable by hand.
-   */
   createdBy?: (string | null) | User;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
 }
 /**
- * Shows on the website under Activities → The Windsor Birzeit Dignity Initiative. Holds a single document -- edit the one that's there rather than adding another. The Title field here is the page's own heading; the Forums/Publications selected below appear on its page, split into Activities and Publications.
- *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "windsor-birzeit".
  */
@@ -1129,21 +1016,13 @@ export interface WindsorBirzeit {
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
   publicationStatus?: string | null;
-  /**
-   * Set automatically -- not editable by hand.
-   */
   updatedBy?: (string | null) | User;
-  /**
-   * Set automatically -- not editable by hand.
-   */
   createdBy?: (string | null) | User;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
 }
 /**
- * Shows on the website under Publications → Brochures.
- *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "brochures".
  */
@@ -1204,21 +1083,13 @@ export interface Brochure {
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
   publicationStatus?: string | null;
-  /**
-   * Set automatically -- not editable by hand.
-   */
   updatedBy?: (string | null) | User;
-  /**
-   * Set automatically -- not editable by hand.
-   */
   createdBy?: (string | null) | User;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
 }
 /**
- * Shows on the website under Publications → Theses.
- *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "theses".
  */
@@ -1279,21 +1150,13 @@ export interface Thesis {
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
   publicationStatus?: string | null;
-  /**
-   * Set automatically -- not editable by hand.
-   */
   updatedBy?: (string | null) | User;
-  /**
-   * Set automatically -- not editable by hand.
-   */
   createdBy?: (string | null) | User;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
 }
 /**
- * Shows on the website under Publications → Audiovisual. Videos are usually a link rather than an upload.
- *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "audiovisual".
  */
@@ -1354,21 +1217,13 @@ export interface Audiovisual {
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
   publicationStatus?: string | null;
-  /**
-   * Set automatically -- not editable by hand.
-   */
   updatedBy?: (string | null) | User;
-  /**
-   * Set automatically -- not editable by hand.
-   */
   createdBy?: (string | null) | User;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
 }
 /**
- * Shows on the website under Publications → Posters.
- *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "posters".
  */
@@ -1429,21 +1284,13 @@ export interface Poster {
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
   publicationStatus?: string | null;
-  /**
-   * Set automatically -- not editable by hand.
-   */
   updatedBy?: (string | null) | User;
-  /**
-   * Set automatically -- not editable by hand.
-   */
   createdBy?: (string | null) | User;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
 }
 /**
- * Shows on the website under About the Dignity Initiative → Clippings (press mentions, newspaper scans, etc). Upload a scanned image of the clipping in the Image field.
- *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "clippings".
  */
@@ -1464,29 +1311,18 @@ export interface Clipping {
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
   publicationStatus?: string | null;
-  /**
-   * Set automatically -- not editable by hand.
-   */
   updatedBy?: (string | null) | User;
-  /**
-   * Set automatically -- not editable by hand.
-   */
   createdBy?: (string | null) | User;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
 }
 /**
- * Shows on the website under Publications → Stickers & Bookmarks. Upload one sticker or bookmark image per entry (click the Image field below to upload).
- *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "stickers".
  */
 export interface Sticker {
   id: string;
-  /**
-   * Optional caption, e.g. "Dignity Initiative sticker set". A sticker that speaks for itself can be left untitled.
-   */
   title?: string | null;
   titleAr?: string | null;
   /**
@@ -1498,13 +1334,7 @@ export interface Sticker {
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
   publicationStatus?: string | null;
-  /**
-   * Set automatically -- not editable by hand.
-   */
   updatedBy?: (string | null) | User;
-  /**
-   * Set automatically -- not editable by hand.
-   */
   createdBy?: (string | null) | User;
   updatedAt: string;
   createdAt: string;
@@ -1548,13 +1378,7 @@ export interface PartnerItem {
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
   publicationStatus?: string | null;
-  /**
-   * Set automatically -- not editable by hand.
-   */
   updatedBy?: (string | null) | User;
-  /**
-   * Set automatically -- not editable by hand.
-   */
   createdBy?: (string | null) | User;
   updatedAt: string;
   createdAt: string;
@@ -1609,13 +1433,7 @@ export interface ReadingList {
     hasNextPage?: boolean;
     totalDocs?: number;
   };
-  /**
-   * Set automatically -- not editable by hand.
-   */
   updatedBy?: (string | null) | User;
-  /**
-   * Set automatically -- not editable by hand.
-   */
   createdBy?: (string | null) | User;
   updatedAt: string;
   createdAt: string;
@@ -1642,13 +1460,7 @@ export interface ReadingImport {
   dryRun?: boolean | null;
   status?: ('running' | 'done' | 'doneWithErrors' | 'failed') | null;
   report?: string | null;
-  /**
-   * Set automatically -- not editable by hand.
-   */
   updatedBy?: (string | null) | User;
-  /**
-   * Set automatically -- not editable by hand.
-   */
   createdBy?: (string | null) | User;
   updatedAt: string;
   createdAt: string;
@@ -1663,8 +1475,6 @@ export interface ReadingImport {
   focalY?: number | null;
 }
 /**
- * A reading or document in a Readings and Documents subject. Shows on the website in its subject’s list.
- *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "readings".
  */
@@ -1718,13 +1528,7 @@ export interface Reading {
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
   publicationStatus?: string | null;
-  /**
-   * Set automatically -- not editable by hand.
-   */
   updatedBy?: (string | null) | User;
-  /**
-   * Set automatically -- not editable by hand.
-   */
   createdBy?: (string | null) | User;
   updatedAt: string;
   createdAt: string;
@@ -1741,13 +1545,7 @@ export interface Keyword {
   name?: string | null;
   nameAr?: string | null;
   label?: string | null;
-  /**
-   * Set automatically -- not editable by hand.
-   */
   updatedBy?: (string | null) | User;
-  /**
-   * Set automatically -- not editable by hand.
-   */
   createdBy?: (string | null) | User;
   updatedAt: string;
   createdAt: string;
@@ -1801,13 +1599,7 @@ export interface Database {
     hasNextPage?: boolean;
     totalDocs?: number;
   };
-  /**
-   * Set automatically -- not editable by hand.
-   */
   updatedBy?: (string | null) | User;
-  /**
-   * Set automatically -- not editable by hand.
-   */
   createdBy?: (string | null) | User;
   updatedAt: string;
   createdAt: string;
@@ -1834,13 +1626,7 @@ export interface BibliographyImport {
   dryRun?: boolean | null;
   status?: ('running' | 'done' | 'doneWithErrors' | 'failed') | null;
   report?: string | null;
-  /**
-   * Set automatically -- not editable by hand.
-   */
   updatedBy?: (string | null) | User;
-  /**
-   * Set automatically -- not editable by hand.
-   */
   createdBy?: (string | null) | User;
   updatedAt: string;
   createdAt: string;
@@ -1855,8 +1641,6 @@ export interface BibliographyImport {
   focalY?: number | null;
 }
 /**
- * One source in an annotated bibliography. Shows on the website inside its database, under Information → Databases.
- *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "bibliography-entries".
  */
@@ -1917,13 +1701,7 @@ export interface BibliographyEntry {
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
   publicationStatus?: string | null;
-  /**
-   * Set automatically -- not editable by hand.
-   */
   updatedBy?: (string | null) | User;
-  /**
-   * Set automatically -- not editable by hand.
-   */
   createdBy?: (string | null) | User;
   updatedAt: string;
   createdAt: string;
@@ -1973,13 +1751,7 @@ export interface Disclaimer {
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
   publicationStatus?: string | null;
-  /**
-   * Set automatically -- not editable by hand.
-   */
   updatedBy?: (string | null) | User;
-  /**
-   * Set automatically -- not editable by hand.
-   */
   createdBy?: (string | null) | User;
   updatedAt: string;
   createdAt: string;
@@ -2029,13 +1801,7 @@ export interface PrivacyPolicy {
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
   publicationStatus?: string | null;
-  /**
-   * Set automatically -- not editable by hand.
-   */
   updatedBy?: (string | null) | User;
-  /**
-   * Set automatically -- not editable by hand.
-   */
   createdBy?: (string | null) | User;
   updatedAt: string;
   createdAt: string;
@@ -3191,9 +2957,6 @@ export interface SiteSetting {
   forumTypeConferenceAr?: string | null;
   forumTypeEncounters?: string | null;
   forumTypeEncountersAr?: string | null;
-  /**
-   * Set automatically -- not editable by hand.
-   */
   updatedBy?: (string | null) | User;
   updatedAt?: string | null;
   createdAt?: string | null;
@@ -3208,9 +2971,6 @@ export interface DatabasesPage {
   titleAr?: string | null;
   intro?: string | null;
   introAr?: string | null;
-  /**
-   * Set automatically -- not editable by hand.
-   */
   updatedBy?: (string | null) | User;
   updatedAt?: string | null;
   createdAt?: string | null;
@@ -3225,9 +2985,6 @@ export interface ReadingsPage {
   titleAr?: string | null;
   intro?: string | null;
   introAr?: string | null;
-  /**
-   * Set automatically -- not editable by hand.
-   */
   updatedBy?: (string | null) | User;
   updatedAt?: string | null;
   createdAt?: string | null;

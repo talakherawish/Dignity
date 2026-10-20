@@ -191,7 +191,6 @@ function publicationCollection(
   slug: CollectionSlug,
   singular: string,
   plural: string,
-  description: string,
   relatedField: string,
 ): CollectionConfig {
   return {
@@ -201,7 +200,6 @@ function publicationCollection(
       group: 'Publications',
       useAsTitle: 'title',
       defaultColumns: ['title', 'date', 'author', 'updatedAt'],
-      description,
     },
     versions: {
       drafts: true,
@@ -253,7 +251,6 @@ export const Books = publicationCollection(
   'books',
   'Book',
   'Books',
-  'Shows on the website under Publications → Books.',
   'relatedBooks',
 )
 
@@ -261,7 +258,6 @@ export const Papers = publicationCollection(
   'papers',
   'Paper',
   'Papers',
-  'Shows on the website under Publications → Papers.',
   'relatedPapers',
 )
 
@@ -269,7 +265,6 @@ export const Reports = publicationCollection(
   'reports',
   'Report',
   'Reports',
-  'Shows on the website under Publications → Reports.',
   'relatedReports',
 )
 
@@ -277,7 +272,6 @@ export const Brochures = publicationCollection(
   'brochures',
   'Brochure',
   'Brochures',
-  'Shows on the website under Publications → Brochures.',
   'relatedBrochures',
 )
 
@@ -285,7 +279,6 @@ export const Theses = publicationCollection(
   'theses',
   'Thesis',
   'Theses',
-  'Shows on the website under Publications → Theses.',
   'relatedTheses',
 )
 
@@ -293,7 +286,6 @@ export const Audiovisual = publicationCollection(
   'audiovisual',
   'Audiovisual Item',
   'Audiovisual',
-  'Shows on the website under Publications → Audiovisual. Videos are usually a link rather than an upload.',
   'relatedAudiovisual',
 )
 
@@ -301,6 +293,5 @@ export const Posters = publicationCollection(
   'posters',
   'Poster',
   'Posters',
-  'Shows on the website under Publications → Posters.',
   'relatedPosters',
 )

@@ -7,8 +7,6 @@ export const Photos: CollectionConfig = {
     group: 'About the Dignity Initiative',
     useAsTitle: 'title',
     defaultColumns: ['title', 'date', 'status'],
-    description:
-      'Shows on the website under About the Dignity Initiative → Photos. Upload one photo per entry (click the Image field below to upload).',
   },
   versions: {
     drafts: true,
@@ -37,10 +35,6 @@ export const Photos: CollectionConfig = {
       name: 'title',
       type: 'text',
       label: 'Title (English)',
-      admin: {
-        description:
-          'Optional caption, e.g. "Seminar on Dignity and Praxis, March 2026". A photo that speaks for itself can be left untitled — the gallery just shows the picture.',
-      },
     },
     {
       name: 'titleAr',
@@ -67,10 +61,6 @@ export const Photos: CollectionConfig = {
       type: 'relationship',
       relationTo: 'forums',
       label: 'Related Activity (optional)',
-      admin: {
-        description:
-          'If this photo is from a specific seminar, roundtable, workshop, or conference, link it here — the gallery will show an "Enter" link to that activity.',
-      },
     },
     {
       name: 'taggedParticipants',

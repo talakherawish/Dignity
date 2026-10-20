@@ -36,7 +36,6 @@ function trackingField(name: string, label: string): Field {
     admin: {
       position: 'sidebar',
       readOnly: true,
-      description: `Set automatically -- not editable by hand.`,
     },
   }
 }

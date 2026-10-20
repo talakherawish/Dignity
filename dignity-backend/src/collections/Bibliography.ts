@@ -181,8 +181,6 @@ export const BibliographyEntries: CollectionConfig = {
     useAsTitle: 'title',
     defaultColumns: ['title', 'database', 'entryType', 'year', 'updatedAt'],
     listSearchableFields: ['title', 'containerTitle', 'authors.name'],
-    description:
-      'One source in an annotated bibliography. Shows on the website inside its database, under Information → Databases.',
   },
   versions: {
     drafts: true,

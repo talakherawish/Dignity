@@ -28,8 +28,6 @@ export const Readings: CollectionConfig = {
     useAsTitle: 'title',
     defaultColumns: ['title', 'itemType', 'year', 'language', '_status'],
     listSearchableFields: ['title', 'source', 'authors.name', 'otherVersion.title'],
-    description:
-      'A reading or document in a Readings and Documents subject. Shows on the website in its subject’s list.',
   },
   versions: {
     drafts: true,

@@ -7,8 +7,6 @@ export const Stickers: CollectionConfig = {
     group: 'Publications',
     useAsTitle: 'title',
     defaultColumns: ['title', 'date', 'status'],
-    description:
-      'Shows on the website under Publications → Stickers & Bookmarks. Upload one sticker or bookmark image per entry (click the Image field below to upload).',
   },
   versions: {
     drafts: true,
@@ -27,10 +25,6 @@ export const Stickers: CollectionConfig = {
       name: 'title',
       type: 'text',
       label: 'Title (English)',
-      admin: {
-        description:
-          'Optional caption, e.g. "Dignity Initiative sticker set". A sticker that speaks for itself can be left untitled.',
-      },
     },
     {
       name: 'titleAr',

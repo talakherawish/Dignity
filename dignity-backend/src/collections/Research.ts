@@ -22,8 +22,6 @@ export const Research: CollectionConfig = {
     group: 'Activities',
     useAsTitle: 'title',
     defaultColumns: ['title', 'slug', 'status', 'updatedAt'],
-    description:
-      'Shows on the website under Activities → Research. Each entry gets its own page, where the publications, clippings and photos selected below appear alongside it.',
   },
   versions: {
     drafts: true,

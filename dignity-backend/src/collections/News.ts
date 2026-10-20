@@ -10,8 +10,6 @@ export const News: CollectionConfig = {
     group: 'About the Dignity Initiative',
     useAsTitle: 'title',
     defaultColumns: ['title', 'status', 'publishedAt', 'updatedAt'],
-    description:
-      'Shows on the website under About the Dignity Initiative → News & Announcements. Add a new entry here for each news post or announcement.',
   },
   // Enable draft/publish — nothing goes live until content manager publishes
   versions: {
@@ -89,10 +87,6 @@ export const News: CollectionConfig = {
         { label: 'With Image (photo carousel)', value: 'withImage' },
         { label: 'Text Only (headline list)', value: 'textOnly' },
       ],
-      admin: {
-        description:
-          'Which side of the homepage News & Announcements section this appears in: the rotating photo carousel, or the plain headline list. Leave blank to let it follow whether a Cover Image is set.',
-      },
     },
   ],
 }

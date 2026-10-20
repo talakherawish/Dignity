@@ -7,8 +7,6 @@ export const Clippings: CollectionConfig = {
     group: 'About the Dignity Initiative',
     useAsTitle: 'title',
     defaultColumns: ['title', 'date', 'status'],
-    description:
-      'Shows on the website under About the Dignity Initiative → Clippings (press mentions, newspaper scans, etc). Upload a scanned image of the clipping in the Image field.',
   },
   versions: {
     drafts: true,
