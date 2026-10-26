@@ -824,12 +824,22 @@ const NESTED_POPULATE: Record<string, string> = Object.fromEntries([
   ),
 ]);
 
+/**
+ * The site and the admin share an origin, so the browser would otherwise send
+ * an editor's payload-token cookie with every request -- and Payload lets a
+ * logged-in user read drafts, so an unpublished item stayed on the site for
+ * whoever had just unpublished it. Omitting credentials makes every request
+ * anonymous: editors see exactly what visitors see.
+ */
+const PUBLIC_REQUEST: RequestInit = {
+  credentials: "omit",
+  headers: { "Content-Type": "application/json" },
+};
+
 async function fetchCollection<T>(slug: string, extra: Record<string, string> = {}): Promise<T[]> {
   try {
     const params = new URLSearchParams({ depth: "1", limit: "100", ...NESTED_POPULATE, ...extra });
-    const res = await fetch(`${PAYLOAD_URL}/api/${slug}?${params}`, {
-      headers: { "Content-Type": "application/json" },
-    });
+    const res = await fetch(`${PAYLOAD_URL}/api/${slug}?${params}`, PUBLIC_REQUEST);
     if (!res.ok) return [];
     const data = (await res.json()) as { docs?: T[] };
     return data.docs ?? [];
@@ -1072,9 +1082,7 @@ export const fetchPartners = () => fetchCollection<PayloadPartner>("partner-item
  */
 export async function fetchSiteSettings(): Promise<PayloadSiteSettings | null> {
   try {
-    const res = await fetch(`${PAYLOAD_URL}/api/globals/site-settings?depth=2`, {
-      headers: { "Content-Type": "application/json" },
-    });
+    const res = await fetch(`${PAYLOAD_URL}/api/globals/site-settings?depth=2`, PUBLIC_REQUEST);
     if (!res.ok) return null;
     return (await res.json()) as PayloadSiteSettings;
   } catch {
@@ -1099,9 +1107,7 @@ export async function fetchPageText(
   global: "databases-page" | "readings-page",
 ): Promise<PayloadPageText | null> {
   try {
-    const res = await fetch(`${PAYLOAD_URL}/api/globals/${global}?depth=0`, {
-      headers: { "Content-Type": "application/json" },
-    });
+    const res = await fetch(`${PAYLOAD_URL}/api/globals/${global}?depth=0`, PUBLIC_REQUEST);
     if (!res.ok) return null;
     return (await res.json()) as PayloadPageText;
   } catch {
@@ -1126,8 +1132,8 @@ export type SubscribeToMailingListInput = {
  */
 export async function subscribeToMailingList(input: SubscribeToMailingListInput): Promise<void> {
   const res = await fetch(`${PAYLOAD_URL}/api/recipients`, {
+    ...PUBLIC_REQUEST,
     method: "POST",
-    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(input),
   });
   if (!res.ok) throw new Error(`Subscribing returned ${res.status}`);
