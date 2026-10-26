@@ -34,7 +34,10 @@ function lettermark(text: string, fontSize: number): ComponentType<IconProps> {
   };
 }
 
-const PLATFORMS: Record<ProfileLink["platform"], { label: string; Icon: ComponentType<IconProps> }> = {
+const PLATFORMS: Record<
+  ProfileLink["platform"],
+  { label: string; Icon: ComponentType<IconProps> }
+> = {
   linkedin: { label: "LinkedIn", Icon: Linkedin },
   academia: { label: "Academia.edu", Icon: lettermark("A", 17) },
   orcid: { label: "ORCID", Icon: lettermark("iD", 13) },
