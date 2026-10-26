@@ -168,6 +168,22 @@ export type PayloadParticipant = {
     | "intern"
     | "practical_support";
   email?: string;
+  /** Shown as round icons beside the email icon -- see ProfileLinks. */
+  links?: {
+    id?: string;
+    platform:
+      | "linkedin"
+      | "academia"
+      | "orcid"
+      | "researchgate"
+      | "googleScholar"
+      | "facebook"
+      | "youtube"
+      | "instagram"
+      | "x"
+      | "website";
+    url: string;
+  }[];
   bio?: string;
   bioAr?: string;
   photo?: PayloadMedia;

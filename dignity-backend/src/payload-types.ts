@@ -364,6 +364,23 @@ export interface Participant {
   title?: string | null;
   titleAr?: string | null;
   email?: string | null;
+  links?:
+    | {
+        platform:
+          | 'linkedin'
+          | 'academia'
+          | 'orcid'
+          | 'researchgate'
+          | 'googleScholar'
+          | 'facebook'
+          | 'youtube'
+          | 'instagram'
+          | 'x'
+          | 'website';
+        url: string;
+        id?: string | null;
+      }[]
+    | null;
   /**
    * Up to 350 words.
    */
@@ -2122,6 +2139,13 @@ export interface ParticipantsSelect<T extends boolean = true> {
   title?: T;
   titleAr?: T;
   email?: T;
+  links?:
+    | T
+    | {
+        platform?: T;
+        url?: T;
+        id?: T;
+      };
   bio?: T;
   bioAr?: T;
   photo?: T;

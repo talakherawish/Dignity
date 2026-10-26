@@ -8,6 +8,7 @@ import { Reveal } from "@/components/Reveal";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { getField, mapPayloadNews, type Article } from "@/data/articles";
 import { withItalicQuotes } from "@/lib/text";
+import { ProfileLinks, type ProfileLink } from "@/components/ProfileLinks";
 import {
   fetchNews,
   fetchParticipants,
@@ -88,6 +89,7 @@ type TeamPerson = {
   titleAr: string;
   category: PayloadParticipant["category"];
   email: string;
+  links: ProfileLink[];
   bio: string;
   bioAr: string;
   photo?: string;
@@ -103,6 +105,7 @@ function mapPayloadToTeamPerson(p: PayloadParticipant): TeamPerson {
     titleAr: p.titleAr ?? p.title ?? role.ar,
     category: p.category,
     email: p.email ?? "",
+    links: p.links ?? [],
     bio: p.bio ?? "",
     bioAr: p.bioAr ?? p.bio ?? "",
     photo: mediaUrl(p.photo) || undefined,
@@ -359,6 +362,7 @@ function TeamModal({
                 <Mail className="h-4 w-4" />
               </a>
             )}
+            <ProfileLinks links={person.links} />
             <button
               onClick={onClose}
               className="p-1.5 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"

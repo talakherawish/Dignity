@@ -139,6 +139,48 @@ export const Participants: CollectionConfig = {
       type: 'email',
       label: 'Email Address',
     },
+    // Each row is a platform + URL; the site picks the icon from the platform
+    // (see ProfileLinks.tsx in the frontend), so the two lists must match.
+    {
+      name: 'links',
+      type: 'array',
+      label: 'Links',
+      labels: { singular: 'Link', plural: 'Links' },
+      admin: { initCollapsed: false },
+      fields: [
+        {
+          type: 'row',
+          fields: [
+            {
+              name: 'platform',
+              type: 'select',
+              label: false,
+              required: true,
+              admin: { width: '30%' },
+              options: [
+                { label: 'LinkedIn', value: 'linkedin' },
+                { label: 'Academia.edu', value: 'academia' },
+                { label: 'ORCID', value: 'orcid' },
+                { label: 'ResearchGate', value: 'researchgate' },
+                { label: 'Google Scholar', value: 'googleScholar' },
+                { label: 'Facebook', value: 'facebook' },
+                { label: 'YouTube', value: 'youtube' },
+                { label: 'Instagram', value: 'instagram' },
+                { label: 'X (Twitter)', value: 'x' },
+                { label: 'Website', value: 'website' },
+              ],
+            },
+            {
+              name: 'url',
+              type: 'text',
+              label: false,
+              required: true,
+              admin: { width: '70%', placeholder: 'https://' },
+            },
+          ],
+        },
+      ],
+    },
     {
       name: 'bio',
       type: 'textarea',

@@ -5,6 +5,7 @@ import {
   PARTICIPANT_ROLE_LABEL,
   type PayloadParticipant,
 } from "@/lib/payload";
+import { ProfileLinks, type ProfileLink } from "@/components/ProfileLinks";
 
 /**
  * A person's profile card, shown over whatever page opened it: the Working
@@ -27,6 +28,7 @@ export type Participant = {
     | "intern"
     | "practical_support";
   email: string;
+  links: ProfileLink[];
   bio: string;
   bioAr: string;
   photo?: string;
@@ -43,6 +45,7 @@ export function mapPayloadParticipant(p: PayloadParticipant): Participant {
     titleAr: p.titleAr ?? p.title ?? role.ar,
     category: p.category,
     email: p.email ?? "",
+    links: p.links ?? [],
     bio: p.bio ?? "",
     bioAr: p.bioAr ?? p.bio ?? "",
     photo: mediaUrl(p.photo) || undefined,
@@ -96,6 +99,7 @@ export function ParticipantModal({
                 <Mail className="h-4 w-4" />
               </a>
             )}
+            <ProfileLinks links={participant.links} />
             <button
               onClick={onClose}
               className="p-1.5 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
