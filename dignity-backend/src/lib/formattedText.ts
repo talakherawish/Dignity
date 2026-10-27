@@ -1,7 +1,7 @@
 import type { CollectionConfig, Field, FieldHook, Validate } from 'payload'
 import {
   BoldFeature,
-  FixedToolbarFeature,
+  InlineToolbarFeature,
   ItalicFeature,
   ParagraphFeature,
   lexicalEditor,
@@ -22,8 +22,10 @@ import {
  * The website shows the formatted version and falls back to the plain one.
  */
 
+// The same floating toolbar as the write-ups: select words and Bold / Italic
+// appear above them. No fixed bar across the top of a one-line field.
 const inlineEditor = lexicalEditor({
-  features: [ParagraphFeature(), BoldFeature(), ItalicFeature(), FixedToolbarFeature()],
+  features: [ParagraphFeature(), BoldFeature(), ItalicFeature(), InlineToolbarFeature()],
 })
 
 type LexicalNode = { type?: string; text?: string; children?: LexicalNode[] }
