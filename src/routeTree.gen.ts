@@ -36,6 +36,7 @@ import { Route as PublicationsPostersRouteImport } from './routes/publications.p
 import { Route as PublicationsReportsRouteImport } from './routes/publications.reports'
 import { Route as PublicationsStickersRouteImport } from './routes/publications.stickers'
 import { Route as PublicationsThesesRouteImport } from './routes/publications.theses'
+import { Route as AboutParticipantsSlugRouteImport } from './routes/about.participants_.$slug'
 import { Route as InformationDatabasesSlugRouteImport } from './routes/information.databases_.$slug'
 import { Route as InformationReadingsSlugRouteImport } from './routes/information.readings_.$slug'
 import { Route as ProjectsResearchIndexRouteImport } from './routes/projects.research.index'
@@ -177,6 +178,11 @@ const PublicationsThesesRoute = PublicationsThesesRouteImport.update({
   path: '/theses',
   getParentRoute: () => PublicationsRoute,
 } as any)
+const AboutParticipantsSlugRoute = AboutParticipantsSlugRouteImport.update({
+  id: '/participants_/$slug',
+  path: '/participants/$slug',
+  getParentRoute: () => AboutRoute,
+} as any)
 const InformationDatabasesSlugRoute =
   InformationDatabasesSlugRouteImport.update({
     id: '/databases_/$slug',
@@ -227,6 +233,7 @@ export interface FileRoutesByFullPath {
   '/publications/reports': typeof PublicationsReportsRoute
   '/publications/stickers': typeof PublicationsStickersRoute
   '/publications/theses': typeof PublicationsThesesRoute
+  '/about/participants/$slug': typeof AboutParticipantsSlugRoute
   '/information/databases/$slug': typeof InformationDatabasesSlugRoute
   '/information/readings/$slug': typeof InformationReadingsSlugRoute
   '/projects/research/$slug': typeof ProjectsResearchSlugRoute
@@ -260,6 +267,7 @@ export interface FileRoutesByTo {
   '/publications/reports': typeof PublicationsReportsRoute
   '/publications/stickers': typeof PublicationsStickersRoute
   '/publications/theses': typeof PublicationsThesesRoute
+  '/about/participants/$slug': typeof AboutParticipantsSlugRoute
   '/information/databases/$slug': typeof InformationDatabasesSlugRoute
   '/information/readings/$slug': typeof InformationReadingsSlugRoute
   '/projects/research/$slug': typeof ProjectsResearchSlugRoute
@@ -294,6 +302,7 @@ export interface FileRoutesById {
   '/publications/reports': typeof PublicationsReportsRoute
   '/publications/stickers': typeof PublicationsStickersRoute
   '/publications/theses': typeof PublicationsThesesRoute
+  '/about/participants_/$slug': typeof AboutParticipantsSlugRoute
   '/information/databases_/$slug': typeof InformationDatabasesSlugRoute
   '/information/readings_/$slug': typeof InformationReadingsSlugRoute
   '/projects/research/$slug': typeof ProjectsResearchSlugRoute
@@ -329,6 +338,7 @@ export interface FileRouteTypes {
     | '/publications/reports'
     | '/publications/stickers'
     | '/publications/theses'
+    | '/about/participants/$slug'
     | '/information/databases/$slug'
     | '/information/readings/$slug'
     | '/projects/research/$slug'
@@ -362,6 +372,7 @@ export interface FileRouteTypes {
     | '/publications/reports'
     | '/publications/stickers'
     | '/publications/theses'
+    | '/about/participants/$slug'
     | '/information/databases/$slug'
     | '/information/readings/$slug'
     | '/projects/research/$slug'
@@ -395,6 +406,7 @@ export interface FileRouteTypes {
     | '/publications/reports'
     | '/publications/stickers'
     | '/publications/theses'
+    | '/about/participants_/$slug'
     | '/information/databases_/$slug'
     | '/information/readings_/$slug'
     | '/projects/research/$slug'
@@ -608,6 +620,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicationsThesesRouteImport
       parentRoute: typeof PublicationsRoute
     }
+    '/about/participants_/$slug': {
+      id: '/about/participants_/$slug'
+      path: '/participants/$slug'
+      fullPath: '/about/participants/$slug'
+      preLoaderRoute: typeof AboutParticipantsSlugRouteImport
+      parentRoute: typeof AboutRoute
+    }
     '/information/databases_/$slug': {
       id: '/information/databases_/$slug'
       path: '/databases/$slug'
@@ -642,11 +661,13 @@ declare module '@tanstack/react-router' {
 interface AboutRouteChildren {
   AboutParticipantsRoute: typeof AboutParticipantsRoute
   AboutPartnersRoute: typeof AboutPartnersRoute
+  AboutParticipantsSlugRoute: typeof AboutParticipantsSlugRoute
 }
 
 const AboutRouteChildren: AboutRouteChildren = {
   AboutParticipantsRoute: AboutParticipantsRoute,
   AboutPartnersRoute: AboutPartnersRoute,
+  AboutParticipantsSlugRoute: AboutParticipantsSlugRoute,
 }
 
 const AboutRouteWithChildren = AboutRoute._addFileChildren(AboutRouteChildren)

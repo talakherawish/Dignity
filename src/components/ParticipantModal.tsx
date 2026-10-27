@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import { X, Mail } from "lucide-react";
 import {
   mediaSrcSet,
@@ -36,6 +37,8 @@ export type Participant = {
   bioAr: string;
   photo?: string;
   photoSrcSet?: string;
+  /** Their full page's address, when they have one -- see FullPageLink. */
+  pageSlug?: string;
 };
 
 export function mapPayloadParticipant(p: PayloadParticipant): Participant {
@@ -57,7 +60,23 @@ export function mapPayloadParticipant(p: PayloadParticipant): Participant {
     bioAr: p.bioAr ?? p.bio ?? "",
     photo: mediaUrl(p.photo) || undefined,
     photoSrcSet: mediaSrcSet(p.photo),
+    pageSlug: p.hasFullPage && p.slug ? p.slug : undefined,
   };
+}
+
+/** The pop-up's way to the person's own page, for those who have one. */
+export function FullPageLink({ slug, isArabic }: { slug?: string; isArabic: boolean }) {
+  if (!slug) return null;
+  return (
+    <Link
+      to="/about/participants/$slug"
+      params={{ slug }}
+      className="mt-6 inline-flex items-center gap-1.5 rounded-full border border-border px-4 py-2 text-sm font-medium text-primary transition-colors hover:border-accent hover:text-accent"
+    >
+      {isArabic ? "الصفحة الكاملة" : "View full page"}
+      <span aria-hidden>{isArabic ? "←" : "→"}</span>
+    </Link>
+  );
 }
 
 export function ParticipantModal({
@@ -135,6 +154,7 @@ export function ParticipantModal({
                 {lang === "ar" ? participant.bioAr : participant.bio}
               </p>
             )}
+            <FullPageLink slug={participant.pageSlug} isArabic={isArabic} />
           </div>
         </div>
         {participant.photo && (

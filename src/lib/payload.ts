@@ -201,6 +201,23 @@ export type PayloadParticipant = {
    * who were already there, which reads as false, so they are unaffected.
    */
   hideFromWorkingGroupPage?: boolean;
+  /** Has a page of their own, at /about/participants/<slug>, linked from the pop-up. */
+  hasFullPage?: boolean;
+  slug?: string;
+  /** The full page's bio; the short `bio` stands in when this is empty. */
+  fullBio?: unknown;
+  fullBioAr?: unknown;
+  /** Their work published outside this website, listed on the full page. */
+  otherPublications?: {
+    id?: string;
+    title: string;
+    titleAr?: string;
+    publishedIn?: string;
+    year?: string;
+    link?: string;
+  }[];
+  /** Items that credit them but that they'd rather not list on their page. */
+  hiddenFromPage?: { relationTo: string; value: string | { id: string } }[];
 };
 
 /**
@@ -1011,8 +1028,77 @@ export const fetchClippings = () =>
 
 export const fetchStickers = () => fetchCollection<PayloadSticker>("stickers", NEWEST_FIRST);
 
-// Participants carry no date — Payload's own ordering is what the admin sees.
-export const fetchParticipants = () => fetchCollection<PayloadParticipant>("participants");
+// In the order editors drag them into in the admin's Working Group list.
+export const fetchParticipants = () =>
+  fetchCollection<PayloadParticipant>("participants", { sort: "_order" });
+
+/** One person with a full page, by its address. Undefined if there is none. */
+export async function fetchParticipantPage(slug: string): Promise<PayloadParticipant | undefined> {
+  const [person] = await fetchCollection<PayloadParticipant>("participants", {
+    "where[slug][equals]": slug,
+    "where[hasFullPage][equals]": "true",
+    limit: "1",
+  });
+  return person;
+}
+
+const PUBLICATION_COLLECTIONS: PublicationCollection[] = [
+  "books",
+  "papers",
+  "reports",
+  "brochures",
+  "theses",
+  "audiovisual",
+  "posters",
+];
+
+export type Contributions = {
+  publications: PayloadPublication[];
+  forums: PayloadActivity[];
+  photos: PayloadPhoto[];
+};
+
+/**
+ * Everything on this website that credits a person -- the publications naming
+ * them as author or speaker, the forums they took part in, the photos they're
+ * tagged in -- for their full page, less whatever their entry hides from it.
+ * depth 2 for the same previews the listing pages show.
+ */
+export async function fetchContributions(person: PayloadParticipant): Promise<Contributions> {
+  const hidden = new Set(
+    (person.hiddenFromPage ?? []).map((pick) =>
+      typeof pick.value === "string" ? pick.value : pick.value?.id,
+    ),
+  );
+  const shown = <T extends { id: string }>(items: T[]) => items.filter((i) => !hidden.has(i.id));
+  const [publications, forums, photos] = await Promise.all([
+    Promise.all(
+      PUBLICATION_COLLECTIONS.map((collection) =>
+        fetchCollection<PayloadPublication>(collection, {
+          "where[or][0][authorParticipants][equals]": person.id,
+          "where[or][1][speakerParticipants][equals]": person.id,
+          depth: "2",
+          ...NEWEST_FIRST,
+        }),
+      ),
+    ),
+    fetchCollection<PayloadActivity>("forums", {
+      "where[participants][equals]": person.id,
+      depth: "2",
+      ...NEWEST_FIRST,
+    }),
+    fetchCollection<PayloadPhoto>("photos", {
+      "where[taggedParticipants][equals]": person.id,
+      depth: "2",
+      ...NEWEST_FIRST,
+    }),
+  ]);
+  return {
+    publications: shown(publications.flat()),
+    forums: shown(forums),
+    photos: shown(photos),
+  };
+}
 
 /** Everything in one of the publication collections, newest first. */
 export const fetchPublications = (collection: PublicationCollection) =>

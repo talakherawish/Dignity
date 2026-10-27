@@ -9,6 +9,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { getField, getFormatted, mapPayloadNews, type Article } from "@/data/articles";
 import { FormattedText } from "@/components/RichText";
 import { ProfileLinks, type ProfileLink } from "@/components/ProfileLinks";
+import { FullPageLink } from "@/components/ParticipantModal";
 import {
   mediaSrcSet,
   mediaUrl,
@@ -102,6 +103,7 @@ type TeamPerson = {
   bioAr: string;
   photo?: string;
   photoSrcSet?: string;
+  pageSlug?: string;
 };
 
 function mapPayloadToTeamPerson(p: PayloadParticipant): TeamPerson {
@@ -122,6 +124,7 @@ function mapPayloadToTeamPerson(p: PayloadParticipant): TeamPerson {
     bioAr: p.bioAr ?? p.bio ?? "",
     photo: mediaUrl(p.photo) || undefined,
     photoSrcSet: mediaSrcSet(p.photo),
+    pageSlug: p.hasFullPage && p.slug ? p.slug : undefined,
   };
 }
 
@@ -403,6 +406,7 @@ function TeamModal({
                 {lang === "ar" ? person.bioAr : person.bio}
               </p>
             )}
+            <FullPageLink slug={person.pageSlug} isArabic={isArabic} />
           </div>
         </div>
         {person.photo && (

@@ -1,5 +1,6 @@
-import type { CollectionConfig } from 'payload'
+import type { CollectionBeforeValidateHook, CollectionConfig, Where } from 'payload'
 import { section } from '../lib/adminLayout'
+import { toSlug } from '../lib/slug'
 
 /** Bio fields are free prose, but the card/modal on the site assumes a short paragraph. */
 const MAX_BIO_WORDS = 350
@@ -13,6 +14,42 @@ function validateWordCount(value: unknown): string | true {
   return true
 }
 
+/** What on this website credits a person: the field that names them, per collection. */
+function creditedTo(relationTo: string, id: string | number | undefined): Where | boolean {
+  if (!id) return false
+  const names = { equals: id }
+  if (relationTo === 'forums') return { participants: names }
+  if (relationTo === 'photos') return { taggedParticipants: names }
+  return { or: [{ authorParticipants: names }, { speakerParticipants: names }] }
+}
+
+const showWithFullPage = (data: Partial<Record<string, unknown>> | undefined) => data?.hasFullPage === true
+
+/**
+ * A full page's address comes from the English name, made unique by a number
+ * if someone else already has it. Set once: changing it would break links
+ * already shared.
+ */
+const fillSlug: CollectionBeforeValidateHook = async ({ data, originalDoc, req }) => {
+  if (!data || !(data.hasFullPage ?? originalDoc?.hasFullPage)) return data
+  if (data.slug || originalDoc?.slug) return data
+  const name = (data.name ?? originalDoc?.name) as string | undefined
+  const base = name ? toSlug(name) : ''
+  if (!base) return data
+  for (let n = 1; ; n++) {
+    const slug = n === 1 ? base : `${base}-${n}`
+    const { totalDocs } = await req.payload.count({
+      collection: 'participants',
+      where: { slug: { equals: slug }, ...(originalDoc?.id ? { id: { not_equals: originalDoc.id } } : {}) },
+      req,
+    })
+    if (totalDocs === 0) {
+      data.slug = slug
+      return data
+    }
+  }
+}
+
 export const Participants: CollectionConfig = {
   slug: 'participants',
   labels: {
@@ -24,6 +61,8 @@ export const Participants: CollectionConfig = {
     useAsTitle: 'name',
     defaultColumns: ['name', 'category', 'status'],
   },
+  // Drag to reorder in the list: the Working Group page shows people in this order.
+  orderable: true,
   versions: {
     drafts: true,
   },
@@ -37,6 +76,7 @@ export const Participants: CollectionConfig = {
     delete: ({ req }) => !!req.user,
   },
   hooks: {
+    beforeValidate: [fillSlug],
     // New profiles default to visible on the site — an editor has to actively
     // choose "Save as draft" to hold one back, rather than remembering to hit
     // "Publish" before it appears. Drafts stay usable for anyone who does want
@@ -206,6 +246,84 @@ export const Participants: CollectionConfig = {
         type: 'upload',
         relationTo: 'media',
         label: 'Photo (optional)',
+      },
+    ]),
+    // Optional. Everyone has the pop-up on the Working Group page; someone with
+    // a lot to show also gets a page of their own, linked from the pop-up.
+    section('Full Page', [
+      {
+        name: 'hasFullPage',
+        type: 'checkbox',
+        label: 'Give this person a full page',
+        // Must stay false: see hideFromWorkingGroupPage above.
+        defaultValue: false,
+      },
+      {
+        name: 'slug',
+        type: 'text',
+        index: true,
+        label: 'Page address',
+        admin: {
+          condition: showWithFullPage,
+          description:
+            'Filled in from the English name. Changing it after the page has been shared breaks the old link.',
+        },
+      },
+      {
+        name: 'fullBio',
+        type: 'richText',
+        label: 'Full Bio (English)',
+        admin: {
+          condition: showWithFullPage,
+          description: 'Shown on the full page. Leave empty to use the short bio above.',
+        },
+      },
+      {
+        name: 'fullBioAr',
+        type: 'richText',
+        label: 'Full Bio (Arabic / السيرة الكاملة بالعربية)',
+        admin: { condition: showWithFullPage },
+      },
+      {
+        name: 'otherPublications',
+        type: 'array',
+        label: 'Publications Elsewhere',
+        labels: { singular: 'Publication', plural: 'Publications' },
+        admin: { condition: showWithFullPage, initCollapsed: false },
+        fields: [
+          { name: 'title', type: 'text', required: true, label: 'Title (English)' },
+          { name: 'titleAr', type: 'text', label: 'Title (Arabic / العنوان بالعربية)', admin: { rtl: true } },
+          {
+            type: 'row',
+            fields: [
+              { name: 'publishedIn', type: 'text', label: 'Published In', admin: { width: '45%' } },
+              { name: 'year', type: 'text', label: 'Year', admin: { width: '15%' } },
+              { name: 'link', type: 'text', label: 'Link', admin: { width: '40%', placeholder: 'https://' } },
+            ],
+          },
+        ],
+      },
+      // Everything on this website that credits them shows on their page by
+      // itself; this takes single items off it. The picker only offers what
+      // credits this person.
+      {
+        name: 'hiddenFromPage',
+        type: 'relationship',
+        relationTo: [
+          'books',
+          'papers',
+          'reports',
+          'brochures',
+          'theses',
+          'audiovisual',
+          'posters',
+          'forums',
+          'photos',
+        ],
+        hasMany: true,
+        label: 'Hide from Their Page',
+        filterOptions: ({ id, relationTo }) => creditedTo(relationTo, id),
+        admin: { condition: showWithFullPage },
       },
     ]),
   ],

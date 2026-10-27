@@ -5,6 +5,7 @@ import {
   fetchBibliographyCounts,
   fetchBibliographyEntries,
   fetchClippings,
+  fetchContributions,
   fetchDatabase,
   fetchDatabases,
   fetchDisclaimer,
@@ -12,6 +13,7 @@ import {
   fetchHomepage,
   fetchNews,
   fetchPageText,
+  fetchParticipantPage,
   fetchParticipants,
   fetchPartners,
   fetchPhotos,
@@ -26,6 +28,7 @@ import {
   fetchSiteSettings,
   fetchStickers,
   type ActivityLine,
+  type PayloadParticipant,
   type PublicationCollection,
 } from "./payload";
 
@@ -80,6 +83,18 @@ export const participantsQuery = queryOptions({
   queryKey: ["participants"],
   queryFn: fetchParticipants,
 });
+
+export const participantPageQuery = (slug: string) =>
+  queryOptions({
+    queryKey: ["participant-page", slug],
+    queryFn: async () => (await fetchParticipantPage(slug)) ?? null,
+  });
+
+export const contributionsQuery = (person: PayloadParticipant) =>
+  queryOptions({
+    queryKey: ["contributions", person.id],
+    queryFn: () => fetchContributions(person),
+  });
 
 export const partnersQuery = queryOptions({ queryKey: ["partners"], queryFn: fetchPartners });
 

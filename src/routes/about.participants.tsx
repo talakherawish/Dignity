@@ -29,21 +29,6 @@ export const Route = createFileRoute("/about/participants")({
 });
 
 /**
- * Speakers and Authors have their own toggle (see isVisible) and no pill of
- * their own -- they're reachable from the publications/photos that credit
- * them, not from browsing this page. Team Members has no pill either: those
- * people show up under Practical Support instead (see matchesCategory).
- */
-const CATEGORIES = [
-  { value: "all", en: "All", ar: "الكل" },
-  { value: "researcher", en: "Researchers", ar: "باحثون" },
-  { value: "visitor", en: "Visitors", ar: "زائرون" },
-  { value: "student", en: "Students", ar: "طلاب" },
-  { value: "intern", en: "Interns", ar: "متدربات ومتدربون" },
-  { value: "practical_support", en: "Practical Support", ar: "الدعم العملي" },
-];
-
-/**
  * Who this page lists.
  *
  * Two switches, each with its own history. "Keep off the Working Group page"
@@ -63,15 +48,6 @@ function isVisible(p: PayloadParticipant): boolean {
     return p.showOnWorkingGroupPage === true;
   }
   return true;
-}
-
-/** Team Member counts as Practical Support here -- the two share one pill. */
-function matchesCategory(category: Participant["category"], activeCategory: string): boolean {
-  if (activeCategory === "all") return true;
-  if (activeCategory === "practical_support") {
-    return category === "practical_support" || category === "team_member";
-  }
-  return category === activeCategory;
 }
 
 function ParticipantCard({
@@ -115,7 +91,6 @@ function ParticipantsPage() {
   const { lang, isArabic } = useLanguage();
   const { participant: deepLinkedId } = Route.useSearch();
   const [search, setSearch] = useState("");
-  const [activeCategory, setActiveCategory] = useState("all");
   const [selected, setSelected] = useState<Participant | null>(null);
 
   const { data: payloadParticipants = [] } = useQuery(participantsQuery);
@@ -130,6 +105,10 @@ function ParticipantsPage() {
     if (match) setSelected(mapPayloadParticipant(match));
   }, [deepLinkedId, payloadParticipants]);
 
+  // Everyone in one group, in the order editors drag them into in the admin
+  // (fetchParticipants). Roles stay in the admin for editors' own use; the page
+  // no longer filters by them.
+  //
   // Always the real CMS data, even when it's empty -- falling back to the
   // hardcoded PARTICIPANTS placeholder list on an empty result meant a fetch
   // that failed for any reason (wrong URL, CORS, the backend being down)
@@ -142,7 +121,7 @@ function ParticipantsPage() {
   const q = search.toLowerCase();
   const filtered = participants.filter((f) => {
     const matchesSearch = f.name.toLowerCase().includes(q) || f.nameAr.includes(search);
-    return matchesCategory(f.category, activeCategory) && matchesSearch;
+    return matchesSearch;
   });
 
   return (
@@ -164,23 +143,6 @@ function ParticipantsPage() {
             "flex flex-col sm:flex-row gap-4 mb-10" + (isArabic ? " sm:flex-row-reverse" : "")
           }
         >
-          <div className="flex flex-wrap gap-2">
-            {CATEGORIES.map((cat) => (
-              <button
-                key={cat.value}
-                onClick={() => setActiveCategory(cat.value)}
-                className={[
-                  "px-4 py-1.5 rounded-full text-sm font-medium border transition-all duration-150",
-                  activeCategory === cat.value
-                    ? "bg-primary text-primary-foreground border-primary"
-                    : "border-border text-muted-foreground hover:border-accent hover:text-accent bg-background",
-                ].join(" ")}
-              >
-                {lang === "ar" ? cat.ar : cat.en}
-              </button>
-            ))}
-          </div>
-
           <div className={"relative sm:ml-auto" + (isArabic ? " sm:ml-0 sm:mr-auto" : "")}>
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
             <input

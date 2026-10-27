@@ -379,6 +379,7 @@ export interface AboutInitiative {
  */
 export interface Participant {
   id: string;
+  _order?: string | null;
   name: string;
   nameAr: string;
   category:
@@ -450,139 +451,15 @@ export interface Participant {
    */
   bioAr?: string | null;
   photo?: (string | null) | Media;
+  hasFullPage?: boolean | null;
   /**
-   * Read-only. Reflects the Publish / Save as Draft state above.
+   * Filled in from the English name. Changing it after the page has been shared breaks the old link.
    */
-  publicationStatus?: string | null;
-  updatedBy?: (string | null) | User;
-  createdBy?: (string | null) | User;
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "news".
- */
-export interface News {
-  id: string;
-  title?: string | null;
-  titleAr?: string | null;
-  titleRich?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  titleRichAr?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  date: string;
-  excerpt?: string | null;
-  excerptAr?: string | null;
-  excerptRich?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  excerptRichAr?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  content?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  contentAr?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  image?: (string | null) | Media;
-  homepageSpot?: ('none' | 'withImage' | 'titleOnly') | null;
-  homepagePosition?: number | null;
+  slug?: string | null;
   /**
-   * Read-only. Reflects the Publish / Save as Draft state above.
+   * Shown on the full page. Leave empty to use the short bio above.
    */
-  publicationStatus?: string | null;
-  updatedBy?: (string | null) | User;
-  createdBy?: (string | null) | User;
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "photos".
- */
-export interface Photo {
-  id: string;
-  title?: string | null;
-  titleAr?: string | null;
-  titleRich?: {
+  fullBio?: {
     root: {
       type: string;
       children: {
@@ -597,7 +474,7 @@ export interface Photo {
     };
     [k: string]: unknown;
   } | null;
-  titleRichAr?: {
+  fullBioAr?: {
     root: {
       type: string;
       children: {
@@ -612,182 +489,181 @@ export interface Photo {
     };
     [k: string]: unknown;
   } | null;
-  /**
-   * Optional. Shown under the caption when set.
-   */
-  date?: string | null;
-  image: string | Media;
-  relatedActivity?: (string | null) | Forum;
-  /**
-   * People shown in this photo. Pick them here, then place each one on the photo just below. Each tag links to their profile under About → Participants.
-   */
-  taggedParticipants?: (string | Participant)[] | null;
-  tagPositions?:
+  otherPublications?:
     | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
-  /**
-   * Which research line(s) this photo is from. Shows up on that research line's page automatically.
-   */
-  researchLines?: (string | Research)[] | null;
-  /**
-   * Read-only. Reflects the Publish / Save as Draft state above.
-   */
-  publicationStatus?: string | null;
-  updatedBy?: (string | null) | User;
-  createdBy?: (string | null) | User;
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
-}
-/**
- * Seminars, roundtables, workshops, and conferences organized through the Dignity initiative. Appears on the website under Activities -> Forums, filterable by Forum Type. Replaces the old separate Seminars, Conferences, and Meetings collections.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "forums".
- */
-export interface Forum {
-  id: string;
-  title?: string | null;
-  titleAr?: string | null;
-  titleRich?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  titleRichAr?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  date: string;
-  forumType?: ('seminar' | 'roundtable' | 'workshop' | 'conference' | 'encounters') | null;
-  content?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  contentAr?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  image?: (string | null) | Media;
-  /**
-   * Additional photographs for this entry. They appear only inside it, after a visitor opens it.
-   */
-  gallery?:
-    | {
-        image: string | Media;
-        caption?: string | null;
-        captionAr?: string | null;
-        captionRich?: {
-          root: {
-            type: string;
-            children: {
-              type: any;
-              version: number;
-              [k: string]: unknown;
-            }[];
-            direction: ('ltr' | 'rtl') | null;
-            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-            indent: number;
-            version: number;
-          };
-          [k: string]: unknown;
-        } | null;
-        captionRichAr?: {
-          root: {
-            type: string;
-            children: {
-              type: any;
-              version: number;
-              [k: string]: unknown;
-            }[];
-            direction: ('ltr' | 'rtl') | null;
-            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-            indent: number;
-            version: number;
-          };
-          [k: string]: unknown;
-        } | null;
-        id?: string | null;
-      }[]
-    | null;
-  /**
-   * Documents attached to this forum -- programme, concept note, slides, anything. They appear under Additional Information inside the entry, after a visitor opens it.
-   */
-  attachments?:
-    | {
-        file: string | Media;
         title: string;
         titleAr: string;
+        publishedIn?: string | null;
+        year?: string | null;
+        link?: string | null;
         id?: string | null;
       }[]
     | null;
+  hiddenFromPage?:
+    | (
+        | {
+            relationTo: 'books';
+            value: string | Book;
+          }
+        | {
+            relationTo: 'papers';
+            value: string | Paper;
+          }
+        | {
+            relationTo: 'reports';
+            value: string | Report;
+          }
+        | {
+            relationTo: 'brochures';
+            value: string | Brochure;
+          }
+        | {
+            relationTo: 'theses';
+            value: string | Thesis;
+          }
+        | {
+            relationTo: 'audiovisual';
+            value: string | Audiovisual;
+          }
+        | {
+            relationTo: 'posters';
+            value: string | Poster;
+          }
+        | {
+            relationTo: 'forums';
+            value: string | Forum;
+          }
+        | {
+            relationTo: 'photos';
+            value: string | Photo;
+          }
+      )[]
+    | null;
   /**
-   * People who took part in this forum. Pick existing entries, or use Create New to add someone without leaving this page. A person added here is kept off the public Working Group page unless you uncheck "Keep off the Working Group page" on their profile.
+   * Read-only. Reflects the Publish / Save as Draft state above.
    */
-  participants?: (string | Participant)[] | null;
+  publicationStatus?: string | null;
+  updatedBy?: (string | null) | User;
+  createdBy?: (string | null) | User;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "books".
+ */
+export interface Book {
+  id: string;
+  title?: string | null;
+  titleAr?: string | null;
+  titleRich?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  titleRichAr?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   /**
-   * Which research line(s) this forum came out of. Shows up on that research line's page automatically.
+   * Type a name freehand, or leave this blank and pick people from Participants below instead.
+   */
+  author?: string | null;
+  authorAr?: string | null;
+  /**
+   * Pick existing people instead of typing a name above. When this is set, these are shown in place of the typed Author field, each linking to that person's profile under About → Participants.
+   */
+  authorParticipants?: (string | Participant)[] | null;
+  /**
+   * Pick people tagged as Speaker under About → Participants, if this item credits any.
+   */
+  speakerParticipants?: (string | Participant)[] | null;
+  date?: string | null;
+  description?: string | null;
+  descriptionAr?: string | null;
+  descriptionRich?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  descriptionRichAr?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Shown to readers in both languages. Leave this as the only file unless the Arabic version below is a genuinely different document.
+   */
+  file?: (string | null) | Media;
+  /**
+   * Only needed when the Arabic file is a different document from the one above — a separate translation, say. Leave empty to show the same file to everyone.
+   */
+  fileAr?: (string | null) | Media;
+  /**
+   * Use for items that live elsewhere rather than as an uploaded file — a YouTube video, for example. Leave empty when a file is attached above.
+   */
+  link?: string | null;
+  /**
+   * Only needed when the Arabic destination differs from the link above.
+   */
+  linkAr?: string | null;
+  image?: (string | null) | Media;
+  /**
+   * Which research line(s) this is an output of. Shows up on that research line's page automatically.
    */
   researchLines?: (string | Research)[] | null;
   /**
-   * Shows up under that page's Activities section automatically.
+   * Shows up under that page's Publications section automatically.
    */
   taskForceAILines?: (string | TaskForceAi)[] | null;
   /**
-   * Shows up under that page's Activities section automatically.
+   * Shows up under that page's Publications section automatically.
    */
   ideaFactoryLines?: (string | IdeaFactory)[] | null;
   /**
-   * Shows up under that page's Activities section automatically.
+   * Shows up under that page's Publications section automatically.
    */
   windsorBirzeitLines?: (string | WindsorBirzeit)[] | null;
   /**
@@ -901,9 +777,9 @@ export interface Research {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "books".
+ * via the `definition` "papers".
  */
-export interface Book {
+export interface Paper {
   id: string;
   title?: string | null;
   titleAr?: string | null;
@@ -1117,10 +993,12 @@ export interface TaskForceAi {
   _status?: ('draft' | 'published') | null;
 }
 /**
+ * Seminars, roundtables, workshops, and conferences organized through the Dignity initiative. Appears on the website under Activities -> Forums, filterable by Forum Type. Replaces the old separate Seminars, Conferences, and Meetings collections.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "papers".
+ * via the `definition` "forums".
  */
-export interface Paper {
+export interface Forum {
   id: string;
   title?: string | null;
   titleAr?: string | null;
@@ -1154,23 +1032,9 @@ export interface Paper {
     };
     [k: string]: unknown;
   } | null;
-  /**
-   * Type a name freehand, or leave this blank and pick people from Participants below instead.
-   */
-  author?: string | null;
-  authorAr?: string | null;
-  /**
-   * Pick existing people instead of typing a name above. When this is set, these are shown in place of the typed Author field, each linking to that person's profile under About → Participants.
-   */
-  authorParticipants?: (string | Participant)[] | null;
-  /**
-   * Pick people tagged as Speaker under About → Participants, if this item credits any.
-   */
-  speakerParticipants?: (string | Participant)[] | null;
-  date?: string | null;
-  description?: string | null;
-  descriptionAr?: string | null;
-  descriptionRich?: {
+  date: string;
+  forumType?: ('seminar' | 'roundtable' | 'workshop' | 'conference' | 'encounters') | null;
+  content?: {
     root: {
       type: string;
       children: {
@@ -1185,7 +1049,7 @@ export interface Paper {
     };
     [k: string]: unknown;
   } | null;
-  descriptionRichAr?: {
+  contentAr?: {
     root: {
       type: string;
       children: {
@@ -1200,37 +1064,77 @@ export interface Paper {
     };
     [k: string]: unknown;
   } | null;
-  /**
-   * Shown to readers in both languages. Leave this as the only file unless the Arabic version below is a genuinely different document.
-   */
-  file?: (string | null) | Media;
-  /**
-   * Only needed when the Arabic file is a different document from the one above — a separate translation, say. Leave empty to show the same file to everyone.
-   */
-  fileAr?: (string | null) | Media;
-  /**
-   * Use for items that live elsewhere rather than as an uploaded file — a YouTube video, for example. Leave empty when a file is attached above.
-   */
-  link?: string | null;
-  /**
-   * Only needed when the Arabic destination differs from the link above.
-   */
-  linkAr?: string | null;
   image?: (string | null) | Media;
   /**
-   * Which research line(s) this is an output of. Shows up on that research line's page automatically.
+   * Additional photographs for this entry. They appear only inside it, after a visitor opens it.
+   */
+  gallery?:
+    | {
+        image: string | Media;
+        caption?: string | null;
+        captionAr?: string | null;
+        captionRich?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        captionRichAr?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Documents attached to this forum -- programme, concept note, slides, anything. They appear under Additional Information inside the entry, after a visitor opens it.
+   */
+  attachments?:
+    | {
+        file: string | Media;
+        title: string;
+        titleAr: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * People who took part in this forum. Pick existing entries, or use Create New to add someone without leaving this page. A person added here is kept off the public Working Group page unless you uncheck "Keep off the Working Group page" on their profile.
+   */
+  participants?: (string | Participant)[] | null;
+  /**
+   * Which research line(s) this forum came out of. Shows up on that research line's page automatically.
    */
   researchLines?: (string | Research)[] | null;
   /**
-   * Shows up under that page's Publications section automatically.
+   * Shows up under that page's Activities section automatically.
    */
   taskForceAILines?: (string | TaskForceAi)[] | null;
   /**
-   * Shows up under that page's Publications section automatically.
+   * Shows up under that page's Activities section automatically.
    */
   ideaFactoryLines?: (string | IdeaFactory)[] | null;
   /**
-   * Shows up under that page's Publications section automatically.
+   * Shows up under that page's Activities section automatically.
    */
   windsorBirzeitLines?: (string | WindsorBirzeit)[] | null;
   /**
@@ -2108,6 +2012,191 @@ export interface Clipping {
    * Which research line(s) this clipping is about. Shows up on that research line's page automatically.
    */
   researchLines?: (string | Research)[] | null;
+  /**
+   * Read-only. Reflects the Publish / Save as Draft state above.
+   */
+  publicationStatus?: string | null;
+  updatedBy?: (string | null) | User;
+  createdBy?: (string | null) | User;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "photos".
+ */
+export interface Photo {
+  id: string;
+  title?: string | null;
+  titleAr?: string | null;
+  titleRich?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  titleRichAr?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Optional. Shown under the caption when set.
+   */
+  date?: string | null;
+  image: string | Media;
+  relatedActivity?: (string | null) | Forum;
+  /**
+   * People shown in this photo. Pick them here, then place each one on the photo just below. Each tag links to their profile under About → Participants.
+   */
+  taggedParticipants?: (string | Participant)[] | null;
+  tagPositions?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Which research line(s) this photo is from. Shows up on that research line's page automatically.
+   */
+  researchLines?: (string | Research)[] | null;
+  /**
+   * Read-only. Reflects the Publish / Save as Draft state above.
+   */
+  publicationStatus?: string | null;
+  updatedBy?: (string | null) | User;
+  createdBy?: (string | null) | User;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "news".
+ */
+export interface News {
+  id: string;
+  title?: string | null;
+  titleAr?: string | null;
+  titleRich?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  titleRichAr?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  date: string;
+  excerpt?: string | null;
+  excerptAr?: string | null;
+  excerptRich?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  excerptRichAr?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  contentAr?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  image?: (string | null) | Media;
+  homepageSpot?: ('none' | 'withImage' | 'titleOnly') | null;
+  homepagePosition?: number | null;
   /**
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
@@ -3067,6 +3156,7 @@ export interface AboutInitiativeSelect<T extends boolean = true> {
  * via the `definition` "participants_select".
  */
 export interface ParticipantsSelect<T extends boolean = true> {
+  _order?: T;
   name?: T;
   nameAr?: T;
   category?: T;
@@ -3087,6 +3177,21 @@ export interface ParticipantsSelect<T extends boolean = true> {
   bio?: T;
   bioAr?: T;
   photo?: T;
+  hasFullPage?: T;
+  slug?: T;
+  fullBio?: T;
+  fullBioAr?: T;
+  otherPublications?:
+    | T
+    | {
+        title?: T;
+        titleAr?: T;
+        publishedIn?: T;
+        year?: T;
+        link?: T;
+        id?: T;
+      };
+  hiddenFromPage?: T;
   publicationStatus?: T;
   updatedBy?: T;
   createdBy?: T;
