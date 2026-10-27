@@ -39,7 +39,7 @@ type GithubStorageSettings = {
   uploadsPath: string
 }
 
-export type ResolvedStorageConfig =
+type ResolvedStorageConfig =
   | { enabled: true; settings: GithubStorageSettings }
   | { enabled: false; settings: null }
 

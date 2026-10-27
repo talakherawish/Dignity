@@ -50,7 +50,7 @@ import { readWorkbook, writeWorkbook, type Row } from './xlsx'
 
 export { formatReport, type ImportReport }
 
-export const ENTRY_COLUMNS = ['Type', 'Names']
+const ENTRY_COLUMNS = ['Type', 'Names']
 
 const TYPES: Record<string, string> = {
   book: 'book',

@@ -15,7 +15,7 @@ import {
   type PublicationCollection,
 } from "@/lib/payload";
 
-export type SearchResult = {
+type SearchResult = {
   typeKey: TranslationKey;
   title: string;
   titleAr: string;

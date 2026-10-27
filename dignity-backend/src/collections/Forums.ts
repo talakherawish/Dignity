@@ -8,7 +8,7 @@ export const Forums: CollectionConfig = {
     useAsTitle: 'title',
     defaultColumns: ['title', 'forumType', 'date', 'status', 'updatedAt'],
     description:
-      'Seminars, roundtables, workshops, and conferences organized through the Dignity initiative. Appears on the website under Activities -> Forums, filterable by Forum Type. Replaces the old separate Seminars, Conferences, and Meetings collections -- see scripts/merge-seminars-conferences-meetings-into-forums.ts.',
+      'Seminars, roundtables, workshops, and conferences organized through the Dignity initiative. Appears on the website under Activities -> Forums, filterable by Forum Type. Replaces the old separate Seminars, Conferences, and Meetings collections.',
   },
   versions: {
     drafts: true,

@@ -20,7 +20,7 @@ type SmtpSettings = {
   fromName: string
 }
 
-export type ResolvedEmailConfig = { enabled: true; settings: SmtpSettings } | { enabled: false; settings: null }
+type ResolvedEmailConfig = { enabled: true; settings: SmtpSettings } | { enabled: false; settings: null }
 
 const REQUIRED_VARS = ['SMTP_HOST', 'SMTP_USER', 'SMTP_PASS'] as const
 

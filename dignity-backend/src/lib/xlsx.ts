@@ -214,7 +214,7 @@ function headerText(value: string): string {
 }
 
 /** A column whose cells can only hold one of the given options, picked from a dropdown. */
-export type ColumnList = { column: number; options: string[] }
+type ColumnList = { column: number; options: string[] }
 
 /** Dropdowns from the second row down, refusing anything typed that isn't an option. */
 function listsXml(lists: ColumnList[]): string {

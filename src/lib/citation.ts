@@ -21,7 +21,7 @@ import type { PayloadBibliographyEntry } from "@/lib/payload";
 export type Segment = { text: string; italic?: boolean };
 
 /** What a citation is built from -- a bibliography entry. */
-export type CitationSource = {
+type CitationSource = {
   kind: "book" | "chapter" | "article" | "report" | "thesis" | "website";
   arabic: boolean;
   title: string;

@@ -18,7 +18,7 @@
  * letters that are commonly typed interchangeably folded together (أ إ آ ٱ → ا,
  * ى → ي, ة → ه), and punctuation turned into single spaces.
  */
-export function normalize(text: string): string {
+function normalize(text: string): string {
   return text
     .normalize('NFKD')
     .replace(/[̀-ͯ]/g, '')

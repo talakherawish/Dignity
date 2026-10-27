@@ -111,7 +111,7 @@ export default buildConfig({
     // Activities
     Research,
     // Seminars, Conferences, and Meetings were merged into this one
-    // collection -- see scripts/merge-seminars-conferences-meetings-into-forums.ts.
+    // collection.
     // The three old collections' raw data still exists in MongoDB under
     // their old names; nothing was deleted, just no longer wired in here.
     Forums,

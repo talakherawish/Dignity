@@ -72,7 +72,7 @@ export function PublicationCardGrid({ children }: { children: ReactNode }) {
 /** A tagged author -- picked from Participants in the admin rather than typed. */
 export type PublicationCardAuthor = { id: string; name: string; nameAr?: string };
 
-export type PublicationCardProps = {
+type PublicationCardProps = {
   title: string;
   titleAr?: string;
   author?: string;

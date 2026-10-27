@@ -103,7 +103,7 @@ export type PayloadActivity = {
  */
 export type ActivityLine = "task-force-ai" | "idea-factory" | "windsor-birzeit";
 
-export type PayloadActivityLine = {
+type PayloadActivityLine = {
   id: string;
   title: string;
   titleAr?: string;
@@ -321,9 +321,9 @@ export function isYoutubeLink(url: string | undefined): boolean {
 }
 
 /** Same again for the Information menu: one collection per page. */
-export type InformationCollection = "reading-lists" | "databases";
+type InformationCollection = "reading-lists" | "databases";
 
-export type PayloadInformationItem = {
+type PayloadInformationItem = {
   id: string;
   title: string;
   titleAr?: string;
@@ -387,7 +387,7 @@ export type PayloadDatabase = {
 };
 
 /** A Readings and Documents subject -- shaped exactly like a database. */
-export type PayloadReadingList = PayloadDatabase;
+type PayloadReadingList = PayloadDatabase;
 
 /** A tag from the shared Keywords collection -- may exist in one language only. */
 export type PayloadKeyword = {
@@ -1090,7 +1090,7 @@ export async function fetchSiteSettings(): Promise<PayloadSiteSettings | null> {
   }
 }
 
-export type PayloadPageText = {
+type PayloadPageText = {
   title?: string | null;
   titleAr?: string | null;
   intro?: string | null;
@@ -1115,7 +1115,7 @@ export async function fetchPageText(
   }
 }
 
-export type SubscribeToMailingListInput = {
+type SubscribeToMailingListInput = {
   firstName: string;
   lastName: string;
   email: string;

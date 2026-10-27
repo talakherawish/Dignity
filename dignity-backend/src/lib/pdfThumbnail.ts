@@ -346,9 +346,9 @@ export const generatePdfThumbnail: CollectionAfterChangeHook = async ({ doc, req
       )
     }
   }
-  // Outside a web request -- a script uploading files, such as
-  // scripts/set-up-readings.ts -- there is no response to run after, and
-  // after() throws; the thumbnail is made before the upload returns instead.
+  // Outside a web request -- a script uploading files -- there is no
+  // response to run after, and after() throws; the thumbnail is made before
+  // the upload returns instead.
   try {
     after(makeThumbnail)
   } catch {

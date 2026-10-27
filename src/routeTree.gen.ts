@@ -19,20 +19,15 @@ import { Route as PublicationsRouteImport } from './routes/publications'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as AboutParticipantsRouteImport } from './routes/about.participants'
 import { Route as AboutPartnersRouteImport } from './routes/about.partners'
-import { Route as ActivitiesConferencesRouteImport } from './routes/activities.conferences'
 import { Route as ActivitiesForumsRouteImport } from './routes/activities.forums'
 import { Route as ActivitiesIdeaFactoryRouteImport } from './routes/activities.idea-factory'
-import { Route as ActivitiesMeetingsRouteImport } from './routes/activities.meetings'
-import { Route as ActivitiesSeminarsRouteImport } from './routes/activities.seminars'
 import { Route as ActivitiesTaskForceAiRouteImport } from './routes/activities.task-force-ai'
 import { Route as ActivitiesWindsorBirzeitRouteImport } from './routes/activities.windsor-birzeit'
 import { Route as InformationDatabasesRouteImport } from './routes/information.databases'
 import { Route as InformationReadingsRouteImport } from './routes/information.readings'
-import { Route as MediaAnnouncementsRouteImport } from './routes/media.announcements'
 import { Route as MediaClippingsRouteImport } from './routes/media.clippings'
 import { Route as MediaNewsRouteImport } from './routes/media.news'
 import { Route as MediaPhotosRouteImport } from './routes/media.photos'
-import { Route as MediaStickersRouteImport } from './routes/media.stickers'
 import { Route as PublicationsAudiovisualRouteImport } from './routes/publications.audiovisual'
 import { Route as PublicationsBooksRouteImport } from './routes/publications.books'
 import { Route as PublicationsBrochuresRouteImport } from './routes/publications.brochures'
@@ -96,11 +91,6 @@ const AboutPartnersRoute = AboutPartnersRouteImport.update({
   path: '/partners',
   getParentRoute: () => AboutRoute,
 } as any)
-const ActivitiesConferencesRoute = ActivitiesConferencesRouteImport.update({
-  id: '/conferences',
-  path: '/conferences',
-  getParentRoute: () => ActivitiesRoute,
-} as any)
 const ActivitiesForumsRoute = ActivitiesForumsRouteImport.update({
   id: '/forums',
   path: '/forums',
@@ -109,16 +99,6 @@ const ActivitiesForumsRoute = ActivitiesForumsRouteImport.update({
 const ActivitiesIdeaFactoryRoute = ActivitiesIdeaFactoryRouteImport.update({
   id: '/idea-factory',
   path: '/idea-factory',
-  getParentRoute: () => ActivitiesRoute,
-} as any)
-const ActivitiesMeetingsRoute = ActivitiesMeetingsRouteImport.update({
-  id: '/meetings',
-  path: '/meetings',
-  getParentRoute: () => ActivitiesRoute,
-} as any)
-const ActivitiesSeminarsRoute = ActivitiesSeminarsRouteImport.update({
-  id: '/seminars',
-  path: '/seminars',
   getParentRoute: () => ActivitiesRoute,
 } as any)
 const ActivitiesTaskForceAiRoute = ActivitiesTaskForceAiRouteImport.update({
@@ -142,11 +122,6 @@ const InformationReadingsRoute = InformationReadingsRouteImport.update({
   path: '/readings',
   getParentRoute: () => InformationRoute,
 } as any)
-const MediaAnnouncementsRoute = MediaAnnouncementsRouteImport.update({
-  id: '/media/announcements',
-  path: '/media/announcements',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const MediaClippingsRoute = MediaClippingsRouteImport.update({
   id: '/media/clippings',
   path: '/media/clippings',
@@ -160,11 +135,6 @@ const MediaNewsRoute = MediaNewsRouteImport.update({
 const MediaPhotosRoute = MediaPhotosRouteImport.update({
   id: '/media/photos',
   path: '/media/photos',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MediaStickersRoute = MediaStickersRouteImport.update({
-  id: '/media/stickers',
-  path: '/media/stickers',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PublicationsAudiovisualRoute = PublicationsAudiovisualRouteImport.update({
@@ -240,20 +210,15 @@ export interface FileRoutesByFullPath {
   '/search': typeof SearchRoute
   '/about/participants': typeof AboutParticipantsRoute
   '/about/partners': typeof AboutPartnersRoute
-  '/activities/conferences': typeof ActivitiesConferencesRoute
   '/activities/forums': typeof ActivitiesForumsRoute
   '/activities/idea-factory': typeof ActivitiesIdeaFactoryRoute
-  '/activities/meetings': typeof ActivitiesMeetingsRoute
-  '/activities/seminars': typeof ActivitiesSeminarsRoute
   '/activities/task-force-ai': typeof ActivitiesTaskForceAiRoute
   '/activities/windsor-birzeit': typeof ActivitiesWindsorBirzeitRoute
   '/information/databases': typeof InformationDatabasesRoute
   '/information/readings': typeof InformationReadingsRoute
-  '/media/announcements': typeof MediaAnnouncementsRoute
   '/media/clippings': typeof MediaClippingsRoute
   '/media/news': typeof MediaNewsRoute
   '/media/photos': typeof MediaPhotosRoute
-  '/media/stickers': typeof MediaStickersRoute
   '/publications/audiovisual': typeof PublicationsAudiovisualRoute
   '/publications/books': typeof PublicationsBooksRoute
   '/publications/brochures': typeof PublicationsBrochuresRoute
@@ -278,20 +243,15 @@ export interface FileRoutesByTo {
   '/search': typeof SearchRoute
   '/about/participants': typeof AboutParticipantsRoute
   '/about/partners': typeof AboutPartnersRoute
-  '/activities/conferences': typeof ActivitiesConferencesRoute
   '/activities/forums': typeof ActivitiesForumsRoute
   '/activities/idea-factory': typeof ActivitiesIdeaFactoryRoute
-  '/activities/meetings': typeof ActivitiesMeetingsRoute
-  '/activities/seminars': typeof ActivitiesSeminarsRoute
   '/activities/task-force-ai': typeof ActivitiesTaskForceAiRoute
   '/activities/windsor-birzeit': typeof ActivitiesWindsorBirzeitRoute
   '/information/databases': typeof InformationDatabasesRoute
   '/information/readings': typeof InformationReadingsRoute
-  '/media/announcements': typeof MediaAnnouncementsRoute
   '/media/clippings': typeof MediaClippingsRoute
   '/media/news': typeof MediaNewsRoute
   '/media/photos': typeof MediaPhotosRoute
-  '/media/stickers': typeof MediaStickersRoute
   '/publications/audiovisual': typeof PublicationsAudiovisualRoute
   '/publications/books': typeof PublicationsBooksRoute
   '/publications/brochures': typeof PublicationsBrochuresRoute
@@ -317,20 +277,15 @@ export interface FileRoutesById {
   '/search': typeof SearchRoute
   '/about/participants': typeof AboutParticipantsRoute
   '/about/partners': typeof AboutPartnersRoute
-  '/activities/conferences': typeof ActivitiesConferencesRoute
   '/activities/forums': typeof ActivitiesForumsRoute
   '/activities/idea-factory': typeof ActivitiesIdeaFactoryRoute
-  '/activities/meetings': typeof ActivitiesMeetingsRoute
-  '/activities/seminars': typeof ActivitiesSeminarsRoute
   '/activities/task-force-ai': typeof ActivitiesTaskForceAiRoute
   '/activities/windsor-birzeit': typeof ActivitiesWindsorBirzeitRoute
   '/information/databases': typeof InformationDatabasesRoute
   '/information/readings': typeof InformationReadingsRoute
-  '/media/announcements': typeof MediaAnnouncementsRoute
   '/media/clippings': typeof MediaClippingsRoute
   '/media/news': typeof MediaNewsRoute
   '/media/photos': typeof MediaPhotosRoute
-  '/media/stickers': typeof MediaStickersRoute
   '/publications/audiovisual': typeof PublicationsAudiovisualRoute
   '/publications/books': typeof PublicationsBooksRoute
   '/publications/brochures': typeof PublicationsBrochuresRoute
@@ -357,20 +312,15 @@ export interface FileRouteTypes {
     | '/search'
     | '/about/participants'
     | '/about/partners'
-    | '/activities/conferences'
     | '/activities/forums'
     | '/activities/idea-factory'
-    | '/activities/meetings'
-    | '/activities/seminars'
     | '/activities/task-force-ai'
     | '/activities/windsor-birzeit'
     | '/information/databases'
     | '/information/readings'
-    | '/media/announcements'
     | '/media/clippings'
     | '/media/news'
     | '/media/photos'
-    | '/media/stickers'
     | '/publications/audiovisual'
     | '/publications/books'
     | '/publications/brochures'
@@ -395,20 +345,15 @@ export interface FileRouteTypes {
     | '/search'
     | '/about/participants'
     | '/about/partners'
-    | '/activities/conferences'
     | '/activities/forums'
     | '/activities/idea-factory'
-    | '/activities/meetings'
-    | '/activities/seminars'
     | '/activities/task-force-ai'
     | '/activities/windsor-birzeit'
     | '/information/databases'
     | '/information/readings'
-    | '/media/announcements'
     | '/media/clippings'
     | '/media/news'
     | '/media/photos'
-    | '/media/stickers'
     | '/publications/audiovisual'
     | '/publications/books'
     | '/publications/brochures'
@@ -433,20 +378,15 @@ export interface FileRouteTypes {
     | '/search'
     | '/about/participants'
     | '/about/partners'
-    | '/activities/conferences'
     | '/activities/forums'
     | '/activities/idea-factory'
-    | '/activities/meetings'
-    | '/activities/seminars'
     | '/activities/task-force-ai'
     | '/activities/windsor-birzeit'
     | '/information/databases'
     | '/information/readings'
-    | '/media/announcements'
     | '/media/clippings'
     | '/media/news'
     | '/media/photos'
-    | '/media/stickers'
     | '/publications/audiovisual'
     | '/publications/books'
     | '/publications/brochures'
@@ -470,11 +410,9 @@ export interface RootRouteChildren {
   PrivacyRoute: typeof PrivacyRoute
   PublicationsRoute: typeof PublicationsRouteWithChildren
   SearchRoute: typeof SearchRoute
-  MediaAnnouncementsRoute: typeof MediaAnnouncementsRoute
   MediaClippingsRoute: typeof MediaClippingsRoute
   MediaNewsRoute: typeof MediaNewsRoute
   MediaPhotosRoute: typeof MediaPhotosRoute
-  MediaStickersRoute: typeof MediaStickersRoute
   ProjectsResearchSlugRoute: typeof ProjectsResearchSlugRoute
   ProjectsResearchIndexRoute: typeof ProjectsResearchIndexRoute
 }
@@ -551,13 +489,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutPartnersRouteImport
       parentRoute: typeof AboutRoute
     }
-    '/activities/conferences': {
-      id: '/activities/conferences'
-      path: '/conferences'
-      fullPath: '/activities/conferences'
-      preLoaderRoute: typeof ActivitiesConferencesRouteImport
-      parentRoute: typeof ActivitiesRoute
-    }
     '/activities/forums': {
       id: '/activities/forums'
       path: '/forums'
@@ -570,20 +501,6 @@ declare module '@tanstack/react-router' {
       path: '/idea-factory'
       fullPath: '/activities/idea-factory'
       preLoaderRoute: typeof ActivitiesIdeaFactoryRouteImport
-      parentRoute: typeof ActivitiesRoute
-    }
-    '/activities/meetings': {
-      id: '/activities/meetings'
-      path: '/meetings'
-      fullPath: '/activities/meetings'
-      preLoaderRoute: typeof ActivitiesMeetingsRouteImport
-      parentRoute: typeof ActivitiesRoute
-    }
-    '/activities/seminars': {
-      id: '/activities/seminars'
-      path: '/seminars'
-      fullPath: '/activities/seminars'
-      preLoaderRoute: typeof ActivitiesSeminarsRouteImport
       parentRoute: typeof ActivitiesRoute
     }
     '/activities/task-force-ai': {
@@ -614,13 +531,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InformationReadingsRouteImport
       parentRoute: typeof InformationRoute
     }
-    '/media/announcements': {
-      id: '/media/announcements'
-      path: '/media/announcements'
-      fullPath: '/media/announcements'
-      preLoaderRoute: typeof MediaAnnouncementsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/media/clippings': {
       id: '/media/clippings'
       path: '/media/clippings'
@@ -640,13 +550,6 @@ declare module '@tanstack/react-router' {
       path: '/media/photos'
       fullPath: '/media/photos'
       preLoaderRoute: typeof MediaPhotosRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/media/stickers': {
-      id: '/media/stickers'
-      path: '/media/stickers'
-      fullPath: '/media/stickers'
-      preLoaderRoute: typeof MediaStickersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/publications/audiovisual': {
@@ -749,21 +652,15 @@ const AboutRouteChildren: AboutRouteChildren = {
 const AboutRouteWithChildren = AboutRoute._addFileChildren(AboutRouteChildren)
 
 interface ActivitiesRouteChildren {
-  ActivitiesConferencesRoute: typeof ActivitiesConferencesRoute
   ActivitiesForumsRoute: typeof ActivitiesForumsRoute
   ActivitiesIdeaFactoryRoute: typeof ActivitiesIdeaFactoryRoute
-  ActivitiesMeetingsRoute: typeof ActivitiesMeetingsRoute
-  ActivitiesSeminarsRoute: typeof ActivitiesSeminarsRoute
   ActivitiesTaskForceAiRoute: typeof ActivitiesTaskForceAiRoute
   ActivitiesWindsorBirzeitRoute: typeof ActivitiesWindsorBirzeitRoute
 }
 
 const ActivitiesRouteChildren: ActivitiesRouteChildren = {
-  ActivitiesConferencesRoute: ActivitiesConferencesRoute,
   ActivitiesForumsRoute: ActivitiesForumsRoute,
   ActivitiesIdeaFactoryRoute: ActivitiesIdeaFactoryRoute,
-  ActivitiesMeetingsRoute: ActivitiesMeetingsRoute,
-  ActivitiesSeminarsRoute: ActivitiesSeminarsRoute,
   ActivitiesTaskForceAiRoute: ActivitiesTaskForceAiRoute,
   ActivitiesWindsorBirzeitRoute: ActivitiesWindsorBirzeitRoute,
 }
@@ -825,11 +722,9 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacyRoute: PrivacyRoute,
   PublicationsRoute: PublicationsRouteWithChildren,
   SearchRoute: SearchRoute,
-  MediaAnnouncementsRoute: MediaAnnouncementsRoute,
   MediaClippingsRoute: MediaClippingsRoute,
   MediaNewsRoute: MediaNewsRoute,
   MediaPhotosRoute: MediaPhotosRoute,
-  MediaStickersRoute: MediaStickersRoute,
   ProjectsResearchSlugRoute: ProjectsResearchSlugRoute,
   ProjectsResearchIndexRoute: ProjectsResearchIndexRoute,
 }
