@@ -5,8 +5,8 @@ const MAX_FEATURED_PARTICIPANTS = 3
 
 // How many of each the homepage has room for -- the same numbers the website
 // uses (HEADLINE_COUNT, CAROUSEL_COUNT and POSTER_COUNT in its routes/index.tsx).
-const MAX_HOME_NEWS_HEADLINES = 4
-const MAX_HOME_NEWS_CAROUSEL = 6
+export const MAX_HOME_NEWS_HEADLINES = 4
+export const MAX_HOME_NEWS_CAROUSEL = 6
 const MAX_HOME_PUBLICATIONS = 10
 
 const PUBLICATION_COLLECTIONS = [

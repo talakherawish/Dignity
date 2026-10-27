@@ -93,8 +93,16 @@ type Named = Field & { name: string; required?: boolean; label?: unknown; admin?
  * title (the imports) supply editor content too. Drafts skip it, as they do
  * every required field.
  */
-const requireContent: Validate = (value) =>
-  isState(value) && toPlain(value) ? true : 'This field is required.'
+const requireContent =
+  (plainName: string): Validate =>
+  (value, { siblingData }) => {
+    if (isState(value) && toPlain(value)) return true
+    // Code that saves only the plain text (an import) leaves the editor empty;
+    // the plain text is what counts then. It was already worked out from the
+    // editor by derivePlain when the editor was sent, empty or not.
+    const plain = (siblingData as Record<string, unknown> | undefined)?.[plainName]
+    return typeof plain === 'string' && plain.trim() ? true : 'This field is required.'
+  }
 
 /** One plain field becomes the hidden plain field plus its formatting editor. */
 function formatted(field: Named, required: boolean): Field[] {
@@ -111,7 +119,7 @@ function formatted(field: Named, required: boolean): Field[] {
       name: richName,
       type: 'richText',
       label: field.label,
-      validate: required ? requireContent : undefined,
+      validate: required ? requireContent(field.name) : undefined,
       editor: inlineEditor,
       // Laid out beside its other-language twin -- see adminLayout.
       custom: { inline: true },

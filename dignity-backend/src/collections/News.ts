@@ -1,5 +1,6 @@
 import type { CollectionConfig } from 'payload'
 import { section } from '../lib/adminLayout'
+import { homepageFields, removeFromHomepage, syncHomepagePlace } from '../hooks/newsHomepage'
 
 export const News: CollectionConfig = {
   slug: 'news',
@@ -15,6 +16,12 @@ export const News: CollectionConfig = {
   // Enable draft/publish — nothing goes live until content manager publishes
   versions: {
     drafts: true,
+  },
+  // The entry's own Homepage section edits the homepage lists in Site
+  // Settings -- see src/hooks/newsHomepage.ts.
+  hooks: {
+    afterChange: [syncHomepagePlace],
+    afterDelete: [removeFromHomepage],
   },
   access: {
     // Anyone logged in can read (admin panel); public can only read published
@@ -80,5 +87,6 @@ export const News: CollectionConfig = {
         label: 'Cover Image',
       },
     ]),
+    section('Homepage', homepageFields),
   ],
 }

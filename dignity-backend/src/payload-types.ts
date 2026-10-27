@@ -562,6 +562,8 @@ export interface News {
     [k: string]: unknown;
   } | null;
   image?: (string | null) | Media;
+  homepageSpot?: ('none' | 'withImage' | 'titleOnly') | null;
+  homepagePosition?: number | null;
   /**
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
@@ -3109,6 +3111,8 @@ export interface NewsSelect<T extends boolean = true> {
   content?: T;
   contentAr?: T;
   image?: T;
+  homepageSpot?: T;
+  homepagePosition?: T;
   publicationStatus?: T;
   updatedBy?: T;
   createdBy?: T;
