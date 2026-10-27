@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { ExternalLink, Mail } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 import { ForumGrid } from "@/components/ForumGrid";
 import { PublicationGrid } from "@/components/OutputSection";
 import { PageLayout } from "@/components/PageLayout";
@@ -103,21 +103,9 @@ function ProfileCard({ person }: { person: PayloadParticipant }) {
               text={isAr ? profile.titleAr : profile.title}
             />
           </p>
-          {(profile.email || profile.links.length > 0) && (
-            <div className="mt-4 flex flex-wrap items-center gap-1 -ms-1.5">
-              {profile.email && (
-                <a
-                  href={"mailto:" + profile.email}
-                  title={profile.email}
-                  aria-label={profile.email}
-                  className="p-1.5 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
-                >
-                  <Mail className="h-4 w-4" />
-                </a>
-              )}
-              <ProfileLinks links={profile.links} />
-            </div>
-          )}
+          <div className="mt-4">
+            <ProfileLinks links={profile.links} email={profile.email} />
+          </div>
         </div>
       </div>
     </aside>

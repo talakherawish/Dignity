@@ -1,22 +1,22 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { createPortal } from "react-dom";
 import { useQuery } from "@tanstack/react-query";
-import { ChevronLeft, ChevronRight, X, Mail } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { PageLayout } from "@/components/PageLayout";
 import { Reveal } from "@/components/Reveal";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { getField, getFormatted, mapPayloadNews, type Article } from "@/data/articles";
 import { FormattedText } from "@/components/RichText";
-import { ProfileLinks, type ProfileLink } from "@/components/ProfileLinks";
-import { FullPageLink } from "@/components/ParticipantModal";
+import {
+  mapPayloadParticipant,
+  ParticipantModal,
+  type Participant,
+} from "@/components/ParticipantModal";
 import {
   mediaSrcSet,
   mediaUrl,
   populated,
   youtubeThumbnail,
-  PARTICIPANT_ROLE_LABEL,
-  type PayloadParticipant,
   type PayloadMedia,
   type PayloadPublication,
 } from "@/lib/payload";
@@ -88,45 +88,6 @@ export const Route = createFileRoute("/")({
   }),
   component: Home,
 });
-
-type TeamPerson = {
-  name: string;
-  nameAr: string;
-  title: string;
-  titleAr: string;
-  titleRich?: unknown;
-  titleRichAr?: unknown;
-  category: PayloadParticipant["category"];
-  email: string;
-  links: ProfileLink[];
-  bio: string;
-  bioAr: string;
-  photo?: string;
-  photoSrcSet?: string;
-  pageSlug?: string;
-};
-
-function mapPayloadToTeamPerson(p: PayloadParticipant): TeamPerson {
-  const role = PARTICIPANT_ROLE_LABEL[p.category];
-  return {
-    name: p.name,
-    nameAr: p.nameAr ?? p.name,
-    title: p.title ?? role.en,
-    titleAr: p.titleAr ?? p.title ?? role.ar,
-    // Formatting goes with whichever plain role is shown; the built-in role
-    // label has none.
-    titleRich: p.title ? p.titleRich : undefined,
-    titleRichAr: p.titleAr ? p.titleRichAr : p.title ? p.titleRich : undefined,
-    category: p.category,
-    email: p.email ?? "",
-    links: p.links ?? [],
-    bio: p.bio ?? "",
-    bioAr: p.bioAr ?? p.bio ?? "",
-    photo: mediaUrl(p.photo) || undefined,
-    photoSrcSet: mediaSrcSet(p.photo),
-    pageSlug: p.hasFullPage && p.slug ? p.slug : undefined,
-  };
-}
 
 // ── Latest news and announcements: two independent halves ─────────────────
 /**
@@ -318,118 +279,10 @@ function LatestNewsAndAnnouncements() {
   );
 }
 
-// ── Team member modal ─────────────────────────────────────────────────────
-function TeamModal({
-  person,
-  onClose,
-  isArabic,
-  lang,
-}: {
-  person: TeamPerson;
-  onClose: () => void;
-  isArabic: boolean;
-  lang: string;
-}) {
-  // Portaled to <body>, not rendered where TeamSection sits. That section
-  // is wrapped in <Reveal>, whose translate-y-0 stays applied after the
-  // fade-in, and any element with a CSS transform/translate becomes the
-  // containing block for its position:fixed descendants -- so a "fixed
-  // inset-0" overlay in here covered only the team section (not the screen),
-  // was clipped by the page wrapper's overflow-hidden, and slid under the
-  // footer. It also sits under the z-10 wrapper that carries the page over
-  // the hero video, which would put it beneath the z-40 header. On <body> it
-  // is above everything. Only ever mounted after a click, so `document`
-  // always exists here (no SSR concern).
-  return createPortal(
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
-      onClick={(e) => e.target === e.currentTarget && onClose()}
-    >
-      {/* The avatar overlaps the card: its vertical center sits on the
-          card's top edge, half poking up above it. The spacer above the
-          card reserves exactly that top half's height (h-20/sm:h-24, half
-          of the avatar's own h-40/sm:h-48) so the photo has room to float
-          there; the card's matching pt-24/sm:pt-28 leaves the same amount
-          of clearance inside so its bottom half doesn't sit under the name.
-          Unlike the earlier version of this layout (see git history), the
-          whole wrapper is capped at max-h-[90svh] via flex-col + flex-1
-          min-h-0 on the card, so only the card scrolls internally -- a long
-          bio can't push the avatar or the modal itself past the viewport.
-          svh rather than the /about/participants modal's vh: on a phone, vh
-          is the height with the browser toolbars collapsed, so a 90vh card
-          can run down behind the toolbar. */}
-      <div className="relative w-full max-w-3xl max-h-[90svh] flex flex-col">
-        {person.photo && <div className="h-20 sm:h-24 shrink-0" aria-hidden />}
-        <div
-          className={
-            "relative flex-1 min-h-0 bg-card border border-border rounded-lg shadow-2xl overflow-y-auto overscroll-contain" +
-            (isArabic ? " text-right" : "")
-          }
-        >
-          <div className="absolute top-4 right-4 z-20 flex items-center gap-1">
-            {person.email && (
-              <a
-                href={"mailto:" + person.email}
-                title={person.email}
-                aria-label={person.email}
-                className="p-1.5 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
-              >
-                <Mail className="h-4 w-4" />
-              </a>
-            )}
-            <ProfileLinks links={person.links} />
-            <button
-              onClick={onClose}
-              className="p-1.5 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
-              aria-label="Close"
-            >
-              <X className="h-4 w-4" />
-            </button>
-          </div>
-          <div
-            className={
-              "flex flex-col items-center px-8 pb-8 text-center " +
-              (person.photo ? "pt-24 sm:pt-28" : "pt-12")
-            }
-          >
-            <h2 className="font-serif text-2xl text-primary">
-              {lang === "ar" ? person.nameAr : person.name}
-            </h2>
-            <p className="text-muted-foreground text-sm mt-1">
-              <FormattedText
-                rich={lang === "ar" ? person.titleRichAr : person.titleRich}
-                text={lang === "ar" ? person.titleAr : person.title}
-              />
-            </p>
-            {(person.bio || person.bioAr) && (
-              <p className="mt-6 text-sm text-muted-foreground leading-relaxed">
-                {lang === "ar" ? person.bioAr : person.bio}
-              </p>
-            )}
-            <FullPageLink slug={person.pageSlug} isArabic={isArabic} />
-          </div>
-        </div>
-        {person.photo && (
-          <div className="absolute left-1/2 top-0 -translate-x-1/2 z-10 h-40 w-40 sm:h-48 sm:w-48 rounded-full overflow-hidden shadow-lg bg-secondary">
-            <img
-              src={person.photo}
-              srcSet={person.photoSrcSet}
-              sizes="192px"
-              alt={person.name}
-              className="h-full w-full object-cover"
-            />
-          </div>
-        )}
-      </div>
-    </div>,
-    document.body,
-  );
-}
-
 // ── Compact editorial team row ────────────────────────────────────────────
 function TeamSection() {
   const { t, tOptional, lang, isArabic } = useLanguage();
-  const [selected, setSelected] = useState<TeamPerson | null>(null);
+  const [selected, setSelected] = useState<Participant | null>(null);
   const eyebrow = tOptional("team.eyebrow");
 
   const { data: payloadParticipants = [] } = useQuery(participantsQuery);
@@ -443,9 +296,9 @@ function TeamSection() {
   // first three people in the Working Group, same as before this setting
   // existed.
   const featured = populated(homepage?.featuredParticipants).slice(0, 3);
-  const members: TeamPerson[] = (
+  const members: Participant[] = (
     featured.length > 0 ? featured : payloadParticipants.slice(0, 3)
-  ).map(mapPayloadToTeamPerson);
+  ).map(mapPayloadParticipant);
 
   return (
     <>
@@ -526,14 +379,7 @@ function TeamSection() {
         </div>
       </section>
 
-      {selected && (
-        <TeamModal
-          person={selected}
-          onClose={() => setSelected(null)}
-          isArabic={isArabic}
-          lang={lang}
-        />
-      )}
+      {selected && <ParticipantModal participant={selected} onClose={() => setSelected(null)} />}
     </>
   );
 }

@@ -13,6 +13,13 @@ import {
 import { SECTION_COLORS } from "@/lib/sectionColors";
 import { participantsQuery } from "@/lib/queries";
 import { FormattedText } from "@/components/RichText";
+import { Highlighted } from "@/components/Highlighted";
+import {
+  matchParticipant,
+  searchNeedles,
+  searchWords,
+  type ParticipantMatch,
+} from "@/lib/participantSearch";
 
 /** ?participant=<id> deep-links to one profile, opening that person's
  * modal once the list has loaded. */
@@ -53,14 +60,17 @@ function isVisible(p: PayloadParticipant): boolean {
 function ParticipantCard({
   participant,
   onClick,
-  lang,
-  isArabic,
+  needles,
+  match,
 }: {
   participant: Participant;
   onClick: () => void;
-  lang: string;
-  isArabic: boolean;
+  needles: string[];
+  match: ParticipantMatch;
 }) {
+  const { lang, isArabic } = useLanguage();
+  const isAr = lang === "ar";
+  const role = isAr ? participant.titleAr : participant.title;
   return (
     <button
       onClick={onClick}
@@ -71,14 +81,33 @@ function ParticipantCard({
           the same compact height regardless of who has a picture on file. */}
       <div className="px-4 py-4 flex-1">
         <div className="font-serif text-base text-primary leading-tight group-hover:text-accent transition-colors">
-          {lang === "ar" ? participant.nameAr : participant.name}
+          <Highlighted text={isAr ? participant.nameAr : participant.name} needles={needles} />
         </div>
         <div className="text-xs text-muted-foreground mt-1">
-          <FormattedText
-            rich={lang === "ar" ? participant.titleRichAr : participant.titleRich}
-            text={lang === "ar" ? participant.titleAr : participant.title}
-          />
+          {needles.length > 0 ? (
+            <Highlighted text={role} needles={needles} />
+          ) : (
+            <FormattedText
+              rich={isAr ? participant.titleRichAr : participant.titleRich}
+              text={role}
+            />
+          )}
+          {match.roleLabel && (
+            <>
+              {" · "}
+              <mark className="search-mark rounded-sm">{match.roleLabel}</mark>
+            </>
+          )}
         </div>
+        {/* Why a bio search found them: the words around the match. */}
+        {match.bioSnippet && (
+          <p
+            className="mt-2 text-[11px] leading-relaxed text-muted-foreground/90 text-start"
+            dir={isArabic ? "rtl" : "ltr"}
+          >
+            <Highlighted text={match.bioSnippet} needles={needles} />
+          </p>
+        )}
         <div className="text-[11px] font-medium text-green-600 mt-1.5 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
           {isArabic ? "اضغط لقراءة المزيد" : "Click to read more"}
         </div>
@@ -88,7 +117,7 @@ function ParticipantCard({
 }
 
 function ParticipantsPage() {
-  const { lang, isArabic } = useLanguage();
+  const { isArabic } = useLanguage();
   const { participant: deepLinkedId } = Route.useSearch();
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<Participant | null>(null);
@@ -118,10 +147,13 @@ function ParticipantsPage() {
     .filter(isVisible)
     .map(mapPayloadParticipant);
 
-  const q = search.toLowerCase();
-  const filtered = participants.filter((f) => {
-    const matchesSearch = f.name.toLowerCase().includes(q) || f.nameAr.includes(search);
-    return matchesSearch;
+  // See participantSearch: names, roles, bios and the kind of member, in
+  // both languages, every word typed.
+  const words = searchWords(search);
+  const needles = searchNeedles(words);
+  const filtered = participants.flatMap((participant) => {
+    const match = matchParticipant(participant, words, isArabic);
+    return match ? [{ participant, match }] : [];
   });
 
   return (
@@ -138,32 +170,31 @@ function ParticipantsPage() {
       />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <div
-          className={
-            "flex flex-col sm:flex-row gap-4 mb-10" + (isArabic ? " sm:flex-row-reverse" : "")
-          }
-        >
-          <div className={"relative sm:ml-auto" + (isArabic ? " sm:ml-0 sm:mr-auto" : "")}>
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+        {/* Centred in both languages. */}
+        <div className="mb-10 flex justify-center">
+          <div className="relative w-full sm:w-96">
+            <Search className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder={isArabic ? "ابحث باسم الزميل..." : "Search by name..."}
-              className="pl-9 pr-4 py-2 text-sm border border-border rounded-full bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-accent w-full sm:w-56 transition-colors"
+              placeholder={
+                isArabic ? "ابحث بالاسم أو الدور أو السيرة..." : "Search by name, role or bio..."
+              }
+              className="ps-9 pe-4 py-2 text-sm border border-border rounded-full bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-accent w-full transition-colors"
             />
           </div>
         </div>
 
         {filtered.length > 0 ? (
           <div className="grid gap-x-6 gap-y-10 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">
-            {filtered.map((participant) => (
+            {filtered.map(({ participant, match }) => (
               <ParticipantCard
                 key={participant.id}
                 participant={participant}
                 onClick={() => setSelected(participant)}
-                lang={lang}
-                isArabic={isArabic}
+                needles={needles}
+                match={match}
               />
             ))}
           </div>
@@ -178,8 +209,7 @@ function ParticipantsPage() {
         <ParticipantModal
           participant={selected}
           onClose={() => setSelected(null)}
-          isArabic={isArabic}
-          lang={lang}
+          needles={needles}
         />
       )}
     </PageLayout>

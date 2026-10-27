@@ -1,4 +1,3 @@
-import { Link } from "@tanstack/react-router";
 import { Download, FileText } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import {
@@ -12,6 +11,7 @@ import {
   type PayloadMedia,
   type PayloadParticipant,
 } from "@/lib/payload";
+import { ParticipantLink } from "@/components/ParticipantModal";
 
 /**
  * What a forum carries besides its write-up and photographs: the people who
@@ -159,21 +159,17 @@ export function ForumAdditionalInfo({ item }: { item: PayloadActivity }) {
           <span className="mb-1.5 block text-[11px] uppercase tracking-widest text-muted-foreground">
             {t("forums.participants")}
           </span>
-          {/* Each name opens that person's profile on the Working Group page,
-              which resolves the id against the whole collection rather than
-              the grid -- so someone kept off that page is still reachable
-              from here. */}
+          {/* Each name opens that person's pop-up right here -- see
+              ParticipantLink -- so closing it leaves the reader on the forum. */}
           <p className="text-sm leading-relaxed text-foreground">
             {people.map((person, index) => (
               <span key={person.id}>
-                <Link
-                  to="/about/participants"
-                  search={{ participant: person.id }}
-                  onClick={(event) => event.stopPropagation()}
+                <ParticipantLink
+                  id={person.id}
                   className="font-serif underline-offset-2 hover:text-[color:var(--brand-magenta)] hover:underline"
                 >
                   {lang === "ar" ? (person.nameAr ?? person.name) : person.name}
-                </Link>
+                </ParticipantLink>
                 {index < people.length - 1 ? (isArabic ? "، " : ", ") : ""}
               </span>
             ))}

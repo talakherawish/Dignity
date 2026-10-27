@@ -531,12 +531,7 @@ export function PhotoGallery({ photos }: { photos: GalleryPhoto[] }) {
 
       {/* After the lightbox, so it stacks on top of it at the same z-index. */}
       {open && profile && (
-        <ParticipantModal
-          participant={profile}
-          onClose={() => setProfile(null)}
-          isArabic={isArabic}
-          lang={lang}
-        />
+        <ParticipantModal participant={profile} onClose={() => setProfile(null)} />
       )}
     </>
   );

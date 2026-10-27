@@ -1,81 +1,113 @@
-import type { ComponentType, SVGProps } from "react";
-import { Facebook, Globe, GraduationCap, Instagram, Linkedin, Youtube } from "lucide-react";
+import type { ReactNode } from "react";
+import { Globe, Mail } from "lucide-react";
+import { BRAND_ICONS, type BrandIconName } from "@/lib/brandIcons";
 import type { PayloadParticipant } from "@/lib/payload";
 
 /**
- * The round icon links on a person's profile card, next to the email icon.
- * Each one comes from a row in the Participant's "Links" list in Payload: a
- * platform picked from a dropdown plus a URL. The icon is chosen here from the
- * platform, so editors never upload one.
+ * The links on a person's profile -- their email, then each row of the
+ * Participant's "Links" list in Payload (a platform picked from a dropdown
+ * plus a URL) -- as small round badges carrying each brand's own mark and
+ * colour. The mark is chosen here from the platform, so editors never upload
+ * one.
  */
 
 export type ProfileLink = NonNullable<PayloadParticipant["links"]>[number];
 
-type IconProps = SVGProps<SVGSVGElement> & { className?: string };
-
-/** Lucide has no marks for the academic sites, so those are drawn as their lettermarks. */
-function lettermark(text: string, fontSize: number): ComponentType<IconProps> {
-  return function Lettermark(props: IconProps) {
-    return (
-      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden {...props}>
-        <text
-          x="12"
-          y="12"
-          textAnchor="middle"
-          dominantBaseline="central"
-          fontSize={fontSize}
-          fontWeight="700"
-          fontFamily="Georgia, 'Times New Roman', serif"
-        >
-          {text}
-        </text>
-      </svg>
-    );
-  };
-}
-
-const PLATFORMS: Record<
-  ProfileLink["platform"],
-  { label: string; Icon: ComponentType<IconProps> }
-> = {
-  linkedin: { label: "LinkedIn", Icon: Linkedin },
-  academia: { label: "Academia.edu", Icon: lettermark("A", 17) },
-  orcid: { label: "ORCID", Icon: lettermark("iD", 13) },
-  researchgate: { label: "ResearchGate", Icon: lettermark("RG", 11) },
-  googleScholar: { label: "Google Scholar", Icon: GraduationCap },
-  facebook: { label: "Facebook", Icon: Facebook },
-  youtube: { label: "YouTube", Icon: Youtube },
-  instagram: { label: "Instagram", Icon: Instagram },
-  x: { label: "X", Icon: lettermark("X", 15) },
-  website: { label: "Website", Icon: Globe },
+const PLATFORMS: Record<ProfileLink["platform"], { label: string; brand?: BrandIconName }> = {
+  linkedin: { label: "LinkedIn", brand: "linkedin" },
+  academia: { label: "Academia.edu", brand: "academia" },
+  orcid: { label: "ORCID", brand: "orcid" },
+  researchgate: { label: "ResearchGate", brand: "researchgate" },
+  googleScholar: { label: "Google Scholar", brand: "googleScholar" },
+  facebook: { label: "Facebook", brand: "facebook" },
+  youtube: { label: "YouTube", brand: "youtube" },
+  instagram: { label: "Instagram", brand: "instagram" },
+  x: { label: "X", brand: "x" },
+  // A personal website has no brand: a globe on neutral grey.
+  website: { label: "Website" },
 };
+
+const NEUTRAL = "#5F6368";
 
 /** Editors paste addresses with or without the scheme; a bare one would resolve relative to this site. */
 function absoluteUrl(url: string): string {
   return /^https?:\/\//i.test(url) ? url : "https://" + url.replace(/^\/+/, "");
 }
 
-export function ProfileLinks({ links }: { links?: ProfileLink[] }) {
+function Badge({
+  href,
+  label,
+  color,
+  newTab,
+  children,
+}: {
+  href: string;
+  label: string;
+  color: string;
+  newTab?: boolean;
+  children: ReactNode;
+}) {
   return (
-    <>
-      {(links ?? [])
-        .filter((l) => l.url?.trim() && PLATFORMS[l.platform])
-        .map((l, i) => {
-          const { label, Icon } = PLATFORMS[l.platform];
-          return (
-            <a
-              key={l.id ?? i}
-              href={absoluteUrl(l.url.trim())}
-              target="_blank"
-              rel="noopener noreferrer"
-              title={label}
-              aria-label={label}
-              className="p-1.5 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
-            >
-              <Icon className="h-4 w-4" />
-            </a>
-          );
-        })}
-    </>
+    <a
+      href={href}
+      title={label}
+      aria-label={label}
+      {...(newTab ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+      className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-white shadow-sm transition-transform hover:scale-110"
+      style={{ background: color }}
+    >
+      {children}
+    </a>
+  );
+}
+
+function BrandMark({ name }: { name: BrandIconName }) {
+  return (
+    <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="currentColor" aria-hidden>
+      <path d={BRAND_ICONS[name].path} />
+    </svg>
+  );
+}
+
+export function ProfileLinks({
+  links,
+  email,
+  stacked = false,
+}: {
+  links?: ProfileLink[];
+  email?: string;
+  /** One above the other, as in the profile pop-up; otherwise side by side. */
+  stacked?: boolean;
+}) {
+  const shown = (links ?? []).filter((l) => l.url?.trim() && PLATFORMS[l.platform]);
+  if (!email && shown.length === 0) return null;
+  const isGmail = !!email && /@(gmail|googlemail)\.com$/i.test(email.trim());
+
+  return (
+    <div className={stacked ? "flex flex-col gap-1.5" : "flex flex-wrap items-center gap-1.5"}>
+      {email && (
+        <Badge
+          href={"mailto:" + email}
+          label={email}
+          color={isGmail ? BRAND_ICONS.gmail.color : NEUTRAL}
+        >
+          {isGmail ? <BrandMark name="gmail" /> : <Mail className="h-3.5 w-3.5" />}
+        </Badge>
+      )}
+      {shown.map((l, i) => {
+        const { label, brand } = PLATFORMS[l.platform];
+        return (
+          <Badge
+            key={l.id ?? i}
+            href={absoluteUrl(l.url.trim())}
+            label={label}
+            color={brand ? BRAND_ICONS[brand].color : NEUTRAL}
+            newTab
+          >
+            {brand ? <BrandMark name={brand} /> : <Globe className="h-3.5 w-3.5" />}
+          </Badge>
+        );
+      })}
+    </div>
   );
 }

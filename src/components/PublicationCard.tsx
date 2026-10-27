@@ -1,4 +1,3 @@
-import { Link } from "@tanstack/react-router";
 import { Download, ExternalLink, FileText, Play } from "lucide-react";
 import { useState, type KeyboardEvent, type ReactNode } from "react";
 import { TranslationNotice } from "@/components/TranslationNotice";
@@ -13,6 +12,7 @@ import {
   youtubeThumbnailFallback,
 } from "@/lib/payload";
 import { FormattedText } from "./RichText";
+import { ParticipantLink } from "@/components/ParticipantModal";
 
 /**
  * The document card shown by every publication-shaped grid on the site —
@@ -367,14 +367,12 @@ export function PublicationCard({
               <div className="normal-case font-serif">
                 {authorTags.map((tag, index) => (
                   <span key={tag.id}>
-                    <Link
-                      to="/about/participants"
-                      search={{ participant: tag.id }}
-                      onClick={(e) => e.stopPropagation()}
+                    <ParticipantLink
+                      id={tag.id}
                       className="hover:text-accent hover:underline underline-offset-2"
                     >
                       {tag.name}
-                    </Link>
+                    </ParticipantLink>
                     {index < authorTags.length - 1 ? ", " : ""}
                   </span>
                 ))}
