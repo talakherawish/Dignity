@@ -1,5 +1,6 @@
 import type { CollectionConfig, CollectionSlug, Field } from 'payload'
 import { mirrorLinksOnChange, mirrorLinksOnDelete } from '../hooks/syncResearchLinks'
+import { section } from '../lib/adminLayout'
 
 /**
  * The seven publication collections — one for each entry under Publications in
@@ -17,118 +18,124 @@ import { mirrorLinksOnChange, mirrorLinksOnDelete } from '../hooks/syncResearchL
 /** Shared by all seven — the field set the unified collection already used. */
 function publicationFields(): Field[] {
   return [
-    {
-      name: 'title',
-      type: 'text',
-      required: true,
-      label: 'Title (English)',
-    },
-    {
-      name: 'titleAr',
-      type: 'text',
-      label: 'Title (Arabic / العنوان بالعربية)',
-      admin: { rtl: true },
-    },
-    {
-      name: 'author',
-      type: 'text',
-      label: 'Author/Authors (English)',
-      admin: {
-        description:
-          'Type a name freehand, or leave this blank and pick people from Participants below instead.',
+    section('Title and People', [
+      {
+        name: 'title',
+        type: 'text',
+        required: true,
+        label: 'Title (English)',
       },
-    },
-    {
-      name: 'authorAr',
-      type: 'text',
-      label: 'Author/Authors (Arabic / المؤلف بالعربية)',
-      admin: { rtl: true },
-    },
-    {
-      name: 'authorParticipants',
-      type: 'relationship',
-      relationTo: 'participants',
-      hasMany: true,
-      label: 'Author(s) from Participants',
-      admin: {
-        description:
-          "Pick existing people instead of typing a name above. When this is set, these are shown in place of the typed Author field, each linking to that person's profile under About → Participants.",
+      {
+        name: 'titleAr',
+        type: 'text',
+        label: 'Title (Arabic / العنوان بالعربية)',
+        admin: { rtl: true },
       },
-    },
-    {
-      name: 'speakerParticipants',
-      type: 'relationship',
-      relationTo: 'participants',
-      hasMany: true,
-      label: 'Speaker(s) from Participants',
-      filterOptions: {
-        category: { equals: 'speaker' },
+      {
+        name: 'author',
+        type: 'text',
+        label: 'Author/Authors (English)',
+        admin: {
+          description:
+            'Type a name freehand, or leave this blank and pick people from Participants below instead.',
+        },
       },
-      admin: {
-        description:
-          'Pick people tagged as Speaker under About → Participants, if this item credits any.',
+      {
+        name: 'authorAr',
+        type: 'text',
+        label: 'Author/Authors (Arabic / المؤلف بالعربية)',
+        admin: { rtl: true },
       },
-    },
-    {
-      name: 'date',
-      type: 'date',
-      label: 'Publication Date',
-    },
-    {
-      name: 'description',
-      type: 'textarea',
-      label: 'Description (English)',
-    },
-    {
-      name: 'descriptionAr',
-      type: 'textarea',
-      label: 'Description (Arabic / الوصف بالعربية)',
-      admin: { rtl: true },
-    },
-    {
-      name: 'file',
-      type: 'upload',
-      relationTo: 'media',
-      label: 'PDF or File',
-      admin: {
-        description:
-          'Shown to readers in both languages. Leave this as the only file unless the Arabic version below is a genuinely different document.',
+      {
+        name: 'authorParticipants',
+        type: 'relationship',
+        relationTo: 'participants',
+        hasMany: true,
+        label: 'Author(s) from Participants',
+        admin: {
+          description:
+            "Pick existing people instead of typing a name above. When this is set, these are shown in place of the typed Author field, each linking to that person's profile under About → Participants.",
+        },
       },
-    },
-    {
-      name: 'fileAr',
-      type: 'upload',
-      relationTo: 'media',
-      label: 'PDF or File (Arabic only, if different / نسخة عربية مختلفة)',
-      admin: {
-        description:
-          'Only needed when the Arabic file is a different document from the one above — a separate translation, say. Leave empty to show the same file to everyone.',
+      {
+        name: 'speakerParticipants',
+        type: 'relationship',
+        relationTo: 'participants',
+        hasMany: true,
+        label: 'Speaker(s) from Participants',
+        filterOptions: {
+          category: { equals: 'speaker' },
+        },
+        admin: {
+          description:
+            'Pick people tagged as Speaker under About → Participants, if this item credits any.',
+        },
       },
-    },
-    {
-      name: 'link',
-      type: 'text',
-      label: 'External Link (e.g. YouTube video)',
-      admin: {
-        description:
-          'Use for items that live elsewhere rather than as an uploaded file — a YouTube video, for example. Leave empty when a file is attached above.',
+      {
+        name: 'date',
+        type: 'date',
+        label: 'Publication Date',
       },
-    },
-    {
-      name: 'linkAr',
-      type: 'text',
-      label: 'External Link (Arabic only, if different / رابط عربي مختلف)',
-      admin: {
-        rtl: true,
-        description: 'Only needed when the Arabic destination differs from the link above.',
+    ]),
+    section('Description', [
+      {
+        name: 'description',
+        type: 'textarea',
+        label: 'Description (English)',
       },
-    },
-    {
-      name: 'image',
-      type: 'upload',
-      relationTo: 'media',
-      label: 'Cover Image or Thumbnail',
-    },
+      {
+        name: 'descriptionAr',
+        type: 'textarea',
+        label: 'Description (Arabic / الوصف بالعربية)',
+        admin: { rtl: true },
+      },
+    ]),
+    section('File, Link and Cover Image', [
+      {
+        name: 'file',
+        type: 'upload',
+        relationTo: 'media',
+        label: 'PDF or File',
+        admin: {
+          description:
+            'Shown to readers in both languages. Leave this as the only file unless the Arabic version below is a genuinely different document.',
+        },
+      },
+      {
+        name: 'fileAr',
+        type: 'upload',
+        relationTo: 'media',
+        label: 'PDF or File (Arabic only, if different / نسخة عربية مختلفة)',
+        admin: {
+          description:
+            'Only needed when the Arabic file is a different document from the one above — a separate translation, say. Leave empty to show the same file to everyone.',
+        },
+      },
+      {
+        name: 'link',
+        type: 'text',
+        label: 'External Link (e.g. YouTube video)',
+        admin: {
+          description:
+            'Use for items that live elsewhere rather than as an uploaded file — a YouTube video, for example. Leave empty when a file is attached above.',
+        },
+      },
+      {
+        name: 'linkAr',
+        type: 'text',
+        label: 'External Link (Arabic only, if different / رابط عربي مختلف)',
+        admin: {
+          rtl: true,
+          description: 'Only needed when the Arabic destination differs from the link above.',
+        },
+      },
+      {
+        name: 'image',
+        type: 'upload',
+        relationTo: 'media',
+        label: 'Cover Image or Thumbnail',
+      },
+    ]),
     {
       name: 'researchLines',
       type: 'relationship',

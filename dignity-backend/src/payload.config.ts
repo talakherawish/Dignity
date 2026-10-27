@@ -9,6 +9,7 @@ import sharp from 'sharp'
 
 import { createGithubStorageAdapter } from './lib/githubStorageAdapter'
 import { enforceBilingual, enforceBilingualGlobal } from './lib/bilingual'
+import { sideBySide, sideBySideGlobal } from './lib/adminLayout'
 import { withPublicationStatus } from './lib/publicationStatus'
 import { withEditTracking, withEditTrackingGlobal } from './lib/editTracking'
 import { resolveGithubStorageConfig } from './lib/storageConfig'
@@ -88,8 +89,10 @@ export default buildConfig({
   // "Published?" field to every collection with a draft/publish workflow —
   // see src/lib/publicationStatus.ts. And withEditTracking(), which adds
   // "Last Edited By" / "Created By" sidebar fields set automatically from
-  // whoever's logged in — see src/lib/editTracking.ts. Wrapping all three
-  // centrally means new collections are covered automatically.
+  // whoever's logged in — see src/lib/editTracking.ts. And sideBySide(), which
+  // sets each English field beside its Arabic twin in the edit form — see
+  // src/lib/adminLayout.ts. Wrapping them centrally means new collections are
+  // covered automatically.
   collections: [
     // Admin
     Users,
@@ -146,8 +149,12 @@ export default buildConfig({
   ]
     .map(withPublicationStatus)
     .map(enforceBilingual)
+    .map(sideBySide)
     .map(withEditTracking),
-  globals: [SiteSettings, DatabasesPage, ReadingsPage].map(enforceBilingualGlobal).map(withEditTrackingGlobal),
+  globals: [SiteSettings, DatabasesPage, ReadingsPage]
+    .map(enforceBilingualGlobal)
+    .map(sideBySideGlobal)
+    .map(withEditTrackingGlobal),
   editor: lexicalEditor(),
   cors: process.env.CORS_ORIGINS
   ? process.env.CORS_ORIGINS.split(',').map((s) => s.trim())

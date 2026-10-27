@@ -1,6 +1,7 @@
 import type { CollectionConfig, CollectionSlug, Field } from 'payload'
 import { mirrorLinksOnChange, mirrorLinksOnDelete } from '../hooks/syncResearchLinks'
 import { singletonCreateAccess, singletonListView } from '../lib/singleton'
+import { section } from '../lib/adminLayout'
 
 /**
  * Task Force on AI, Idea Factory, and Windsor-Birzeit, each shaped like a
@@ -31,98 +32,102 @@ const ACTIVITY_LINE_OUTPUTS = [
 
 function activityLineFields(): Field[] {
   return [
-    {
-      name: 'title',
-      type: 'text',
-      required: true,
-      label: 'Title (English)',
-    },
-    {
-      name: 'titleAr',
-      type: 'text',
-      label: 'Title (Arabic / العنوان بالعربية)',
-      admin: { rtl: true },
-    },
-    {
-      name: 'content',
-      type: 'richText',
-      label: 'Content (English)',
-    },
-    {
-      name: 'contentAr',
-      type: 'richText',
-      label: 'Content (Arabic / المحتوى بالعربية)',
-    },
-    {
-      name: 'image',
-      type: 'upload',
-      relationTo: 'media',
-      label: 'Featured Image',
-    },
-    // The outputs, shown on the page beneath the write-up. Each points at the
-    // collection that already holds those items, so nothing is duplicated --
-    // an item is uploaded once (under Forums or a Publications type) and
-    // attached here, same as Research's own related* fields.
-    {
-      name: 'relatedForums',
-      type: 'relationship',
-      relationTo: 'forums',
-      hasMany: true,
-      label: 'Activities (Forums)',
-      admin: {
-        description:
-          "Seminars, roundtables, workshops, and conferences related to this. Shown under this page's Activities section.",
+    section('Page', [
+      {
+        name: 'title',
+        type: 'text',
+        required: true,
+        label: 'Title (English)',
       },
-    },
-    {
-      name: 'relatedBooks',
-      type: 'relationship',
-      relationTo: 'books',
-      hasMany: true,
-      label: 'Books',
-    },
-    {
-      name: 'relatedPapers',
-      type: 'relationship',
-      relationTo: 'papers',
-      hasMany: true,
-      label: 'Papers',
-    },
-    {
-      name: 'relatedReports',
-      type: 'relationship',
-      relationTo: 'reports',
-      hasMany: true,
-      label: 'Reports',
-    },
-    {
-      name: 'relatedBrochures',
-      type: 'relationship',
-      relationTo: 'brochures',
-      hasMany: true,
-      label: 'Brochures',
-    },
-    {
-      name: 'relatedTheses',
-      type: 'relationship',
-      relationTo: 'theses',
-      hasMany: true,
-      label: 'Theses',
-    },
-    {
-      name: 'relatedAudiovisual',
-      type: 'relationship',
-      relationTo: 'audiovisual',
-      hasMany: true,
-      label: 'Audiovisual',
-    },
-    {
-      name: 'relatedPosters',
-      type: 'relationship',
-      relationTo: 'posters',
-      hasMany: true,
-      label: 'Posters',
-    },
+      {
+        name: 'titleAr',
+        type: 'text',
+        label: 'Title (Arabic / العنوان بالعربية)',
+        admin: { rtl: true },
+      },
+      {
+        name: 'content',
+        type: 'richText',
+        label: 'Content (English)',
+      },
+      {
+        name: 'contentAr',
+        type: 'richText',
+        label: 'Content (Arabic / المحتوى بالعربية)',
+      },
+      {
+        name: 'image',
+        type: 'upload',
+        relationTo: 'media',
+        label: 'Featured Image',
+      },
+    ]),
+    section('Linked Activities and Publications', [
+      // The outputs, shown on the page beneath the write-up. Each points at the
+      // collection that already holds those items, so nothing is duplicated --
+      // an item is uploaded once (under Forums or a Publications type) and
+      // attached here, same as Research's own related* fields.
+      {
+        name: 'relatedForums',
+        type: 'relationship',
+        relationTo: 'forums',
+        hasMany: true,
+        label: 'Activities (Forums)',
+        admin: {
+          description:
+            "Seminars, roundtables, workshops, and conferences related to this. Shown under this page's Activities section.",
+        },
+      },
+      {
+        name: 'relatedBooks',
+        type: 'relationship',
+        relationTo: 'books',
+        hasMany: true,
+        label: 'Books',
+      },
+      {
+        name: 'relatedPapers',
+        type: 'relationship',
+        relationTo: 'papers',
+        hasMany: true,
+        label: 'Papers',
+      },
+      {
+        name: 'relatedReports',
+        type: 'relationship',
+        relationTo: 'reports',
+        hasMany: true,
+        label: 'Reports',
+      },
+      {
+        name: 'relatedBrochures',
+        type: 'relationship',
+        relationTo: 'brochures',
+        hasMany: true,
+        label: 'Brochures',
+      },
+      {
+        name: 'relatedTheses',
+        type: 'relationship',
+        relationTo: 'theses',
+        hasMany: true,
+        label: 'Theses',
+      },
+      {
+        name: 'relatedAudiovisual',
+        type: 'relationship',
+        relationTo: 'audiovisual',
+        hasMany: true,
+        label: 'Audiovisual',
+      },
+      {
+        name: 'relatedPosters',
+        type: 'relationship',
+        relationTo: 'posters',
+        hasMany: true,
+        label: 'Posters',
+      },
+    ]),
   ]
 }
 

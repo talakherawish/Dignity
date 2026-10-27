@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { section } from '../lib/adminLayout'
 
 export const News: CollectionConfig = {
   slug: 'news',
@@ -29,49 +30,55 @@ export const News: CollectionConfig = {
     delete: ({ req }) => !!req.user,
   },
   fields: [
-    {
-      name: 'title',
-      type: 'text',
-      required: true,
-      label: 'Title (English)',
-    },
-    {
-      name: 'titleAr',
-      type: 'text',
-      label: 'Title (Arabic / العنوان بالعربية)',
-      admin: { rtl: true },
-    },
-    {
-      name: 'date',
-      type: 'date',
-      required: true,
-    },
-    {
-      name: 'excerpt',
-      type: 'textarea',
-      label: 'Short Summary (English)',
-    },
-    {
-      name: 'excerptAr',
-      type: 'textarea',
-      label: 'Short Summary (Arabic / الملخص بالعربية)',
-      admin: { rtl: true },
-    },
-    {
-      name: 'content',
-      type: 'richText',
-      label: 'Full Content (English)',
-    },
-    {
-      name: 'contentAr',
-      type: 'richText',
-      label: 'Full Content (Arabic / المحتوى بالعربية)',
-    },
-    {
-      name: 'image',
-      type: 'upload',
-      relationTo: 'media',
-      label: 'Cover Image',
-    },
+    section('Title and Date', [
+      {
+        name: 'title',
+        type: 'text',
+        required: true,
+        label: 'Title (English)',
+      },
+      {
+        name: 'titleAr',
+        type: 'text',
+        label: 'Title (Arabic / العنوان بالعربية)',
+        admin: { rtl: true },
+      },
+      {
+        name: 'date',
+        type: 'date',
+        required: true,
+      },
+    ]),
+    section('Summary and Write-up', [
+      {
+        name: 'excerpt',
+        type: 'textarea',
+        label: 'Short Summary (English)',
+      },
+      {
+        name: 'excerptAr',
+        type: 'textarea',
+        label: 'Short Summary (Arabic / الملخص بالعربية)',
+        admin: { rtl: true },
+      },
+      {
+        name: 'content',
+        type: 'richText',
+        label: 'Full Content (English)',
+      },
+      {
+        name: 'contentAr',
+        type: 'richText',
+        label: 'Full Content (Arabic / المحتوى بالعربية)',
+      },
+    ]),
+    section('Cover Image', [
+      {
+        name: 'image',
+        type: 'upload',
+        relationTo: 'media',
+        label: 'Cover Image',
+      },
+    ]),
   ],
 }

@@ -1,4 +1,5 @@
 import type { GlobalConfig, Field } from 'payload'
+import { section } from '../lib/adminLayout'
 
 const MAX_FEATURED_PARTICIPANTS = 3
 
@@ -18,28 +19,13 @@ const PUBLICATION_COLLECTIONS = [
   'posters',
 ] as const
 
-/** The English and Arabic wording of one label, side by side. */
+/** The English and Arabic wording of one label -- shown side by side (see adminLayout). */
 function pair(name: string, label: string, textarea?: boolean): Field[] {
   const type = textarea ? 'textarea' : 'text'
   return [
-    {
-      type: 'row',
-      fields: [
-        { name, type, label: label + ' (English)', admin: { width: '50%' } } as Field,
-        {
-          name: name + 'Ar',
-          type,
-          label: label + ' (Arabic)',
-          admin: { width: '50%', rtl: true },
-        } as Field,
-      ],
-    },
+    { name, type, label: label + ' (English)' } as Field,
+    { name: name + 'Ar', type, label: label + ' (Arabic)', admin: { rtl: true } } as Field,
   ]
-}
-
-/** One section of the homepage, under its own heading, in page order. */
-function section(label: string, fields: Field[]): Field {
-  return { type: 'collapsible', label, admin: { initCollapsed: false }, fields }
 }
 
 function atMost(max: number, what: string) {
@@ -66,46 +52,50 @@ export const SiteSettings: GlobalConfig = {
           label: 'Navigation Menu',
           description:
             'Every label in the site header, listed in the order the menus appear. Leave a field blank to fall back to the wording built into the site.',
+          // One section per menu, left to right as in the header.
           fields: [
-            ...pair('navAbout', 'About — menu heading'),
-            ...pair('navAboutInitiative', 'About: About the Initiative'),
-            ...pair('navAboutFellows', 'About: Working Group'),
-            ...pair('navMediaNews', 'About: News & Announcements'),
-            ...pair('navMediaPhotos', 'About: Photos'),
-            ...pair('navMediaClippings', 'About: Clippings'),
-            ...pair('navAboutPartners', 'About: Partners'),
-
-            ...pair('navActivities', 'Activities — menu heading'),
-            // Field name kept from when this link sat under a 'Projects' menu, so
-            // the wording already saved in the database survives. It is the
-            // Research link inside Activities.
-            ...pair('navProjectsResearch', 'Activities: Research'),
-            // Seminars, Roundtables, Workshops, Conferences and Meetings were
-            // each their own top-level entry (Meetings still had a page of its
-            // own); they are now sub-types on one Forums page.
-            ...pair('navActivitiesForums', 'Activities: Forums'),
-            ...pair('navActivitiesWindsor', 'Activities: The Windsor Birzeit Dignity Initiative'),
-            // Content shape not decided yet -- these two are placeholder pages
-            // until there's something to put on them.
-            ...pair('navActivitiesIdeaFactory', 'Activities: Idea Factory'),
-            ...pair('navActivitiesTaskForceAI', 'Activities: Task Force on AI'),
-
-            ...pair('navPublications', 'Publications — menu heading'),
-            ...pair('navPublicationsBooks', 'Publications: Books'),
-            ...pair('navPublicationsPapers', 'Publications: Papers'),
-            ...pair('navPublicationsReports', 'Publications: Reports'),
-            ...pair('navPublicationsBrochures', 'Publications: Brochures'),
-            ...pair('navPublicationsTheses', 'Publications: Theses'),
-            ...pair('navPublicationsAudiovisual', 'Publications: Audiovisual'),
-            ...pair('navPublicationsPosters', 'Publications: Posters'),
-            // Still called navAboutStickers in Payload, from when this link sat
-            // under the About menu -- renaming the field would strand the
-            // wording already saved in the database.
-            ...pair('navAboutStickers', 'Publications: Stickers & Bookmarks'),
-
-            ...pair('navInformation', 'Information — menu heading'),
-            ...pair('navInformationReadings', 'Information: Readings and Documents'),
-            ...pair('navInformationDatabases', 'Information: Databases'),
+            section('About Menu', [
+              ...pair('navAbout', 'Menu Heading'),
+              ...pair('navAboutInitiative', 'About the Initiative'),
+              ...pair('navAboutFellows', 'Working Group'),
+              ...pair('navMediaNews', 'News & Announcements'),
+              ...pair('navMediaPhotos', 'Photos'),
+              ...pair('navMediaClippings', 'Clippings'),
+              ...pair('navAboutPartners', 'Partners'),
+            ]),
+            section('Activities Menu', [
+              ...pair('navActivities', 'Menu Heading'),
+              // Field name kept from when this link sat under a 'Projects' menu, so
+              // the wording already saved in the database survives. It is the
+              // Research link inside Activities.
+              ...pair('navProjectsResearch', 'Research'),
+              // Seminars, Roundtables, Workshops, Conferences and Meetings were
+              // each their own top-level entry (Meetings still had a page of its
+              // own); they are now sub-types on one Forums page.
+              ...pair('navActivitiesForums', 'Forums'),
+              ...pair('navActivitiesWindsor', 'The Windsor Birzeit Dignity Initiative'),
+              ...pair('navActivitiesIdeaFactory', 'Idea Factory'),
+              ...pair('navActivitiesTaskForceAI', 'Task Force on AI'),
+            ]),
+            section('Publications Menu', [
+              ...pair('navPublications', 'Menu Heading'),
+              ...pair('navPublicationsBooks', 'Books'),
+              ...pair('navPublicationsPapers', 'Papers'),
+              ...pair('navPublicationsReports', 'Reports'),
+              ...pair('navPublicationsBrochures', 'Brochures'),
+              ...pair('navPublicationsTheses', 'Theses'),
+              ...pair('navPublicationsAudiovisual', 'Audiovisual'),
+              ...pair('navPublicationsPosters', 'Posters'),
+              // Still called navAboutStickers in Payload, from when this link sat
+              // under the About menu -- renaming the field would strand the
+              // wording already saved in the database.
+              ...pair('navAboutStickers', 'Stickers & Bookmarks'),
+            ]),
+            section('Information Menu', [
+              ...pair('navInformation', 'Menu Heading'),
+              ...pair('navInformationReadings', 'Readings and Documents'),
+              ...pair('navInformationDatabases', 'Databases'),
+            ]),
           ],
         },
         {
@@ -187,36 +177,49 @@ export const SiteSettings: GlobalConfig = {
         {
           label: 'Footer',
           fields: [
-            ...pair('footerContact', 'Contact Heading'),
-            ...pair('footerUniversity', 'University Name'),
-            ...pair('footerPobox', 'P.O. Box Line'),
-            ...pair('footerZip', 'Zip Code Line'),
-            ...pair('footerPhone', 'Phone Line'),
-            ...pair('footerFax', 'Fax Line'),
-            ...pair('footerEmail', 'Email Line'),
-            ...pair('footerSubscribe', 'Subscribe Heading'),
-            ...pair('footerSubscribePlaceholder', 'Subscribe Input Placeholder'),
-            ...pair('footerSubscribeBtn', 'Subscribe Button'),
-            ...pair('footerDisclaimer', 'Disclaimer Link'),
-            ...pair('footerPrivacy', 'Privacy Policy Link'),
-            ...pair('footerCopyright', 'Copyright Line'),
-            ...pair('footerResources', 'Resources Heading'),
-            ...pair('footerStudying', 'Studying Materials Link'),
-            ...pair('footerDatabases', 'Databases Link'),
+            // In the order the footer shows them.
+            section('Contact', [
+              ...pair('footerContact', 'Heading'),
+              ...pair('footerUniversity', 'University Name'),
+              ...pair('footerPobox', 'P.O. Box Line'),
+              ...pair('footerZip', 'Zip Code Line'),
+              ...pair('footerPhone', 'Phone Line'),
+              ...pair('footerFax', 'Fax Line'),
+              ...pair('footerEmail', 'Email Line'),
+            ]),
+            section('Stay in Touch', [
+              ...pair('footerSubscribe', 'Heading'),
+              ...pair('footerSubscribeBtn', 'Subscribe Button'),
+              ...pair('footerSubscribePlaceholder', 'Email Box Placeholder (sign-up form)'),
+            ]),
+            section('Bottom Bar', [
+              ...pair('footerCopyright', 'Copyright Line'),
+              ...pair('footerResources', 'Resources Heading'),
+              ...pair('footerStudying', 'Studying Materials Link'),
+              ...pair('footerDatabases', 'Databases Link'),
+              ...pair('footerDisclaimer', 'Disclaimer Link'),
+              ...pair('footerPrivacy', 'Privacy Policy Link'),
+            ]),
           ],
         },
         {
           label: 'Small UI Labels',
           fields: [
-            ...pair('newsReadMore', 'Read More Label'),
-            ...pair('newsCollapse', 'Collapse Label'),
-            ...pair('contentUntranslated', 'Notice: Body Not Translated Yet'),
-            ...pair('forumFilterAll', 'Forums Filter: All'),
-            ...pair('forumTypeSeminar', 'Forum Type: Seminar'),
-            ...pair('forumTypeRoundtable', 'Forum Type: Roundtable'),
-            ...pair('forumTypeWorkshop', 'Forum Type: Workshop'),
-            ...pair('forumTypeConference', 'Forum Type: Conference'),
-            ...pair('forumTypeEncounters', 'Forum Type: Encounters'),
+            section('News & Announcements', [
+              ...pair('newsReadMore', 'Read More'),
+              ...pair('newsCollapse', 'Collapse'),
+            ]),
+            section('Forums Filter', [
+              ...pair('forumFilterAll', 'All'),
+              ...pair('forumTypeSeminar', 'Seminar'),
+              ...pair('forumTypeRoundtable', 'Roundtable'),
+              ...pair('forumTypeWorkshop', 'Workshop'),
+              ...pair('forumTypeConference', 'Conference'),
+              ...pair('forumTypeEncounters', 'Encounters'),
+            ]),
+            section('Any Page', [
+              ...pair('contentUntranslated', 'Notice: Not Translated Yet'),
+            ]),
           ],
         },
       ],

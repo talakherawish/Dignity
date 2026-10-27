@@ -25,8 +25,20 @@ const bad = (name: string, detail: string) => {
   console.log(`  FAIL  ${name}\n        ${detail}`)
 }
 
-const findField = (fields: Field[], name: string): Field | undefined =>
-  fields.find((f) => (f as { name?: string }).name === name)
+/**
+ * A field by name, looking through the rows and sections that only arrange
+ * the form (see src/lib/adminLayout.ts) -- they hold no data of their own.
+ */
+const findField = (fields: Field[], name: string): Field | undefined => {
+  for (const f of fields) {
+    if ((f as { name?: string }).name === name) return f
+    if (f.type === 'row' || f.type === 'collapsible') {
+      const found = findField(f.fields, name)
+      if (found) return found
+    }
+  }
+  return undefined
+}
 
 /** A field inside an array/group field -- `attachments.title`, say. */
 const findNested = (fields: Field[], arrayName: string, name: string): Field | undefined => {

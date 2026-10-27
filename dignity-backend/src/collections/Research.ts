@@ -1,6 +1,7 @@
 import type { CollectionConfig } from 'payload'
 import { mirrorLinksOnChange, mirrorLinksOnDelete } from '../hooks/syncResearchLinks'
 import { toSlug } from '../lib/slug'
+import { section } from '../lib/adminLayout'
 
 /** Every output type a research line can list, and the field each mirrors on the other side. */
 const OUTPUT_LINKS = [
@@ -57,34 +58,36 @@ export const Research: CollectionConfig = {
     delete: ({ req }) => !!req.user,
   },
   fields: [
-    {
-      name: 'title',
-      type: 'text',
-      required: true,
-      label: 'Title (English)',
-    },
-    {
-      name: 'titleAr',
-      type: 'text',
-      label: 'Title (Arabic / العنوان بالعربية)',
-      admin: { rtl: true },
-    },
-    {
-      name: 'content',
-      type: 'richText',
-      label: 'Content (English)',
-    },
-    {
-      name: 'contentAr',
-      type: 'richText',
-      label: 'Content (Arabic / المحتوى بالعربية)',
-    },
-    {
-      name: 'image',
-      type: 'upload',
-      relationTo: 'media',
-      label: 'Featured Image',
-    },
+    section('Page', [
+      {
+        name: 'title',
+        type: 'text',
+        required: true,
+        label: 'Title (English)',
+      },
+      {
+        name: 'titleAr',
+        type: 'text',
+        label: 'Title (Arabic / العنوان بالعربية)',
+        admin: { rtl: true },
+      },
+      {
+        name: 'content',
+        type: 'richText',
+        label: 'Content (English)',
+      },
+      {
+        name: 'contentAr',
+        type: 'richText',
+        label: 'Content (Arabic / المحتوى بالعربية)',
+      },
+      {
+        name: 'image',
+        type: 'upload',
+        relationTo: 'media',
+        label: 'Featured Image',
+      },
+    ]),
     {
       name: 'slug',
       type: 'text',
@@ -97,85 +100,87 @@ export const Research: CollectionConfig = {
           "Filled in automatically from the English title. It is the end of this entry's web address, so changing it after the page has been shared will break the old link.",
       },
     },
-    // The outputs of a research area, shown on its page beneath the write-up.
-    // Each points at the collection that already holds those items, so nothing
-    // is duplicated — an item is uploaded once and attached wherever it belongs.
-    {
-      name: 'relatedBooks',
-      type: 'relationship',
-      relationTo: 'books',
-      hasMany: true,
-      label: 'Books from this research',
-      admin: {
-        description: 'Select existing books or add new ones.',
+    section('Linked Outputs', [
+      // The outputs of a research area, shown on its page beneath the write-up.
+      // Each points at the collection that already holds those items, so nothing
+      // is duplicated — an item is uploaded once and attached wherever it belongs.
+      {
+        name: 'relatedBooks',
+        type: 'relationship',
+        relationTo: 'books',
+        hasMany: true,
+        label: 'Books from this research',
+        admin: {
+          description: 'Select existing books or add new ones.',
+        },
       },
-    },
-    {
-      name: 'relatedPapers',
-      type: 'relationship',
-      relationTo: 'papers',
-      hasMany: true,
-      label: 'Papers from this research',
-    },
-    {
-      name: 'relatedReports',
-      type: 'relationship',
-      relationTo: 'reports',
-      hasMany: true,
-      label: 'Reports from this research',
-    },
-    {
-      name: 'relatedBrochures',
-      type: 'relationship',
-      relationTo: 'brochures',
-      hasMany: true,
-      label: 'Brochures from this research',
-    },
-    {
-      name: 'relatedTheses',
-      type: 'relationship',
-      relationTo: 'theses',
-      hasMany: true,
-      label: 'Theses from this research',
-    },
-    {
-      name: 'relatedAudiovisual',
-      type: 'relationship',
-      relationTo: 'audiovisual',
-      hasMany: true,
-      label: 'Audiovisual from this research',
-    },
-    {
-      name: 'relatedPosters',
-      type: 'relationship',
-      relationTo: 'posters',
-      hasMany: true,
-      label: 'Posters from this research',
-    },
-    {
-      name: 'relatedClippings',
-      type: 'relationship',
-      relationTo: 'clippings',
-      hasMany: true,
-      label: 'Press clippings about this research',
-    },
-    {
-      name: 'relatedPhotos',
-      type: 'relationship',
-      relationTo: 'photos',
-      hasMany: true,
-      label: 'Photos from this research',
-    },
-    {
-      name: 'relatedForums',
-      type: 'relationship',
-      relationTo: 'forums',
-      hasMany: true,
-      label: 'Forums from this research',
-      admin: {
-        description:
-          'Seminars, roundtables, workshops, and conferences that came out of this research.',
+      {
+        name: 'relatedPapers',
+        type: 'relationship',
+        relationTo: 'papers',
+        hasMany: true,
+        label: 'Papers from this research',
       },
-    },
+      {
+        name: 'relatedReports',
+        type: 'relationship',
+        relationTo: 'reports',
+        hasMany: true,
+        label: 'Reports from this research',
+      },
+      {
+        name: 'relatedBrochures',
+        type: 'relationship',
+        relationTo: 'brochures',
+        hasMany: true,
+        label: 'Brochures from this research',
+      },
+      {
+        name: 'relatedTheses',
+        type: 'relationship',
+        relationTo: 'theses',
+        hasMany: true,
+        label: 'Theses from this research',
+      },
+      {
+        name: 'relatedAudiovisual',
+        type: 'relationship',
+        relationTo: 'audiovisual',
+        hasMany: true,
+        label: 'Audiovisual from this research',
+      },
+      {
+        name: 'relatedPosters',
+        type: 'relationship',
+        relationTo: 'posters',
+        hasMany: true,
+        label: 'Posters from this research',
+      },
+      {
+        name: 'relatedClippings',
+        type: 'relationship',
+        relationTo: 'clippings',
+        hasMany: true,
+        label: 'Press clippings about this research',
+      },
+      {
+        name: 'relatedPhotos',
+        type: 'relationship',
+        relationTo: 'photos',
+        hasMany: true,
+        label: 'Photos from this research',
+      },
+      {
+        name: 'relatedForums',
+        type: 'relationship',
+        relationTo: 'forums',
+        hasMany: true,
+        label: 'Forums from this research',
+        admin: {
+          description:
+            'Seminars, roundtables, workshops, and conferences that came out of this research.',
+        },
+      },
+    ]),
   ],
 }

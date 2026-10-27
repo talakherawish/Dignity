@@ -1,5 +1,6 @@
 import type { CollectionConfig } from 'payload'
 import { mirrorLinksOnChange, mirrorLinksOnDelete } from '../hooks/syncResearchLinks'
+import { section } from '../lib/adminLayout'
 
 export const Forums: CollectionConfig = {
   slug: 'forums',
@@ -53,161 +54,171 @@ export const Forums: CollectionConfig = {
     delete: ({ req }) => !!req.user,
   },
   fields: [
-    {
-      name: 'title',
-      type: 'text',
-      required: true,
-      label: 'Title (English)',
-    },
-    {
-      name: 'titleAr',
-      type: 'text',
-      label: 'Title (Arabic / العنوان بالعربية)',
-      admin: { rtl: true },
-    },
-    {
-      name: 'date',
-      type: 'date',
-      required: true,
-    },
-    /**
-     * Which of the five sub-types this is. Not required -- a handful of
-     * documents migrated in from the old Meetings collection were left
-     * without this set, since guessing their type risked mischaracterizing
-     * real events, and a required field blocks saving *any* change to a
-     * document (including unpublishing it) until it's filled in. It's what
-     * the filter tabs on Activities -> Forums key off; left blank, an entry
-     * still shows under "All" there, just not under a specific tab.
-     */
-    {
-      name: 'forumType',
-      type: 'select',
-      label: 'Forum Type',
-      options: [
-        { label: 'Seminar', value: 'seminar' },
-        { label: 'Roundtable', value: 'roundtable' },
-        { label: 'Workshop', value: 'workshop' },
-        { label: 'Conference', value: 'conference' },
-        { label: 'Encounters', value: 'encounters' },
-      ],
-    },
-    {
-      name: 'content',
-      type: 'richText',
-      label: 'Content (English)',
-    },
-    {
-      name: 'contentAr',
-      type: 'richText',
-      label: 'Content (Arabic / المحتوى بالعربية)',
-    },
-    {
-      name: 'image',
-      type: 'upload',
-      relationTo: 'media',
-      label: 'Featured Image (optional)',
-    },
-    /**
-     * Extra images, beyond the featured one. Optional and often empty, which is
-     * why the website shows the whole set only once a visitor opens the entry
-     * -- the Forums list stays an even list of dates and titles whether an
-     * entry carries photographs or not.
-     */
-    {
-      name: 'gallery',
-      type: 'array',
-      label: 'More Images (optional)',
-      labels: { singular: 'Image', plural: 'Images' },
-      admin: {
-        description:
-          'Additional photographs for this entry. They appear only inside it, after a visitor opens it.',
+    section('Title, Date and Type', [
+      {
+        name: 'title',
+        type: 'text',
+        required: true,
+        label: 'Title (English)',
       },
-      fields: [
-        {
-          name: 'image',
-          type: 'upload',
-          relationTo: 'media',
-          required: true,
-        },
-        {
-          name: 'caption',
-          type: 'text',
-          label: 'Caption (English)',
-        },
-        {
-          name: 'captionAr',
-          type: 'text',
-          label: 'Caption (Arabic / التسمية بالعربية)',
-          admin: { rtl: true },
-        },
-      ],
-    },
-    /**
-     * Files that belong to this forum -- a programme, a call for papers, a
-     * concept note, the slides someone presented. Each row is the file plus
-     * its name in both languages, and nothing else: the name is what a
-     * visitor reads under the card, so a row with a file and no name would
-     * show as an unlabelled thumbnail.
-     *
-     * Separate from Publications on purpose. A publication is a piece of work
-     * in its own right, listed and searchable across the site; these are
-     * papers attached to one event, shown only inside it.
-     */
-    {
-      name: 'attachments',
-      type: 'array',
-      label: 'Additional Files (optional)',
-      labels: { singular: 'File', plural: 'Files' },
-      admin: {
-        description:
-          'Documents attached to this forum -- programme, concept note, slides, anything. They appear under Additional Information inside the entry, after a visitor opens it.',
+      {
+        name: 'titleAr',
+        type: 'text',
+        label: 'Title (Arabic / العنوان بالعربية)',
+        admin: { rtl: true },
       },
-      fields: [
-        {
-          name: 'file',
-          type: 'upload',
-          relationTo: 'media',
-          required: true,
-          label: 'File',
-        },
-        {
-          name: 'title',
-          type: 'text',
-          required: true,
-          label: 'Title (English)',
-        },
-        {
-          name: 'titleAr',
-          type: 'text',
-          label: 'Title (Arabic / العنوان بالعربية)',
-          admin: { rtl: true },
-        },
-      ],
-    },
-    /**
-     * Who took part. Pick people who are already in the Working Group
-     * collection, or add a new person here without leaving this page -- the
-     * picker's "Create New" opens the full Participant form in a drawer.
-     *
-     * Someone created that way starts out kept off the public Working Group
-     * page (see `hideFromWorkingGroupPage` on Participants, which is checked
-     * by default for every new person). They still show here, and their
-     * profile is still reachable from this forum, so adding a conference
-     * speaker doesn't put them on a page meant for the initiative's own
-     * people. Unchecking that box -- in the drawer while adding them, or
-     * later in Working Group -- is what lists them there.
-     */
-    {
-      name: 'participants',
-      type: 'relationship',
-      relationTo: 'participants',
-      hasMany: true,
-      label: 'Participants',
-      admin: {
-        description:
-          'People who took part in this forum. Pick existing entries, or use Create New to add someone without leaving this page. A person added here is kept off the public Working Group page unless you uncheck "Keep off the Working Group page" on their profile.',
+      {
+        name: 'date',
+        type: 'date',
+        required: true,
       },
-    },
+      /**
+       * Which of the five sub-types this is. Not required -- a handful of
+       * documents migrated in from the old Meetings collection were left
+       * without this set, since guessing their type risked mischaracterizing
+       * real events, and a required field blocks saving *any* change to a
+       * document (including unpublishing it) until it's filled in. It's what
+       * the filter tabs on Activities -> Forums key off; left blank, an entry
+       * still shows under "All" there, just not under a specific tab.
+       */
+      {
+        name: 'forumType',
+        type: 'select',
+        label: 'Forum Type',
+        options: [
+          { label: 'Seminar', value: 'seminar' },
+          { label: 'Roundtable', value: 'roundtable' },
+          { label: 'Workshop', value: 'workshop' },
+          { label: 'Conference', value: 'conference' },
+          { label: 'Encounters', value: 'encounters' },
+        ],
+      },
+    ]),
+    section('Write-up and Cover Image', [
+      {
+        name: 'content',
+        type: 'richText',
+        label: 'Content (English)',
+      },
+      {
+        name: 'contentAr',
+        type: 'richText',
+        label: 'Content (Arabic / المحتوى بالعربية)',
+      },
+      {
+        name: 'image',
+        type: 'upload',
+        relationTo: 'media',
+        label: 'Featured Image (optional)',
+      },
+      /**
+       * Extra images, beyond the featured one. Optional and often empty, which is
+       * why the website shows the whole set only once a visitor opens the entry
+       * -- the Forums list stays an even list of dates and titles whether an
+       * entry carries photographs or not.
+       */
+    ]),
+    section('Gallery', [
+      {
+        name: 'gallery',
+        type: 'array',
+        label: 'More Images (optional)',
+        labels: { singular: 'Image', plural: 'Images' },
+        admin: {
+          description:
+            'Additional photographs for this entry. They appear only inside it, after a visitor opens it.',
+        },
+        fields: [
+          {
+            name: 'image',
+            type: 'upload',
+            relationTo: 'media',
+            required: true,
+          },
+          {
+            name: 'caption',
+            type: 'text',
+            label: 'Caption (English)',
+          },
+          {
+            name: 'captionAr',
+            type: 'text',
+            label: 'Caption (Arabic / التسمية بالعربية)',
+            admin: { rtl: true },
+          },
+        ],
+      },
+      /**
+       * Files that belong to this forum -- a programme, a call for papers, a
+       * concept note, the slides someone presented. Each row is the file plus
+       * its name in both languages, and nothing else: the name is what a
+       * visitor reads under the card, so a row with a file and no name would
+       * show as an unlabelled thumbnail.
+       *
+       * Separate from Publications on purpose. A publication is a piece of work
+       * in its own right, listed and searchable across the site; these are
+       * papers attached to one event, shown only inside it.
+       */
+    ]),
+    section('Attachments', [
+      {
+        name: 'attachments',
+        type: 'array',
+        label: 'Additional Files (optional)',
+        labels: { singular: 'File', plural: 'Files' },
+        admin: {
+          description:
+            'Documents attached to this forum -- programme, concept note, slides, anything. They appear under Additional Information inside the entry, after a visitor opens it.',
+        },
+        fields: [
+          {
+            name: 'file',
+            type: 'upload',
+            relationTo: 'media',
+            required: true,
+            label: 'File',
+          },
+          {
+            name: 'title',
+            type: 'text',
+            required: true,
+            label: 'Title (English)',
+          },
+          {
+            name: 'titleAr',
+            type: 'text',
+            label: 'Title (Arabic / العنوان بالعربية)',
+            admin: { rtl: true },
+          },
+        ],
+      },
+      /**
+       * Who took part. Pick people who are already in the Working Group
+       * collection, or add a new person here without leaving this page -- the
+       * picker's "Create New" opens the full Participant form in a drawer.
+       *
+       * Someone created that way starts out kept off the public Working Group
+       * page (see `hideFromWorkingGroupPage` on Participants, which is checked
+       * by default for every new person). They still show here, and their
+       * profile is still reachable from this forum, so adding a conference
+       * speaker doesn't put them on a page meant for the initiative's own
+       * people. Unchecking that box -- in the drawer while adding them, or
+       * later in Working Group -- is what lists them there.
+       */
+    ]),
+    section('People', [
+      {
+        name: 'participants',
+        type: 'relationship',
+        relationTo: 'participants',
+        hasMany: true,
+        label: 'Participants',
+        admin: {
+          description:
+            'People who took part in this forum. Pick existing entries, or use Create New to add someone without leaving this page. A person added here is kept off the public Working Group page unless you uncheck "Keep off the Working Group page" on their profile.',
+        },
+      },
+    ]),
     {
       name: 'researchLines',
       type: 'relationship',
