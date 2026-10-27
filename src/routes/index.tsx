@@ -13,12 +13,13 @@ import {
   mediaSrcSet,
   mediaUrl,
   populated,
+  youtubeThumbnail,
   PARTICIPANT_ROLE_LABEL,
   type PayloadParticipant,
   type PayloadMedia,
   type PayloadPublication,
 } from "@/lib/payload";
-import { newsQuery, participantsQuery, publicationsQuery, siteSettingsQuery } from "@/lib/queries";
+import { homepageQuery, newsQuery, participantsQuery, publicationsQuery } from "@/lib/queries";
 
 /**
  * Shared by every "one screen" section on this page: the hero and News &
@@ -69,6 +70,7 @@ const NEWS_SECTION_HEIGHT = `${PHONE_SCREEN_MIN} md:h-[calc(100svh-82px)] lg:h-[
 export const Route = createFileRoute("/")({
   loader: async ({ context }) => {
     await Promise.all([
+      context.queryClient.ensureQueryData(homepageQuery),
       context.queryClient.ensureQueryData(newsQuery),
       context.queryClient.ensureQueryData(participantsQuery),
       context.queryClient.ensureQueryData(publicationsQuery("posters")),
@@ -119,9 +121,8 @@ function mapPayloadToTeamPerson(p: PayloadParticipant): TeamPerson {
 
 // ── Latest news and announcements: two independent halves ─────────────────
 /**
- * The text list: a static, numbered list of the imageless entries (Payload's
- * `displayMode: "textOnly"`). Nothing here rotates -- it's a plain index, not
- * a slideshow. Which physical side it renders on depends on language --
+ * The text list: a static, numbered list of entries shown by title only.
+ * Nothing here rotates -- it's a plain index, not a slideshow. Which physical side it renders on depends on language --
  * see LatestNewsAndAnnouncements below.
  */
 const HEADLINE_COUNT = 4;
@@ -231,19 +232,26 @@ function LatestNewsAndAnnouncements() {
   const { isArabic } = useLanguage();
 
   const { data: payloadNews = [] } = useQuery(newsQuery);
+  const { data: homepage } = useQuery(homepageQuery);
+
+  // Each side shows what the editors picked for it in Site Settings ->
+  // Homepage, in the order they put it in. A side with nothing picked shows
+  // the newest entries instead: those with a cover image in the carousel, and
+  // in the list the newest without one, padded with the rest so a short list
+  // doesn't sit beside a full carousel looking broken.
+  const pickedCarousel = populated(homepage?.homeNewsCarousel)
+    .map(mapPayloadNews)
+    .filter((a) => a.image);
+  const pickedHeadlines = populated(homepage?.homeNewsHeadlines).map(mapPayloadNews);
   const articles = payloadNews.map(mapPayloadNews);
-  const textOnlyArticles = articles.filter((a) => a.displayMode === "textOnly");
-  const carouselArticles = articles
-    .filter((a) => a.displayMode === "withImage" && a.image)
-    .slice(0, CAROUSEL_COUNT);
-  // The left column prefers dedicated text-only entries, but a handful of
-  // those next to a full CAROUSEL_COUNT carousel reads as broken, not sparse
-  // -- so once those run out, pad with whatever's left (image entries too,
-  // shown here without their image) up to HEADLINE_COUNT.
-  const headlineArticles = [
-    ...textOnlyArticles,
-    ...articles.filter((a) => !textOnlyArticles.includes(a)),
-  ].slice(0, HEADLINE_COUNT);
+  const carouselArticles = (
+    pickedCarousel.length > 0 ? pickedCarousel : articles.filter((a) => a.image)
+  ).slice(0, CAROUSEL_COUNT);
+  const headlineArticles = (
+    pickedHeadlines.length > 0
+      ? pickedHeadlines
+      : [...articles.filter((a) => !a.image), ...articles.filter((a) => a.image)]
+  ).slice(0, HEADLINE_COUNT);
 
   const hasHeadlines = headlineArticles.length > 0;
   const hasCarousel = carouselArticles.length > 0;
@@ -251,8 +259,7 @@ function LatestNewsAndAnnouncements() {
 
   // Split only once both sides actually have something to show -- otherwise
   // the row is a single full-width block, so an empty side never sits there
-  // as wasted space (e.g. before any entry has been tagged textOnly, or if
-  // every current entry happens to have a cover image).
+  // as wasted space.
   if (hasHeadlines && !hasCarousel) {
     return <HeadlineList articles={headlineArticles} />;
   }
@@ -408,20 +415,21 @@ function TeamModal({
 
 // ── Compact editorial team row ────────────────────────────────────────────
 function TeamSection() {
-  const { t, lang, isArabic } = useLanguage();
+  const { t, tOptional, lang, isArabic } = useLanguage();
   const [selected, setSelected] = useState<TeamPerson | null>(null);
+  const eyebrow = tOptional("team.eyebrow");
 
   const { data: payloadParticipants = [] } = useQuery(participantsQuery);
-  const { data: siteSettings } = useQuery(siteSettingsQuery);
+  const { data: homepage } = useQuery(homepageQuery);
 
-  // An editor's picks in Site Settings -> Homepage -> "Featured on Homepage"
+  // An editor's picks in Site Settings -> Homepage -> Meet the Participants
   // win when there are any; `populated()` drops a dangling reference (the
   // person was deleted, or is unpublished and this is an anonymous request)
   // rather than crashing on the bare id string Payload leaves in its place.
   // No picks yet (a fresh site, or every pick fell through) falls back to the
   // first three people in the Working Group, same as before this setting
   // existed.
-  const featured = populated(siteSettings?.featuredParticipants).slice(0, 3);
+  const featured = populated(homepage?.featuredParticipants).slice(0, 3);
   const members: TeamPerson[] = (
     featured.length > 0 ? featured : payloadParticipants.slice(0, 3)
   ).map(mapPayloadToTeamPerson);
@@ -435,14 +443,16 @@ function TeamSection() {
             the bottom side keeps roughly its old amount, tightened further
             by the button's own mt-6 below. */}
         <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-10 text-center">
-          <div
-            className={
-              "uppercase tracking-[0.22em] text-[color:var(--brand-magenta)] font-semibold mb-2 " +
-              (isArabic ? "text-[14px]" : "text-[12px]")
-            }
-          >
-            {t("team.eyebrow")}
-          </div>
+          {eyebrow && (
+            <div
+              className={
+                "uppercase tracking-[0.22em] text-[color:var(--brand-magenta)] font-semibold mb-2 " +
+                (isArabic ? "text-[14px]" : "text-[12px]")
+              }
+            >
+              {eyebrow}
+            </div>
+          )}
           <h2
             className={
               "font-serif text-2xl text-primary leading-tight mb-10 " +
@@ -512,7 +522,7 @@ function TeamSection() {
   );
 }
 
-// ── Posters showcase: a horizontally-scrollable teaser for /publications/posters
+// ── Publications showcase: a horizontally-scrollable teaser for /publications
 const POSTER_COUNT = 10;
 
 /** Same preview-source fallback PublicationsPage uses: a real image if the
@@ -527,16 +537,27 @@ function PostersShowcase() {
   const scrollerRef = useRef<HTMLDivElement>(null);
 
   const { data: payloadPosters = [] } = useQuery(publicationsQuery("posters"));
+  const { data: homepage } = useQuery(homepageQuery);
 
-  const posters = payloadPosters
-    .map((item) => ({
-      id: item.id,
-      title: item.title,
-      titleAr: item.titleAr,
-      image: mediaUrl(posterPreview(item)),
-      imageSrcSet: mediaSrcSet(posterPreview(item)),
-      fileUrl: mediaUrl(item.file),
-    }))
+  // The publications picked in Site Settings -> Homepage, from any of the
+  // publication collections, in the order picked; the newest posters if none
+  // are. A video has no upload to preview, so it shows its YouTube still and
+  // opens the video.
+  const picked = (homepage?.homePublications ?? []).flatMap((pick) =>
+    typeof pick.value === "object" ? [pick.value] : [],
+  );
+  const posters = (picked.length > 0 ? picked : payloadPosters)
+    .map((item) => {
+      const preview = posterPreview(item);
+      return {
+        id: item.id,
+        title: item.title,
+        titleAr: item.titleAr,
+        image: preview ? mediaUrl(preview) : youtubeThumbnail(item.link),
+        imageSrcSet: preview ? mediaSrcSet(preview) : undefined,
+        fileUrl: mediaUrl(item.file) || item.link,
+      };
+    })
     .filter((p) => p.image)
     .slice(0, POSTER_COUNT);
 
@@ -718,7 +739,8 @@ function PostersShowcase() {
  * height, since only the hero sits directly under it.
  */
 function HeroVideo() {
-  const { t, isArabic } = useLanguage();
+  const { t, tOptional, isArabic } = useLanguage();
+  const eyebrow = tOptional("hero.eyebrow");
   const videoRef = useRef<HTMLVideoElement>(null);
 
   // Belt-and-suspenders alongside the autoPlay attribute: some mobile
@@ -801,14 +823,16 @@ function HeroVideo() {
             simply fades the whole text block in as soon as the video mounts
             rather than waiting for a scroll. */}
         <Reveal className="flex flex-col items-center">
-          <p
-            className={
-              "uppercase tracking-[0.22em] text-white/90 font-semibold mb-3 " +
-              (isArabic ? "text-[14px] md:text-[15px]" : "text-[12px] md:text-[13px]")
-            }
-          >
-            {t("hero.eyebrow")}
-          </p>
+          {eyebrow && (
+            <p
+              className={
+                "uppercase tracking-[0.22em] text-white/90 font-semibold mb-3 " +
+                (isArabic ? "text-[14px] md:text-[15px]" : "text-[12px] md:text-[13px]")
+              }
+            >
+              {eyebrow}
+            </p>
+          )}
           {/*
            * whitespace-pre-line so a line break typed into the Hero Title or
            * Hero Description in Site Settings is the line break shown here.

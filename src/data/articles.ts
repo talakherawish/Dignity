@@ -13,8 +13,6 @@ export type Article = {
   title: Record<ArticleLang, string>;
   excerpt: Record<ArticleLang, string>;
   body: Record<ArticleLang, string[]>;
-  /** Which side of the homepage split this belongs in. */
-  displayMode: "withImage" | "textOnly";
 };
 
 /** Adapt a Payload news entry to the local Article shape the homepage carousel and the news listing render. */
@@ -34,9 +32,6 @@ export function mapPayloadNews(pa: PayloadNews): Article {
       en: extractText(pa.content),
       ar: extractText(pa.contentAr),
     },
-    // Entries saved before the field existed have no displayMode -- fall back
-    // to whether an image was uploaded, which is what the field replaces.
-    displayMode: pa.displayMode ?? (image ? "withImage" : "textOnly"),
   };
 }
 

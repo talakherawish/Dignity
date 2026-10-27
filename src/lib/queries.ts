@@ -9,6 +9,7 @@ import {
   fetchDatabases,
   fetchDisclaimer,
   fetchForums,
+  fetchHomepage,
   fetchNews,
   fetchPageText,
   fetchParticipants,
@@ -51,6 +52,11 @@ const orNull =
 export const siteSettingsQuery = queryOptions({
   queryKey: ["site-settings"],
   queryFn: fetchSiteSettings,
+});
+
+export const homepageQuery = queryOptions({
+  queryKey: ["homepage"],
+  queryFn: fetchHomepage,
 });
 
 export const aboutInitiativeQuery = queryOptions({

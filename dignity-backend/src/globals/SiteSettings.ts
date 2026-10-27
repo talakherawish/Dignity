@@ -2,12 +2,49 @@ import type { GlobalConfig, Field } from 'payload'
 
 const MAX_FEATURED_PARTICIPANTS = 3
 
+// How many of each the homepage has room for -- the same numbers the website
+// uses (HEADLINE_COUNT, CAROUSEL_COUNT and POSTER_COUNT in its routes/index.tsx).
+const MAX_HOME_NEWS_HEADLINES = 4
+const MAX_HOME_NEWS_CAROUSEL = 6
+const MAX_HOME_PUBLICATIONS = 10
+
+const PUBLICATION_COLLECTIONS = [
+  'books',
+  'papers',
+  'reports',
+  'brochures',
+  'theses',
+  'audiovisual',
+  'posters',
+] as const
+
+/** The English and Arabic wording of one label, side by side. */
 function pair(name: string, label: string, textarea?: boolean): Field[] {
   const type = textarea ? 'textarea' : 'text'
   return [
-    { name, type, label: label + ' (English)' } as Field,
-    { name: name + 'Ar', type, label: label + ' (Arabic)', admin: { rtl: true } } as Field,
+    {
+      type: 'row',
+      fields: [
+        { name, type, label: label + ' (English)', admin: { width: '50%' } } as Field,
+        {
+          name: name + 'Ar',
+          type,
+          label: label + ' (Arabic)',
+          admin: { width: '50%', rtl: true },
+        } as Field,
+      ],
+    },
   ]
+}
+
+/** One section of the homepage, under its own heading, in page order. */
+function section(label: string, fields: Field[]): Field {
+  return { type: 'collapsible', label, admin: { initCollapsed: false }, fields }
+}
+
+function atMost(max: number, what: string) {
+  return (value: unknown) =>
+    Array.isArray(value) && value.length > max ? `Choose at most ${max} ${what}.` : true
 }
 
 export const SiteSettings: GlobalConfig = {
@@ -73,33 +110,78 @@ export const SiteSettings: GlobalConfig = {
         },
         {
           label: 'Homepage',
+          // Top to bottom, the way the homepage reads. An eyebrow left blank
+          // is left off the page.
           fields: [
-            ...pair('heroEyebrow', 'Hero Eyebrow Label'),
-            ...pair('heroTitle', 'Hero Title', true),
-            ...pair('heroDesc', 'Hero Description', true),
-            ...pair('teamEyebrow', 'Team Section Eyebrow'),
-            ...pair('teamTitle', 'Team Section Title'),
-            {
-              name: 'featuredParticipants',
-              type: 'relationship',
-              relationTo: 'participants',
-              hasMany: true,
-              label: `Featured on Homepage (up to ${MAX_FEATURED_PARTICIPANTS})`,
-              filterOptions: {
-                _status: { equals: 'published' },
+            section('Opening Video', [
+              ...pair('heroEyebrow', 'Eyebrow'),
+              ...pair('heroTitle', 'Title', true),
+              ...pair('heroDesc', 'Description', true),
+            ]),
+            section('Latest News and Announcements', [
+              ...pair('newsTitle', 'Heading'),
+              ...pair('newsViewAll', 'View All Link'),
+              // Side by side as on the English page: the photo carousel on
+              // the left, the numbered list of titles on the right. Nothing
+              // picked fills each side with the newest entries instead.
+              {
+                type: 'row',
+                fields: [
+                  {
+                    name: 'homeNewsCarousel',
+                    type: 'relationship',
+                    relationTo: 'news',
+                    hasMany: true,
+                    label: `With Image (up to ${MAX_HOME_NEWS_CAROUSEL})`,
+                    filterOptions: {
+                      _status: { equals: 'published' },
+                      image: { exists: true },
+                    },
+                    validate: atMost(MAX_HOME_NEWS_CAROUSEL, 'entries with an image'),
+                    admin: { width: '50%' },
+                  },
+                  {
+                    name: 'homeNewsHeadlines',
+                    type: 'relationship',
+                    relationTo: 'news',
+                    hasMany: true,
+                    label: `Title Only (up to ${MAX_HOME_NEWS_HEADLINES})`,
+                    filterOptions: { _status: { equals: 'published' } },
+                    validate: atMost(MAX_HOME_NEWS_HEADLINES, 'title-only entries'),
+                    admin: { width: '50%' },
+                  },
+                ],
               },
-              admin: {
-                description: `Who shows in the "Meet the Participants" row on the homepage. Pick up to ${MAX_FEATURED_PARTICIPANTS} people from the Working Group -- drag to reorder, or remove one and add another to swap them out. Leave empty and the homepage falls back to the first ${MAX_FEATURED_PARTICIPANTS} people in the Working Group automatically.`,
+            ]),
+            section('A Look at Our Publications', [
+              ...pair('postersTitle', 'Heading'),
+              ...pair('postersViewAll', 'View All Link'),
+              {
+                name: 'homePublications',
+                type: 'relationship',
+                relationTo: [...PUBLICATION_COLLECTIONS],
+                hasMany: true,
+                label: `Publications, in order (up to ${MAX_HOME_PUBLICATIONS})`,
+                filterOptions: { _status: { equals: 'published' } },
+                validate: atMost(MAX_HOME_PUBLICATIONS, 'publications'),
               },
-              validate: (value: unknown) => {
-                if (Array.isArray(value) && value.length > MAX_FEATURED_PARTICIPANTS) {
-                  return `Choose at most ${MAX_FEATURED_PARTICIPANTS} people to feature on the homepage.`
-                }
-                return true
+            ]),
+            section('Meet the Participants', [
+              ...pair('teamEyebrow', 'Eyebrow'),
+              ...pair('teamTitle', 'Heading'),
+              {
+                name: 'featuredParticipants',
+                type: 'relationship',
+                relationTo: 'participants',
+                hasMany: true,
+                label: `Participants, in order (up to ${MAX_FEATURED_PARTICIPANTS})`,
+                filterOptions: {
+                  _status: { equals: 'published' },
+                },
+                validate: atMost(MAX_FEATURED_PARTICIPANTS, 'people'),
               },
-            },
-            ...pair('teamBtn', 'Team Section Button'),
-            ...pair('newsViewAll', 'View All Link Text'),
+              ...pair('teamBtn', 'Button'),
+            ]),
           ],
         },
         {

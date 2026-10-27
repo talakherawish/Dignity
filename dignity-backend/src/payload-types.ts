@@ -442,7 +442,6 @@ export interface News {
     [k: string]: unknown;
   } | null;
   image?: (string | null) | Media;
-  displayMode?: ('withImage' | 'textOnly') | null;
   /**
    * Read-only. Reflects the Publish / Save as Draft state above.
    */
@@ -2169,7 +2168,6 @@ export interface NewsSelect<T extends boolean = true> {
   content?: T;
   contentAr?: T;
   image?: T;
-  displayMode?: T;
   publicationStatus?: T;
   updatedBy?: T;
   createdBy?: T;
@@ -2917,18 +2915,55 @@ export interface SiteSetting {
   heroTitleAr?: string | null;
   heroDesc?: string | null;
   heroDescAr?: string | null;
+  newsTitle?: string | null;
+  newsTitleAr?: string | null;
+  newsViewAll?: string | null;
+  newsViewAllAr?: string | null;
+  homeNewsCarousel?: (string | News)[] | null;
+  homeNewsHeadlines?: (string | News)[] | null;
+  postersTitle?: string | null;
+  postersTitleAr?: string | null;
+  postersViewAll?: string | null;
+  postersViewAllAr?: string | null;
+  homePublications?:
+    | (
+        | {
+            relationTo: 'books';
+            value: string | Book;
+          }
+        | {
+            relationTo: 'papers';
+            value: string | Paper;
+          }
+        | {
+            relationTo: 'reports';
+            value: string | Report;
+          }
+        | {
+            relationTo: 'brochures';
+            value: string | Brochure;
+          }
+        | {
+            relationTo: 'theses';
+            value: string | Thesis;
+          }
+        | {
+            relationTo: 'audiovisual';
+            value: string | Audiovisual;
+          }
+        | {
+            relationTo: 'posters';
+            value: string | Poster;
+          }
+      )[]
+    | null;
   teamEyebrow?: string | null;
   teamEyebrowAr?: string | null;
   teamTitle?: string | null;
   teamTitleAr?: string | null;
-  /**
-   * Who shows in the "Meet the Participants" row on the homepage. Pick up to 3 people from the Working Group -- drag to reorder, or remove one and add another to swap them out. Leave empty and the homepage falls back to the first 3 people in the Working Group automatically.
-   */
   featuredParticipants?: (string | Participant)[] | null;
   teamBtn?: string | null;
   teamBtnAr?: string | null;
-  newsViewAll?: string | null;
-  newsViewAllAr?: string | null;
   footerContact?: string | null;
   footerContactAr?: string | null;
   footerUniversity?: string | null;
@@ -3072,6 +3107,17 @@ export interface SiteSettingsSelect<T extends boolean = true> {
   heroTitleAr?: T;
   heroDesc?: T;
   heroDescAr?: T;
+  newsTitle?: T;
+  newsTitleAr?: T;
+  newsViewAll?: T;
+  newsViewAllAr?: T;
+  homeNewsCarousel?: T;
+  homeNewsHeadlines?: T;
+  postersTitle?: T;
+  postersTitleAr?: T;
+  postersViewAll?: T;
+  postersViewAllAr?: T;
+  homePublications?: T;
   teamEyebrow?: T;
   teamEyebrowAr?: T;
   teamTitle?: T;
@@ -3079,8 +3125,6 @@ export interface SiteSettingsSelect<T extends boolean = true> {
   featuredParticipants?: T;
   teamBtn?: T;
   teamBtnAr?: T;
-  newsViewAll?: T;
-  newsViewAllAr?: T;
   footerContact?: T;
   footerContactAr?: T;
   footerUniversity?: T;

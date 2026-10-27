@@ -46,8 +46,6 @@ export type PayloadNews = {
   content?: unknown;
   contentAr?: unknown;
   image?: PayloadMedia;
-  /** Which side of the homepage split this appears in -- see mapPayloadNews. */
-  displayMode?: "withImage" | "textOnly";
 };
 
 type PayloadGalleryItem = {
@@ -499,7 +497,14 @@ export type PayloadPage = {
  * A dangling reference (the participant was deleted, or is unpublished and this
  * request is anonymous) comes back as a bare id string -- read it through `populated()`.
  */
-export type PayloadSiteSettings = Record<string, string | undefined> & {
+/** Site Settings' wording: menu labels, homepage headings, footer, UI labels. */
+export type PayloadSiteSettings = Record<string, string | undefined>;
+
+/** What the editors picked for the homepage, in Site Settings -> Homepage. */
+export type PayloadHomepage = {
+  homeNewsCarousel?: (PayloadNews | string)[];
+  homeNewsHeadlines?: (PayloadNews | string)[];
+  homePublications?: { relationTo: PublicationCollection; value: PayloadPublication | string }[];
   featuredParticipants?: (PayloadParticipant | string)[];
 };
 
@@ -1098,15 +1103,31 @@ export const fetchPrivacyPolicy = () => fetchSinglePage("privacy-policy");
 export const fetchPartners = () => fetchCollection<PayloadPartner>("partner-items", { depth: "1" });
 
 /**
- * Fetch the Site Settings global (nav labels, hero, footer, small UI labels,
- * featured homepage participants). Returns null if unreachable.
- *
- * depth: 2, not the 0 every other field here would be happy with --
- * featuredParticipants needs it to reach a participant's photo (site-settings
- * -> participant (1) -> photo (2)) as a media object rather than a bare id.
+ * Fetch the Site Settings global's wording (nav labels, homepage headings,
+ * footer, small UI labels), loaded on every page. Returns null if unreachable.
+ * depth 0: the homepage's picks are fetched on their own by fetchHomepage.
  */
 export async function fetchSiteSettings(): Promise<PayloadSiteSettings | null> {
-  return (await getJson<PayloadSiteSettings>("globals/site-settings?depth=2")) ?? null;
+  return (await getJson<PayloadSiteSettings>("globals/site-settings?depth=0")) ?? null;
+}
+
+const HOMEPAGE_PICKS = [
+  "homeNewsCarousel",
+  "homeNewsHeadlines",
+  "homePublications",
+  "featuredParticipants",
+];
+
+/**
+ * The news, publications and participants picked for the homepage in Site
+ * Settings, in the order picked. depth 3 reaches a publication's preview: site
+ * settings -> publication (1) -> file (2) -> its PDF thumbnail (3). Anything
+ * unpublished since it was picked comes back as a bare id, which populated()
+ * drops.
+ */
+export async function fetchHomepage(): Promise<PayloadHomepage | null> {
+  const select = HOMEPAGE_PICKS.map((field) => `select[${field}]=true`).join("&");
+  return (await getJson<PayloadHomepage>(`globals/site-settings?depth=3&${select}`)) ?? null;
 }
 
 type PayloadPageText = {

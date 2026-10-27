@@ -9,6 +9,12 @@ interface LanguageContextValue {
   lang: Language;
   setLang: (lang: Language) => void;
   t: (key: TranslationKey) => string;
+  /**
+   * Like t, but for wording an editor can leave blank in Site Settings to take
+   * it off the page (the eyebrows): blank there gives "". The built-in wording
+   * is only used if Site Settings couldn't be loaded at all.
+   */
+  tOptional: (key: TranslationKey) => string;
   dir: "ltr" | "rtl";
   isArabic: boolean;
 }
@@ -359,7 +365,10 @@ const SITE_SETTINGS_KEY_MAP: Partial<Record<TranslationKey, string>> = {
   "hero.eyebrow": "heroEyebrow",
   "hero.title": "heroTitle",
   "hero.desc": "heroDesc",
+  "news.title": "newsTitle",
   "news.viewAll": "newsViewAll",
+  "posters.title": "postersTitle",
+  "posters.viewAll": "postersViewAll",
   "news.readMore": "newsReadMore",
   "news.collapse": "newsCollapse",
   "content.untranslated": "contentUntranslated",
@@ -446,9 +455,18 @@ export function LanguageProvider({
     [lang, isArabic, overrides],
   );
 
+  const tOptional = useCallback(
+    (key: TranslationKey) => {
+      const base = SITE_SETTINGS_KEY_MAP[key];
+      if (base && overrides) return overrides[isArabic ? `${base}Ar` : base]?.trim() ?? "";
+      return t(key);
+    },
+    [isArabic, overrides, t],
+  );
+
   const value = useMemo<LanguageContextValue>(
-    () => ({ lang, setLang, t, dir, isArabic }),
-    [lang, setLang, t, dir, isArabic],
+    () => ({ lang, setLang, t, tOptional, dir, isArabic }),
+    [lang, setLang, t, tOptional, dir, isArabic],
   );
 
   return <LanguageContext.Provider value={value}>{children}</LanguageContext.Provider>;

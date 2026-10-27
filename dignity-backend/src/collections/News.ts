@@ -73,20 +73,5 @@ export const News: CollectionConfig = {
       relationTo: 'media',
       label: 'Cover Image',
     },
-    {
-      name: 'displayMode',
-      type: 'select',
-      label: 'Homepage Display',
-      // No defaultValue on purpose: Payload fills a field's defaultValue in
-      // for *every* existing document that doesn't have it stored, not just
-      // new ones -- so a static default here would have tagged every
-      // already-published entry (including ones with no cover image) as
-      // "withImage". Left blank, the frontend infers it per-item instead
-      // (has an image -> withImage, otherwise textOnly -- see mapPayloadNews).
-      options: [
-        { label: 'With Image (photo carousel)', value: 'withImage' },
-        { label: 'Text Only (headline list)', value: 'textOnly' },
-      ],
-    },
   ],
 }
