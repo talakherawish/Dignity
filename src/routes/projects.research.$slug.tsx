@@ -23,6 +23,7 @@ import {
 import { SECTION_COLORS } from "@/lib/sectionColors";
 import { researchBySlugQuery } from "@/lib/queries";
 import { FormattedText } from "@/components/RichText";
+import { isLandscapeSize, landscapeFirst } from "@/lib/ordering";
 
 export const Route = createFileRoute("/projects/research/$slug")({
   loader: async ({ context, params }) => {
@@ -195,7 +196,15 @@ function ResearchDetailPage() {
                   count={clippings.length}
                 >
                   <PublicationCardGrid>
-                    {clippings.map((c: PayloadClipping) => {
+                    {landscapeFirst(
+                      clippings,
+                      (c) => {
+                        const isImage = c.image?.mimeType?.startsWith("image/") ?? false;
+                        const preview = isImage ? c.image : c.image?.thumbnail;
+                        return isLandscapeSize(preview?.width, preview?.height);
+                      },
+                      (c) => c.date,
+                    ).map((c: PayloadClipping) => {
                       const url = mediaUrl(c.image);
                       const isImage = c.image?.mimeType?.startsWith("image/") ?? false;
                       const previewSource = isImage ? c.image : c.image?.thumbnail;

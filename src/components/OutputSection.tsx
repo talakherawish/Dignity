@@ -8,7 +8,9 @@ import {
   youtubeThumbnail,
   type PayloadParticipant,
   type PayloadPublication,
+  isYoutubeLink,
 } from "@/lib/payload";
+import { isLandscapeSize, landscapeFirst } from "@/lib/ordering";
 
 /**
  * One output group — the heading is a toggle and the grid below it starts
@@ -63,9 +65,19 @@ export function PublicationGrid({
   items: PayloadPublication[];
   showDownload?: boolean;
 }) {
+  // Landscape first, then portrait, newest first in each -- see landscapeFirst.
+  // A video with no image of its own shows its YouTube still, which is 16:9.
+  const ordered = landscapeFirst(
+    items,
+    (p) => {
+      const preview = p.image?.thumbnail ?? p.image ?? p.file?.thumbnail;
+      return preview ? isLandscapeSize(preview.width, preview.height) : isYoutubeLink(p.link);
+    },
+    (p) => p.date,
+  );
   return (
     <PublicationCardGrid>
-      {items.map((p) => {
+      {ordered.map((p) => {
         // A manually-set cover image wins; otherwise the auto-generated PDF
         // page-1 thumbnail, wherever it's attached. Its own dimensions travel
         // with it so the card shows it at its own proportions rather than

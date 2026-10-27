@@ -16,6 +16,7 @@ import {
   formatted,
   type Formatted,
 } from "@/lib/payload";
+import { landscapeFirst } from "@/lib/ordering";
 
 /**
  * The poster wall for Forums attached to a Research area, Task Force on AI,
@@ -554,7 +555,16 @@ export function ForumGrid({ items }: { items: PayloadActivity[] }) {
     });
   };
 
-  const rows = useMemo(() => packRows(items, columns), [items, columns]);
+  // Landscape posters first, then portrait, newest first in each -- the
+  // site-wide order (see landscapeFirst), before the cards are packed into rows.
+  const rows = useMemo(
+    () =>
+      packRows(
+        landscapeFirst(items, isWide, (item) => item.date),
+        columns,
+      ),
+    [items, columns],
+  );
 
   const cardProps = (item: PayloadActivity) => ({
     item,

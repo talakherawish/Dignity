@@ -16,9 +16,11 @@ import {
   type PayloadResearchActivity,
   type PublicationCollection,
   type PayloadPublication,
+  isYoutubeLink,
 } from "@/lib/payload";
 import { SECTION_COLORS } from "@/lib/sectionColors";
 import { publicationsQuery } from "@/lib/queries";
+import { isLandscapeSize, landscapeFirst } from "@/lib/ordering";
 
 /** Just enough of a research line to head a group and sort it -- see groupByResearchLine. */
 type ResearchLineRef = { id: string; title: string; titleAr?: string };
@@ -68,8 +70,8 @@ type ResearchLineGroup = {
  *
  * Groups sort alphabetically by name (locale-aware, so Arabic titles sort
  * correctly in the Arabic UI); "Other" always sorts last regardless of its
- * label. Items keep the order they arrived in -- fetchPublications already
- * sorts newest-first, and grouping here doesn't reorder within a group.
+ * label. Within a group, PublicationsGrid puts landscape items first, then
+ * portrait, newest first in each -- see landscapeFirst.
  */
 function groupByResearchLine(items: DisplayPublication[], isArabic: boolean): ResearchLineGroup[] {
   const groups = new Map<string, ResearchLineGroup>();
@@ -157,10 +159,16 @@ function fromPayload(item: PayloadPublication): DisplayPublication {
   };
 }
 
+/** A video with no image of its own shows its YouTube still, which is 16:9. */
+const isLandscapeItem = (item: DisplayPublication) =>
+  item.previewWidth && item.previewHeight
+    ? isLandscapeSize(item.previewWidth, item.previewHeight)
+    : isYoutubeLink(item.linkUrl);
+
 function PublicationsGrid({ items }: { items: DisplayPublication[] }) {
   return (
     <PublicationCardGrid>
-      {items.map((item) => (
+      {landscapeFirst(items, isLandscapeItem, (item) => item.date).map((item) => (
         <PublicationCard
           key={item.id}
           title={item.title}
