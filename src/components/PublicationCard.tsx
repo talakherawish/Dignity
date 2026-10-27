@@ -12,7 +12,6 @@ import {
   youtubeEmbedUrl,
   youtubeThumbnailFallback,
 } from "@/lib/payload";
-import { withItalicQuotes } from "@/lib/text";
 
 /**
  * The document card shown by every publication-shaped grid on the site —
@@ -385,7 +384,7 @@ export function PublicationCard({
             overflowing it. The document language is on <html>, which is what
             hyphenation resolves against. */}
         <Heading className="font-serif text-sm text-primary leading-snug text-balance hyphens-auto break-words">
-          {withItalicQuotes(displayTitle)}
+          {displayTitle}
         </Heading>
 
         {action ? (

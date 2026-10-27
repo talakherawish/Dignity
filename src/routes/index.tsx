@@ -7,7 +7,6 @@ import { PageLayout } from "@/components/PageLayout";
 import { Reveal } from "@/components/Reveal";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { getField, mapPayloadNews, type Article } from "@/data/articles";
-import { withItalicQuotes } from "@/lib/text";
 import { ProfileLinks, type ProfileLink } from "@/components/ProfileLinks";
 import {
   mediaSrcSet,
@@ -160,7 +159,7 @@ function HeadlineList({ articles }: { articles: Article[] }) {
               </span>
               <span className="min-w-0">
                 <span className="block font-serif text-base leading-snug text-primary transition-colors group-hover:text-[color:var(--brand-magenta)] md:text-lg">
-                  {withItalicQuotes(getField(article, "title", lang))}
+                  {getField(article, "title", lang)}
                 </span>
                 <span className="mt-1.5 block text-[11px] uppercase tracking-[0.16em] text-muted-foreground">
                   {getField(article, "date", lang)}
@@ -221,7 +220,7 @@ function ImageCarousel({ articles }: { articles: Article[] }) {
           {getField(article, "date", lang)}
         </p>
         <h3 className="mt-1 font-serif text-base leading-snug text-white md:text-lg">
-          {withItalicQuotes(getField(article, "title", lang))}
+          {getField(article, "title", lang)}
         </h3>
       </div>
     </Link>

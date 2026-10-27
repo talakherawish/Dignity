@@ -6,7 +6,6 @@ import { TranslationNotice } from "@/components/TranslationNotice";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { getField, getBody, mapPayloadNews, type Article } from "@/data/articles";
 import { SECTION_COLORS } from "@/lib/sectionColors";
-import { withItalicQuotes } from "@/lib/text";
 import { newsQuery } from "@/lib/queries";
 
 type NewsSearch = { id?: string };
@@ -74,7 +73,7 @@ function ArticleRow({
           id={titleId}
           className="mt-2 font-serif text-lg leading-snug text-primary transition-colors duration-300 group-hover:text-[color:var(--brand-magenta)] md:text-xl"
         >
-          {withItalicQuotes(getField(article, "title", lang))}
+          {getField(article, "title", lang)}
         </h2>
         {excerpt && (
           <p className="mt-1.5 line-clamp-1 text-sm leading-relaxed text-muted-foreground">
