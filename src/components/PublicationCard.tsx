@@ -1,4 +1,4 @@
-import { Download, ExternalLink, FileText, Play } from "lucide-react";
+import { ExternalLink, FileText, Play } from "lucide-react";
 import { useState, type KeyboardEvent, type ReactNode } from "react";
 import { TranslationNotice } from "@/components/TranslationNotice";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -10,9 +10,11 @@ import {
   resolveAttachment,
   youtubeEmbedUrl,
   youtubeThumbnailFallback,
+  type PayloadPublication,
 } from "@/lib/payload";
 import { FormattedText } from "./RichText";
 import { ParticipantLink } from "@/components/ParticipantModal";
+import { DownloadMenu } from "./DownloadMenu";
 
 /**
  * The document card shown by every publication-shaped grid on the site —
@@ -117,6 +119,11 @@ type PublicationCardProps = {
   linkUrl?: string;
   /** Arabic-only counterpart to `linkUrl`, when the two differ. */
   linkUrlAr?: string;
+  /** The file's own name, for naming its download -- see DownloadMenu. */
+  fileName?: string;
+  fileNameAr?: string;
+  /** Uploaded alternatives (the Word original, an image...), each its own download. */
+  otherFormats?: PayloadPublication["otherFormats"];
   /** Headings inside a section that already has its own h3 pass "h4". */
   as?: "h3" | "h4";
 };
@@ -141,6 +148,9 @@ export function PublicationCard({
   fileMimeTypeAr,
   fileSize,
   fileSizeAr,
+  fileName,
+  fileNameAr,
+  otherFormats,
   linkUrl,
   linkUrlAr,
   as: Heading = "h3",
@@ -406,21 +416,15 @@ export function PublicationCard({
           so this only needs to carry the second, less-common action. It's
           pinned to the well's corner, matching the video play button's dark
           badge so it reads over any thumbnail. */}
-      {canOpenFile && (
-        <a
-          href={fileUrl}
-          download
-          onClick={(e) => e.stopPropagation()}
-          aria-label={
-            sizeLabel ? `${t("publications.download")} (${sizeLabel})` : t("publications.download")
-          }
-          title={
-            sizeLabel ? `${t("publications.download")} (${sizeLabel})` : t("publications.download")
-          }
-          className="absolute top-2 end-2 z-10 inline-flex h-8 w-8 items-center justify-center rounded-full bg-black/60 text-white transition-colors hover:bg-black/75"
-        >
-          <Download className="h-3.5 w-3.5" />
-        </a>
+      {canOpenFile && fileUrl && (
+        <DownloadMenu
+          fileUrl={fileUrl}
+          fileName={isAr && fileUrlAr ? fileNameAr : fileName}
+          fileMimeType={resolvedFileMimeType}
+          fileSize={isAr && fileUrlAr ? fileSizeAr : fileSize}
+          otherFormats={otherFormats}
+          label={t("publications.download")}
+        />
       )}
     </div>
   );

@@ -38,6 +38,9 @@ type DisplayPublication = {
   date: string;
   fileUrl: string;
   fileMimeType?: string;
+  fileName?: string;
+  fileNameAr?: string;
+  otherFormats?: PayloadPublication["otherFormats"];
   fileUrlAr: string;
   fileMimeTypeAr?: string;
   fileSize?: number;
@@ -143,6 +146,9 @@ function fromPayload(item: PayloadPublication): DisplayPublication {
     date: item.date,
     fileUrl: mediaUrl(item.file),
     fileMimeType: item.file?.mimeType,
+    fileName: item.file?.filename,
+    fileNameAr: item.fileAr?.filename,
+    otherFormats: item.otherFormats,
     fileUrlAr: mediaUrl(item.fileAr),
     fileMimeTypeAr: item.fileAr?.mimeType,
     fileSize: item.file?.filesize,
@@ -185,6 +191,9 @@ function PublicationsGrid({ items }: { items: DisplayPublication[] }) {
           previewHeight={item.previewHeight}
           fileUrl={item.fileUrl}
           fileMimeType={item.fileMimeType}
+          fileName={item.fileName}
+          fileNameAr={item.fileNameAr}
+          otherFormats={item.otherFormats}
           fileUrlAr={item.fileUrlAr}
           fileMimeTypeAr={item.fileMimeTypeAr}
           fileSize={item.fileSize}

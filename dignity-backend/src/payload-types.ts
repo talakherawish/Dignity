@@ -650,6 +650,14 @@ export interface Book {
    */
   linkAr?: string | null;
   image?: (string | null) | Media;
+  otherFormats?:
+    | {
+        file: string | Media;
+        label?: string | null;
+        labelAr?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   /**
    * Which research line(s) this is an output of. Shows up on that research line's page automatically.
    */
@@ -876,6 +884,14 @@ export interface Paper {
    */
   linkAr?: string | null;
   image?: (string | null) | Media;
+  otherFormats?:
+    | {
+        file: string | Media;
+        label?: string | null;
+        labelAr?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   /**
    * Which research line(s) this is an output of. Shows up on that research line's page automatically.
    */
@@ -1338,6 +1354,14 @@ export interface Report {
    */
   linkAr?: string | null;
   image?: (string | null) | Media;
+  otherFormats?:
+    | {
+        file: string | Media;
+        label?: string | null;
+        labelAr?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   /**
    * Which research line(s) this is an output of. Shows up on that research line's page automatically.
    */
@@ -1555,6 +1579,14 @@ export interface Brochure {
    */
   linkAr?: string | null;
   image?: (string | null) | Media;
+  otherFormats?:
+    | {
+        file: string | Media;
+        label?: string | null;
+        labelAr?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   /**
    * Which research line(s) this is an output of. Shows up on that research line's page automatically.
    */
@@ -1682,6 +1714,14 @@ export interface Thesis {
    */
   linkAr?: string | null;
   image?: (string | null) | Media;
+  otherFormats?:
+    | {
+        file: string | Media;
+        label?: string | null;
+        labelAr?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   /**
    * Which research line(s) this is an output of. Shows up on that research line's page automatically.
    */
@@ -1809,6 +1849,14 @@ export interface Audiovisual {
    */
   linkAr?: string | null;
   image?: (string | null) | Media;
+  otherFormats?:
+    | {
+        file: string | Media;
+        label?: string | null;
+        labelAr?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   /**
    * Which research line(s) this is an output of. Shows up on that research line's page automatically.
    */
@@ -1936,6 +1984,14 @@ export interface Poster {
    */
   linkAr?: string | null;
   image?: (string | null) | Media;
+  otherFormats?:
+    | {
+        file: string | Media;
+        label?: string | null;
+        labelAr?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   /**
    * Which research line(s) this is an output of. Shows up on that research line's page automatically.
    */
@@ -3482,6 +3538,14 @@ export interface BooksSelect<T extends boolean = true> {
   link?: T;
   linkAr?: T;
   image?: T;
+  otherFormats?:
+    | T
+    | {
+        file?: T;
+        label?: T;
+        labelAr?: T;
+        id?: T;
+      };
   researchLines?: T;
   taskForceAILines?: T;
   ideaFactoryLines?: T;
@@ -3516,6 +3580,14 @@ export interface PapersSelect<T extends boolean = true> {
   link?: T;
   linkAr?: T;
   image?: T;
+  otherFormats?:
+    | T
+    | {
+        file?: T;
+        label?: T;
+        labelAr?: T;
+        id?: T;
+      };
   researchLines?: T;
   taskForceAILines?: T;
   ideaFactoryLines?: T;
@@ -3550,6 +3622,14 @@ export interface ReportsSelect<T extends boolean = true> {
   link?: T;
   linkAr?: T;
   image?: T;
+  otherFormats?:
+    | T
+    | {
+        file?: T;
+        label?: T;
+        labelAr?: T;
+        id?: T;
+      };
   researchLines?: T;
   taskForceAILines?: T;
   ideaFactoryLines?: T;
@@ -3584,6 +3664,14 @@ export interface BrochuresSelect<T extends boolean = true> {
   link?: T;
   linkAr?: T;
   image?: T;
+  otherFormats?:
+    | T
+    | {
+        file?: T;
+        label?: T;
+        labelAr?: T;
+        id?: T;
+      };
   researchLines?: T;
   taskForceAILines?: T;
   ideaFactoryLines?: T;
@@ -3618,6 +3706,14 @@ export interface ThesesSelect<T extends boolean = true> {
   link?: T;
   linkAr?: T;
   image?: T;
+  otherFormats?:
+    | T
+    | {
+        file?: T;
+        label?: T;
+        labelAr?: T;
+        id?: T;
+      };
   researchLines?: T;
   taskForceAILines?: T;
   ideaFactoryLines?: T;
@@ -3652,6 +3748,14 @@ export interface AudiovisualSelect<T extends boolean = true> {
   link?: T;
   linkAr?: T;
   image?: T;
+  otherFormats?:
+    | T
+    | {
+        file?: T;
+        label?: T;
+        labelAr?: T;
+        id?: T;
+      };
   researchLines?: T;
   taskForceAILines?: T;
   ideaFactoryLines?: T;
@@ -3686,6 +3790,14 @@ export interface PostersSelect<T extends boolean = true> {
   link?: T;
   linkAr?: T;
   image?: T;
+  otherFormats?:
+    | T
+    | {
+        file?: T;
+        label?: T;
+        labelAr?: T;
+        id?: T;
+      };
   researchLines?: T;
   taskForceAILines?: T;
   ideaFactoryLines?: T;

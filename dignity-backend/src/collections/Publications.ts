@@ -135,6 +135,37 @@ function publicationFields(): Field[] {
         relationTo: 'media',
         label: 'Cover Image or Thumbnail',
       },
+      // The same publication in the formats the team has it in -- the Word
+      // original, a high-resolution image, the slides -- each offered on the
+      // website as its own download beside the main file. Uploaded, never
+      // converted, so each is exactly the original.
+      {
+        name: 'otherFormats',
+        type: 'array',
+        label: 'Other Formats',
+        labels: { singular: 'Format', plural: 'Formats' },
+        fields: [
+          {
+            name: 'file',
+            type: 'upload',
+            relationTo: 'media',
+            required: true,
+            label: 'File',
+          },
+          {
+            name: 'label',
+            type: 'text',
+            label: 'Name (English)',
+            admin: { placeholder: 'e.g. Word -- leave empty to name it from the file type' },
+          },
+          {
+            name: 'labelAr',
+            type: 'text',
+            label: 'Name (Arabic / الاسم بالعربية)',
+            admin: { rtl: true },
+          },
+        ],
+      },
     ]),
     {
       name: 'researchLines',

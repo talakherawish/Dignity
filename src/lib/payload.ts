@@ -288,6 +288,8 @@ export type PayloadPublication = {
   linkAr?: string;
   /** Which research line(s) this is an output of -- see the publications listing pages' group-by-research-line view. */
   researchLines?: (PayloadResearchActivity | string)[];
+  /** The same publication in other formats, each its own download -- see DownloadMenu. */
+  otherFormats?: { id?: string; file?: PayloadMedia | string; label?: string; labelAr?: string }[];
 };
 
 /** The video id inside a YouTube watch/embed/short/youtu.be URL. */

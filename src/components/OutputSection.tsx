@@ -106,6 +106,9 @@ export function PublicationGrid({
             previewHeight={previewSource?.height}
             fileUrl={showDownload && p.file ? mediaUrl(p.file) : ""}
             fileMimeType={showDownload ? p.file?.mimeType : undefined}
+            fileName={p.file?.filename}
+            fileNameAr={p.fileAr?.filename}
+            otherFormats={showDownload ? p.otherFormats : undefined}
             fileUrlAr={showDownload && p.fileAr ? mediaUrl(p.fileAr) : ""}
             fileMimeTypeAr={showDownload ? p.fileAr?.mimeType : undefined}
             fileSize={showDownload ? p.file?.filesize : undefined}
