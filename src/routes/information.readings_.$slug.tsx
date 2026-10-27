@@ -3,9 +3,9 @@ import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft } from "lucide-react";
 import { ReadingsBrowser, type ReadingFilters } from "@/components/ReadingsBrowser";
 import { PageLayout, PageHero } from "@/components/PageLayout";
-import { RichText } from "@/components/RichText";
+import { RichText, FormattedText } from "@/components/RichText";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { hasProse } from "@/lib/payload";
+import { hasProse, formatted } from "@/lib/payload";
 import { SECTION_COLORS } from "@/lib/sectionColors";
 import { readingItemsQuery, readingListQuery } from "@/lib/queries";
 
@@ -41,7 +41,7 @@ function ReadingListPage() {
     enabled: !!subject,
   });
 
-  const title = subject ? (isArabic ? (subject.titleAr ?? subject.title) : subject.title) : "";
+  const title = formatted(subject, "title", isArabic);
   const description = subject && (isArabic ? subject.descriptionAr : subject.description);
 
   return (
@@ -49,7 +49,9 @@ function ReadingListPage() {
       <PageHero
         eyebrow={t("information.readings")}
         eyebrowColor={SECTION_COLORS.information}
-        title={subjectLoading ? "" : title || t("readings.empty")}
+        title={
+          subjectLoading ? "" : title.text ? <FormattedText {...title} /> : t("readings.empty")
+        }
       />
 
       <div className="mx-auto max-w-5xl px-4 pt-8 sm:px-6 lg:px-8" dir={isArabic ? "rtl" : "ltr"}>

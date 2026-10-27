@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { Handshake, Images, Megaphone, Newspaper, Users } from "lucide-react";
 import { PageLayout } from "./PageLayout";
 import { Reveal } from "./Reveal";
@@ -71,7 +72,7 @@ export function AboutPage({
 }: {
   eyebrow?: string;
   eyebrowColor?: string;
-  title: string;
+  title: ReactNode;
   paragraphs?: string[];
   items?: string[];
 }) {

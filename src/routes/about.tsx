@@ -2,9 +2,10 @@ import { createFileRoute, Outlet, useLocation } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { AboutPage } from "@/components/About";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { extractListItems, extractText } from "@/lib/payload";
+import { extractListItems, extractText, formatted } from "@/lib/payload";
 import { aboutInitiativeQuery } from "@/lib/queries";
 import { SECTION_COLORS } from "@/lib/sectionColors";
+import { FormattedText } from "@/components/RichText";
 
 const isAboutIndex = (pathname: string) => pathname === "/about" || pathname === "/about/";
 
@@ -32,11 +33,12 @@ function AboutLayout() {
 
   if (isIndex) {
     const body = isArabic ? page?.bodyAr : page?.body;
+    const title = formatted(page, "title", isArabic, { fallback: false });
     return (
       <AboutPage
         eyebrow={t("about")}
         eyebrowColor={SECTION_COLORS.about}
-        title={(isArabic ? page?.titleAr : page?.title) || t("about.initiative")}
+        title={title.text ? <FormattedText {...title} /> : t("about.initiative")}
         paragraphs={extractText(body)}
         items={extractListItems(body)}
       />

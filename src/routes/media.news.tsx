@@ -4,7 +4,8 @@ import { useQuery } from "@tanstack/react-query";
 import { PageLayout, PageHero } from "@/components/PageLayout";
 import { TranslationNotice } from "@/components/TranslationNotice";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { getField, getBody, mapPayloadNews, type Article } from "@/data/articles";
+import { FormattedText } from "@/components/RichText";
+import { getField, getBody, getFormatted, mapPayloadNews, type Article } from "@/data/articles";
 import { SECTION_COLORS } from "@/lib/sectionColors";
 import { newsQuery } from "@/lib/queries";
 
@@ -73,11 +74,11 @@ function ArticleRow({
           id={titleId}
           className="mt-2 font-serif text-lg leading-snug text-primary transition-colors duration-300 group-hover:text-[color:var(--brand-magenta)] md:text-xl"
         >
-          {getField(article, "title", lang)}
+          <FormattedText {...getFormatted(article, "title", lang)} />
         </h2>
         {excerpt && (
           <p className="mt-1.5 line-clamp-1 text-sm leading-relaxed text-muted-foreground">
-            {excerpt}
+            <FormattedText {...getFormatted(article, "excerpt", lang)} />
           </p>
         )}
         <span

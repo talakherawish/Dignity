@@ -3,7 +3,7 @@ import { flushSync } from "react-dom";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, Plus, X } from "lucide-react";
 import { ForumAdditionalInfo, hasAdditionalInfo } from "./ForumAdditionalInfo";
-import { RichText } from "./RichText";
+import { RichText, FormattedText } from "./RichText";
 import { TranslationNotice } from "./TranslationNotice";
 import { useLanguage, type TranslationKey } from "@/contexts/LanguageContext";
 import {
@@ -13,6 +13,8 @@ import {
   mediaUrl,
   type ForumType,
   type PayloadActivity,
+  formatted,
+  type Formatted,
 } from "@/lib/payload";
 
 /**
@@ -220,7 +222,7 @@ function withViewTransition(update: () => void): Promise<void> {
   return document.startViewTransition(update).finished.then(done, done);
 }
 
-type Figure = { url: string; srcSet?: string; alt: string; caption?: string };
+type Figure = { url: string; srcSet?: string; alt: string; caption?: Formatted };
 
 /** The photographs only -- the poster is shown separately, and larger. */
 function galleryOf(item: PayloadActivity, isArabic: boolean): Figure[] {
@@ -228,12 +230,12 @@ function galleryOf(item: PayloadActivity, isArabic: boolean): Figure[] {
   for (const entry of item.gallery ?? []) {
     const url = mediaUrl(entry.image);
     if (!url) continue;
-    const caption = isArabic ? (entry.captionAr ?? entry.caption) : entry.caption;
+    const caption = formatted(entry, "caption", isArabic);
     figures.push({
       url,
       srcSet: mediaSrcSet(entry.image),
       alt: entry.image?.alt ?? "",
-      caption: caption?.trim() || undefined,
+      caption: caption.text.trim() ? caption : undefined,
     });
   }
   return figures;
@@ -281,7 +283,7 @@ function ForumCardClosed({
   cardRef: (el: HTMLElement | null) => void;
 }) {
   const { t, lang, isArabic } = useLanguage();
-  const displayTitle = lang === "ar" ? (item.titleAr ?? item.title) : item.title;
+  const displayTitle = formatted(item, "title", lang === "ar");
   const typeLabel = typeLabelOf(item, t);
   const image = mediaUrl(item.image);
   const expandable = isExpandable(item);
@@ -320,7 +322,7 @@ function ForumCardClosed({
         )}
         <div className="flex items-start justify-between gap-3">
           <h4 className="font-serif text-sm text-primary leading-snug text-balance hyphens-auto break-words">
-            {displayTitle}
+            <FormattedText {...displayTitle} />
           </h4>
           {/* No poster to sit on, so the chip joins the title instead. */}
           {!image && expandable && <ToggleChip />}
@@ -370,7 +372,8 @@ function ForumCardOpen({
   cardRef: (el: HTMLElement | null) => void;
 }) {
   const { t, lang, isArabic } = useLanguage();
-  const title = lang === "ar" ? (item.titleAr ?? item.title) : item.title;
+  const titleFormatted = formatted(item, "title", lang === "ar");
+  const title = titleFormatted.text;
   const typeLabel = typeLabelOf(item, t);
 
   const poster = mediaUrl(item.image);
@@ -456,7 +459,9 @@ function ForumCardOpen({
                   )}
                 </div>
               )}
-              <h4 className="font-serif text-xl leading-snug text-primary md:text-2xl">{title}</h4>
+              <h4 className="font-serif text-xl leading-snug text-primary md:text-2xl">
+                <FormattedText {...titleFormatted} />
+              </h4>
             </div>
 
             {hasProse(body) && (
@@ -488,7 +493,7 @@ function ForumCardOpen({
                     </div>
                     {figure.caption && (
                       <figcaption className="mt-2 text-[11px] leading-relaxed text-muted-foreground">
-                        {figure.caption}
+                        <FormattedText {...figure.caption} />
                       </figcaption>
                     )}
                   </figure>

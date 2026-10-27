@@ -12,8 +12,10 @@ import {
   type ActivityLine,
   type PayloadActivity,
   type PayloadPublication,
+  formatted,
 } from "@/lib/payload";
 import { activityLineQuery } from "@/lib/queries";
+import { FormattedText } from "@/components/RichText";
 
 /**
  * Task Force on AI and Idea Factory, laid out exactly like a Research area's
@@ -51,7 +53,8 @@ export function ActivityLinePage({
     );
   }
 
-  const title = item ? (lang === "ar" ? (item.titleAr ?? item.title) : item.title) : fallbackTitle;
+  const titleFormatted = item ? formatted(item, "title", lang === "ar") : { text: fallbackTitle };
+  const title = titleFormatted.text;
   const image = mediaUrl(item?.image);
   // The visitor's own language only, matching how a Research area's page
   // reads: an entry written up only in the other language is announced as
@@ -72,7 +75,11 @@ export function ActivityLinePage({
 
   return (
     <PageLayout>
-      <PageHero eyebrow={eyebrow} eyebrowColor={eyebrowColor} title={title} />
+      <PageHero
+        eyebrow={eyebrow}
+        eyebrowColor={eyebrowColor}
+        title={<FormattedText {...titleFormatted} />}
+      />
 
       <article
         className={"max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-12" + (isArabic ? " text-right" : "")}

@@ -12,6 +12,7 @@ import {
   youtubeEmbedUrl,
   youtubeThumbnailFallback,
 } from "@/lib/payload";
+import { FormattedText } from "./RichText";
 
 /**
  * The document card shown by every publication-shaped grid on the site —
@@ -74,6 +75,9 @@ export type PublicationCardAuthor = { id: string; name: string; nameAr?: string 
 type PublicationCardProps = {
   title: string;
   titleAr?: string;
+  /** The title's bold and italic, when it has any -- see FormattedText. */
+  titleRich?: unknown;
+  titleRichAr?: unknown;
   author?: string;
   authorAr?: string;
   /** Takes precedence over `author`/`authorAr` when non-empty -- see the field's own admin description on Publications.ts. */
@@ -120,6 +124,8 @@ type PublicationCardProps = {
 export function PublicationCard({
   title,
   titleAr,
+  titleRich,
+  titleRichAr,
   author,
   authorAr,
   authorParticipants,
@@ -384,7 +390,10 @@ export function PublicationCard({
             overflowing it. The document language is on <html>, which is what
             hyphenation resolves against. */}
         <Heading className="font-serif text-sm text-primary leading-snug text-balance hyphens-auto break-words">
-          {displayTitle}
+          <FormattedText
+            rich={isAr && titleAr != null ? titleRichAr : titleRich}
+            text={displayTitle}
+          />
         </Heading>
 
         {action ? (

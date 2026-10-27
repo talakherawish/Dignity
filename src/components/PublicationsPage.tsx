@@ -28,6 +28,8 @@ type DisplayPublication = {
   id: string;
   title: string;
   titleAr?: string;
+  titleRich?: unknown;
+  titleRichAr?: unknown;
   author?: string;
   authorAr?: string;
   authorParticipants?: PublicationCardAuthor[];
@@ -127,6 +129,8 @@ function fromPayload(item: PayloadPublication): DisplayPublication {
     id: item.id,
     title: item.title,
     titleAr: item.titleAr,
+    titleRich: item.titleRich,
+    titleRichAr: item.titleRichAr,
     author: item.author,
     authorAr: item.authorAr,
     authorParticipants: populated<PayloadParticipant>(item.authorParticipants).map((p) => ({
@@ -161,6 +165,8 @@ function PublicationsGrid({ items }: { items: DisplayPublication[] }) {
           key={item.id}
           title={item.title}
           titleAr={item.titleAr}
+          titleRich={item.titleRich}
+          titleRichAr={item.titleRichAr}
           author={item.author}
           authorAr={item.authorAr}
           authorParticipants={item.authorParticipants}

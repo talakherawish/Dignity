@@ -3,9 +3,10 @@ import { useQuery, type UseQueryOptions } from "@tanstack/react-query";
 import { ArrowRight } from "lucide-react";
 import { PageLayout, PageHero } from "@/components/PageLayout";
 import { useLanguage, type TranslationKey } from "@/contexts/LanguageContext";
-import { extractText, type PayloadDatabase } from "@/lib/payload";
+import { extractText, type PayloadDatabase, formatted } from "@/lib/payload";
 import { pageTextQuery } from "@/lib/queries";
 import { SECTION_COLORS } from "@/lib/sectionColors";
+import { FormattedText } from "@/components/RichText";
 
 /**
  * A page of subjects, one card each, leading to the subject's own filterable
@@ -64,7 +65,7 @@ export function SubjectIndex({
         ) : (
           <div className="grid gap-5 md:grid-cols-2" dir={isArabic ? "rtl" : "ltr"}>
             {subjects.map((subject) => {
-              const title = isArabic ? (subject.titleAr ?? subject.title) : subject.title;
+              const title = formatted(subject, "title", isArabic);
               const summary = extractText(isArabic ? subject.descriptionAr : subject.description)
                 .join(" ")
                 .trim();
@@ -88,7 +89,7 @@ export function SubjectIndex({
                     </span>
                   )}
                   <h2 className="font-serif text-2xl leading-snug text-primary transition-colors duration-300 group-hover:text-[color:var(--brand-magenta)]">
-                    {title}
+                    <FormattedText {...title} />
                   </h2>
                   {summary && (
                     <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-muted-foreground">

@@ -18,9 +18,11 @@ import {
   type PayloadClipping,
   type PayloadPhoto,
   type PayloadPublication,
+  formatted,
 } from "@/lib/payload";
 import { SECTION_COLORS } from "@/lib/sectionColors";
 import { researchBySlugQuery } from "@/lib/queries";
+import { FormattedText } from "@/components/RichText";
 
 export const Route = createFileRoute("/projects/research/$slug")({
   loader: async ({ context, params }) => {
@@ -74,7 +76,8 @@ function ResearchDetailPage() {
   }
 
   const research: PayloadResearchActivity = item;
-  const title = lang === "ar" ? (research.titleAr ?? research.title) : research.title;
+  const titleFormatted = formatted(research, "title", lang === "ar");
+  const title = titleFormatted.text;
   const image = mediaUrl(research.image);
   // The visitor's own language only, so an area written up in one language
   // is announced as untranslated rather than silently served in the other.
@@ -152,7 +155,7 @@ function ResearchDetailPage() {
       <PageHero
         eyebrow={isArabic ? "نشاطات — المشاريع البحثية" : "Activities — Research Projects"}
         eyebrowColor={SECTION_COLORS.activities}
-        title={title}
+        title={<FormattedText {...titleFormatted} />}
       />
 
       <article
@@ -202,6 +205,8 @@ function ResearchDetailPage() {
                           as="h4"
                           title={c.title || (isArabic ? "قصاصة صحفية" : "Press clipping")}
                           titleAr={c.titleAr}
+                          titleRich={c.titleRich}
+                          titleRichAr={c.titleRichAr}
                           date={c.date}
                           previewUrl={mediaUrl(previewSource)}
                           previewSrcSet={mediaSrcSet(previewSource)}

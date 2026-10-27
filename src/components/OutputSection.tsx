@@ -78,6 +78,8 @@ export function PublicationGrid({
             as="h4"
             title={p.title}
             titleAr={p.titleAr}
+            titleRich={p.titleRich}
+            titleRichAr={p.titleRichAr}
             author={p.author}
             authorAr={p.authorAr}
             authorParticipants={populated<PayloadParticipant>(p.authorParticipants).map((a) => ({

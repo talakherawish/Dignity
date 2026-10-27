@@ -137,6 +137,9 @@ export type PayloadClipping = {
   id: string;
   title?: string;
   titleAr?: string;
+  /** The title's bold and italic -- see formatted. */
+  titleRich?: unknown;
+  titleRichAr?: unknown;
   date?: string;
   image: PayloadMedia;
 };
@@ -156,6 +159,9 @@ export type PayloadParticipant = {
   nameAr?: string;
   title?: string;
   titleAr?: string;
+  /** The role's bold and italic -- see formatted. */
+  titleRich?: unknown;
+  titleRichAr?: unknown;
   category:
     | "researcher"
     | "visitor"
@@ -245,6 +251,9 @@ export type PayloadPublication = {
   id: string;
   title: string;
   titleAr?: string;
+  /** The title's bold and italic -- see formatted. */
+  titleRich?: unknown;
+  titleRichAr?: unknown;
   author?: string;
   authorAr?: string;
   /** Picked from Participants instead of typed -- when set, shown instead of `author`/`authorAr`, each linking to that person's profile. */
@@ -479,6 +488,35 @@ export type PayloadResearchActivity = {
 export function populated<T>(items: (T | string)[] | undefined): T[] {
   if (!items) return [];
   return items.filter((item): item is T => typeof item === "object" && item !== null);
+}
+
+/**
+ * A title or short text in the reader's language: its plain text, for alt
+ * text, labels and search, and the editor's bold and italic, for showing it
+ * (see FormattedText). Arabic falls back to English when it was left blank,
+ * as the plain titles always have; `fallback: false` for a field that shows
+ * nothing instead.
+ *
+ * The admin keeps the formatting beside each plain field, in `<field>Rich`
+ * and `<field>RichAr` -- see formattedText.ts in the backend.
+ */
+export type Formatted = { text: string; rich?: unknown };
+
+export function formatted(
+  doc: object | null | undefined,
+  field: string,
+  isArabic: boolean,
+  { fallback = true }: { fallback?: boolean } = {},
+): Formatted {
+  const values = (doc ?? {}) as Record<string, unknown>;
+  const plain = (name: string) => {
+    const value = values[name];
+    return typeof value === "string" ? value : "";
+  };
+  if (isArabic && (plain(`${field}Ar`).trim() || !fallback)) {
+    return { text: plain(`${field}Ar`), rich: values[`${field}RichAr`] };
+  }
+  return { text: plain(field), rich: values[`${field}Rich`] };
 }
 
 /** A standalone page — its heading and its prose. */

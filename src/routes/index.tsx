@@ -6,7 +6,8 @@ import { ChevronLeft, ChevronRight, X, Mail } from "lucide-react";
 import { PageLayout } from "@/components/PageLayout";
 import { Reveal } from "@/components/Reveal";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { getField, mapPayloadNews, type Article } from "@/data/articles";
+import { getField, getFormatted, mapPayloadNews, type Article } from "@/data/articles";
+import { FormattedText } from "@/components/RichText";
 import { ProfileLinks, type ProfileLink } from "@/components/ProfileLinks";
 import {
   mediaSrcSet,
@@ -92,6 +93,8 @@ type TeamPerson = {
   nameAr: string;
   title: string;
   titleAr: string;
+  titleRich?: unknown;
+  titleRichAr?: unknown;
   category: PayloadParticipant["category"];
   email: string;
   links: ProfileLink[];
@@ -108,6 +111,10 @@ function mapPayloadToTeamPerson(p: PayloadParticipant): TeamPerson {
     nameAr: p.nameAr ?? p.name,
     title: p.title ?? role.en,
     titleAr: p.titleAr ?? p.title ?? role.ar,
+    // Formatting goes with whichever plain role is shown; the built-in role
+    // label has none.
+    titleRich: p.title ? p.titleRich : undefined,
+    titleRichAr: p.titleAr ? p.titleRichAr : p.title ? p.titleRich : undefined,
     category: p.category,
     email: p.email ?? "",
     links: p.links ?? [],
@@ -159,7 +166,7 @@ function HeadlineList({ articles }: { articles: Article[] }) {
               </span>
               <span className="min-w-0">
                 <span className="block font-serif text-base leading-snug text-primary transition-colors group-hover:text-[color:var(--brand-magenta)] md:text-lg">
-                  {getField(article, "title", lang)}
+                  <FormattedText {...getFormatted(article, "title", lang)} />
                 </span>
                 <span className="mt-1.5 block text-[11px] uppercase tracking-[0.16em] text-muted-foreground">
                   {getField(article, "date", lang)}
@@ -220,7 +227,7 @@ function ImageCarousel({ articles }: { articles: Article[] }) {
           {getField(article, "date", lang)}
         </p>
         <h3 className="mt-1 font-serif text-base leading-snug text-white md:text-lg">
-          {getField(article, "title", lang)}
+          <FormattedText {...getFormatted(article, "title", lang)} />
         </h3>
       </div>
     </Link>
@@ -386,7 +393,10 @@ function TeamModal({
               {lang === "ar" ? person.nameAr : person.name}
             </h2>
             <p className="text-muted-foreground text-sm mt-1">
-              {lang === "ar" ? person.titleAr : person.title}
+              <FormattedText
+                rich={lang === "ar" ? person.titleRichAr : person.titleRich}
+                text={lang === "ar" ? person.titleAr : person.title}
+              />
             </p>
             {(person.bio || person.bioAr) && (
               <p className="mt-6 text-sm text-muted-foreground leading-relaxed">
@@ -491,7 +501,10 @@ function TeamSection() {
                   {lang === "ar" ? person.nameAr : person.name}
                 </div>
                 <div className="text-[11px] sm:text-xs text-muted-foreground mt-0.5">
-                  {lang === "ar" ? person.titleAr : person.title}
+                  <FormattedText
+                    rich={lang === "ar" ? person.titleRichAr : person.titleRich}
+                    text={lang === "ar" ? person.titleAr : person.title}
+                  />
                 </div>
                 <div className="hidden sm:block text-[11px] font-medium text-green-600 mt-1 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                   {isArabic ? "اضغط لقراءة المزيد" : "Click to read more"}

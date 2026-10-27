@@ -22,7 +22,7 @@ export function PageHero({
   eyebrow?: string;
   /** Defaults to the site's magenta -- pass a `SECTION_COLORS` value to match the eyebrow to the page's nav group. */
   eyebrowColor?: string;
-  title: string;
+  title: ReactNode;
   description?: string;
 }) {
   const { isArabic } = useLanguage();

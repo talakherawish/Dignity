@@ -12,6 +12,7 @@ import {
 } from "@/components/ParticipantModal";
 import { SECTION_COLORS } from "@/lib/sectionColors";
 import { participantsQuery } from "@/lib/queries";
+import { FormattedText } from "@/components/RichText";
 
 /** ?participant=<id> deep-links to one profile, opening that person's
  * modal once the list has loaded. */
@@ -97,7 +98,10 @@ function ParticipantCard({
           {lang === "ar" ? participant.nameAr : participant.name}
         </div>
         <div className="text-xs text-muted-foreground mt-1">
-          {lang === "ar" ? participant.titleAr : participant.title}
+          <FormattedText
+            rich={lang === "ar" ? participant.titleRichAr : participant.titleRich}
+            text={lang === "ar" ? participant.titleAr : participant.title}
+          />
         </div>
         <div className="text-[11px] font-medium text-green-600 mt-1.5 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
           {isArabic ? "اضغط لقراءة المزيد" : "Click to read more"}

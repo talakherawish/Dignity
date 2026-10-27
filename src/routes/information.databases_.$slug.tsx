@@ -3,9 +3,9 @@ import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft } from "lucide-react";
 import { BibliographyBrowser, type BibliographyFilters } from "@/components/BibliographyBrowser";
 import { PageLayout, PageHero } from "@/components/PageLayout";
-import { RichText } from "@/components/RichText";
+import { RichText, FormattedText } from "@/components/RichText";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { hasProse } from "@/lib/payload";
+import { hasProse, formatted } from "@/lib/payload";
 import { SECTION_COLORS } from "@/lib/sectionColors";
 import { bibliographyEntriesQuery, databaseQuery } from "@/lib/queries";
 
@@ -41,7 +41,7 @@ function DatabasePage() {
     enabled: !!database,
   });
 
-  const title = database ? (isArabic ? (database.titleAr ?? database.title) : database.title) : "";
+  const title = formatted(database, "title", isArabic);
   const description = database && (isArabic ? database.descriptionAr : database.description);
 
   return (
@@ -49,7 +49,9 @@ function DatabasePage() {
       <PageHero
         eyebrow={t("information.databases")}
         eyebrowColor={SECTION_COLORS.information}
-        title={databaseLoading ? "" : title || t("databases.empty")}
+        title={
+          databaseLoading ? "" : title.text ? <FormattedText {...title} /> : t("databases.empty")
+        }
       />
 
       <div className="mx-auto max-w-5xl px-4 pt-8 sm:px-6 lg:px-8" dir={isArabic ? "rtl" : "ltr"}>

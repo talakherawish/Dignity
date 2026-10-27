@@ -1,5 +1,13 @@
 import type { Language } from "@/contexts/LanguageContext";
-import { extractText, formatDate, mediaSrcSet, mediaUrl, type PayloadNews } from "@/lib/payload";
+import {
+  extractText,
+  formatDate,
+  formatted,
+  mediaSrcSet,
+  mediaUrl,
+  type Formatted,
+  type PayloadNews,
+} from "@/lib/payload";
 
 /** The languages an article carries. Mirrors the site's active language set. */
 export type ArticleLang = Language;
@@ -12,6 +20,8 @@ export type Article = {
   date: Record<ArticleLang, string>;
   title: Record<ArticleLang, string>;
   excerpt: Record<ArticleLang, string>;
+  /** The same two with the editor's bold and italic -- see getFormatted. */
+  formatted: Record<"title" | "excerpt", Record<ArticleLang, Formatted>>;
   body: Record<ArticleLang, string[]>;
 };
 
@@ -25,6 +35,10 @@ export function mapPayloadNews(pa: PayloadNews): Article {
     date: { en: formatDate(pa.date, "en"), ar: formatDate(pa.date, "ar") },
     title: { en: pa.title, ar: pa.titleAr ?? pa.title },
     excerpt: { en: pa.excerpt ?? "", ar: pa.excerptAr ?? pa.excerpt ?? "" },
+    formatted: {
+      title: { en: formatted(pa, "title", false), ar: formatted(pa, "title", true) },
+      excerpt: { en: formatted(pa, "excerpt", false), ar: formatted(pa, "excerpt", true) },
+    },
     // Each language carries its own body, with no cross-language fallback:
     // an article written up in one language only is announced as untranslated
     // by the card rather than being served in the other language.
@@ -33,6 +47,15 @@ export function mapPayloadNews(pa: PayloadNews): Article {
       ar: extractText(pa.contentAr),
     },
   };
+}
+
+/** A title or summary in the reader's language, with its bold and italic (see FormattedText). */
+export function getFormatted(
+  article: Article,
+  field: "title" | "excerpt",
+  lang: ArticleLang,
+): Formatted {
+  return article.formatted[field][lang];
 }
 
 /** Pick the localized field; falls back to English if the translation is blank. */

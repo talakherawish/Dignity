@@ -200,6 +200,30 @@ function renderNode(node: LexicalNode, key: number): ReactNode {
 }
 
 /**
+ * A title or short text with the bold and italic its editor gave it (the
+ * one-line editors beside titles, summaries, roles and captions in the
+ * admin), inline -- it goes inside whatever heading or paragraph the page
+ * already has there. Without formatted content it is the plain text.
+ */
+export function FormattedText({ rich, text }: { rich?: unknown; text?: string | null }) {
+  const root = (rich as { root?: LexicalNode } | undefined)?.root;
+  const paragraphs = root ? childrenOf(root) : [];
+  if (!paragraphs.some((p) => childrenOf(p).length > 0)) return <>{text ?? ""}</>;
+  // Lines are joined with a newline character rather than <br>, so each
+  // place keeps showing breaks exactly as it showed them in the plain text.
+  return (
+    <>
+      {paragraphs.map((p, i) => (
+        <Fragment key={i}>
+          {i > 0 && "\n"}
+          {renderNodes(childrenOf(p))}
+        </Fragment>
+      ))}
+    </>
+  );
+}
+
+/**
  * Render a Payload prose field.
  *
  * Accepts both shapes the CMS produces: Lexical richText (the `content` fields)

@@ -12,14 +12,21 @@ export function section(label: string, fields: Field[]): Field {
 }
 
 // Rich text stays full width, one language above the other: its toolbar and
-// long write-ups need the room.
+// long write-ups need the room. The exception is the one-line editors of
+// formatted titles and captions (see formattedText), marked `custom.inline`.
 const PAIRED_TYPES = new Set(['text', 'textarea', 'upload'])
 
-type Named = { name?: string; type?: string; admin?: { position?: string; width?: string } }
+type Named = {
+  name?: string
+  type?: string
+  admin?: { position?: string; width?: string }
+  custom?: { inline?: boolean }
+}
 
 function pairable(field: Field): boolean {
   const f = field as Named
-  return !!f.name && !!f.type && PAIRED_TYPES.has(f.type) && f.admin?.position !== 'sidebar'
+  if (!f.name || !f.type || f.admin?.position === 'sidebar') return false
+  return PAIRED_TYPES.has(f.type) || (f.type === 'richText' && f.custom?.inline === true)
 }
 
 function half(field: Field): Field {

@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { GalleryPage } from "@/components/GalleryPage";
 import type { GalleryPhoto } from "@/components/PhotoGallery";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { mediaSrcSet, mediaUrl, type PayloadSticker } from "@/lib/payload";
+import { mediaSrcSet, mediaUrl, type PayloadSticker, formatted } from "@/lib/payload";
 import { SECTION_COLORS } from "@/lib/sectionColors";
 import { stickersQuery } from "@/lib/queries";
 
@@ -15,12 +15,13 @@ export const Route = createFileRoute("/publications/stickers")({
 });
 
 function toGallerySticker(sticker: PayloadSticker, lang: "en" | "ar"): GalleryPhoto {
-  const caption = lang === "ar" ? (sticker.titleAr ?? sticker.title) : sticker.title;
+  const caption = formatted(sticker, "title", lang === "ar");
   return {
     id: sticker.id,
     url: mediaUrl(sticker.image),
     srcSet: mediaSrcSet(sticker.image),
-    caption: caption || undefined,
+    caption: caption.text || undefined,
+    captionRich: caption.rich,
     date: sticker.date,
     width: sticker.image?.width,
     height: sticker.image?.height,

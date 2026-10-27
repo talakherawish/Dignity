@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { ForumAdditionalInfo, hasAdditionalInfo } from "@/components/ForumAdditionalInfo";
-import { RichText } from "@/components/RichText";
+import { FormattedText, RichText } from "@/components/RichText";
 import { TranslationNotice } from "@/components/TranslationNotice";
 import { useLanguage, type TranslationKey } from "@/contexts/LanguageContext";
 import {
@@ -12,6 +12,8 @@ import {
   type ForumType,
   type PayloadActivity,
   type PayloadMedia,
+  formatted,
+  type Formatted,
 } from "@/lib/payload";
 
 const FORUM_TYPE_LABEL_KEY: Record<ForumType, TranslationKey> = {
@@ -84,25 +86,25 @@ function groupByYear(items: PayloadActivity[], lang: Lang): YearGroup[] {
   return groups;
 }
 
-type Figure = { url: string; srcSet?: string; alt: string; caption?: string };
+type Figure = { url: string; srcSet?: string; alt: string; caption?: Formatted };
 
 /** The featured image first, then the gallery, skipping anything unresolved. */
 function figuresOf(item: PayloadActivity, lang: Lang): Figure[] {
   const figures: Figure[] = [];
-  const add = (media: PayloadMedia | undefined, caption?: string) => {
+  const add = (media: PayloadMedia | undefined, caption?: Formatted) => {
     const url = mediaUrl(media);
     if (!url) return;
     figures.push({
       url,
       srcSet: mediaSrcSet(media),
       alt: media?.alt ?? "",
-      caption: caption?.trim() || undefined,
+      caption: caption?.text.trim() ? caption : undefined,
     });
   };
 
   add(item.image);
   for (const entry of item.gallery ?? []) {
-    add(entry.image, lang === "ar" ? (entry.captionAr ?? entry.caption) : entry.caption);
+    add(entry.image, formatted(entry, "caption", lang === "ar"));
   }
   return figures;
 }
@@ -141,7 +143,7 @@ function ActivityEntry({
 }) {
   const { t } = useLanguage();
   const isArabic = lang === "ar";
-  const title = isArabic ? (item.titleAr ?? item.title) : item.title;
+  const title = formatted(item, "title", isArabic);
 
   // Prose is read from the visitor's own language only. A title still falls
   // back, because every entry has one and a row cannot be blank -- but handing
@@ -209,7 +211,7 @@ function ActivityEntry({
             (expandable ? "group-hover:text-[color:var(--brand-magenta)]" : "")
           }
         >
-          {title}
+          <FormattedText {...title} />
         </h3>
         {expandable && (
           <span
@@ -299,7 +301,7 @@ function ActivityEntry({
                       </div>
                       {figure.caption && (
                         <figcaption className="mt-2 text-[11px] leading-relaxed text-muted-foreground">
-                          {figure.caption}
+                          <FormattedText {...figure.caption} />
                         </figcaption>
                       )}
                     </figure>

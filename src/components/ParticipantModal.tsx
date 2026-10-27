@@ -6,6 +6,7 @@ import {
   type PayloadParticipant,
 } from "@/lib/payload";
 import { ProfileLinks, type ProfileLink } from "@/components/ProfileLinks";
+import { FormattedText } from "./RichText";
 
 /**
  * A person's profile card, shown over whatever page opened it: the Working
@@ -18,6 +19,8 @@ export type Participant = {
   nameAr: string;
   title: string;
   titleAr: string;
+  titleRich?: unknown;
+  titleRichAr?: unknown;
   category:
     | "researcher"
     | "visitor"
@@ -43,6 +46,10 @@ export function mapPayloadParticipant(p: PayloadParticipant): Participant {
     nameAr: p.nameAr ?? p.name,
     title: p.title ?? role.en,
     titleAr: p.titleAr ?? p.title ?? role.ar,
+    // Formatting goes with whichever plain role is shown; the built-in role
+    // label has none.
+    titleRich: p.title ? p.titleRich : undefined,
+    titleRichAr: p.titleAr ? p.titleRichAr : p.title ? p.titleRich : undefined,
     category: p.category,
     email: p.email ?? "",
     links: p.links ?? [],
@@ -118,7 +125,10 @@ export function ParticipantModal({
               {lang === "ar" ? participant.nameAr : participant.name}
             </h2>
             <p className="text-muted-foreground text-sm mt-1">
-              {lang === "ar" ? participant.titleAr : participant.title}
+              <FormattedText
+                rich={lang === "ar" ? participant.titleRichAr : participant.titleRich}
+                text={lang === "ar" ? participant.titleAr : participant.title}
+              />
             </p>
             {(participant.bio || participant.bioAr) && (
               <p className="mt-6 text-sm text-muted-foreground leading-relaxed">

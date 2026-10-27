@@ -3,9 +3,16 @@ import { useQuery } from "@tanstack/react-query";
 import { ArrowRight } from "lucide-react";
 import { PageLayout, PageHero } from "@/components/PageLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { mediaSrcSet, mediaUrl, populated, type PayloadResearchActivity } from "@/lib/payload";
+import {
+  mediaSrcSet,
+  mediaUrl,
+  populated,
+  type PayloadResearchActivity,
+  formatted,
+} from "@/lib/payload";
 import { SECTION_COLORS } from "@/lib/sectionColors";
 import { researchQuery } from "@/lib/queries";
+import { FormattedText } from "@/components/RichText";
 export const Route = createFileRoute("/projects/research/")({
   loader: async ({ context }) => {
     await context.queryClient.ensureQueryData(researchQuery);
@@ -72,7 +79,8 @@ function ResearchPage() {
         ) : (
           <div className="grid gap-5 sm:grid-cols-2" dir={isArabic ? "rtl" : "ltr"}>
             {items.map((item) => {
-              const title = lang === "ar" ? (item.titleAr ?? item.title) : item.title;
+              const titleFormatted = formatted(item, "title", lang === "ar");
+              const title = titleFormatted.text;
               const image = mediaUrl(item.image);
               const outputs = outputCount(item);
               return (
@@ -101,7 +109,7 @@ function ResearchPage() {
                   )}
                   <div className="p-6 flex-1 flex flex-col">
                     <h2 className="font-serif text-lg text-primary leading-snug group-hover:text-accent transition-colors flex-1">
-                      {title}
+                      <FormattedText {...titleFormatted} />
                     </h2>
                     <div
                       className={

@@ -303,6 +303,36 @@ export interface AboutInitiative {
   id: string;
   title?: string | null;
   titleAr?: string | null;
+  titleRich?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  titleRichAr?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   body?: {
     root: {
       type: string;
@@ -363,6 +393,36 @@ export interface Participant {
   hideFromWorkingGroupPage?: boolean | null;
   title?: string | null;
   titleAr?: string | null;
+  titleRich?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  titleRichAr?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   email?: string | null;
   links?:
     | {
@@ -406,11 +466,71 @@ export interface Participant {
  */
 export interface News {
   id: string;
-  title: string;
-  titleAr: string;
+  title?: string | null;
+  titleAr?: string | null;
+  titleRich?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  titleRichAr?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   date: string;
   excerpt?: string | null;
   excerptAr?: string | null;
+  excerptRich?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  excerptRichAr?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   content?: {
     root: {
       type: string;
@@ -460,6 +580,36 @@ export interface Photo {
   id: string;
   title?: string | null;
   titleAr?: string | null;
+  titleRich?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  titleRichAr?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   /**
    * Optional. Shown under the caption when set.
    */
@@ -501,8 +651,38 @@ export interface Photo {
  */
 export interface Forum {
   id: string;
-  title: string;
-  titleAr: string;
+  title?: string | null;
+  titleAr?: string | null;
+  titleRich?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  titleRichAr?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   date: string;
   forumType?: ('seminar' | 'roundtable' | 'workshop' | 'conference' | 'encounters') | null;
   content?: {
@@ -544,6 +724,36 @@ export interface Forum {
         image: string | Media;
         caption?: string | null;
         captionAr?: string | null;
+        captionRich?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        captionRichAr?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
         id?: string | null;
       }[]
     | null;
@@ -594,8 +804,38 @@ export interface Forum {
  */
 export interface Research {
   id: string;
-  title: string;
-  titleAr: string;
+  title?: string | null;
+  titleAr?: string | null;
+  titleRich?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  titleRichAr?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   content?: {
     root: {
       type: string;
@@ -663,8 +903,38 @@ export interface Research {
  */
 export interface Book {
   id: string;
-  title: string;
-  titleAr: string;
+  title?: string | null;
+  titleAr?: string | null;
+  titleRich?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  titleRichAr?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   /**
    * Type a name freehand, or leave this blank and pick people from Participants below instead.
    */
@@ -681,6 +951,36 @@ export interface Book {
   date?: string | null;
   description?: string | null;
   descriptionAr?: string | null;
+  descriptionRich?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  descriptionRichAr?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   /**
    * Shown to readers in both languages. Leave this as the only file unless the Arabic version below is a genuinely different document.
    */
@@ -730,8 +1030,38 @@ export interface Book {
  */
 export interface TaskForceAi {
   id: string;
-  title: string;
-  titleAr: string;
+  title?: string | null;
+  titleAr?: string | null;
+  titleRich?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  titleRichAr?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   content?: {
     root: {
       type: string;
@@ -790,8 +1120,38 @@ export interface TaskForceAi {
  */
 export interface Paper {
   id: string;
-  title: string;
-  titleAr: string;
+  title?: string | null;
+  titleAr?: string | null;
+  titleRich?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  titleRichAr?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   /**
    * Type a name freehand, or leave this blank and pick people from Participants below instead.
    */
@@ -808,6 +1168,36 @@ export interface Paper {
   date?: string | null;
   description?: string | null;
   descriptionAr?: string | null;
+  descriptionRich?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  descriptionRichAr?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   /**
    * Shown to readers in both languages. Leave this as the only file unless the Arabic version below is a genuinely different document.
    */
@@ -857,8 +1247,38 @@ export interface Paper {
  */
 export interface IdeaFactory {
   id: string;
-  title: string;
-  titleAr: string;
+  title?: string | null;
+  titleAr?: string | null;
+  titleRich?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  titleRichAr?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   content?: {
     root: {
       type: string;
@@ -917,8 +1337,38 @@ export interface IdeaFactory {
  */
 export interface Report {
   id: string;
-  title: string;
-  titleAr: string;
+  title?: string | null;
+  titleAr?: string | null;
+  titleRich?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  titleRichAr?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   /**
    * Type a name freehand, or leave this blank and pick people from Participants below instead.
    */
@@ -935,6 +1385,36 @@ export interface Report {
   date?: string | null;
   description?: string | null;
   descriptionAr?: string | null;
+  descriptionRich?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  descriptionRichAr?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   /**
    * Shown to readers in both languages. Leave this as the only file unless the Arabic version below is a genuinely different document.
    */
@@ -984,8 +1464,38 @@ export interface Report {
  */
 export interface WindsorBirzeit {
   id: string;
-  title: string;
-  titleAr: string;
+  title?: string | null;
+  titleAr?: string | null;
+  titleRich?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  titleRichAr?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   content?: {
     root: {
       type: string;
@@ -1044,8 +1554,38 @@ export interface WindsorBirzeit {
  */
 export interface Brochure {
   id: string;
-  title: string;
-  titleAr: string;
+  title?: string | null;
+  titleAr?: string | null;
+  titleRich?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  titleRichAr?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   /**
    * Type a name freehand, or leave this blank and pick people from Participants below instead.
    */
@@ -1062,6 +1602,36 @@ export interface Brochure {
   date?: string | null;
   description?: string | null;
   descriptionAr?: string | null;
+  descriptionRich?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  descriptionRichAr?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   /**
    * Shown to readers in both languages. Leave this as the only file unless the Arabic version below is a genuinely different document.
    */
@@ -1111,8 +1681,38 @@ export interface Brochure {
  */
 export interface Thesis {
   id: string;
-  title: string;
-  titleAr: string;
+  title?: string | null;
+  titleAr?: string | null;
+  titleRich?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  titleRichAr?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   /**
    * Type a name freehand, or leave this blank and pick people from Participants below instead.
    */
@@ -1129,6 +1729,36 @@ export interface Thesis {
   date?: string | null;
   description?: string | null;
   descriptionAr?: string | null;
+  descriptionRich?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  descriptionRichAr?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   /**
    * Shown to readers in both languages. Leave this as the only file unless the Arabic version below is a genuinely different document.
    */
@@ -1178,8 +1808,38 @@ export interface Thesis {
  */
 export interface Audiovisual {
   id: string;
-  title: string;
-  titleAr: string;
+  title?: string | null;
+  titleAr?: string | null;
+  titleRich?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  titleRichAr?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   /**
    * Type a name freehand, or leave this blank and pick people from Participants below instead.
    */
@@ -1196,6 +1856,36 @@ export interface Audiovisual {
   date?: string | null;
   description?: string | null;
   descriptionAr?: string | null;
+  descriptionRich?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  descriptionRichAr?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   /**
    * Shown to readers in both languages. Leave this as the only file unless the Arabic version below is a genuinely different document.
    */
@@ -1245,8 +1935,38 @@ export interface Audiovisual {
  */
 export interface Poster {
   id: string;
-  title: string;
-  titleAr: string;
+  title?: string | null;
+  titleAr?: string | null;
+  titleRich?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  titleRichAr?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   /**
    * Type a name freehand, or leave this blank and pick people from Participants below instead.
    */
@@ -1263,6 +1983,36 @@ export interface Poster {
   date?: string | null;
   description?: string | null;
   descriptionAr?: string | null;
+  descriptionRich?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  descriptionRichAr?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   /**
    * Shown to readers in both languages. Leave this as the only file unless the Arabic version below is a genuinely different document.
    */
@@ -1317,6 +2067,39 @@ export interface Clipping {
    */
   title?: string | null;
   titleAr?: string | null;
+  /**
+   * Optional — the headline or name of the publication this clipping is from. Not shown on the site; only used to identify the clipping here in the admin.
+   */
+  titleRich?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  titleRichAr?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   date?: string | null;
   image: string | Media;
   /**
@@ -1341,6 +2124,36 @@ export interface Sticker {
   id: string;
   title?: string | null;
   titleAr?: string | null;
+  titleRich?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  titleRichAr?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   /**
    * Optional. Shown under the caption when set.
    */
@@ -1408,8 +2221,38 @@ export interface PartnerItem {
  */
 export interface ReadingList {
   id: string;
-  title: string;
-  titleAr: string;
+  title?: string | null;
+  titleAr?: string | null;
+  titleRich?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  titleRichAr?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   description?: {
     root: {
       type: string;
@@ -1574,8 +2417,38 @@ export interface Keyword {
  */
 export interface Database {
   id: string;
-  title: string;
-  titleAr: string;
+  title?: string | null;
+  titleAr?: string | null;
+  titleRich?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  titleRichAr?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   description?: {
     root: {
       type: string;
@@ -1733,6 +2606,36 @@ export interface Disclaimer {
   id: string;
   title?: string | null;
   titleAr?: string | null;
+  titleRich?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  titleRichAr?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   body?: {
     root: {
       type: string;
@@ -1783,6 +2686,36 @@ export interface PrivacyPolicy {
   id: string;
   title?: string | null;
   titleAr?: string | null;
+  titleRich?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  titleRichAr?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   body?: {
     root: {
       type: string;
@@ -2116,6 +3049,8 @@ export interface RecipientsSelect<T extends boolean = true> {
 export interface AboutInitiativeSelect<T extends boolean = true> {
   title?: T;
   titleAr?: T;
+  titleRich?: T;
+  titleRichAr?: T;
   body?: T;
   bodyAr?: T;
   publicationStatus?: T;
@@ -2137,6 +3072,8 @@ export interface ParticipantsSelect<T extends boolean = true> {
   hideFromWorkingGroupPage?: T;
   title?: T;
   titleAr?: T;
+  titleRich?: T;
+  titleRichAr?: T;
   email?: T;
   links?:
     | T
@@ -2162,9 +3099,13 @@ export interface ParticipantsSelect<T extends boolean = true> {
 export interface NewsSelect<T extends boolean = true> {
   title?: T;
   titleAr?: T;
+  titleRich?: T;
+  titleRichAr?: T;
   date?: T;
   excerpt?: T;
   excerptAr?: T;
+  excerptRich?: T;
+  excerptRichAr?: T;
   content?: T;
   contentAr?: T;
   image?: T;
@@ -2182,6 +3123,8 @@ export interface NewsSelect<T extends boolean = true> {
 export interface PhotosSelect<T extends boolean = true> {
   title?: T;
   titleAr?: T;
+  titleRich?: T;
+  titleRichAr?: T;
   date?: T;
   image?: T;
   relatedActivity?: T;
@@ -2202,6 +3145,8 @@ export interface PhotosSelect<T extends boolean = true> {
 export interface ClippingsSelect<T extends boolean = true> {
   title?: T;
   titleAr?: T;
+  titleRich?: T;
+  titleRichAr?: T;
   date?: T;
   image?: T;
   researchLines?: T;
@@ -2219,6 +3164,8 @@ export interface ClippingsSelect<T extends boolean = true> {
 export interface StickersSelect<T extends boolean = true> {
   title?: T;
   titleAr?: T;
+  titleRich?: T;
+  titleRichAr?: T;
   date?: T;
   image?: T;
   publicationStatus?: T;
@@ -2255,6 +3202,8 @@ export interface PartnerItemsSelect<T extends boolean = true> {
 export interface ResearchSelect<T extends boolean = true> {
   title?: T;
   titleAr?: T;
+  titleRich?: T;
+  titleRichAr?: T;
   content?: T;
   contentAr?: T;
   image?: T;
@@ -2283,6 +3232,8 @@ export interface ResearchSelect<T extends boolean = true> {
 export interface ForumsSelect<T extends boolean = true> {
   title?: T;
   titleAr?: T;
+  titleRich?: T;
+  titleRichAr?: T;
   date?: T;
   forumType?: T;
   content?: T;
@@ -2294,6 +3245,8 @@ export interface ForumsSelect<T extends boolean = true> {
         image?: T;
         caption?: T;
         captionAr?: T;
+        captionRich?: T;
+        captionRichAr?: T;
         id?: T;
       };
   attachments?:
@@ -2323,6 +3276,8 @@ export interface ForumsSelect<T extends boolean = true> {
 export interface WindsorBirzeitSelect<T extends boolean = true> {
   title?: T;
   titleAr?: T;
+  titleRich?: T;
+  titleRichAr?: T;
   content?: T;
   contentAr?: T;
   image?: T;
@@ -2348,6 +3303,8 @@ export interface WindsorBirzeitSelect<T extends boolean = true> {
 export interface IdeaFactorySelect<T extends boolean = true> {
   title?: T;
   titleAr?: T;
+  titleRich?: T;
+  titleRichAr?: T;
   content?: T;
   contentAr?: T;
   image?: T;
@@ -2373,6 +3330,8 @@ export interface IdeaFactorySelect<T extends boolean = true> {
 export interface TaskForceAiSelect<T extends boolean = true> {
   title?: T;
   titleAr?: T;
+  titleRich?: T;
+  titleRichAr?: T;
   content?: T;
   contentAr?: T;
   image?: T;
@@ -2398,6 +3357,8 @@ export interface TaskForceAiSelect<T extends boolean = true> {
 export interface BooksSelect<T extends boolean = true> {
   title?: T;
   titleAr?: T;
+  titleRich?: T;
+  titleRichAr?: T;
   author?: T;
   authorAr?: T;
   authorParticipants?: T;
@@ -2405,6 +3366,8 @@ export interface BooksSelect<T extends boolean = true> {
   date?: T;
   description?: T;
   descriptionAr?: T;
+  descriptionRich?: T;
+  descriptionRichAr?: T;
   file?: T;
   fileAr?: T;
   link?: T;
@@ -2428,6 +3391,8 @@ export interface BooksSelect<T extends boolean = true> {
 export interface PapersSelect<T extends boolean = true> {
   title?: T;
   titleAr?: T;
+  titleRich?: T;
+  titleRichAr?: T;
   author?: T;
   authorAr?: T;
   authorParticipants?: T;
@@ -2435,6 +3400,8 @@ export interface PapersSelect<T extends boolean = true> {
   date?: T;
   description?: T;
   descriptionAr?: T;
+  descriptionRich?: T;
+  descriptionRichAr?: T;
   file?: T;
   fileAr?: T;
   link?: T;
@@ -2458,6 +3425,8 @@ export interface PapersSelect<T extends boolean = true> {
 export interface ReportsSelect<T extends boolean = true> {
   title?: T;
   titleAr?: T;
+  titleRich?: T;
+  titleRichAr?: T;
   author?: T;
   authorAr?: T;
   authorParticipants?: T;
@@ -2465,6 +3434,8 @@ export interface ReportsSelect<T extends boolean = true> {
   date?: T;
   description?: T;
   descriptionAr?: T;
+  descriptionRich?: T;
+  descriptionRichAr?: T;
   file?: T;
   fileAr?: T;
   link?: T;
@@ -2488,6 +3459,8 @@ export interface ReportsSelect<T extends boolean = true> {
 export interface BrochuresSelect<T extends boolean = true> {
   title?: T;
   titleAr?: T;
+  titleRich?: T;
+  titleRichAr?: T;
   author?: T;
   authorAr?: T;
   authorParticipants?: T;
@@ -2495,6 +3468,8 @@ export interface BrochuresSelect<T extends boolean = true> {
   date?: T;
   description?: T;
   descriptionAr?: T;
+  descriptionRich?: T;
+  descriptionRichAr?: T;
   file?: T;
   fileAr?: T;
   link?: T;
@@ -2518,6 +3493,8 @@ export interface BrochuresSelect<T extends boolean = true> {
 export interface ThesesSelect<T extends boolean = true> {
   title?: T;
   titleAr?: T;
+  titleRich?: T;
+  titleRichAr?: T;
   author?: T;
   authorAr?: T;
   authorParticipants?: T;
@@ -2525,6 +3502,8 @@ export interface ThesesSelect<T extends boolean = true> {
   date?: T;
   description?: T;
   descriptionAr?: T;
+  descriptionRich?: T;
+  descriptionRichAr?: T;
   file?: T;
   fileAr?: T;
   link?: T;
@@ -2548,6 +3527,8 @@ export interface ThesesSelect<T extends boolean = true> {
 export interface AudiovisualSelect<T extends boolean = true> {
   title?: T;
   titleAr?: T;
+  titleRich?: T;
+  titleRichAr?: T;
   author?: T;
   authorAr?: T;
   authorParticipants?: T;
@@ -2555,6 +3536,8 @@ export interface AudiovisualSelect<T extends boolean = true> {
   date?: T;
   description?: T;
   descriptionAr?: T;
+  descriptionRich?: T;
+  descriptionRichAr?: T;
   file?: T;
   fileAr?: T;
   link?: T;
@@ -2578,6 +3561,8 @@ export interface AudiovisualSelect<T extends boolean = true> {
 export interface PostersSelect<T extends boolean = true> {
   title?: T;
   titleAr?: T;
+  titleRich?: T;
+  titleRichAr?: T;
   author?: T;
   authorAr?: T;
   authorParticipants?: T;
@@ -2585,6 +3570,8 @@ export interface PostersSelect<T extends boolean = true> {
   date?: T;
   description?: T;
   descriptionAr?: T;
+  descriptionRich?: T;
+  descriptionRichAr?: T;
   file?: T;
   fileAr?: T;
   link?: T;
@@ -2608,6 +3595,8 @@ export interface PostersSelect<T extends boolean = true> {
 export interface ReadingListsSelect<T extends boolean = true> {
   title?: T;
   titleAr?: T;
+  titleRich?: T;
+  titleRichAr?: T;
   description?: T;
   descriptionAr?: T;
   slug?: T;
@@ -2685,6 +3674,8 @@ export interface ReadingImportsSelect<T extends boolean = true> {
 export interface DatabasesSelect<T extends boolean = true> {
   title?: T;
   titleAr?: T;
+  titleRich?: T;
+  titleRichAr?: T;
   description?: T;
   descriptionAr?: T;
   slug?: T;
@@ -2786,6 +3777,8 @@ export interface BibliographyImportsSelect<T extends boolean = true> {
 export interface DisclaimerSelect<T extends boolean = true> {
   title?: T;
   titleAr?: T;
+  titleRich?: T;
+  titleRichAr?: T;
   body?: T;
   bodyAr?: T;
   publicationStatus?: T;
@@ -2802,6 +3795,8 @@ export interface DisclaimerSelect<T extends boolean = true> {
 export interface PrivacyPolicySelect<T extends boolean = true> {
   title?: T;
   titleAr?: T;
+  titleRich?: T;
+  titleRichAr?: T;
   body?: T;
   bodyAr?: T;
   publicationStatus?: T;

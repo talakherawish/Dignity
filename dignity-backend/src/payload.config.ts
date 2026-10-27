@@ -10,6 +10,7 @@ import sharp from 'sharp'
 import { createGithubStorageAdapter } from './lib/githubStorageAdapter'
 import { enforceBilingual, enforceBilingualGlobal } from './lib/bilingual'
 import { sideBySide, sideBySideGlobal } from './lib/adminLayout'
+import { withFormattedText } from './lib/formattedText'
 import { withPublicationStatus } from './lib/publicationStatus'
 import { withEditTracking, withEditTrackingGlobal } from './lib/editTracking'
 import { resolveGithubStorageConfig } from './lib/storageConfig'
@@ -91,8 +92,9 @@ export default buildConfig({
   // "Last Edited By" / "Created By" sidebar fields set automatically from
   // whoever's logged in — see src/lib/editTracking.ts. And sideBySide(), which
   // sets each English field beside its Arabic twin in the edit form — see
-  // src/lib/adminLayout.ts. Wrapping them centrally means new collections are
-  // covered automatically.
+  // src/lib/adminLayout.ts. And withFormattedText(), which gives titles and
+  // short texts a Bold/Italic editor -- see src/lib/formattedText.ts. Wrapping
+  // them centrally means new collections are covered automatically.
   collections: [
     // Admin
     Users,
@@ -148,6 +150,7 @@ export default buildConfig({
     PrivacyPolicy,
   ]
     .map(withPublicationStatus)
+    .map(withFormattedText)
     .map(enforceBilingual)
     .map(sideBySide)
     .map(withEditTracking),

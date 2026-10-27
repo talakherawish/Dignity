@@ -10,12 +10,14 @@ import {
   type ForumType,
   type PayloadParticipant,
   type PayloadPhoto,
+  formatted,
 } from "@/lib/payload";
 import {
   mapPayloadParticipant,
   ParticipantModal,
   type Participant,
 } from "@/components/ParticipantModal";
+import { FormattedText } from "./RichText";
 
 /**
  * The photo gallery, shared by the Photos page and a research entry's photos.
@@ -50,6 +52,8 @@ export type GalleryPhoto = {
   srcSet?: string;
   /** Optional — an untitled photo simply shows no caption. */
   caption?: string;
+  /** The caption's bold and italic, for showing it -- see FormattedText. */
+  captionRich?: unknown;
   date?: string;
   width?: number;
   height?: number;
@@ -77,7 +81,7 @@ export type GalleryPhoto = {
  * research entry's photos, which both draw from the same collection.
  */
 export function toGalleryPhoto(photo: PayloadPhoto, lang: "en" | "ar"): GalleryPhoto {
-  const caption = lang === "ar" ? (photo.titleAr ?? photo.title) : photo.title;
+  const caption = formatted(photo, "title", lang === "ar");
 
   const relatedActivity =
     typeof photo.relatedActivity === "object" && photo.relatedActivity
@@ -105,7 +109,8 @@ export function toGalleryPhoto(photo: PayloadPhoto, lang: "en" | "ar"): GalleryP
     id: photo.id,
     url: mediaUrl(photo.image),
     srcSet: mediaSrcSet(photo.image),
-    caption: caption || undefined,
+    caption: caption.text || undefined,
+    captionRich: caption.rich,
     date: photo.date,
     width: photo.image?.width,
     height: photo.image?.height,
@@ -356,7 +361,7 @@ export function PhotoGallery({ photos }: { photos: GalleryPhoto[] }) {
                     <span className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-3 pt-10 text-start opacity-0 transition-opacity duration-200 group-hover:opacity-100">
                       {photo.caption && (
                         <span className="block text-xs font-medium leading-snug text-white">
-                          {photo.caption}
+                          <FormattedText rich={photo.captionRich} text={photo.caption} />
                         </span>
                       )}
                       {photo.date && (
@@ -477,7 +482,11 @@ export function PhotoGallery({ photos }: { photos: GalleryPhoto[] }) {
               className="mt-3 max-w-2xl text-center text-white/80"
               onClick={(e) => e.stopPropagation()}
             >
-              {open.caption && <p className="text-sm">{open.caption}</p>}
+              {open.caption && (
+                <p className="text-sm">
+                  <FormattedText rich={open.captionRich} text={open.caption} />
+                </p>
+              )}
               {open.date && (
                 <p className="text-[12px] text-white/50 mt-1">
                   {formatDate(open.date, lang === "ar" ? "ar" : "en")}
