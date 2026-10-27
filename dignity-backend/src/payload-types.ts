@@ -2959,8 +2959,6 @@ export interface SiteSetting {
   footerResourcesAr?: string | null;
   footerStudying?: string | null;
   footerStudyingAr?: string | null;
-  footerLibrary?: string | null;
-  footerLibraryAr?: string | null;
   footerDatabases?: string | null;
   footerDatabasesAr?: string | null;
   newsReadMore?: string | null;
@@ -3113,8 +3111,6 @@ export interface SiteSettingsSelect<T extends boolean = true> {
   footerResourcesAr?: T;
   footerStudying?: T;
   footerStudyingAr?: T;
-  footerLibrary?: T;
-  footerLibraryAr?: T;
   footerDatabases?: T;
   footerDatabasesAr?: T;
   newsReadMore?: T;

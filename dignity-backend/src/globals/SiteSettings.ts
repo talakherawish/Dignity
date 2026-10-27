@@ -120,7 +120,6 @@ export const SiteSettings: GlobalConfig = {
             ...pair('footerCopyright', 'Copyright Line'),
             ...pair('footerResources', 'Resources Heading'),
             ...pair('footerStudying', 'Studying Materials Link'),
-            ...pair('footerLibrary', 'Library Link'),
             ...pair('footerDatabases', 'Databases Link'),
           ],
         },
