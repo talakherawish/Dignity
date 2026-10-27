@@ -1,9 +1,10 @@
 import { Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, type UseQueryOptions } from "@tanstack/react-query";
 import { ArrowRight } from "lucide-react";
 import { PageLayout, PageHero } from "@/components/PageLayout";
 import { useLanguage, type TranslationKey } from "@/contexts/LanguageContext";
-import { extractText, fetchPageText, type PayloadDatabase } from "@/lib/payload";
+import { extractText, type PayloadDatabase } from "@/lib/payload";
+import { pageTextQuery } from "@/lib/queries";
 import { SECTION_COLORS } from "@/lib/sectionColors";
 
 /**
@@ -13,21 +14,21 @@ import { SECTION_COLORS } from "@/lib/sectionColors";
  * from the page's own page-text global, edited at the top of its list in the
  * CMS; either may be empty, and the title falls back to the menu label.
  */
+/** One of the entries in lib/queries, fetched on the server by the route's loader. */
+type Query<T> = UseQueryOptions<T, Error, T, string[]>;
+
 export function SubjectIndex({
-  section,
   pageText,
-  fetchSubjects,
-  fetchCounts,
+  subjectsQuery,
+  countsQuery,
   titleKey,
   emptyKey,
   countKey,
   to,
 }: {
-  /** Names the react-query caches, e.g. "databases". */
-  section: string;
   pageText: "databases-page" | "readings-page";
-  fetchSubjects: () => Promise<PayloadDatabase[]>;
-  fetchCounts: () => Promise<Record<string, number>>;
+  subjectsQuery: Query<PayloadDatabase[]>;
+  countsQuery: Query<Record<string, number>>;
   titleKey: TranslationKey;
   emptyKey: TranslationKey;
   /** What a subject holds, after its count: "entries", "readings". */
@@ -35,18 +36,9 @@ export function SubjectIndex({
   to: "/information/databases/$slug" | "/information/readings/$slug";
 }) {
   const { t, lang, isArabic } = useLanguage();
-  const { data: subjects = [], isLoading } = useQuery({
-    queryKey: [section],
-    queryFn: fetchSubjects,
-  });
-  const { data: counts = {} } = useQuery({
-    queryKey: [section, "counts"],
-    queryFn: fetchCounts,
-  });
-  const { data: page } = useQuery({
-    queryKey: [pageText],
-    queryFn: () => fetchPageText(pageText),
-  });
+  const { data: subjects = [], isLoading } = useQuery(subjectsQuery);
+  const { data: counts = {} } = useQuery(countsQuery);
+  const { data: page } = useQuery(pageTextQuery(pageText));
   const pageTitle = (isArabic ? page?.titleAr : page?.title)?.trim();
   const pageIntro = (isArabic ? page?.introAr : page?.intro)?.trim();
 

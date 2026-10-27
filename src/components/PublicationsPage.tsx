@@ -8,7 +8,6 @@ import {
 } from "@/components/PublicationCard";
 import { useLanguage, type TranslationKey } from "@/contexts/LanguageContext";
 import {
-  fetchPublications,
   mediaSrcSet,
   mediaUrl,
   populated,
@@ -19,6 +18,7 @@ import {
   type PayloadPublication,
 } from "@/lib/payload";
 import { SECTION_COLORS } from "@/lib/sectionColors";
+import { publicationsQuery } from "@/lib/queries";
 
 /** Just enough of a research line to head a group and sort it -- see groupByResearchLine. */
 type ResearchLineRef = { id: string; title: string; titleAr?: string };
@@ -193,12 +193,7 @@ export function PublicationsPage({
   breadcrumb?: string;
 }) {
   const { t, isArabic } = useLanguage();
-  // No staleTime: an editor publishing a change in the admin expects to see
-  // it on the next load, not up to five minutes later.
-  const { data: payloadItems = [], isLoading } = useQuery({
-    queryKey: ["publications", type],
-    queryFn: () => fetchPublications(type),
-  });
+  const { data: payloadItems = [], isLoading } = useQuery(publicationsQuery(type));
 
   // Payload is the only source. A type with nothing published shows the empty
   // state below rather than a hardcoded stand-in nobody can edit.

@@ -1,8 +1,11 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, type UseQueryOptions } from "@tanstack/react-query";
 import { PageHero, PageLayout } from "@/components/PageLayout";
 import { RichText } from "@/components/RichText";
 import { useLanguage } from "@/contexts/LanguageContext";
 import type { PayloadPage } from "@/lib/payload";
+
+/** One of the entries in lib/queries, fetched on the server by the route's loader. */
+type Query<T> = UseQueryOptions<T, Error, T, string[]>;
 
 /**
  * The Disclaimer and Privacy Policy pages, both linked from the footer and
@@ -12,17 +15,15 @@ import type { PayloadPage } from "@/lib/payload";
  * two drift apart.
  */
 export function LegalPage({
-  queryKey,
-  fetchPage,
+  query,
   fallbackTitle,
 }: {
-  queryKey: string;
-  fetchPage: () => Promise<PayloadPage | undefined>;
+  query: Query<PayloadPage | null>;
   fallbackTitle: string;
 }) {
   const { isArabic } = useLanguage();
 
-  const { data: page } = useQuery({ queryKey: [queryKey], queryFn: fetchPage });
+  const { data: page } = useQuery(query);
 
   const title = (isArabic ? page?.titleAr : page?.title) || fallbackTitle;
   const body = isArabic ? page?.bodyAr : page?.body;

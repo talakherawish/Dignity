@@ -1,19 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { LegalPage } from "@/components/LegalPage";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { fetchDisclaimer } from "@/lib/payload";
+import { disclaimerQuery } from "@/lib/queries";
 
 export const Route = createFileRoute("/disclaimer")({
+  loader: async ({ context }) => {
+    await context.queryClient.ensureQueryData(disclaimerQuery);
+  },
   component: DisclaimerPage,
 });
 
 function DisclaimerPage() {
   const { t } = useLanguage();
-  return (
-    <LegalPage
-      queryKey="disclaimer"
-      fetchPage={fetchDisclaimer}
-      fallbackTitle={t("footer.disclaimer")}
-    />
-  );
+  return <LegalPage query={disclaimerQuery} fallbackTitle={t("footer.disclaimer")} />;
 }

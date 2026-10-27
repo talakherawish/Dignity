@@ -5,14 +5,19 @@ import { BibliographyBrowser, type BibliographyFilters } from "@/components/Bibl
 import { PageLayout, PageHero } from "@/components/PageLayout";
 import { RichText } from "@/components/RichText";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { fetchBibliographyEntries, fetchDatabase, hasProse } from "@/lib/payload";
+import { hasProse } from "@/lib/payload";
 import { SECTION_COLORS } from "@/lib/sectionColors";
+import { bibliographyEntriesQuery, databaseQuery } from "@/lib/queries";
 
 const text = (value: unknown) => (typeof value === "string" && value ? value : undefined);
 
 // "databases_" rather than "databases": the trailing underscore keeps this page
 // from nesting inside the list page's component, which has no <Outlet />.
 export const Route = createFileRoute("/information/databases_/$slug")({
+  loader: async ({ context, params }) => {
+    const database = await context.queryClient.ensureQueryData(databaseQuery(params.slug));
+    if (database) await context.queryClient.ensureQueryData(bibliographyEntriesQuery(database.id));
+  },
   validateSearch: (search: Record<string, unknown>): BibliographyFilters => ({
     q: text(search.q),
     type: text(search.type),
@@ -30,13 +35,9 @@ function DatabasePage() {
   const navigate = Route.useNavigate();
   const { t, isArabic } = useLanguage();
 
-  const { data: database, isLoading: databaseLoading } = useQuery({
-    queryKey: ["database", slug],
-    queryFn: () => fetchDatabase(slug),
-  });
+  const { data: database, isLoading: databaseLoading } = useQuery(databaseQuery(slug));
   const { data: entries = [], isLoading: entriesLoading } = useQuery({
-    queryKey: ["bibliography-entries", database?.id],
-    queryFn: () => fetchBibliographyEntries(database!.id),
+    ...bibliographyEntriesQuery(database?.id ?? ""),
     enabled: !!database,
   });
 

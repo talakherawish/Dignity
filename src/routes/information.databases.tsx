@@ -1,8 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { SubjectIndex } from "@/components/SubjectIndex";
-import { fetchBibliographyCounts, fetchDatabases } from "@/lib/payload";
+import { databaseCountsQuery, pageTextQuery, databasesQuery } from "@/lib/queries";
 
 export const Route = createFileRoute("/information/databases")({
+  loader: async ({ context }) => {
+    await Promise.all([
+      context.queryClient.ensureQueryData(databasesQuery),
+      context.queryClient.ensureQueryData(databaseCountsQuery),
+      context.queryClient.ensureQueryData(pageTextQuery("databases-page")),
+    ]);
+  },
   component: DatabasesPage,
 });
 
@@ -13,10 +20,9 @@ export const Route = createFileRoute("/information/databases")({
 function DatabasesPage() {
   return (
     <SubjectIndex
-      section="databases"
       pageText="databases-page"
-      fetchSubjects={fetchDatabases}
-      fetchCounts={fetchBibliographyCounts}
+      subjectsQuery={databasesQuery}
+      countsQuery={databaseCountsQuery}
       titleKey="information.databases"
       emptyKey="databases.empty"
       countKey="databases.entries"

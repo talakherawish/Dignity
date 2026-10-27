@@ -4,19 +4,23 @@ import { useQuery } from "@tanstack/react-query";
 import { Search } from "lucide-react";
 import { PageLayout, PageHero } from "@/components/PageLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { fetchParticipants, type PayloadParticipant } from "@/lib/payload";
+import { type PayloadParticipant } from "@/lib/payload";
 import {
   mapPayloadParticipant,
   ParticipantModal,
   type Participant,
 } from "@/components/ParticipantModal";
 import { SECTION_COLORS } from "@/lib/sectionColors";
+import { participantsQuery } from "@/lib/queries";
 
 /** ?participant=<id> deep-links to one profile, opening that person's
  * modal once the list has loaded. */
 type ParticipantsSearch = { participant?: string };
 
 export const Route = createFileRoute("/about/participants")({
+  loader: async ({ context }) => {
+    await context.queryClient.ensureQueryData(participantsQuery);
+  },
   validateSearch: (search: Record<string, unknown>): ParticipantsSearch => ({
     participant: typeof search.participant === "string" ? search.participant : undefined,
   }),
@@ -110,12 +114,7 @@ function ParticipantsPage() {
   const [activeCategory, setActiveCategory] = useState("all");
   const [selected, setSelected] = useState<Participant | null>(null);
 
-  // No staleTime: an editor publishing a change in the admin expects to see
-  // it on the next load, not up to five minutes later.
-  const { data: payloadParticipants = [] } = useQuery({
-    queryKey: ["participants"],
-    queryFn: fetchParticipants,
-  });
+  const { data: payloadParticipants = [] } = useQuery(participantsQuery);
 
   // Opens a tagged person's modal when arriving from a photo's "With: ..."
   // tag. Runs once per deep link -- payloadParticipants is a stable

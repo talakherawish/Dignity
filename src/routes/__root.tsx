@@ -1,4 +1,4 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import type { QueryClient } from "@tanstack/react-query";
 import {
   Outlet,
   Link,
@@ -9,6 +9,7 @@ import {
 } from "@tanstack/react-router";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { resolveInitialLanguage } from "@/lib/language-preference";
+import { siteSettingsQuery } from "@/lib/queries";
 
 import appCss from "../styles.css?url";
 
@@ -96,7 +97,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   // on the server and shipped to the client with the rest of the loader data.
   // Resolving it independently on each side risks the two disagreeing, which
   // would hydrate the page in a different language than it was rendered in.
-  loader: () => ({ initialLanguage: resolveInitialLanguage() }),
+  //
+  // Site Settings (menu labels, homepage text, footer) is on every page, so it
+  // is fetched here, before the page is rendered, rather than after it appears.
+  loader: async ({ context }) => {
+    await context.queryClient.ensureQueryData(siteSettingsQuery);
+    return { initialLanguage: resolveInitialLanguage() };
+  },
   shellComponent: RootShell,
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
@@ -104,8 +111,19 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 });
 
 function RootShell({ children }: { children: React.ReactNode }) {
+  // The page's language, direction and Arabic font are written into the HTML
+  // the server sends, so an Arabic page doesn't first appear left-to-right in
+  // the English font. LanguageProvider keeps them in step when the reader
+  // switches language.
+  const { initialLanguage } = Route.useLoaderData();
+  const isArabic = initialLanguage === "ar";
+
   return (
-    <html lang="en">
+    <html
+      lang={initialLanguage}
+      dir={isArabic ? "rtl" : "ltr"}
+      className={isArabic ? "lang-ar" : undefined}
+    >
       <head>
         <HeadContent />
       </head>
@@ -118,14 +136,11 @@ function RootShell({ children }: { children: React.ReactNode }) {
 }
 
 function RootComponent() {
-  const { queryClient } = Route.useRouteContext();
   const { initialLanguage } = Route.useLoaderData();
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <LanguageProvider initialLanguage={initialLanguage}>
-        <Outlet />
-      </LanguageProvider>
-    </QueryClientProvider>
+    <LanguageProvider initialLanguage={initialLanguage}>
+      <Outlet />
+    </LanguageProvider>
   );
 }

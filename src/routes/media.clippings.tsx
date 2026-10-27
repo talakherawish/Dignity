@@ -3,10 +3,14 @@ import { useQuery } from "@tanstack/react-query";
 import { GalleryPage } from "@/components/GalleryPage";
 import type { GalleryPhoto } from "@/components/PhotoGallery";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { fetchClippings, mediaSrcSet, mediaUrl, type PayloadClipping } from "@/lib/payload";
+import { mediaSrcSet, mediaUrl, type PayloadClipping } from "@/lib/payload";
 import { SECTION_COLORS } from "@/lib/sectionColors";
+import { clippingsQuery } from "@/lib/queries";
 
 export const Route = createFileRoute("/media/clippings")({
+  loader: async ({ context }) => {
+    await context.queryClient.ensureQueryData(clippingsQuery);
+  },
   component: ClippingsPage,
 });
 
@@ -27,12 +31,7 @@ function toGalleryClipping(item: PayloadClipping): GalleryPhoto {
 
 function ClippingsPage() {
   const { t, isArabic } = useLanguage();
-  // No staleTime: an editor publishing a change in the admin expects to see
-  // it on the next load, not up to five minutes later.
-  const { data: items = [], isLoading } = useQuery({
-    queryKey: ["clippings"],
-    queryFn: fetchClippings,
-  });
+  const { data: items = [], isLoading } = useQuery(clippingsQuery);
 
   return (
     <GalleryPage

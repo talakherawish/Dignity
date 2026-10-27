@@ -3,15 +3,13 @@ import { useQuery } from "@tanstack/react-query";
 import { ArrowRight } from "lucide-react";
 import { PageLayout, PageHero } from "@/components/PageLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
-import {
-  fetchResearch,
-  mediaSrcSet,
-  mediaUrl,
-  populated,
-  type PayloadResearchActivity,
-} from "@/lib/payload";
+import { mediaSrcSet, mediaUrl, populated, type PayloadResearchActivity } from "@/lib/payload";
 import { SECTION_COLORS } from "@/lib/sectionColors";
+import { researchQuery } from "@/lib/queries";
 export const Route = createFileRoute("/projects/research/")({
+  loader: async ({ context }) => {
+    await context.queryClient.ensureQueryData(researchQuery);
+  },
   component: ResearchPage,
 });
 
@@ -48,12 +46,7 @@ function outputCount(item: PayloadResearchActivity): number {
 function ResearchPage() {
   const { lang, isArabic } = useLanguage();
 
-  // No staleTime: an editor publishing a change in the admin expects to see
-  // it on the next load, not up to five minutes later.
-  const { data: items = [], isLoading } = useQuery({
-    queryKey: ["research"],
-    queryFn: fetchResearch,
-  });
+  const { data: items = [], isLoading } = useQuery(researchQuery);
 
   return (
     <PageLayout>

@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { persistLanguage } from "@/lib/language-preference";
-import { fetchSiteSettings, type PayloadSiteSettings } from "@/lib/payload";
+import { siteSettingsQuery } from "@/lib/queries";
 
 export type Language = "en" | "ar";
 
@@ -409,7 +410,9 @@ export function LanguageProvider({
   const [lang, setLangState] = useState<Language>(initialLanguage);
   const dir = lang === "ar" ? "rtl" : "ltr";
   const isArabic = lang === "ar";
-  const [overrides, setOverrides] = useState<PayloadSiteSettings | null>(null);
+  // Fetched on the server by the root route's loader, so it is here from the
+  // first render and the labels never switch from built-in text to the CMS's.
+  const { data: overrides } = useQuery(siteSettingsQuery);
 
   // Every switch is remembered, so a reload keeps the reader where they were.
   const setLang = useCallback((next: Language) => {
@@ -427,20 +430,10 @@ export function LanguageProvider({
     }
   }, [lang, dir, isArabic]);
 
-  useEffect(() => {
-    let cancelled = false;
-    fetchSiteSettings().then((data) => {
-      if (!cancelled && data) setOverrides(data);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
   // Memoised together: every component below this provider consumes the
   // context, so a fresh `t` or a fresh value object on each render would
   // re-render the entire tree. Both only actually change when the language
-  // switches or the Payload overrides land.
+  // switches or the Payload overrides change.
   const t = useCallback(
     (key: TranslationKey) => {
       const base = SITE_SETTINGS_KEY_MAP[key];

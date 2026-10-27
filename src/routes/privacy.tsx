@@ -1,19 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { LegalPage } from "@/components/LegalPage";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { fetchPrivacyPolicy } from "@/lib/payload";
+import { privacyPolicyQuery } from "@/lib/queries";
 
 export const Route = createFileRoute("/privacy")({
+  loader: async ({ context }) => {
+    await context.queryClient.ensureQueryData(privacyPolicyQuery);
+  },
   component: PrivacyPage,
 });
 
 function PrivacyPage() {
   const { t } = useLanguage();
-  return (
-    <LegalPage
-      queryKey="privacy-policy"
-      fetchPage={fetchPrivacyPolicy}
-      fallbackTitle={t("footer.privacy")}
-    />
-  );
+  return <LegalPage query={privacyPolicyQuery} fallbackTitle={t("footer.privacy")} />;
 }

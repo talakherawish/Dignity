@@ -32,9 +32,8 @@ function SearchPage() {
   const query = q?.trim() ?? "";
 
   // Fetched once per visit and cached while typing — a new query re-filters
-  // the same list rather than re-fetching it. No staleTime, though: a fresh
-  // visit should reflect anything an editor just published or unpublished,
-  // not a copy of the index from up to five minutes ago.
+  // the same list rather than re-fetching it. Left to load in the browser rather than on the server: it is every
+  // collection at once, too much to hold up the page or send along with it.
   const { data: index = [], isLoading } = useQuery({
     queryKey: ["search-index"],
     queryFn: buildSearchIndex,

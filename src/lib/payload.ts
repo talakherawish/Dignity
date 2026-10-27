@@ -836,16 +836,43 @@ const PUBLIC_REQUEST: RequestInit = {
   headers: { "Content-Type": "application/json" },
 };
 
-async function fetchCollection<T>(slug: string, extra: Record<string, string> = {}): Promise<T[]> {
+/**
+ * How long a request may take before the last good copy is used instead. Pages
+ * are rendered on the server only once their content has arrived, so a hung
+ * backend would otherwise hold the whole page up.
+ */
+const REQUEST_TIMEOUT_MS = 5000;
+
+/**
+ * The last successful answer to every request, by address. Pages are rendered
+ * from whatever Payload holds at the moment of the request, so this is never
+ * what a visitor normally sees -- it is the fallback for when Payload is down
+ * or slow, and it follows every edit made in the admin because it is replaced
+ * by each successful answer. On the server it lives as long as the website's
+ * process and is shared by every visitor; in the browser, as long as the tab.
+ */
+const lastGood = new Map<string, unknown>();
+
+/** GET a Payload API path as JSON, or its last good answer, or undefined. */
+async function getJson<T>(path: string): Promise<T | undefined> {
   try {
-    const params = new URLSearchParams({ depth: "1", limit: "100", ...NESTED_POPULATE, ...extra });
-    const res = await fetch(`${PAYLOAD_URL}/api/${slug}?${params}`, PUBLIC_REQUEST);
-    if (!res.ok) return [];
-    const data = (await res.json()) as { docs?: T[] };
-    return data.docs ?? [];
+    const res = await fetch(`${PAYLOAD_URL}/api/${path}`, {
+      ...PUBLIC_REQUEST,
+      signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+    });
+    if (!res.ok) throw new Error(`${res.status}`);
+    const data = (await res.json()) as T;
+    lastGood.set(path, data);
+    return data;
   } catch {
-    return [];
+    return lastGood.get(path) as T | undefined;
   }
+}
+
+async function fetchCollection<T>(slug: string, extra: Record<string, string> = {}): Promise<T[]> {
+  const params = new URLSearchParams({ depth: "1", limit: "100", ...NESTED_POPULATE, ...extra });
+  const data = await getJson<{ docs?: T[] }>(`${slug}?${params}`);
+  return data?.docs ?? [];
 }
 
 // ── Public fetch functions ─────────────────────────────────────────────────
@@ -868,10 +895,8 @@ export const fetchNews = () => fetchCollection<PayloadNews>("news", NEWEST_FIRST
  * Everything shown on Activities -> Forums, newest first: every seminar,
  * roundtable, workshop, and conference the Dignity initiative has run.
  * Seminars, Conferences, and Meetings used to be three separate Payload
- * collections; they were merged into this one (see
- * scripts/merge-seminars-conferences-meetings-into-forums.ts in the
- * backend), so this is now a single fetch rather than three stitched
- * together. A document's forumType says which of the four types it's filed
+ * collections; they were merged into this one, so this is now a single
+ * fetch rather than three stitched together. A document's forumType says which of the four types it's filed
  * under; the handful migrated in from the old Meetings collection without
  * one yet still come back (for the "All" tab) rather than disappearing --
  * see the `forumType` field on the Forums collection.
@@ -1081,13 +1106,7 @@ export const fetchPartners = () => fetchCollection<PayloadPartner>("partner-item
  * -> participant (1) -> photo (2)) as a media object rather than a bare id.
  */
 export async function fetchSiteSettings(): Promise<PayloadSiteSettings | null> {
-  try {
-    const res = await fetch(`${PAYLOAD_URL}/api/globals/site-settings?depth=2`, PUBLIC_REQUEST);
-    if (!res.ok) return null;
-    return (await res.json()) as PayloadSiteSettings;
-  } catch {
-    return null;
-  }
+  return (await getJson<PayloadSiteSettings>("globals/site-settings?depth=2")) ?? null;
 }
 
 type PayloadPageText = {
@@ -1106,13 +1125,7 @@ type PayloadPageText = {
 export async function fetchPageText(
   global: "databases-page" | "readings-page",
 ): Promise<PayloadPageText | null> {
-  try {
-    const res = await fetch(`${PAYLOAD_URL}/api/globals/${global}?depth=0`, PUBLIC_REQUEST);
-    if (!res.ok) return null;
-    return (await res.json()) as PayloadPageText;
-  } catch {
-    return null;
-  }
+  return (await getJson<PayloadPageText>(`globals/${global}?depth=0`)) ?? null;
 }
 
 type SubscribeToMailingListInput = {

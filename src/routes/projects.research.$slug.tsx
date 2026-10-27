@@ -9,7 +9,6 @@ import { PhotoGallery, toGalleryPhoto } from "@/components/PhotoGallery";
 import { PublicationCard, PublicationCardGrid } from "@/components/PublicationCard";
 import { useLanguage } from "@/contexts/LanguageContext";
 import {
-  fetchResearchBySlug,
   hasProse,
   mediaSrcSet,
   mediaUrl,
@@ -21,8 +20,12 @@ import {
   type PayloadPublication,
 } from "@/lib/payload";
 import { SECTION_COLORS } from "@/lib/sectionColors";
+import { researchBySlugQuery } from "@/lib/queries";
 
 export const Route = createFileRoute("/projects/research/$slug")({
+  loader: async ({ context, params }) => {
+    await context.queryClient.ensureQueryData(researchBySlugQuery(params.slug));
+  },
   component: ResearchDetailPage,
 });
 
@@ -30,14 +33,7 @@ function ResearchDetailPage() {
   const { slug } = Route.useParams();
   const { lang, isArabic } = useLanguage();
 
-  // No staleTime: an editor publishing a change in the admin expects to see it
-  // on the next load, and React Query's default revalidate-on-mount plus
-  // revalidate-on-focus gives exactly that. The five minutes this used to hold
-  // meant a just-published edit could be invisible for that long.
-  const { data: item, isLoading } = useQuery({
-    queryKey: ["research", slug],
-    queryFn: () => fetchResearchBySlug(slug),
-  });
+  const { data: item, isLoading } = useQuery(researchBySlugQuery(slug));
 
   const backLink = (
     <Link

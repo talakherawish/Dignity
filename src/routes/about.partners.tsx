@@ -3,10 +3,14 @@ import { useQuery } from "@tanstack/react-query";
 import { ArrowUpRight } from "lucide-react";
 import { PageLayout, PageHero } from "@/components/PageLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { fetchPartners, mediaSrcSet, mediaUrl, type PayloadPartner } from "@/lib/payload";
+import { mediaSrcSet, mediaUrl, type PayloadPartner } from "@/lib/payload";
 import { SECTION_COLORS } from "@/lib/sectionColors";
+import { partnersQuery } from "@/lib/queries";
 
 export const Route = createFileRoute("/about/partners")({
+  loader: async ({ context }) => {
+    await context.queryClient.ensureQueryData(partnersQuery);
+  },
   component: PartnersPage,
 });
 
@@ -148,12 +152,8 @@ function PartnersPage() {
   // -- these, plus a prose document for the page's heading and a one-line
   // introduction -- and two sidebar entries for one page confused everyone
   // looking for where to add a partner. The heading now comes from the site's
-  // own navigation label, and there is no introduction. No staleTime: an
-  // editor publishing a partner expects it on the next load.
-  const { data: partners = [], isLoading } = useQuery({
-    queryKey: ["partners"],
-    queryFn: fetchPartners,
-  });
+  // own navigation label, and there is no introduction.
+  const { data: partners = [], isLoading } = useQuery(partnersQuery);
 
   return (
     <PageLayout>

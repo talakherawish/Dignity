@@ -5,7 +5,6 @@ import { PageIntro } from "./PageIntro";
 import { PageLayout, PageHero } from "./PageLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
 import {
-  fetchActivityLine,
   hasProse,
   mediaSrcSet,
   mediaUrl,
@@ -14,6 +13,7 @@ import {
   type PayloadActivity,
   type PayloadPublication,
 } from "@/lib/payload";
+import { activityLineQuery } from "@/lib/queries";
 
 /**
  * Task Force on AI and Idea Factory, laid out exactly like a Research area's
@@ -37,12 +37,7 @@ export function ActivityLinePage({
 }) {
   const { lang, isArabic } = useLanguage();
 
-  // No staleTime: an editor publishing a change in the admin expects to see
-  // it on the next load, not up to five minutes later.
-  const { data: item, isLoading } = useQuery({
-    queryKey: ["activity-line", activityLine],
-    queryFn: () => fetchActivityLine(activityLine),
-  });
+  const { data: item, isLoading } = useQuery(activityLineQuery(activityLine));
 
   if (isLoading) {
     return (

@@ -3,10 +3,14 @@ import { useQuery } from "@tanstack/react-query";
 import { GalleryPage } from "@/components/GalleryPage";
 import type { GalleryPhoto } from "@/components/PhotoGallery";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { fetchStickers, mediaSrcSet, mediaUrl, type PayloadSticker } from "@/lib/payload";
+import { mediaSrcSet, mediaUrl, type PayloadSticker } from "@/lib/payload";
 import { SECTION_COLORS } from "@/lib/sectionColors";
+import { stickersQuery } from "@/lib/queries";
 
 export const Route = createFileRoute("/publications/stickers")({
+  loader: async ({ context }) => {
+    await context.queryClient.ensureQueryData(stickersQuery);
+  },
   component: StickersPage,
 });
 
@@ -25,12 +29,7 @@ function toGallerySticker(sticker: PayloadSticker, lang: "en" | "ar"): GalleryPh
 
 function StickersPage() {
   const { t, lang, isArabic } = useLanguage();
-  // No staleTime: an editor publishing a change in the admin expects to see
-  // it on the next load, not up to five minutes later.
-  const { data: items = [], isLoading } = useQuery({
-    queryKey: ["stickers"],
-    queryFn: fetchStickers,
-  });
+  const { data: items = [], isLoading } = useQuery(stickersQuery);
 
   return (
     <GalleryPage

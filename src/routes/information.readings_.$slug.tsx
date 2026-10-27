@@ -5,14 +5,19 @@ import { ReadingsBrowser, type ReadingFilters } from "@/components/ReadingsBrows
 import { PageLayout, PageHero } from "@/components/PageLayout";
 import { RichText } from "@/components/RichText";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { fetchReadingItems, fetchReadingList, hasProse } from "@/lib/payload";
+import { hasProse } from "@/lib/payload";
 import { SECTION_COLORS } from "@/lib/sectionColors";
+import { readingItemsQuery, readingListQuery } from "@/lib/queries";
 
 const text = (value: unknown) => (typeof value === "string" && value ? value : undefined);
 
 // "readings_" rather than "readings": the trailing underscore keeps this page
 // from nesting inside the list page's component, which has no <Outlet />.
 export const Route = createFileRoute("/information/readings_/$slug")({
+  loader: async ({ context, params }) => {
+    const subject = await context.queryClient.ensureQueryData(readingListQuery(params.slug));
+    if (subject) await context.queryClient.ensureQueryData(readingItemsQuery(subject.id));
+  },
   validateSearch: (search: Record<string, unknown>): ReadingFilters => ({
     q: text(search.q),
     type: text(search.type),
@@ -30,13 +35,9 @@ function ReadingListPage() {
   const navigate = Route.useNavigate();
   const { t, isArabic } = useLanguage();
 
-  const { data: subject, isLoading: subjectLoading } = useQuery({
-    queryKey: ["reading-list", slug],
-    queryFn: () => fetchReadingList(slug),
-  });
+  const { data: subject, isLoading: subjectLoading } = useQuery(readingListQuery(slug));
   const { data: readings = [], isLoading: readingsLoading } = useQuery({
-    queryKey: ["readings", subject?.id],
-    queryFn: () => fetchReadingItems(subject!.id),
+    ...readingItemsQuery(subject?.id ?? ""),
     enabled: !!subject,
   });
 

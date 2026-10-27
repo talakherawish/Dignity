@@ -13,11 +13,11 @@ const HUB_TILES: SectionTile[] = [
   { labelKey: "about.partners", to: "/about/partners", icon: Handshake },
 ];
 
-// ── Fallback content (shown while Payload loads, or if a field is empty) ───
-// Mirrors the real copy stored in the Payload "about" page doc
-// (see dignity-backend /api/seed-pages), so there's no visible flash or blank
-// state if the fetch is slow, fails, or the page hasn't been seeded yet.
-// Keep this in sync with the seed route so both sources stay 100% equivalent.
+// ── Fallback content ────────────────────────────────────────────────────────
+// Only shown when Payload can't be reached and the website holds no earlier
+// copy of the page (see lastGood in lib/payload). The page is otherwise
+// rendered on the server from what Payload holds, so this never flashes up
+// before the real text.
 
 const FALLBACK_PARAGRAPHS_EN = [
   "The Dignity Initiative (Karama) is a research initiative at Birzeit University. Its mission is to advance knowledge production that safeguards and fosters human dignity. The initiative is grounded in the understanding that dignity — an interdisciplinary concept — serves as a meaningful point of intersection between diverse academic fields, and a foundational pillar for scientific research ethics.",
@@ -80,8 +80,8 @@ export function AboutPage({
   const fallbackParagraphs = isArabic ? FALLBACK_PARAGRAPHS_AR : FALLBACK_PARAGRAPHS_EN;
   const fallbackItems = isArabic ? FALLBACK_ITEMS_AR : FALLBACK_ITEMS_EN;
 
-  // Prefer Payload content; fall back to the equivalent hardcoded copy above
-  // while loading, on fetch failure, or if the page hasn't been seeded.
+  // Prefer Payload content; fall back to the built-in copy above only if
+  // Payload gave nothing.
   const resolvedItems = items && items.length > 0 ? items : fallbackItems;
   const resolvedParagraphs = paragraphs && paragraphs.length > 0 ? paragraphs : fallbackParagraphs;
 

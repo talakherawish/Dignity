@@ -1,8 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { SubjectIndex } from "@/components/SubjectIndex";
-import { fetchReadingCounts, fetchReadingLists } from "@/lib/payload";
+import { readingCountsQuery, pageTextQuery, readingListsQuery } from "@/lib/queries";
 
 export const Route = createFileRoute("/information/readings")({
+  loader: async ({ context }) => {
+    await Promise.all([
+      context.queryClient.ensureQueryData(readingListsQuery),
+      context.queryClient.ensureQueryData(readingCountsQuery),
+      context.queryClient.ensureQueryData(pageTextQuery("readings-page")),
+    ]);
+  },
   component: ReadingsPage,
 });
 
@@ -13,10 +20,9 @@ export const Route = createFileRoute("/information/readings")({
 function ReadingsPage() {
   return (
     <SubjectIndex
-      section="reading-lists"
       pageText="readings-page"
-      fetchSubjects={fetchReadingLists}
-      fetchCounts={fetchReadingCounts}
+      subjectsQuery={readingListsQuery}
+      countsQuery={readingCountsQuery}
       titleKey="information.readings"
       emptyKey="readings.empty"
       countKey="readings.count"

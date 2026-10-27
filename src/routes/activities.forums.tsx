@@ -4,8 +4,9 @@ import { useQuery } from "@tanstack/react-query";
 import { ActivityLedger } from "@/components/ActivityLedger";
 import { PageLayout, PageHero } from "@/components/PageLayout";
 import { useLanguage, type TranslationKey } from "@/contexts/LanguageContext";
-import { fetchForums, type ForumType } from "@/lib/payload";
+import { type ForumType } from "@/lib/payload";
 import { SECTION_COLORS } from "@/lib/sectionColors";
+import { forumsQuery } from "@/lib/queries";
 
 type FilterValue = "all" | ForumType;
 
@@ -19,6 +20,9 @@ type FilterValue = "all" | ForumType;
 type ForumsSearch = { type?: FilterValue; open?: string };
 
 export const Route = createFileRoute("/activities/forums")({
+  loader: async ({ context }) => {
+    await context.queryClient.ensureQueryData(forumsQuery);
+  },
   validateSearch: (search: Record<string, unknown>): ForumsSearch => {
     const forumTypes: readonly string[] = [
       "seminar",
@@ -49,13 +53,7 @@ function ForumsPage() {
   const { type, open } = Route.useSearch();
   const [active, setActive] = useState<FilterValue>(type ?? "all");
 
-  // No staleTime: an editor publishing or unpublishing something in the
-  // admin expects to see it reflected on the next load, not up to five
-  // minutes later.
-  const { data: items = [], isLoading } = useQuery({
-    queryKey: ["forums"],
-    queryFn: fetchForums,
-  });
+  const { data: items = [], isLoading } = useQuery(forumsQuery);
 
   const filtered = active === "all" ? items : items.filter((item) => item.forumType === active);
 

@@ -5,13 +5,16 @@ import { PageLayout, PageHero } from "@/components/PageLayout";
 import { TranslationNotice } from "@/components/TranslationNotice";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { getField, getBody, mapPayloadNews, type Article } from "@/data/articles";
-import { fetchNews } from "@/lib/payload";
 import { SECTION_COLORS } from "@/lib/sectionColors";
 import { withItalicQuotes } from "@/lib/text";
+import { newsQuery } from "@/lib/queries";
 
 type NewsSearch = { id?: string };
 
 export const Route = createFileRoute("/media/news")({
+  loader: async ({ context }) => {
+    await context.queryClient.ensureQueryData(newsQuery);
+  },
   validateSearch: (search: Record<string, unknown>): NewsSearch => ({
     id: typeof search.id === "string" ? search.id : undefined,
   }),
@@ -158,12 +161,7 @@ function NewsPage() {
   const { id: linkedId } = Route.useSearch();
   const [openIds, setOpenIds] = useState<Set<string>>(() => new Set(linkedId ? [linkedId] : []));
 
-  // No staleTime: an editor publishing a change in the admin expects to see
-  // it on the next load, not up to five minutes later.
-  const { data: payloadNews = [], isLoading } = useQuery({
-    queryKey: ["news"],
-    queryFn: fetchNews,
-  });
+  const { data: payloadNews = [], isLoading } = useQuery(newsQuery);
   const articles = payloadNews.map(mapPayloadNews);
 
   // The linked article only exists once the feed has loaded, so the jump has

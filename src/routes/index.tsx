@@ -10,10 +10,6 @@ import { getField, mapPayloadNews, type Article } from "@/data/articles";
 import { withItalicQuotes } from "@/lib/text";
 import { ProfileLinks, type ProfileLink } from "@/components/ProfileLinks";
 import {
-  fetchNews,
-  fetchParticipants,
-  fetchPublications,
-  fetchSiteSettings,
   mediaSrcSet,
   mediaUrl,
   populated,
@@ -22,6 +18,7 @@ import {
   type PayloadMedia,
   type PayloadPublication,
 } from "@/lib/payload";
+import { newsQuery, participantsQuery, publicationsQuery, siteSettingsQuery } from "@/lib/queries";
 
 /**
  * Shared by every "one screen" section on this page: the hero and News &
@@ -70,6 +67,13 @@ const POSTERS_SECTION_HEIGHT = FULL_SCREEN_SECTION;
 const NEWS_SECTION_HEIGHT = `${PHONE_SCREEN_MIN} md:h-[calc(100svh-82px)] lg:h-[calc(100svh-103px)]`;
 
 export const Route = createFileRoute("/")({
+  loader: async ({ context }) => {
+    await Promise.all([
+      context.queryClient.ensureQueryData(newsQuery),
+      context.queryClient.ensureQueryData(participantsQuery),
+      context.queryClient.ensureQueryData(publicationsQuery("posters")),
+    ]);
+  },
   head: () => ({
     meta: [
       {
@@ -226,12 +230,7 @@ function ImageCarousel({ articles }: { articles: Article[] }) {
 function LatestNewsAndAnnouncements() {
   const { isArabic } = useLanguage();
 
-  // No staleTime: an editor publishing a change in the admin expects to see
-  // it on the next load, not up to five minutes later.
-  const { data: payloadNews = [] } = useQuery({
-    queryKey: ["news"],
-    queryFn: fetchNews,
-  });
+  const { data: payloadNews = [] } = useQuery(newsQuery);
   const articles = payloadNews.map(mapPayloadNews);
   const textOnlyArticles = articles.filter((a) => a.displayMode === "textOnly");
   const carouselArticles = articles
@@ -412,16 +411,8 @@ function TeamSection() {
   const { t, lang, isArabic } = useLanguage();
   const [selected, setSelected] = useState<TeamPerson | null>(null);
 
-  // No staleTime: an editor publishing a change in the admin expects to see
-  // it on the next load, not up to five minutes later.
-  const { data: payloadParticipants = [] } = useQuery({
-    queryKey: ["participants"],
-    queryFn: fetchParticipants,
-  });
-  const { data: siteSettings } = useQuery({
-    queryKey: ["site-settings"],
-    queryFn: fetchSiteSettings,
-  });
+  const { data: payloadParticipants = [] } = useQuery(participantsQuery);
+  const { data: siteSettings } = useQuery(siteSettingsQuery);
 
   // An editor's picks in Site Settings -> Homepage -> "Featured on Homepage"
   // win when there are any; `populated()` drops a dangling reference (the
@@ -535,12 +526,7 @@ function PostersShowcase() {
   const { t, isArabic } = useLanguage();
   const scrollerRef = useRef<HTMLDivElement>(null);
 
-  // No staleTime: same reasoning as every other homepage query -- a newly
-  // published poster should show up here on the next load, not later.
-  const { data: payloadPosters = [] } = useQuery({
-    queryKey: ["publications", "posters"],
-    queryFn: () => fetchPublications("posters"),
-  });
+  const { data: payloadPosters = [] } = useQuery(publicationsQuery("posters"));
 
   const posters = payloadPosters
     .map((item) => ({
