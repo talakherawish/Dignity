@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Download, Loader2 } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { formatFileSize, mediaUrl, type PayloadPublication } from "@/lib/payload";
-import { downloadPdfAsImages } from "@/lib/pdfImages";
+import { downloadPdfAsImages, type ImageFormat } from "@/lib/pdfImages";
 
 /**
  * The download badge on a publication card's preview. With one thing to offer
@@ -33,12 +33,13 @@ function typeName(filename: string | undefined, isArabic: boolean): string {
   return name.split(".").pop()?.toUpperCase() || (isArabic ? "ملف" : "File");
 }
 
+/** A file to download as it is, or images to make from the PDF. */
 type Item = {
   key: string;
   label: string;
   detail?: string;
   href?: string;
-  run?: () => Promise<void>;
+  image?: ImageFormat;
 };
 
 const itemClass =
@@ -62,8 +63,9 @@ export function DownloadMenu({
 }) {
   const { isArabic } = useLanguage();
   const [open, setOpen] = useState(false);
-  const [progress, setProgress] = useState<string | null>(null);
-  const [failed, setFailed] = useState(false);
+  // Which image download is being made, and how far along; which one failed.
+  const [busy, setBusy] = useState<{ key: string; progress: string } | null>(null);
+  const [failed, setFailed] = useState<string | null>(null);
   const ref = useRef<HTMLDivElement>(null);
 
   // Closes on a click anywhere else, or Escape.
@@ -91,24 +93,26 @@ export function DownloadMenu({
     },
   ];
   if (isPdf) {
-    items.push({
-      key: "images",
-      label: isArabic ? "صور (PNG)" : "Images (PNG)",
-      run: async () => {
-        setFailed(false);
-        try {
-          await downloadPdfAsImages(fileUrl, (done, total) =>
-            setProgress(total > 1 ? `${done}/${total}` : "…"),
-          );
-          setOpen(false);
-        } catch {
-          setFailed(true);
-        } finally {
-          setProgress(null);
-        }
-      },
-    });
+    items.push(
+      { key: "png", label: isArabic ? "صور (PNG)" : "Images (PNG)", image: "png" },
+      { key: "jpg", label: isArabic ? "صور (JPG)" : "Images (JPG)", image: "jpeg" },
+    );
   }
+  const makeImages = async (item: Item) => {
+    if (!item.image) return;
+    setFailed(null);
+    setBusy({ key: item.key, progress: "…" });
+    try {
+      await downloadPdfAsImages(fileUrl, item.image, (done, total) =>
+        setBusy({ key: item.key, progress: total > 1 ? `${done}/${total}` : "…" }),
+      );
+      setOpen(false);
+    } catch {
+      setFailed(item.key);
+    } finally {
+      setBusy(null);
+    }
+  };
   for (const [index, format] of (otherFormats ?? []).entries()) {
     const media = typeof format.file === "object" ? format.file : undefined;
     const href = mediaUrl(media);
@@ -182,18 +186,18 @@ export function DownloadMenu({
                 key={item.key}
                 type="button"
                 role="menuitem"
-                disabled={progress !== null}
-                onClick={() => void item.run?.()}
+                disabled={busy !== null}
+                onClick={() => void makeImages(item)}
                 className={itemClass + " disabled:opacity-70"}
               >
                 <span>{item.label}</span>
-                {progress !== null ? (
+                {busy?.key === item.key ? (
                   <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
                     <Loader2 className="h-3 w-3 animate-spin" />
-                    {progress}
+                    {busy.progress}
                   </span>
                 ) : (
-                  failed && (
+                  failed === item.key && (
                     <span className="text-xs text-destructive">
                       {isArabic ? "تعذّر" : "Failed"}
                     </span>

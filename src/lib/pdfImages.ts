@@ -1,7 +1,8 @@
 /**
  * "Download as images" for a publication's PDF, done in the reader's browser:
- * each page is drawn by pdf.js (Mozilla's PDF renderer) and saved as a PNG --
- * one image for a one-page poster, a zip with one image per page otherwise.
+ * each page is drawn by pdf.js (Mozilla's PDF renderer) and saved as a PNG or
+ * a JPG -- one image for a one-page poster, a zip with one image per page
+ * otherwise.
  * Nothing is made or stored ahead of time and the server does no work; both
  * libraries load only when someone asks for images.
  *
@@ -31,8 +32,11 @@ function save(blob: Blob, filename: string) {
   setTimeout(() => URL.revokeObjectURL(href), 10_000);
 }
 
+export type ImageFormat = "png" | "jpeg";
+
 export async function downloadPdfAsImages(
   url: string,
+  format: ImageFormat,
   onProgress?: (done: number, total: number) => void,
 ): Promise<void> {
   const [pdfjs, { default: workerUrl }, { zipSync }] = await Promise.all([
@@ -46,6 +50,7 @@ export async function downloadPdfAsImages(
   const pageCount = pdf.numPages;
   const total = Math.min(pageCount, MAX_PAGES);
   const name = baseName(url);
+  const extension = format === "png" ? "png" : "jpg";
   const pages: Record<string, Uint8Array> = {};
   let single: Blob | undefined;
 
@@ -66,12 +71,16 @@ export async function downloadPdfAsImages(
       context.fillRect(0, 0, canvas.width, canvas.height);
       await page.render({ canvasContext: context, viewport }).promise;
       const blob = await new Promise<Blob>((resolve, reject) =>
-        canvas.toBlob((b) => (b ? resolve(b) : reject(new Error("No image"))), "image/png"),
+        canvas.toBlob(
+          (b) => (b ? resolve(b) : reject(new Error("No image"))),
+          `image/${format}`,
+          0.92,
+        ),
       );
       page.cleanup();
       if (total === 1) single = blob;
       else
-        pages[`${name}-page-${String(n).padStart(2, "0")}.png`] = new Uint8Array(
+        pages[`${name}-page-${String(n).padStart(2, "0")}.${extension}`] = new Uint8Array(
           await blob.arrayBuffer(),
         );
     }
@@ -81,10 +90,10 @@ export async function downloadPdfAsImages(
   }
 
   if (single) {
-    save(single, `${name}.png`);
+    save(single, `${name}.${extension}`);
     return;
   }
-  // PNGs are already compressed; storing them as they are is faster than
+  // PNGs and JPGs are already compressed; storing them as they are is faster than
   // squeezing them again for next to nothing.
   const zip = zipSync(pages, { level: 0 });
   const range = pageCount > MAX_PAGES ? `-pages-1-${MAX_PAGES}` : "";
