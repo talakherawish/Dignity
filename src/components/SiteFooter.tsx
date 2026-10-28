@@ -9,8 +9,8 @@ const PHONE_TEL_HREF = "tel:+97222982169";
 const ADDRESS_MAP_LINK = "https://maps.app.goo.gl/XhiS7J5itvxw3mGy9";
 
 const RESOURCES = [
-  { key: "footer.studying" as const, Icon: BookOpen },
-  { key: "footer.databases" as const, Icon: Database },
+  { key: "footer.studying" as const, to: "/information/readings" as const, Icon: BookOpen },
+  { key: "footer.databases" as const, to: "/information/databases" as const, Icon: Database },
 ] as const;
 
 const EMPTY_SUBSCRIBE_FORM = { firstName: "", lastName: "", email: "", phone: "" };
@@ -177,17 +177,17 @@ export function SiteFooter() {
             <span className="text-[11px] sm:text-[12px] uppercase tracking-[0.18em] text-white/35 font-semibold sm:me-2">
               {t("footer.resources")}
             </span>
-            {RESOURCES.map(({ key, Icon }) => (
-              <a
+            {RESOURCES.map(({ key, to, Icon }) => (
+              <Link
                 key={key}
-                href="#"
+                to={to}
                 className="group flex items-center gap-1.5 rounded-sm text-white/60 transition-all duration-200 hover:text-white/90 sm:gap-2 sm:border sm:border-white/10 sm:bg-white/5 sm:px-3.5 sm:py-2 sm:hover:border-white/20 sm:hover:bg-white/10"
               >
                 <Icon className="hidden h-3.5 w-3.5 shrink-0 text-white/55 transition-colors group-hover:text-[color:var(--brand-magenta)] sm:block" />
                 <span className="text-[12px] font-medium transition-colors whitespace-nowrap sm:text-xs">
                   {t(key)}
                 </span>
-              </a>
+              </Link>
             ))}
           </div>
 

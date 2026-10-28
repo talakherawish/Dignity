@@ -203,7 +203,7 @@ export const SiteSettings: GlobalConfig = {
             section('Bottom Bar', [
               ...pair('footerCopyright', 'Copyright Line'),
               ...pair('footerResources', 'Resources Heading'),
-              ...pair('footerStudying', 'Studying Materials Link'),
+              ...pair('footerStudying', 'Readings and Documents Link'),
               ...pair('footerDatabases', 'Databases Link'),
               ...pair('footerDisclaimer', 'Disclaimer Link'),
               ...pair('footerPrivacy', 'Privacy Policy Link'),

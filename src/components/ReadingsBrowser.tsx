@@ -141,9 +141,9 @@ function ReadingRow({
       ? reading.source
       : undefined;
   const byline = [authors.join(", "), reading.year, source].filter(Boolean);
-  // The note is the team's own words, so it comes in both languages; one
-  // written in only one language is shown on both pages, saying so, with a
-  // machine translation on offer (MachineTranslation).
+  // The note is the team's own words, so it comes in both languages. One
+  // written only in the other language isn't shown: the page says it isn't
+  // available yet and offers a machine translation (MachineTranslation).
   const note = (
     (isArabic ? reading.noteAr || reading.note : reading.note || reading.noteAr) ?? ""
   ).trim();
@@ -192,7 +192,7 @@ function ReadingRow({
               <Highlighted text={byline.join(" · ")} needles={needles} />
             </p>
           )}
-          {note && (
+          {note && !noteIn && (
             <p
               dir="auto"
               className={
@@ -203,7 +203,7 @@ function ReadingRow({
               <Highlighted text={note} needles={needles} />
             </p>
           )}
-          {note && noteIn && <MachineTranslation text={note} from={noteIn} />}
+          {note && noteIn && <MachineTranslation className="mt-3" text={note} from={noteIn} />}
         </div>
         {hasSource && (
           <div className="hidden w-8 shrink-0 pt-6 md:block">

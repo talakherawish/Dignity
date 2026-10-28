@@ -246,9 +246,9 @@ function Entry({
     [keyword.name, keyword.nameAr].some((name) => name && containsAny(name, needles));
   const fileUrl = entry.access === "upload" ? mediaUrl(entry.file) : "";
   const sourceUrl = entry.url || (entry.doi ? `https://doi.org/${entry.doi}` : "");
-  // The annotation is the team's own words, so it comes in both languages; one
-  // written in only one language is shown on both pages, saying so, with a
-  // machine translation on offer (MachineTranslation).
+  // The annotation is the team's own words, so it comes in both languages. One
+  // written only in the other language isn't shown: the page says it isn't
+  // available yet and offers a machine translation (MachineTranslation).
   const annotation = (
     (isArabic ? entry.annotationAr || entry.annotation : entry.annotation || entry.annotationAr) ??
     ""
@@ -360,7 +360,7 @@ function Entry({
         >
           <div className="overflow-hidden">
             <div className="pb-8">
-              {annotation && (
+              {annotation && !annotationIn && (
                 <p
                   dir="auto"
                   className="max-w-3xl whitespace-pre-line text-start text-sm leading-relaxed text-foreground"

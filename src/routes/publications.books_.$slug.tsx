@@ -8,6 +8,7 @@ import { PdfPreview } from "@/components/PdfPreview";
 import { FormattedText } from "@/components/RichText";
 import { useLanguage } from "@/contexts/LanguageContext";
 import {
+  formatFileSize,
   formatted,
   mediaSrcSet,
   mediaUrl,
@@ -21,7 +22,7 @@ import { SECTION_COLORS } from "@/lib/sectionColors";
 
 /**
  * A book's own page, opened from its card: the cover beside its details --
- * authors, publisher, place, year, edition, pages, ISBN -- and downloads, then
+ * authors, publisher, place, year, edition, pages, file size, ISBN -- and downloads, then
  * its description, then the book itself to read in the page (PdfPreview).
  *
  * "books_" rather than "books": the trailing underscore keeps this page from
@@ -82,6 +83,7 @@ function Book({ book }: { book: PayloadPublication }) {
     [isArabic ? "السنة" : "Year", book.date ? new Date(book.date).getFullYear() : undefined],
     [isArabic ? "الطبعة" : "Edition", book.edition],
     [isArabic ? "عدد الصفحات" : "Pages", book.pageCount],
+    [isArabic ? "حجم الملف" : "File size", formatFileSize(file?.filesize)],
     ["ISBN", book.isbn],
   ];
 

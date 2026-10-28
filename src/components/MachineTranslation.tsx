@@ -1,14 +1,24 @@
 import { useState } from "react";
 import { Languages, Loader2 } from "lucide-react";
+import { TranslationNotice } from "@/components/TranslationNotice";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { translate } from "@/lib/translate";
 
 /**
- * Under text the team wrote in the other language only (an annotation, a
- * reading's note): says so, and offers a machine translation on request --
- * shown in its own marked box, so no one takes it for the team's own words.
+ * In place of text the team wrote in the other language only (an annotation,
+ * a reading's note): the site's notice that it isn't available in this
+ * language yet, and a machine translation on request -- shown in its own
+ * marked box, so no one takes it for the team's own words.
  */
-export function MachineTranslation({ text, from }: { text: string; from: "en" | "ar" }) {
+export function MachineTranslation({
+  text,
+  from,
+  className = "",
+}: {
+  text: string;
+  from: "en" | "ar";
+  className?: string;
+}) {
   const { t, isArabic } = useLanguage();
   const [state, setState] = useState<"idle" | "loading" | "failed">("idle");
   const [translated, setTranslated] = useState<string | null>(null);
@@ -25,7 +35,7 @@ export function MachineTranslation({ text, from }: { text: string; from: "en" | 
   };
 
   return (
-    <div className="mt-3 max-w-3xl text-start text-xs text-muted-foreground">
+    <div className={"max-w-3xl text-start text-xs text-muted-foreground " + className}>
       {translated ? (
         <div className="rounded-e-sm border-s-2 border-[color:var(--brand-magenta)]/40 bg-secondary/30 px-4 py-3">
           <p className="mb-2 flex items-center gap-1.5">
@@ -37,8 +47,8 @@ export function MachineTranslation({ text, from }: { text: string; from: "en" | 
           </p>
         </div>
       ) : (
-        <p className="flex flex-wrap items-center gap-x-3 gap-y-1">
-          <span>{t(from === "en" ? "translate.onlyEnglish" : "translate.onlyArabic")}</span>
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+          <TranslationNotice compact />
           <button
             type="button"
             onClick={run}
@@ -53,7 +63,7 @@ export function MachineTranslation({ text, from }: { text: string; from: "en" | 
             {t("translate.auto")}
           </button>
           {state === "failed" && <span>{t("translate.failed")}</span>}
-        </p>
+        </div>
       )}
     </div>
   );

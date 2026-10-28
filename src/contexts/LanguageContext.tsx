@@ -74,8 +74,6 @@ const translations = {
       "Readings, documents, and databases relevant to the Dignity initiative's research.",
     "citation.copy": "Copy citation",
     "citation.style": "Citation style",
-    "translate.onlyEnglish": "Only available in English.",
-    "translate.onlyArabic": "Only available in Arabic.",
     "translate.auto": "Translate automatically",
     "translate.machine":
       "Machine translation, not by the Dignity Initiative. It may contain errors.",
@@ -169,7 +167,7 @@ const translations = {
     "footer.privacy": "Privacy Policy",
     "footer.copyright": "Copyright © Muwatin Institute for Democracy and Human Rights, 2019–2026.",
     "footer.resources": "Resources",
-    "footer.studying": "Studying Materials",
+    "footer.studying": "Readings and Documents",
     "footer.databases": "Databases",
     // TEAM SECTION
     "team.eyebrow": "Meet the Participants",
@@ -230,8 +228,6 @@ const translations = {
     "information.page.desc": "قراءات ووثائق وقواعد معلومات ذات صلة بأبحاث مبادرة الكرامة.",
     "citation.copy": "نسخ التوثيق",
     "citation.style": "أسلوب التوثيق",
-    "translate.onlyEnglish": "متوفر بالإنجليزية فقط.",
-    "translate.onlyArabic": "متوفر بالعربية فقط.",
     "translate.auto": "ترجمة آلية",
     "translate.machine": "ترجمة آلية، ليست من مبادرة كرامة، وقد تحتوي على أخطاء.",
     "translate.failed": "تعذّرت الترجمة الآن.",
@@ -324,7 +320,7 @@ const translations = {
     "footer.privacy": "سياسة الخصوصية",
     "footer.copyright": "حقوق النشر © معهد مواطن للديمقراطية وحقوق الإنسان، 2019–2026.",
     "footer.resources": "الموارد",
-    "footer.studying": "المواد الدراسية",
+    "footer.studying": "قراءات ووثائق",
     "footer.databases": "قواعد البيانات",
     // TEAM SECTION
     "team.eyebrow": "تعرف على المشاركين",
