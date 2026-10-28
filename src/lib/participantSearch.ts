@@ -1,5 +1,5 @@
 import type { Participant } from "@/components/ParticipantModal";
-import { PARTICIPANT_ROLE_LABEL } from "@/lib/payload";
+import { baseRole, PARTICIPANT_ROLES, roleLabel } from "@/lib/payload";
 import { containsAny, fold, foldedMatches } from "@/lib/keywords";
 
 /**
@@ -11,39 +11,30 @@ import { containsAny, fold, foldedMatches } from "@/lib/keywords";
  * plural, English and Arabic.
  */
 
-const ROLE_WORDS: Record<Participant["category"], string[]> = {
-  researcher: [
-    "researcher",
-    "researchers",
-    "research",
-    "باحث",
-    "باحثه",
-    "باحثون",
-    "باحثين",
-    "باحثات",
-  ],
-  visitor: ["visitor", "visitors", "visiting", "زائر", "زائره", "زائرون", "زائرين", "زوار"],
-  student: ["student", "students", "طالب", "طالبه", "طلاب", "طلبه", "طالبات"],
-  intern: [
-    "intern",
-    "interns",
-    "internship",
-    "trainee",
-    "trainees",
-    "متدرب",
-    "متدربه",
-    "متدربون",
-    "متدربين",
-    "متدربات",
-  ],
-  practical_support: ["support", "practical", "staff", "team", "دعم", "فريق", "العملي"],
-  team_member: ["team", "member", "members", "staff", "support", "فريق", "عضو", "اعضاء", "دعم"],
-  speaker: ["speaker", "speakers", "متحدث", "متحدثه", "متحدثون", "متحدثين"],
-  author: ["author", "authors", "writer", "writers", "مؤلف", "مؤلفه", "مؤلفون", "كاتب", "كتاب"],
+// Words a role answers to beyond its own name in both languages -- Arabic
+// broken plurals, and the everyday words for it.
+const MORE_ROLE_WORDS: Record<string, string[]> = {
+  researcher: ["research"],
+  intern: ["internship", "trainee", "trainees"],
+  trainee_researcher: ["trainee", "trainees"],
+  student: ["طلاب", "طلبه"],
+  visitor: ["visiting", "زوار"],
+  fellow: ["fellows", "زملاء"],
+  visiting_professor: ["professor", "professors", "اساتذه"],
+  team_member: ["team", "staff", "support", "فريق", "اعضاء", "دعم"],
+  practical_support: ["staff", "team", "دعم", "فريق"],
+  author: ["writer", "writers", "كاتب", "كتاب"],
 };
-const FOLDED_ROLE_WORDS = Object.fromEntries(
-  Object.entries(ROLE_WORDS).map(([role, words]) => [role, words.map(fold)]),
-) as Record<Participant["category"], string[]>;
+
+/** Each role's words, folded: its English and both Arabic names, word by word, and the above. */
+const ROLE_WORDS: Record<string, string[]> = Object.fromEntries(
+  Object.entries(PARTICIPANT_ROLES).map(([role, names]) => [
+    role,
+    [...names.flatMap((name) => (name ?? "").split(/\s+/)), ...(MORE_ROLE_WORDS[role] ?? [])]
+      .map(fold)
+      .filter((word) => word.length >= 3),
+  ]),
+);
 
 /** "interns" -> also "intern", so the singular written on the page is found and marked. */
 function forms(word: string): string[] {
@@ -63,9 +54,9 @@ export function searchNeedles(words: string[]): string[] {
   return [...new Set(words.flatMap(forms))];
 }
 
-function namesRole(category: Participant["category"], word: string): boolean {
+function namesRole(category: string, word: string): boolean {
   if (word.length < 3) return false;
-  return FOLDED_ROLE_WORDS[category].some(
+  return (ROLE_WORDS[baseRole(category)] ?? []).some(
     (w) => w.startsWith(word) || (w.length >= 4 && word.startsWith(w)),
   );
 }
@@ -104,7 +95,7 @@ export function matchParticipant(
     }
   }
   if (byRole) {
-    const label = PARTICIPANT_ROLE_LABEL[person.category];
+    const label = roleLabel(person.category);
     match.roleLabel = isArabic ? label.ar : label.en;
   }
   return match;

@@ -1,5 +1,6 @@
 import type { CollectionConfig, CollectionSlug, Field } from 'payload'
 import { mirrorLinksOnChange, mirrorLinksOnDelete } from '../hooks/syncResearchLinks'
+import { SPEAKER_ROLES } from './Participants'
 import { section } from '../lib/adminLayout'
 
 /**
@@ -64,7 +65,7 @@ function publicationFields(): Field[] {
         hasMany: true,
         label: 'Speaker(s) from Participants',
         filterOptions: {
-          category: { equals: 'speaker' },
+          category: { in: SPEAKER_ROLES },
         },
         admin: {
           description:

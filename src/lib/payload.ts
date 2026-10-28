@@ -162,15 +162,8 @@ export type PayloadParticipant = {
   /** The role's bold and italic -- see formatted. */
   titleRich?: unknown;
   titleRichAr?: unknown;
-  category:
-    | "researcher"
-    | "visitor"
-    | "student"
-    | "speaker"
-    | "author"
-    | "team_member"
-    | "intern"
-    | "practical_support";
+  /** A PARTICIPANT_ROLES key, with "_f" for a woman -- see roleLabel. */
+  category: string;
   email?: string;
   /** Shown as round icons beside the email icon -- see ProfileLinks. */
   links?: {
@@ -240,20 +233,36 @@ export type PayloadPartner = {
   descriptionAr?: string;
 };
 
-/** Shown under a participant's name in place of their title when the CMS entry leaves it blank. */
-export const PARTICIPANT_ROLE_LABEL: Record<
-  PayloadParticipant["category"],
-  { en: string; ar: string }
-> = {
-  researcher: { en: "Researcher", ar: "باحث" },
-  visitor: { en: "Visitor", ar: "زائر" },
-  student: { en: "Student", ar: "طالب" },
-  speaker: { en: "Speaker", ar: "متحدث" },
-  author: { en: "Author", ar: "مؤلف" },
-  team_member: { en: "Team Member", ar: "عضو الفريق" },
-  intern: { en: "Intern", ar: "متدرب" },
-  practical_support: { en: "Practical Support", ar: "الدعم العملي" },
+/**
+ * The roles in the admin's Role dropdown: English, then the Arabic for a man
+ * and for a woman. Participants.ts in the backend keeps the same list -- add a
+ * role to both.
+ */
+export const PARTICIPANT_ROLES: Record<string, [en: string, ar: string, arFemale?: string]> = {
+  researcher: ["Researcher", "باحث", "باحثة"],
+  senior_researcher: ["Senior Researcher", "باحث رئيسي", "باحثة رئيسية"],
+  trainee_researcher: ["Trainee Researcher", "باحث متدرب", "باحثة متدربة"],
+  visiting_researcher: ["Visiting Researcher", "باحث زائر", "باحثة زائرة"],
+  researcher_coordinator: ["Researcher and Coordinator", "باحث ومنسق", "باحثة ومنسقة"],
+  visiting_professor: ["Visiting Professor", "أستاذ زائر", "أستاذة زائرة"],
+  fellow: ["Fellow", "زميل", "زميلة"],
+  visitor: ["Visitor", "زائر", "زائرة"],
+  student: ["Student", "طالب", "طالبة"],
+  intern: ["Intern", "متدرب", "متدربة"],
+  team_member: ["Team Member", "عضو الفريق", "عضوة الفريق"],
+  practical_support: ["Practical Support", "الدعم العملي"],
+  speaker: ["Speaker", "متحدث", "متحدثة"],
+  author: ["Author", "مؤلف", "مؤلفة"],
 };
+
+/** The role without its "_f": a woman's role and a man's are the same role. */
+export const baseRole = (category: string) => category.replace(/_f$/, "");
+
+/** Shown under a participant's name when their entry has no title of its own. */
+export function roleLabel(category: string): { en: string; ar: string } {
+  const [en, ar, arFemale] = PARTICIPANT_ROLES[baseRole(category)] ?? ["", ""];
+  return { en, ar: category.endsWith("_f") && arFemale ? arFemale : ar };
+}
 
 /**
  * The seven publication collections, one per entry under Publications in the

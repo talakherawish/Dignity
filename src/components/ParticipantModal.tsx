@@ -5,12 +5,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { X } from "lucide-react";
 import { Highlighted } from "@/components/Highlighted";
 import { useLanguage } from "@/contexts/LanguageContext";
-import {
-  mediaSrcSet,
-  mediaUrl,
-  PARTICIPANT_ROLE_LABEL,
-  type PayloadParticipant,
-} from "@/lib/payload";
+import { mediaSrcSet, mediaUrl, roleLabel, type PayloadParticipant } from "@/lib/payload";
 import { ProfileLinks, type ProfileLink } from "@/components/ProfileLinks";
 import { FormattedText } from "./RichText";
 import { participantsQuery } from "@/lib/queries";
@@ -30,15 +25,7 @@ export type Participant = {
   titleAr: string;
   titleRich?: unknown;
   titleRichAr?: unknown;
-  category:
-    | "researcher"
-    | "visitor"
-    | "student"
-    | "speaker"
-    | "author"
-    | "team_member"
-    | "intern"
-    | "practical_support";
+  category: string;
   email: string;
   links: ProfileLink[];
   bio: string;
@@ -50,7 +37,7 @@ export type Participant = {
 };
 
 export function mapPayloadParticipant(p: PayloadParticipant): Participant {
-  const role = PARTICIPANT_ROLE_LABEL[p.category];
+  const role = roleLabel(p.category);
   return {
     id: p.id,
     name: p.name,

@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Search } from "lucide-react";
 import { PageLayout, PageHero } from "@/components/PageLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { type PayloadParticipant } from "@/lib/payload";
+import { baseRole, type PayloadParticipant } from "@/lib/payload";
 import {
   mapPayloadParticipant,
   ParticipantModal,
@@ -51,7 +51,7 @@ export const Route = createFileRoute("/about/participants")({
  */
 function isVisible(p: PayloadParticipant): boolean {
   if (p.hideFromWorkingGroupPage === true) return false;
-  if (p.category === "author" || p.category === "speaker") {
+  if (baseRole(p.category) === "author" || baseRole(p.category) === "speaker") {
     return p.showOnWorkingGroupPage === true;
   }
   return true;

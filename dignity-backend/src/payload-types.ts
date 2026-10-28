@@ -383,7 +383,33 @@ export interface Participant {
   name: string;
   nameAr: string;
   category:
-    'researcher' | 'visitor' | 'student' | 'speaker' | 'author' | 'team_member' | 'intern' | 'practical_support';
+    | 'researcher'
+    | 'researcher_f'
+    | 'senior_researcher'
+    | 'senior_researcher_f'
+    | 'trainee_researcher'
+    | 'trainee_researcher_f'
+    | 'visiting_researcher'
+    | 'visiting_researcher_f'
+    | 'researcher_coordinator'
+    | 'researcher_coordinator_f'
+    | 'visiting_professor'
+    | 'visiting_professor_f'
+    | 'fellow'
+    | 'fellow_f'
+    | 'visitor'
+    | 'visitor_f'
+    | 'student'
+    | 'student_f'
+    | 'intern'
+    | 'intern_f'
+    | 'team_member'
+    | 'team_member_f'
+    | 'practical_support'
+    | 'speaker'
+    | 'speaker_f'
+    | 'author'
+    | 'author_f';
   /**
    * Authors and Speakers are hidden from the public Working Group page by default. Check this to show this person there too. Their profile stays reachable from the publications/photos that credit them either way.
    */

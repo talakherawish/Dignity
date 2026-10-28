@@ -14,6 +14,39 @@ function validateWordCount(value: unknown): string | true {
   return true
 }
 
+/**
+ * The Role dropdown: English, then the Arabic for a man and for a woman. A
+ * role with both gets two entries, so a woman is named as one in Arabic; hers
+ * is stored with "_f". The website keeps the same list (PARTICIPANT_ROLES in
+ * its lib/payload.ts) -- add a role to both.
+ */
+const ROLES: [value: string, en: string, ar: string, arFemale?: string][] = [
+  ['researcher', 'Researcher', 'باحث', 'باحثة'],
+  ['senior_researcher', 'Senior Researcher', 'باحث رئيسي', 'باحثة رئيسية'],
+  ['trainee_researcher', 'Trainee Researcher', 'باحث متدرب', 'باحثة متدربة'],
+  ['visiting_researcher', 'Visiting Researcher', 'باحث زائر', 'باحثة زائرة'],
+  ['researcher_coordinator', 'Researcher and Coordinator', 'باحث ومنسق', 'باحثة ومنسقة'],
+  ['visiting_professor', 'Visiting Professor', 'أستاذ زائر', 'أستاذة زائرة'],
+  ['fellow', 'Fellow', 'زميل', 'زميلة'],
+  ['visitor', 'Visitor', 'زائر', 'زائرة'],
+  ['student', 'Student', 'طالب', 'طالبة'],
+  ['intern', 'Intern', 'متدرب', 'متدربة'],
+  ['team_member', 'Team Member', 'عضو الفريق', 'عضوة الفريق'],
+  ['practical_support', 'Practical Support', 'الدعم العملي'],
+  ['speaker', 'Speaker', 'متحدث', 'متحدثة'],
+  ['author', 'Author', 'مؤلف', 'مؤلفة'],
+]
+
+const ROLE_OPTIONS = ROLES.flatMap(([value, en, ar, arFemale]) => [
+  { label: `${en} · ${ar}`, value },
+  ...(arFemale ? [{ label: `${en} · ${arFemale}`, value: `${value}_f` }] : []),
+])
+
+/** Speakers and authors, either form -- kept off the Working Group page unless shown. */
+export const SPEAKER_ROLES = ['speaker', 'speaker_f']
+const isAuthorOrSpeaker = (category: unknown) =>
+  typeof category === 'string' && /^(author|speaker)(_f)?$/.test(category)
+
 /** What on this website credits a person: the field that names them, per collection. */
 function creditedTo(relationTo: string, id: string | number | undefined): Where | boolean {
   if (!id) return false
@@ -110,16 +143,7 @@ export const Participants: CollectionConfig = {
         type: 'select',
         label: 'Role',
         required: true,
-        options: [
-          { label: 'Researcher', value: 'researcher' },
-          { label: 'Visitor', value: 'visitor' },
-          { label: 'Student', value: 'student' },
-          { label: 'Speaker', value: 'speaker' },
-          { label: 'Author', value: 'author' },
-          { label: 'Team Member', value: 'team_member' },
-          { label: 'Intern', value: 'intern' },
-          { label: 'Practical Support', value: 'practical_support' },
-        ],
+        options: ROLE_OPTIONS,
       },
       {
         name: 'showOnWorkingGroupPage',
@@ -127,7 +151,7 @@ export const Participants: CollectionConfig = {
         label: 'Show on Working Group Page',
         defaultValue: false,
         admin: {
-          condition: (data) => data?.category === 'author' || data?.category === 'speaker',
+          condition: (data) => isAuthorOrSpeaker(data?.category),
           description:
             'Authors and Speakers are hidden from the public Working Group page by default. Check this to show this person there too. Their profile stays reachable from the publications/photos that credit them either way.',
         },
