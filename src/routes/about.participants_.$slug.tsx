@@ -36,21 +36,11 @@ function ParticipantPage() {
   const { isArabic } = useLanguage();
   const { data: person } = useQuery(participantPageQuery(slug));
 
-  const backLink = (
-    <Link
-      to="/about/participants"
-      className="text-xs uppercase tracking-[0.18em] font-semibold hover:opacity-80"
-      style={{ color: SECTION_COLORS.about }}
-    >
-      {isArabic ? "→ مجموعة العمل" : "← Working Group"}
-    </Link>
-  );
-
   if (!person) {
     return (
       <PageLayout>
         <div className="max-w-3xl mx-auto px-4 py-24 text-center" dir={isArabic ? "rtl" : "ltr"}>
-          {backLink}
+          <BackLink />
           <p className="mt-6 text-muted-foreground">
             {isArabic ? "هذه الصفحة غير موجودة." : "This page doesn't exist."}
           </p>
@@ -65,8 +55,7 @@ function ParticipantPage() {
         className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-16"
         dir={isArabic ? "rtl" : "ltr"}
       >
-        {backLink}
-        <div className="mt-6 grid gap-10 lg:grid-cols-[300px_minmax(0,1fr)] lg:gap-14">
+        <div className="grid gap-10 lg:grid-cols-[300px_minmax(0,1fr)] lg:gap-14">
           <ProfileCard person={person} />
           <ProfileBody person={person} />
         </div>
@@ -75,22 +64,40 @@ function ParticipantPage() {
   );
 }
 
-/** Photo, then name, then role, then links -- one card, held in view while the page scrolls. */
+function BackLink() {
+  const { isArabic } = useLanguage();
+  return (
+    <Link
+      to="/about/participants"
+      className="text-xs uppercase tracking-[0.18em] font-semibold hover:opacity-80"
+      style={{ color: SECTION_COLORS.about }}
+    >
+      {isArabic ? "→ مجموعة العمل" : "← Working Group"}
+    </Link>
+  );
+}
+
+/**
+ * Photo, then name, then role, then links -- one card, held in view while the
+ * page scrolls. It sticks exactly where it starts (the header's height plus
+ * the page's top padding), so it never shifts, and it is never taller than
+ * the screen below the header: the photo gives way first.
+ */
 function ProfileCard({ person }: { person: PayloadParticipant }) {
   const { lang } = useLanguage();
   const profile = mapPayloadParticipant(person);
   const isAr = lang === "ar";
 
   return (
-    <aside className="self-start lg:sticky lg:top-[127px]">
-      <div className="overflow-hidden rounded-lg border border-border bg-card shadow-sm">
+    <aside className="self-start lg:sticky lg:top-[135px]">
+      <div className="overflow-hidden rounded-lg border border-border bg-card shadow-sm lg:max-h-[calc(100svh-167px)] lg:overflow-y-auto">
         {profile.photo && (
           <img
             src={profile.photo}
             srcSet={profile.photoSrcSet}
             sizes="300px"
             alt={profile.name}
-            className="aspect-square w-full object-cover bg-secondary"
+            className="aspect-[5/4] max-h-[32svh] w-full object-cover object-top bg-secondary"
           />
         )}
         <div className="p-6">
@@ -112,9 +119,17 @@ function ProfileCard({ person }: { person: PayloadParticipant }) {
   );
 }
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Section({
+  title,
+  className = "mt-12",
+  children,
+}: {
+  title: string;
+  className?: string;
+  children: React.ReactNode;
+}) {
   return (
-    <section className="mt-12 first:mt-0">
+    <section className={className}>
       <h2 className="mb-6 font-serif text-2xl text-primary md:text-3xl">{title}</h2>
       {children}
     </section>
@@ -131,27 +146,32 @@ function ProfileBody({ person }: { person: PayloadParticipant }) {
 
   return (
     <div className="min-w-0">
-      {hasProse(fullBio) ? (
-        <RichText
-          value={fullBio}
-          className="space-y-4 text-base leading-relaxed text-foreground/85"
-        />
-      ) : (
-        shortBio && (
-          <p className="whitespace-pre-line text-base leading-relaxed text-foreground/85">
-            {shortBio}
-          </p>
-        )
+      <BackLink />
+      {(hasProse(fullBio) || shortBio) && (
+        <Section className="mt-6" title={isArabic ? "السيرة الذاتية" : "Biography"}>
+          {hasProse(fullBio) ? (
+            <RichText
+              value={fullBio}
+              className="space-y-4 text-base leading-relaxed text-foreground/85"
+            />
+          ) : (
+            <p className="whitespace-pre-line text-base leading-relaxed text-foreground/85">
+              {shortBio}
+            </p>
+          )}
+        </Section>
       )}
 
       {work && work.publications.length > 0 && (
-        <Section title={isArabic ? "المنشورات" : "Publications"}>
+        <Section
+          title={isArabic ? "منشورات ضمن مبادرة كرامة" : "Publications with the Dignity Initiative"}
+        >
           <PublicationGrid items={work.publications} />
         </Section>
       )}
 
       {elsewhere.length > 0 && (
-        <Section title={isArabic ? "منشورات أخرى" : "Published Elsewhere"}>
+        <Section title={isArabic ? "منشورات خارج المبادرة" : "Published Elsewhere"}>
           <ul className="divide-y divide-border border-y border-border">
             {elsewhere.map((item, index) => {
               const title = (isArabic && item.titleAr) || item.title;
@@ -180,13 +200,15 @@ function ProfileBody({ person }: { person: PayloadParticipant }) {
       )}
 
       {work && work.forums.length > 0 && (
-        <Section title={isArabic ? "المنتديات" : "Forums"}>
+        <Section
+          title={isArabic ? "منتديات ضمن مبادرة كرامة" : "Forums with the Dignity Initiative"}
+        >
           <ForumGrid items={work.forums} />
         </Section>
       )}
 
       {work && work.photos.length > 0 && (
-        <Section title={isArabic ? "صور" : "Photos"}>
+        <Section title={isArabic ? "صور من مبادرة كرامة" : "Photos from the Dignity Initiative"}>
           <PhotoGallery
             photos={work.photos
               .map((p) => toGalleryPhoto(p, lang === "ar" ? "ar" : "en"))
