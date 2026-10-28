@@ -18,6 +18,7 @@ import {
   type PayloadReading,
   type ReadingType,
 } from "@/lib/payload";
+import { MachineTranslation } from "@/components/MachineTranslation";
 
 /**
  * The readings and documents of one subject, filterable by free text, type,
@@ -141,10 +142,16 @@ function ReadingRow({
       : undefined;
   const byline = [authors.join(", "), reading.year, source].filter(Boolean);
   // The note is the team's own words, so it comes in both languages; one
-  // written in only one language is shown on both pages.
+  // written in only one language is shown on both pages, saying so, with a
+  // machine translation on offer (MachineTranslation).
   const note = (
     (isArabic ? reading.noteAr || reading.note : reading.note || reading.noteAr) ?? ""
   ).trim();
+  const noteIn = (isArabic ? reading.noteAr : reading.note)?.trim()
+    ? undefined
+    : isArabic
+      ? "en"
+      : "ar";
   // The byline and the note may be in either language whatever the page's:
   // names stay as the source gives them. dir="auto" lays each out in its own
   // direction -- so an English note on the Arabic page keeps its full stop at
@@ -196,6 +203,7 @@ function ReadingRow({
               <Highlighted text={note} needles={needles} />
             </p>
           )}
+          {note && noteIn && <MachineTranslation text={note} from={noteIn} />}
         </div>
         {hasSource && (
           <div className="hidden w-8 shrink-0 pt-6 md:block">

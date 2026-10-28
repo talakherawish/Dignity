@@ -22,6 +22,7 @@ import {
   type PayloadBibliographyEntry,
   type PayloadKeyword,
 } from "@/lib/payload";
+import { MachineTranslation } from "@/components/MachineTranslation";
 
 /**
  * The entries of one annotated bibliography, filterable by free text, type,
@@ -246,11 +247,17 @@ function Entry({
   const fileUrl = entry.access === "upload" ? mediaUrl(entry.file) : "";
   const sourceUrl = entry.url || (entry.doi ? `https://doi.org/${entry.doi}` : "");
   // The annotation is the team's own words, so it comes in both languages; one
-  // written in only one language is shown on both pages.
+  // written in only one language is shown on both pages, saying so, with a
+  // machine translation on offer (MachineTranslation).
   const annotation = (
     (isArabic ? entry.annotationAr || entry.annotation : entry.annotation || entry.annotationAr) ??
     ""
   ).trim();
+  const annotationIn = (isArabic ? entry.annotationAr : entry.annotation)?.trim()
+    ? undefined
+    : isArabic
+      ? "en"
+      : "ar";
   const sourceLink = entry.access !== "citation" ? sourceUrl : "";
   // Only an annotation opens: the source has its own mark, so there's nothing
   // else to open onto.
@@ -271,7 +278,7 @@ function Entry({
             <span className="text-muted-foreground"> · {t(LANGUAGE_LABEL[entry.language])}</span>
           )}
         </span>
-        {/* Chicago's hanging indent: every line after the first steps in. */}
+        {/* The hanging indent all three citation styles share: every line after the first steps in. */}
         <p
           dir={sourceDir}
           lang={entry.language === "ar" ? "ar" : "en"}
@@ -360,6 +367,9 @@ function Entry({
                 >
                   <Highlighted text={annotation} needles={needles} />
                 </p>
+              )}
+              {annotation && annotationIn && (
+                <MachineTranslation text={annotation} from={annotationIn} />
               )}
               {/* The source has its own mark; only the download is left to offer. */}
               {fileUrl && (
