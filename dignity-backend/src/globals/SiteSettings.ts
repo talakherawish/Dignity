@@ -90,6 +90,14 @@ export const SiteSettings: GlobalConfig = {
               // under the About menu -- renaming the field would strand the
               // wording already saved in the database.
               ...pair('navAboutStickers', 'Stickers & Bookmarks'),
+              // Off until the page has content: the menu, the Publications page
+              // and the page's own address all act as if it didn't exist.
+              {
+                name: 'showStickers',
+                type: 'checkbox',
+                label: 'Show the Stickers & Bookmarks page',
+                defaultValue: false,
+              },
             ]),
             section('Information Menu', [
               ...pair('navInformation', 'Menu Heading'),

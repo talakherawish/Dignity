@@ -12,6 +12,7 @@ import {
 import { SectionHubPage, type SectionTile } from "@/components/SectionHub";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { SECTION_COLORS } from "@/lib/sectionColors";
+import { usePageShown } from "@/lib/hiddenPages";
 
 export const Route = createFileRoute("/publications")({
   component: PublicationsLayout,
@@ -34,6 +35,7 @@ const TILES: SectionTile[] = [
 function PublicationsLayout() {
   const { t } = useLanguage();
   const { pathname } = useLocation();
+  const shown = usePageShown();
   const isIndex = pathname === "/publications" || pathname === "/publications/";
 
   if (!isIndex) return <Outlet />;
@@ -43,7 +45,7 @@ function PublicationsLayout() {
       eyebrowColor={SECTION_COLORS.publications}
       title={t("publications")}
       description={t("publications.page.desc")}
-      tiles={TILES}
+      tiles={TILES.filter((tile) => shown(tile.to))}
     />
   );
 }

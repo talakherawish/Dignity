@@ -1,14 +1,18 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, notFound } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { GalleryPage } from "@/components/GalleryPage";
 import type { GalleryPhoto } from "@/components/PhotoGallery";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { mediaSrcSet, mediaUrl, type PayloadSticker, formatted } from "@/lib/payload";
 import { SECTION_COLORS } from "@/lib/sectionColors";
-import { stickersQuery } from "@/lib/queries";
+import { siteSettingsQuery, stickersQuery } from "@/lib/queries";
+import { isPageShown } from "@/lib/hiddenPages";
 
 export const Route = createFileRoute("/publications/stickers")({
   loader: async ({ context }) => {
+    // Switched off in Site Settings until it has content -- see hiddenPages.
+    const settings = await context.queryClient.ensureQueryData(siteSettingsQuery);
+    if (!isPageShown("/publications/stickers", settings)) throw notFound();
     await context.queryClient.ensureQueryData(stickersQuery);
   },
   component: StickersPage,

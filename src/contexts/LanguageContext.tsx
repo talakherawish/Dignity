@@ -448,7 +448,7 @@ export function LanguageProvider({
       const base = SITE_SETTINGS_KEY_MAP[key];
       if (base && overrides) {
         const value = overrides[isArabic ? `${base}Ar` : base];
-        if (value) return value;
+        if (typeof value === "string" && value) return value;
       }
       return translations[lang][key];
     },
@@ -458,7 +458,10 @@ export function LanguageProvider({
   const tOptional = useCallback(
     (key: TranslationKey) => {
       const base = SITE_SETTINGS_KEY_MAP[key];
-      if (base && overrides) return overrides[isArabic ? `${base}Ar` : base]?.trim() ?? "";
+      if (base && overrides) {
+        const value = overrides[isArabic ? `${base}Ar` : base];
+        return typeof value === "string" ? value.trim() : "";
+      }
       return t(key);
     },
     [isArabic, overrides, t],

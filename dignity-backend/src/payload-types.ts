@@ -4145,6 +4145,7 @@ export interface SiteSetting {
   navPublicationsPostersAr?: string | null;
   navAboutStickers?: string | null;
   navAboutStickersAr?: string | null;
+  showStickers?: boolean | null;
   navInformation?: string | null;
   navInformationAr?: string | null;
   navInformationReadings?: string | null;
@@ -4337,6 +4338,7 @@ export interface SiteSettingsSelect<T extends boolean = true> {
   navPublicationsPostersAr?: T;
   navAboutStickers?: T;
   navAboutStickersAr?: T;
+  showStickers?: T;
   navInformation?: T;
   navInformationAr?: T;
   navInformationReadings?: T;

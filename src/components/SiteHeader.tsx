@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import logo from "@/assets/dignity-logo.png";
 import { type Language, type TranslationKey, useLanguage } from "@/contexts/LanguageContext";
 import { SECTION_COLORS } from "@/lib/sectionColors";
+import { usePageShown } from "@/lib/hiddenPages";
 
 /** A top-level nav entry, either a direct link or a single dropdown of links. */
 type Item = {
@@ -65,6 +66,14 @@ const NAV: Item[] = [
     ],
   },
 ];
+
+/** The menu less any page switched off in Site Settings -- see hiddenPages. */
+function useNav(): Item[] {
+  const shown = usePageShown();
+  return NAV.map((item) =>
+    item.children ? { ...item, children: item.children.filter((c) => shown(c.to)) } : item,
+  );
+}
 
 const LANG_OPTIONS: { code: Language; label: string; ariaLabel: string }[] = [
   { code: "en", label: "EN", ariaLabel: "English" },
@@ -253,6 +262,7 @@ function NavItem({ item }: { item: Item }) {
 }
 
 function MobileNav({ open, onNavigate }: { open: boolean; onNavigate: () => void }) {
+  const nav = useNav();
   const { t, isArabic } = useLanguage();
   const [expanded, setExpanded] = useState<string | null>(null);
 
@@ -266,7 +276,7 @@ function MobileNav({ open, onNavigate }: { open: boolean; onNavigate: () => void
       }}
     >
       <nav className="px-4 py-2" dir={isArabic ? "rtl" : "ltr"}>
-        {NAV.map((item) => {
+        {nav.map((item) => {
           const sectionStyle = item.color
             ? ({ "--section-hover": item.color } as React.CSSProperties)
             : undefined;
@@ -366,6 +376,7 @@ function MobileNav({ open, onNavigate }: { open: boolean; onNavigate: () => void
 }
 
 export function SiteHeader() {
+  const nav = useNav();
   const { isArabic } = useLanguage();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -420,7 +431,7 @@ export function SiteHeader() {
 
           {/* Desktop nav — vertically centered, hidden below lg to avoid overflow */}
           <nav className="hidden lg:flex items-center justify-center gap-0 overflow-visible self-center px-4 sm:px-6">
-            {NAV.map((item) => (
+            {nav.map((item) => (
               <NavItem key={item.labelKey} item={item} />
             ))}
           </nav>

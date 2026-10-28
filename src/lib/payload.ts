@@ -564,7 +564,7 @@ export type PayloadPage = {
  * request is anonymous) comes back as a bare id string -- read it through `populated()`.
  */
 /** Site Settings' wording: menu labels, homepage headings, footer, UI labels. */
-export type PayloadSiteSettings = Record<string, string | undefined>;
+export type PayloadSiteSettings = Record<string, unknown>;
 
 /** What the editors picked for the homepage, in Site Settings -> Homepage. */
 export type PayloadHomepage = {
