@@ -1,6 +1,6 @@
 import type { CollectionBeforeValidateHook, CollectionConfig, Where } from 'payload'
 import { section } from '../lib/adminLayout'
-import { toSlug } from '../lib/slug'
+import { uniqueSlug } from '../lib/slug'
 
 /** Bio fields are free prose, but the card/modal on the site assumes a short paragraph. */
 const MAX_BIO_WORDS = 350
@@ -66,21 +66,9 @@ const showWithFullPage = (data: Partial<Record<string, unknown>> | undefined) =>
 const fillSlug: CollectionBeforeValidateHook = async ({ data, originalDoc, req }) => {
   if (!data || !(data.hasFullPage ?? originalDoc?.hasFullPage)) return data
   if (data.slug || originalDoc?.slug) return data
-  const name = (data.name ?? originalDoc?.name) as string | undefined
-  const base = name ? toSlug(name) : ''
-  if (!base) return data
-  for (let n = 1; ; n++) {
-    const slug = n === 1 ? base : `${base}-${n}`
-    const { totalDocs } = await req.payload.count({
-      collection: 'participants',
-      where: { slug: { equals: slug }, ...(originalDoc?.id ? { id: { not_equals: originalDoc.id } } : {}) },
-      req,
-    })
-    if (totalDocs === 0) {
-      data.slug = slug
-      return data
-    }
-  }
+  const slug = await uniqueSlug(req, 'participants', data.name ?? originalDoc?.name, originalDoc?.id)
+  if (slug) data.slug = slug
+  return data
 }
 
 export const Participants: CollectionConfig = {

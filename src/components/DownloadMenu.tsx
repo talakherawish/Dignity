@@ -3,6 +3,7 @@ import { Download, Loader2 } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { formatFileSize, mediaUrl, type PayloadPublication } from "@/lib/payload";
 import { downloadPdfAsImages, type ImageFormat } from "@/lib/pdfImages";
+import { PILL_BUTTON } from "@/lib/ui";
 
 /**
  * The download badge on a publication card's preview. With one thing to offer
@@ -52,6 +53,7 @@ export function DownloadMenu({
   fileSize,
   otherFormats,
   label,
+  pill = false,
 }: {
   fileUrl: string;
   fileName?: string;
@@ -60,6 +62,8 @@ export function DownloadMenu({
   otherFormats?: Format[];
   /** "Download", for the badge's own name. */
   label: string;
+  /** A "Download" button on a page (a book's), instead of the badge on a card's preview. */
+  pill?: boolean;
 }) {
   const { isArabic } = useLanguage();
   const [open, setOpen] = useState(false);
@@ -126,8 +130,16 @@ export function DownloadMenu({
     });
   }
 
-  const badgeClass =
-    "inline-flex h-8 w-8 items-center justify-center rounded-full bg-black/60 text-white transition-colors hover:bg-black/75";
+  const triggerClass = pill
+    ? PILL_BUTTON
+    : "inline-flex h-8 w-8 items-center justify-center rounded-full bg-black/60 text-white transition-colors hover:bg-black/75";
+  const placeClass = pill ? "relative inline-block" : "absolute top-2 end-2 z-10";
+  const icon = (
+    <>
+      <Download className="h-3.5 w-3.5" />
+      {pill && label}
+    </>
+  );
   const title = items[0].detail ? `${label} (${items[0].detail})` : label;
 
   // Clicks and keys stop here: the card around this opens the file on both.
@@ -141,29 +153,32 @@ export function DownloadMenu({
         onClick={stop}
         aria-label={title}
         title={title}
-        className={"absolute top-2 end-2 z-10 " + badgeClass}
+        className={placeClass + " " + triggerClass}
       >
-        <Download className="h-3.5 w-3.5" />
+        {icon}
       </a>
     );
   }
 
   return (
-    <div ref={ref} className="absolute top-2 end-2 z-10" onClick={stop} onKeyDown={stop}>
+    <div ref={ref} className={placeClass} onClick={stop} onKeyDown={stop}>
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-label={label}
         aria-expanded={open}
         title={label}
-        className={badgeClass}
+        className={triggerClass}
       >
-        <Download className="h-3.5 w-3.5" />
+        {icon}
       </button>
       {open && (
         <div
           role="menu"
-          className="absolute top-10 end-0 min-w-48 overflow-hidden rounded-md border border-border bg-card py-1 shadow-lg"
+          className={
+            "absolute z-20 min-w-48 overflow-hidden rounded-md border border-border bg-card py-1 shadow-lg " +
+            (pill ? "top-12 start-0" : "top-10 end-0")
+          }
           dir={isArabic ? "rtl" : "ltr"}
         >
           {items.map((item) =>

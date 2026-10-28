@@ -17,6 +17,7 @@ import {
   type PublicationCollection,
   type PayloadPublication,
   isYoutubeLink,
+  bookPage,
 } from "@/lib/payload";
 import { SECTION_COLORS } from "@/lib/sectionColors";
 import { publicationsQuery } from "@/lib/queries";
@@ -41,6 +42,7 @@ type DisplayPublication = {
   fileName?: string;
   fileNameAr?: string;
   otherFormats?: PayloadPublication["otherFormats"];
+  pageSlug?: string;
   fileUrlAr: string;
   fileMimeTypeAr?: string;
   fileSize?: number;
@@ -149,6 +151,7 @@ function fromPayload(item: PayloadPublication): DisplayPublication {
     fileName: item.file?.filename,
     fileNameAr: item.fileAr?.filename,
     otherFormats: item.otherFormats,
+    pageSlug: bookPage(item),
     fileUrlAr: mediaUrl(item.fileAr),
     fileMimeTypeAr: item.fileAr?.mimeType,
     fileSize: item.file?.filesize,
@@ -194,6 +197,7 @@ function PublicationsGrid({ items }: { items: DisplayPublication[] }) {
           fileName={item.fileName}
           fileNameAr={item.fileNameAr}
           otherFormats={item.otherFormats}
+          pageSlug={item.pageSlug}
           fileUrlAr={item.fileUrlAr}
           fileMimeTypeAr={item.fileMimeTypeAr}
           fileSize={item.fileSize}

@@ -1,7 +1,8 @@
-import type { CollectionConfig, CollectionSlug, Field } from 'payload'
+import type { CollectionBeforeValidateHook, CollectionConfig, CollectionSlug, Field } from 'payload'
 import { mirrorLinksOnChange, mirrorLinksOnDelete } from '../hooks/syncResearchLinks'
 import { SPEAKER_ROLES } from './Participants'
 import { section } from '../lib/adminLayout'
+import { uniqueSlug } from '../lib/slug'
 
 /**
  * The seven publication collections — one for each entry under Publications in
@@ -16,8 +17,50 @@ import { section } from '../lib/adminLayout'
  * every relationship pointing at them (see Research) still resolves.
  */
 
+/**
+ * A book has a page of its own on the website, at /publications/books/<slug>:
+ * its details, its description and a preview of the book. The address comes
+ * from the English title, numbered if taken, and is set once -- changing it
+ * would break links already shared.
+ */
+const fillSlug: CollectionBeforeValidateHook = async ({ data, originalDoc, req }) => {
+  if (!data || data.slug || originalDoc?.slug) return data
+  const slug = await uniqueSlug(req, 'books', data.title ?? originalDoc?.title, originalDoc?.id)
+  if (slug) data.slug = slug
+  return data
+}
+
+/** What a book's page lists beside its cover, and its address. */
+const bookFields: Field[] = [
+  section('Book Details', [
+    {
+      type: 'row',
+      fields: [
+        { name: 'isbn', type: 'text', label: 'ISBN', admin: { width: '50%' } },
+        { name: 'edition', type: 'text', label: 'Edition', admin: { width: '25%' } },
+        { name: 'pageCount', type: 'number', label: 'Pages', min: 1, admin: { width: '25%' } },
+      ],
+    },
+    { name: 'publisher', type: 'text', label: 'Publisher (English)' },
+    { name: 'publisherAr', type: 'text', label: 'Publisher (Arabic / الناشر بالعربية)', admin: { rtl: true } },
+    { name: 'place', type: 'text', label: 'Place of Publication (English)' },
+    { name: 'placeAr', type: 'text', label: 'Place of Publication (Arabic / مكان النشر بالعربية)', admin: { rtl: true } },
+  ]),
+  {
+    name: 'slug',
+    type: 'text',
+    index: true,
+    label: 'Page address',
+    admin: {
+      position: 'sidebar',
+      description:
+        "Filled in from the English title. Changing it after the page has been shared breaks the old link.",
+    },
+  },
+]
+
 /** Shared by all seven — the field set the unified collection already used. */
-function publicationFields(): Field[] {
+function publicationFields(slug: CollectionSlug): Field[] {
   return [
     section('Title and People', [
       {
@@ -78,6 +121,7 @@ function publicationFields(): Field[] {
         label: 'Publication Date',
       },
     ]),
+    ...(slug === 'books' ? bookFields : []),
     section('Description', [
       {
         name: 'description',
@@ -244,6 +288,7 @@ function publicationCollection(
       drafts: true,
     },
     hooks: {
+      ...(slug === 'books' ? { beforeValidate: [fillSlug] } : {}),
       afterChange: [
         mirrorLinksOnChange({
           field: 'researchLines',
@@ -282,7 +327,7 @@ function publicationCollection(
       update: ({ req }) => !!req.user,
       delete: ({ req }) => !!req.user,
     },
-    fields: publicationFields(),
+    fields: publicationFields(slug),
   }
 }
 

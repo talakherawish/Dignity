@@ -627,6 +627,17 @@ export interface Book {
    */
   speakerParticipants?: (string | Participant)[] | null;
   date?: string | null;
+  isbn?: string | null;
+  edition?: string | null;
+  pageCount?: number | null;
+  publisher?: string | null;
+  publisherAr?: string | null;
+  place?: string | null;
+  placeAr?: string | null;
+  /**
+   * Filled in from the English title. Changing it after the page has been shared breaks the old link.
+   */
+  slug?: string | null;
   description?: string | null;
   descriptionAr?: string | null;
   descriptionRich?: {
@@ -3555,6 +3566,14 @@ export interface BooksSelect<T extends boolean = true> {
   authorParticipants?: T;
   speakerParticipants?: T;
   date?: T;
+  isbn?: T;
+  edition?: T;
+  pageCount?: T;
+  publisher?: T;
+  publisherAr?: T;
+  place?: T;
+  placeAr?: T;
+  slug?: T;
   description?: T;
   descriptionAr?: T;
   descriptionRich?: T;

@@ -13,6 +13,7 @@ import {
   type PayloadActivity,
   type PayloadPublication,
   formatted,
+  tagged,
 } from "@/lib/payload";
 import { activityLineQuery } from "@/lib/queries";
 import { FormattedText } from "@/components/RichText";
@@ -64,7 +65,7 @@ export function ActivityLinePage({
 
   const forums = populated<PayloadActivity>(item?.relatedForums);
   const publications = [
-    ...populated<PayloadPublication>(item?.relatedBooks),
+    ...tagged(populated<PayloadPublication>(item?.relatedBooks), "books"),
     ...populated<PayloadPublication>(item?.relatedPapers),
     ...populated<PayloadPublication>(item?.relatedReports),
     ...populated<PayloadPublication>(item?.relatedBrochures),

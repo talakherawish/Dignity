@@ -9,6 +9,7 @@ import {
   type PayloadParticipant,
   type PayloadPublication,
   isYoutubeLink,
+  bookPage,
 } from "@/lib/payload";
 import { isLandscapeSize, landscapeFirst } from "@/lib/ordering";
 
@@ -109,6 +110,7 @@ export function PublicationGrid({
             fileName={p.file?.filename}
             fileNameAr={p.fileAr?.filename}
             otherFormats={showDownload ? p.otherFormats : undefined}
+            pageSlug={bookPage(p)}
             fileUrlAr={showDownload && p.fileAr ? mediaUrl(p.fileAr) : ""}
             fileMimeTypeAr={showDownload ? p.fileAr?.mimeType : undefined}
             fileSize={showDownload ? p.file?.filesize : undefined}

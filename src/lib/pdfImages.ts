@@ -1,3 +1,5 @@
+import { loadPdf } from "./pdf";
+
 /**
  * "Download as images" for a publication's PDF, done in the reader's browser:
  * each page is drawn by pdf.js (Mozilla's PDF renderer) and saved as a PNG or
@@ -39,14 +41,7 @@ export async function downloadPdfAsImages(
   format: ImageFormat,
   onProgress?: (done: number, total: number) => void,
 ): Promise<void> {
-  const [pdfjs, { default: workerUrl }, { zipSync }] = await Promise.all([
-    import("pdfjs-dist"),
-    import("pdfjs-dist/build/pdf.worker.min.mjs?url"),
-    import("fflate"),
-  ]);
-  pdfjs.GlobalWorkerOptions.workerSrc = workerUrl;
-
-  const pdf = await pdfjs.getDocument({ url }).promise;
+  const [pdf, { zipSync }] = await Promise.all([loadPdf(url), import("fflate")]);
   const pageCount = pdf.numPages;
   const total = Math.min(pageCount, MAX_PAGES);
   const name = baseName(url);

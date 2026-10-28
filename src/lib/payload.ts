@@ -299,7 +299,26 @@ export type PayloadPublication = {
   researchLines?: (PayloadResearchActivity | string)[];
   /** The same publication in other formats, each its own download -- see DownloadMenu. */
   otherFormats?: { id?: string; file?: PayloadMedia | string; label?: string; labelAr?: string }[];
+  /** Which collection it came from -- not stored, set by tagged where it's fetched. */
+  collection?: PublicationCollection;
+  // A book's own page and the details it lists (Books only).
+  slug?: string;
+  isbn?: string;
+  edition?: string;
+  pageCount?: number;
+  publisher?: string;
+  publisherAr?: string;
+  place?: string;
+  placeAr?: string;
 };
+
+/** Marks where publications came from, so a book's card can lead to its page. */
+export const tagged = (items: PayloadPublication[], collection: PublicationCollection) =>
+  items.map((item) => ({ ...item, collection }));
+
+/** A book's page address: its slug, or its id until it's saved with one. */
+export const bookPage = (item: PayloadPublication) =>
+  item.collection === "books" ? item.slug || item.id : undefined;
 
 /** The video id inside a YouTube watch/embed/short/youtu.be URL. */
 function youtubeId(url: string | undefined): string | undefined {
@@ -1084,13 +1103,16 @@ export async function fetchContributions(person: PayloadParticipant): Promise<Co
   const shown = <T extends { id: string }>(items: T[]) => items.filter((i) => !hidden.has(i.id));
   const [publications, forums, photos] = await Promise.all([
     Promise.all(
-      PUBLICATION_COLLECTIONS.map((collection) =>
-        fetchCollection<PayloadPublication>(collection, {
-          "where[or][0][authorParticipants][equals]": person.id,
-          "where[or][1][speakerParticipants][equals]": person.id,
-          depth: "2",
-          ...NEWEST_FIRST,
-        }),
+      PUBLICATION_COLLECTIONS.map(async (collection) =>
+        tagged(
+          await fetchCollection<PayloadPublication>(collection, {
+            "where[or][0][authorParticipants][equals]": person.id,
+            "where[or][1][speakerParticipants][equals]": person.id,
+            depth: "2",
+            ...NEWEST_FIRST,
+          }),
+          collection,
+        ),
       ),
     ),
     fetchCollection<PayloadActivity>("forums", {
@@ -1112,10 +1134,19 @@ export async function fetchContributions(person: PayloadParticipant): Promise<Co
 }
 
 /** Everything in one of the publication collections, newest first. */
-export const fetchPublications = (collection: PublicationCollection) =>
+export const fetchPublications = async (collection: PublicationCollection) =>
   // depth: 2 so item.image.thumbnail (the auto-generated PDF preview) resolves
   // to a full Media object, not just an id string.
-  fetchCollection<PayloadPublication>(collection, { depth: "2", ...NEWEST_FIRST });
+  tagged(
+    await fetchCollection<PayloadPublication>(collection, { depth: "2", ...NEWEST_FIRST }),
+    collection,
+  );
+
+/** One book for its own page, by its address or its id (see bookPage). */
+export const fetchBook = async (slugOrId: string) => {
+  const book = await fetchBySlugOrId<PayloadPublication>("books", slugOrId, "2");
+  return book && tagged([book], "books")[0];
+};
 
 export const fetchInformation = (collection: InformationCollection) =>
   fetchCollection<PayloadInformationItem>(collection, { joins: "false" });

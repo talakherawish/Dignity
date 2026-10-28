@@ -2,6 +2,7 @@ import { queryOptions } from "@tanstack/react-query";
 import {
   fetchAboutInitiative,
   fetchActivityLine,
+  fetchBook,
   fetchBibliographyCounts,
   fetchBibliographyEntries,
   fetchClippings,
@@ -116,6 +117,9 @@ export const activityLineQuery = (line: ActivityLine) =>
     queryKey: ["activity-line", line],
     queryFn: orNull(() => fetchActivityLine(line)),
   });
+
+export const bookQuery = (slugOrId: string) =>
+  queryOptions({ queryKey: ["book", slugOrId], queryFn: orNull(() => fetchBook(slugOrId)) });
 
 export const publicationsQuery = (type: PublicationCollection) =>
   queryOptions({ queryKey: ["publications", type], queryFn: () => fetchPublications(type) });

@@ -41,6 +41,7 @@ import { Route as InformationDatabasesSlugRouteImport } from './routes/informati
 import { Route as InformationReadingsSlugRouteImport } from './routes/information.readings_.$slug'
 import { Route as ProjectsResearchIndexRouteImport } from './routes/projects.research.index'
 import { Route as ProjectsResearchSlugRouteImport } from './routes/projects.research.$slug'
+import { Route as PublicationsBooksSlugRouteImport } from './routes/publications.books_.$slug'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -204,6 +205,11 @@ const ProjectsResearchSlugRoute = ProjectsResearchSlugRouteImport.update({
   path: '/projects/research/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PublicationsBooksSlugRoute = PublicationsBooksSlugRouteImport.update({
+  id: '/books_/$slug',
+  path: '/books/$slug',
+  getParentRoute: () => PublicationsRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -237,6 +243,7 @@ export interface FileRoutesByFullPath {
   '/information/databases/$slug': typeof InformationDatabasesSlugRoute
   '/information/readings/$slug': typeof InformationReadingsSlugRoute
   '/projects/research/$slug': typeof ProjectsResearchSlugRoute
+  '/publications/books/$slug': typeof PublicationsBooksSlugRoute
   '/projects/research/': typeof ProjectsResearchIndexRoute
 }
 export interface FileRoutesByTo {
@@ -271,6 +278,7 @@ export interface FileRoutesByTo {
   '/information/databases/$slug': typeof InformationDatabasesSlugRoute
   '/information/readings/$slug': typeof InformationReadingsSlugRoute
   '/projects/research/$slug': typeof ProjectsResearchSlugRoute
+  '/publications/books/$slug': typeof PublicationsBooksSlugRoute
   '/projects/research': typeof ProjectsResearchIndexRoute
 }
 export interface FileRoutesById {
@@ -306,6 +314,7 @@ export interface FileRoutesById {
   '/information/databases_/$slug': typeof InformationDatabasesSlugRoute
   '/information/readings_/$slug': typeof InformationReadingsSlugRoute
   '/projects/research/$slug': typeof ProjectsResearchSlugRoute
+  '/publications/books_/$slug': typeof PublicationsBooksSlugRoute
   '/projects/research/': typeof ProjectsResearchIndexRoute
 }
 export interface FileRouteTypes {
@@ -342,6 +351,7 @@ export interface FileRouteTypes {
     | '/information/databases/$slug'
     | '/information/readings/$slug'
     | '/projects/research/$slug'
+    | '/publications/books/$slug'
     | '/projects/research/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -376,6 +386,7 @@ export interface FileRouteTypes {
     | '/information/databases/$slug'
     | '/information/readings/$slug'
     | '/projects/research/$slug'
+    | '/publications/books/$slug'
     | '/projects/research'
   id:
     | '__root__'
@@ -410,6 +421,7 @@ export interface FileRouteTypes {
     | '/information/databases_/$slug'
     | '/information/readings_/$slug'
     | '/projects/research/$slug'
+    | '/publications/books_/$slug'
     | '/projects/research/'
   fileRoutesById: FileRoutesById
 }
@@ -655,6 +667,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProjectsResearchSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/publications/books_/$slug': {
+      id: '/publications/books_/$slug'
+      path: '/books/$slug'
+      fullPath: '/publications/books/$slug'
+      preLoaderRoute: typeof PublicationsBooksSlugRouteImport
+      parentRoute: typeof PublicationsRoute
+    }
   }
 }
 
@@ -717,6 +736,7 @@ interface PublicationsRouteChildren {
   PublicationsReportsRoute: typeof PublicationsReportsRoute
   PublicationsStickersRoute: typeof PublicationsStickersRoute
   PublicationsThesesRoute: typeof PublicationsThesesRoute
+  PublicationsBooksSlugRoute: typeof PublicationsBooksSlugRoute
 }
 
 const PublicationsRouteChildren: PublicationsRouteChildren = {
@@ -728,6 +748,7 @@ const PublicationsRouteChildren: PublicationsRouteChildren = {
   PublicationsReportsRoute: PublicationsReportsRoute,
   PublicationsStickersRoute: PublicationsStickersRoute,
   PublicationsThesesRoute: PublicationsThesesRoute,
+  PublicationsBooksSlugRoute: PublicationsBooksSlugRoute,
 }
 
 const PublicationsRouteWithChildren = PublicationsRoute._addFileChildren(

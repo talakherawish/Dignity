@@ -1,3 +1,4 @@
+import { useNavigate } from "@tanstack/react-router";
 import { ExternalLink, FileText, Play } from "lucide-react";
 import { useState, type KeyboardEvent, type ReactNode } from "react";
 import { TranslationNotice } from "@/components/TranslationNotice";
@@ -124,6 +125,8 @@ type PublicationCardProps = {
   fileNameAr?: string;
   /** Uploaded alternatives (the Word original, an image...), each its own download. */
   otherFormats?: PayloadPublication["otherFormats"];
+  /** A book's page address -- see bookPage. Pressing the card opens that page. */
+  pageSlug?: string;
   /** Headings inside a section that already has its own h3 pass "h4". */
   as?: "h3" | "h4";
 };
@@ -151,12 +154,14 @@ export function PublicationCard({
   fileName,
   fileNameAr,
   otherFormats,
+  pageSlug,
   linkUrl,
   linkUrlAr,
   as: Heading = "h3",
 }: PublicationCardProps) {
   const { t, lang, isArabic } = useLanguage();
   const isAr = lang === "ar";
+  const navigate = useNavigate();
   // Whether a video's embedded player has been started in place of its
   // thumbnail -- see the well markup below. Per-card local state, since only
   // the card the visitor clicked should start playing.
@@ -274,10 +279,14 @@ export function PublicationCard({
    * left the PDF on "Decolonizing Knowledge Production" reachable from nowhere
    * on the page. Only a video still outranks the file: there the well plays in
    * place, which is the more useful thing to press.
+   *
+   * A book's card opens the book's own page instead (pageSlug), where it can be
+   * read in the page; the badge still downloads it.
    */
-  const canOpenFile = !!fileUrl && !isVideo;
+  const canOpenFile = (!!fileUrl || !!pageSlug) && !isVideo;
   const openFile = () => {
-    if (fileUrl) openFileInNewTab(fileUrl, resolvedFileMimeType);
+    if (pageSlug) void navigate({ to: "/publications/books/$slug", params: { slug: pageSlug } });
+    else if (fileUrl) openFileInNewTab(fileUrl, resolvedFileMimeType);
   };
   const handleCardKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
     if (e.key !== "Enter" && e.key !== " ") return;

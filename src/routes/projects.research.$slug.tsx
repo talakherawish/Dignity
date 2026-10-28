@@ -19,6 +19,7 @@ import {
   type PayloadPhoto,
   type PayloadPublication,
   formatted,
+  tagged,
 } from "@/lib/payload";
 import { SECTION_COLORS } from "@/lib/sectionColors";
 import { researchBySlugQuery } from "@/lib/queries";
@@ -107,7 +108,7 @@ function ResearchDetailPage() {
     {
       key: "books",
       label: isArabic ? "الكتب" : "Books",
-      items: populated<PayloadPublication>(research.relatedBooks),
+      items: tagged(populated<PayloadPublication>(research.relatedBooks), "books"),
       showDownload: true,
     },
     {
