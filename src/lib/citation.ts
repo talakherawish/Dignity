@@ -242,7 +242,7 @@ const onlineLink = (source: CitationSource) => {
   return url && (source.doi || !["book", "chapter"].includes(source.kind)) ? url : undefined;
 };
 
-export function chicago(original: CitationSource): Segment[] {
+function chicago(original: CitationSource): Segment[] {
   const { source, editorsLead, words, out, add } = prepare(original);
 
   if (source.authors.length) {
@@ -364,7 +364,7 @@ function apaNames(list: string[], words: Words, arabic: boolean, form = apaName)
     : `${shown.slice(0, -1).join(", ")}, ${last}`;
 }
 
-export function apa(original: CitationSource): Segment[] {
+function apa(original: CitationSource): Segment[] {
   const { source, editorsLead, words, out, add } = prepare(original);
   const year = `(${source.year || words.noDate}). `;
   const editorMark = (list: string[]) => (list.length > 1 ? words.apaEds : words.apaEd);
@@ -436,7 +436,7 @@ function mlaNames(list: string[], words: Words, arabic: boolean): string {
   return names(list, words, true, arabic);
 }
 
-export function mla(original: CitationSource): Segment[] {
+function mla(original: CitationSource): Segment[] {
   const { source, editorsLead, words, out, add } = prepare(original);
 
   if (source.authors.length) {

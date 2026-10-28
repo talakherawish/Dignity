@@ -586,7 +586,7 @@ export type PayloadPage = {
 export type PayloadSiteSettings = Record<string, unknown>;
 
 /** What the editors picked for the homepage, in Site Settings -> Homepage. */
-export type PayloadHomepage = {
+type PayloadHomepage = {
   homeNewsCarousel?: (PayloadNews | string)[];
   homeNewsHeadlines?: (PayloadNews | string)[];
   homePublications?: { relationTo: PublicationCollection; value: PayloadPublication | string }[];
@@ -1082,7 +1082,7 @@ const PUBLICATION_COLLECTIONS: PublicationCollection[] = [
   "posters",
 ];
 
-export type Contributions = {
+type Contributions = {
   publications: PayloadPublication[];
   forums: PayloadActivity[];
   photos: PayloadPhoto[];
