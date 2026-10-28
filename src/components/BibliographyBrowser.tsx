@@ -4,7 +4,15 @@ import { ToggleMark } from "@/components/ActivityLedger";
 import { useLanguage, type TranslationKey } from "@/contexts/LanguageContext";
 import { Citation, CopyCitation } from "@/components/CopyCitation";
 import { Highlighted } from "@/components/Highlighted";
-import { chicago, entrySource, invert, sortName, uninvert } from "@/lib/citation";
+import {
+  CITATION_STYLES,
+  entrySource,
+  invert,
+  sortName,
+  uninvert,
+  type CitationStyle,
+} from "@/lib/citation";
+import { useCitationStyle } from "@/lib/citationStyle";
 import { containsAny, fold, keywordLabel, keywordsOf } from "@/lib/keywords";
 import { PILL_BUTTON } from "@/lib/ui";
 import {
@@ -163,6 +171,39 @@ export function FilterSelect({
  * and -- for a name -- in the other order, since a citation leads with its
  * first author surname first ("John Smith" and "Smith, John" find each other).
  */
+/** Which style every citation on the page is shown and copied in -- see citationStyle. */
+function StylePicker() {
+  const { t } = useLanguage();
+  const [style, choose] = useCitationStyle();
+  const styles: [CitationStyle, string][] = [
+    ["chicago", "Chicago"],
+    ["apa", "APA"],
+    ["mla", "MLA"],
+  ];
+  return (
+    <div role="radiogroup" aria-label={t("citation.style")} className="flex items-center gap-1.5">
+      <span>{t("citation.style")}</span>
+      {styles.map(([value, label]) => (
+        <button
+          key={value}
+          type="button"
+          role="radio"
+          aria-checked={style === value}
+          onClick={() => choose(value)}
+          className={
+            "rounded-full border px-2.5 py-0.5 transition-colors " +
+            (style === value
+              ? "border-[color:var(--brand-magenta)] text-[color:var(--brand-magenta)]"
+              : "border-border hover:border-[color:var(--brand-magenta)] hover:text-[color:var(--brand-magenta)]")
+          }
+        >
+          {label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 export function searchNeedles(query: string | undefined): string[] {
   const typed = query?.trim();
   if (!typed) return [];
@@ -217,7 +258,8 @@ function Entry({
   const hasSource = !!sourceLink || !!fileUrl;
   const source = { href: sourceLink, file: fileUrl, mimeType: entry.file?.mimeType };
   const panelId = `entry-panel-${entry.id}`;
-  const segments = useMemo(() => chicago(entrySource(entry)), [entry]);
+  const [style] = useCitationStyle();
+  const segments = useMemo(() => CITATION_STYLES[style](entrySource(entry)), [entry, style]);
 
   const heading = (
     <div className="flex items-start gap-6">
@@ -564,16 +606,19 @@ export function BibliographyBrowser({
               {t("databases.showing")} {number(visible.length)} {t("databases.of")}{" "}
               {number(entries.length)}
             </span>
-            {filtering && (
-              <button
-                type="button"
-                onClick={() => onFiltersChange({})}
-                className="inline-flex items-center gap-1 text-[color:var(--brand-magenta)] hover:underline"
-              >
-                <X className="h-3.5 w-3.5" />
-                {t("databases.filter.clear")}
-              </button>
-            )}
+            <div className="flex flex-wrap items-center gap-4">
+              <StylePicker />
+              {filtering && (
+                <button
+                  type="button"
+                  onClick={() => onFiltersChange({})}
+                  className="inline-flex items-center gap-1 text-[color:var(--brand-magenta)] hover:underline"
+                >
+                  <X className="h-3.5 w-3.5" />
+                  {t("databases.filter.clear")}
+                </button>
+              )}
+            </div>
           </div>
         )}
       </div>

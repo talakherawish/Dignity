@@ -73,6 +73,7 @@ const translations = {
     "information.page.desc":
       "Readings, documents, and databases relevant to the Dignity initiative's research.",
     "citation.copy": "Copy citation",
+    "citation.style": "Citation style",
     "citation.copyWithAnnotation": "Copy with annotation",
     "citation.copied": "Copied",
     "citation.failed": "Couldn't copy",
@@ -222,6 +223,7 @@ const translations = {
     "information.databases": "قواعد معلومات",
     "information.page.desc": "قراءات ووثائق وقواعد معلومات ذات صلة بأبحاث مبادرة الكرامة.",
     "citation.copy": "نسخ التوثيق",
+    "citation.style": "أسلوب التوثيق",
     "citation.copyWithAnnotation": "نسخ مع الملخص",
     "citation.copied": "تم النسخ",
     "citation.failed": "تعذّر النسخ",

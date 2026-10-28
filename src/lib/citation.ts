@@ -1,12 +1,17 @@
 import type { PayloadBibliographyEntry } from "@/lib/payload";
 
 /**
- * Citations in Chicago bibliography style (17th ed., notes-and-bibliography),
- * shown on the page and copied to the clipboard from the same parts, so what
- * a reader sees is exactly what they paste:
+ * Citations in the reader's choice of style -- Chicago (17th ed.,
+ * notes-and-bibliography), APA (7th ed.) or MLA (9th ed.) -- shown on the page
+ * and copied to the clipboard from the same parts, so what a reader sees is
+ * exactly what they paste:
  *
- *   Bonefeld, Werner, and Kosmas Psychopedis, eds. *Human Dignity: Social
- *       Autonomy and the Critique of Capitalism*. Abingdon: Routledge, 2017.
+ *   Chicago  Bonefeld, Werner, and Kosmas Psychopedis, eds. *Human Dignity*.
+ *            Abingdon: Routledge, 2017.
+ *   APA      Bonefeld, W., & Psychopedis, K. (Eds.). (2017). *Human Dignity*.
+ *            Routledge.
+ *   MLA      Bonefeld, Werner, and Kosmas Psychopedis, editors. *Human
+ *            Dignity*. Routledge, 2017.
  *
  * Written in the source's own language, not the reader's -- an Arabic book is
  * cited in Arabic on the English page too, the same way its title is never
@@ -54,6 +59,15 @@ type Words = {
   edition: (value: string) => string;
   noDate: string;
   thesis: string;
+  /** APA's "&" before the last author. */
+  amp: string;
+  etAl: string;
+  vol: string;
+  pp: string;
+  editor: string;
+  editors: string;
+  apaEd: string;
+  apaEds: string;
 };
 
 const WORDS: Record<"en" | "ar", Words> = {
@@ -69,6 +83,14 @@ const WORDS: Record<"en" | "ar", Words> = {
     edition: (value) => (/ed\.?$/i.test(value) ? value : `${value} ed.`),
     noDate: "n.d.",
     thesis: "Thesis",
+    amp: "& ",
+    etAl: "et al.",
+    vol: "vol. ",
+    pp: "pp. ",
+    editor: "editor",
+    editors: "editors",
+    apaEd: "(Ed.)",
+    apaEds: "(Eds.)",
   },
   ar: {
     and: "و",
@@ -82,6 +104,14 @@ const WORDS: Record<"en" | "ar", Words> = {
     edition: (value) => `ط. ${value}`,
     noDate: "د.ت.",
     thesis: "رسالة جامعية",
+    amp: "و",
+    etAl: "وآخرون",
+    vol: "مج. ",
+    pp: "ص. ",
+    editor: "محرر",
+    editors: "محررون",
+    apaEd: "(محرر)",
+    apaEds: "(محررون)",
   },
 };
 
@@ -182,18 +212,17 @@ const link = (source: CitationSource) =>
     ? `https://doi.org/${source.doi.replace(/^https?:\/\/(dx\.)?doi\.org\//, "")}`
     : source.url;
 
-export function chicago(source: CitationSource): Segment[] {
-  // Page ranges take an en dash: 451–477.
+/**
+ * What every style starts from: page ranges with an en dash (451–477), and
+ * whether the editors lead -- an edited volume cited as a whole names its
+ * editors in the authors' place. Zotero exports often list a volume's editors
+ * as its authors too; that is still an edited volume, not one authored twice.
+ */
+function prepare(original: CitationSource) {
+  let source = original;
   if (source.pages) {
     source = { ...source, pages: source.pages.trim().replace(/(\d)\s*[-‐‑—]\s*(\d)/g, "$1–$2") };
   }
-  const words = WORDS[source.arabic ? "ar" : "en"];
-  const out: Segment[] = [];
-  const add = (text: string, italic = false) => out.push({ text, italic });
-
-  // Who: the authors, or -- for an edited volume cited as a whole -- its
-  // editors, marked as such. Zotero exports often list a volume's editors as
-  // its authors too; that is still an edited volume, not one authored twice.
   const sameAsEditors =
     source.editors.length > 0 &&
     source.authors.length === source.editors.length &&
@@ -202,6 +231,20 @@ export function chicago(source: CitationSource): Segment[] {
     (source.authors.length === 0 || (sameAsEditors && source.kind !== "chapter")) &&
     source.editors.length > 0;
   if (editorsLead) source = { ...source, authors: [] };
+  const out: Segment[] = [];
+  const add = (text: string, italic = false) => out.push({ text, italic });
+  return { source, editorsLead, words: WORDS[source.arabic ? "ar" : "en"], out, add };
+}
+
+/** Online sources end with where to find them. Books and chapters only with a DOI: their links are mostly a shop's. */
+const onlineLink = (source: CitationSource) => {
+  const url = link(source);
+  return url && (source.doi || !["book", "chapter"].includes(source.kind)) ? url : undefined;
+};
+
+export function chicago(original: CitationSource): Segment[] {
+  const { source, editorsLead, words, out, add } = prepare(original);
+
   if (source.authors.length) {
     add(`${stop(names(source.authors, words, true, source.arabic))} `);
   } else if (editorsLead) {
@@ -285,13 +328,180 @@ export function chicago(source: CitationSource): Segment[] {
     }
   }
 
-  // Online sources end with where to find them. Books and chapters don't:
-  // their links are mostly a shop's or a publisher's page, not the text.
-  const url = link(source);
-  if (url && (source.doi || !["book", "chapter"].includes(source.kind))) add(` ${url}.`);
-
+  const url = onlineLink(source);
+  if (url) add(` ${url}.`);
   return out;
 }
+
+/** "Bonefeld, W." -- surname, then initials. Arabic keeps the whole name: it has no initials. */
+function apaName(name: string, arabic: boolean): string {
+  const inverted = invert(name, arabic);
+  if (arabic || inverted === name.trim()) return inverted;
+  const [surname, given] = inverted.split(", ");
+  const initials = given
+    .split(/[\s-]+/)
+    .filter(Boolean)
+    .map((part) => `${part[0]}.`)
+    .join(" ");
+  return `${surname}, ${initials}`;
+}
+
+/** "R. Debes" -- an editor of the book a chapter is in comes initials first. */
+function apaInitialsFirst(name: string, arabic: boolean): string {
+  const short = apaName(name, arabic);
+  if (arabic || !short.includes(", ")) return short;
+  const [surname, initials] = short.split(", ");
+  return `${initials} ${surname}`;
+}
+
+/** "A, B, & C", every name inverted -- or, for a chapter's editors, initials first. */
+function apaNames(list: string[], words: Words, arabic: boolean, form = apaName): string {
+  const shown = list.map((name) => form(name, arabic));
+  if (shown.length === 1) return shown[0];
+  const last = `${words.amp}${shown[shown.length - 1]}`;
+  return arabic
+    ? `${shown.slice(0, -1).join(words.comma)} ${last}`
+    : `${shown.slice(0, -1).join(", ")}, ${last}`;
+}
+
+export function apa(original: CitationSource): Segment[] {
+  const { source, editorsLead, words, out, add } = prepare(original);
+  const year = `(${source.year || words.noDate}). `;
+  const editorMark = (list: string[]) => (list.length > 1 ? words.apaEds : words.apaEd);
+
+  if (source.authors.length) {
+    add(`${stop(apaNames(source.authors, words, source.arabic))} ${year}`);
+  } else if (editorsLead) {
+    add(`${apaNames(source.editors, words, source.arabic)} ${editorMark(source.editors)}. ${year}`);
+  } else {
+    add(year);
+  }
+
+  switch (source.kind) {
+    case "chapter": {
+      add(`${stop(source.title)} `);
+      if (source.container) {
+        const editors = source.editors.length
+          ? `${apaNames(source.editors, words, source.arabic, apaInitialsFirst)} ${editorMark(source.editors)}${words.comma}`
+          : "";
+        add(`${words.in}${editors}`);
+        add(source.container, true);
+        add(source.pages ? ` (${words.pp}${source.pages}). ` : ". ");
+      }
+      if (source.publisher) add(stop(source.publisher));
+      break;
+    }
+    case "article": {
+      add(`${stop(source.title)} `);
+      if (source.container) {
+        add(source.container, true);
+        if (source.volume) {
+          add(words.comma);
+          add(source.volume, true);
+        }
+        const issue = source.issue ? `(${source.issue})` : "";
+        add(`${issue}${source.pages ? words.comma + source.pages : ""}.`);
+      }
+      break;
+    }
+    case "thesis": {
+      add(source.title.trim(), true);
+      add(` [${[words.thesis, source.publisher].filter(Boolean).join(words.comma)}].`);
+      break;
+    }
+    case "website": {
+      add(source.title.trim(), true);
+      add(". ");
+      if (source.container) add(stop(source.container));
+      break;
+    }
+    default: {
+      add(source.title.trim(), true);
+      const notes = [source.edition && words.edition(source.edition), source.reportType].filter(
+        Boolean,
+      );
+      add(notes.length ? ` (${notes.join(words.comma)}). ` : ". ");
+      if (source.publisher) add(stop(source.publisher));
+    }
+  }
+
+  const url = onlineLink(source);
+  if (url) add(` ${url}`);
+  return out;
+}
+
+/** "A", "A, and B", "A, et al." -- MLA names no third author. */
+function mlaNames(list: string[], words: Words, arabic: boolean): string {
+  if (list.length > 2) return `${invert(list[0], arabic)}${words.comma}${words.etAl}`;
+  return names(list, words, true, arabic);
+}
+
+export function mla(original: CitationSource): Segment[] {
+  const { source, editorsLead, words, out, add } = prepare(original);
+
+  if (source.authors.length) {
+    add(`${stop(mlaNames(source.authors, words, source.arabic))} `);
+  } else if (editorsLead) {
+    const role = source.editors.length > 1 ? words.editors : words.editor;
+    add(`${mlaNames(source.editors, words, source.arabic)}${words.comma}${role}. `);
+  }
+
+  // After the title, the rest goes comma by comma: "edited by X, Routledge, 2017".
+  const editedBy =
+    source.editors.length && !editorsLead
+      ? `${source.arabic ? "تحرير " : "edited by "}${names(source.editors, words, false, source.arabic)}`
+      : "";
+  const pages = source.pages ? `${words.pp}${source.pages}` : "";
+  const list = (parts: (string | undefined)[]) => parts.filter(Boolean).join(words.comma);
+
+  switch (source.kind) {
+    case "chapter":
+    case "article":
+    case "website": {
+      add(`${quoted(source.title)} `);
+      if (source.container) {
+        add(source.container, true);
+        const rest =
+          source.kind === "article"
+            ? list([
+                source.volume && `${words.vol}${source.volume}`,
+                source.issue && `${words.no}${source.issue}`,
+                source.year,
+                pages,
+              ])
+            : list([editedBy, source.publisher, source.year, pages]);
+        add(rest ? `${words.comma}${rest}.` : ".");
+      } else {
+        add(stop(source.year || words.noDate));
+      }
+      break;
+    }
+    case "thesis": {
+      add(source.title.trim(), true);
+      add(". ");
+      add(stop(list([source.year, source.publisher, words.thesis])));
+      break;
+    }
+    default: {
+      add(source.title.trim(), true);
+      add(/[?!؟]$/.test(source.title.trim()) ? " " : ". ");
+      const rest = list([
+        editedBy,
+        source.edition && words.edition(source.edition),
+        source.publisher,
+        source.year,
+      ]);
+      if (rest) add(stop(rest));
+    }
+  }
+
+  const url = onlineLink(source);
+  if (url) add(` ${url}`);
+  return out;
+}
+
+export const CITATION_STYLES = { chicago, apa, mla };
+export type CitationStyle = keyof typeof CITATION_STYLES;
 
 const KIND: Record<PayloadBibliographyEntry["entryType"], CitationSource["kind"]> = {
   book: "book",
@@ -328,7 +538,7 @@ const escape = (text: string) =>
 
 /**
  * Puts a citation (and its annotation, when given) on the clipboard twice
- * over: as formatted HTML -- italics, and Chicago's half-inch hanging indent
+ * over: as formatted HTML -- italics, and the half-inch hanging indent all three styles use
  * -- for pasting into Word or Google Docs, and as plain text for everywhere
  * else. An annotation follows its citation as an indented paragraph, the
  * usual layout of an annotated bibliography.

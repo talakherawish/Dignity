@@ -24,7 +24,7 @@ export function Citation({ segments, needles = [] }: { segments: Segment[]; need
 }
 
 /**
- * Copies a Chicago citation -- or, given an annotation, the citation with its
+ * Copies the citation as shown, in the style picked -- or, given an annotation, the citation with its
  * annotation beneath, as an annotated bibliography lays them out -- ready to
  * paste into a bibliography. See copyCitation for the formats it copies.
  */
