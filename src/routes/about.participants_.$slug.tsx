@@ -166,7 +166,7 @@ function ProfileBody({ person }: { person: PayloadParticipant }) {
         <Section
           title={isArabic ? "منشورات ضمن مبادرة كرامة" : "Publications with the Dignity Initiative"}
         >
-          <PublicationGrid items={work.publications} />
+          <PublicationGrid items={work.publications} showDownload />
         </Section>
       )}
 

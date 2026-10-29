@@ -98,6 +98,11 @@ type PublicationCardProps = {
    */
   previewWidth?: number;
   previewHeight?: number;
+  /** Arabic-only counterparts to the preview above, when the Arabic PDF is a different document -- see resolveAttachment. */
+  previewUrlAr?: string;
+  previewSrcSetAr?: string;
+  previewWidthAr?: number;
+  previewHeightAr?: number;
   /**
    * Shape of the preview well when its ratio isn't known. Documents fall back
    * to A4 proportions, clippings to something squarer, and `none` drops the
@@ -144,6 +149,10 @@ export function PublicationCard({
   previewSrcSet,
   previewWidth,
   previewHeight,
+  previewUrlAr,
+  previewSrcSetAr,
+  previewWidthAr,
+  previewHeightAr,
   preview = "document",
   fileUrl,
   fileMimeType,
@@ -189,6 +198,15 @@ export function PublicationCard({
   linkUrl = resolvedLink.value;
   fileUrl = resolvedFile.value;
   const attachmentMissing = !linkUrl && !fileUrl && (resolvedLink.missing || resolvedFile.missing);
+
+  // The preview follows the file, so the Arabic reader sees the thumbnail of the
+  // Arabic PDF. Falls back to the shared one when no Arabic copy has its own.
+  if (isAr && previewUrlAr) {
+    previewUrl = previewUrlAr;
+    previewSrcSet = previewSrcSetAr;
+    previewWidth = previewWidthAr;
+    previewHeight = previewHeightAr;
+  }
 
   const isVideo = isYoutubeLink(linkUrl);
   const knownRatio = previewWidth && previewHeight ? previewWidth / previewHeight : undefined;

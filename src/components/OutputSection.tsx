@@ -85,6 +85,8 @@ export function PublicationGrid({
         // cropping it into a fixed box.
         const previewSource = p.image?.thumbnail ?? p.image ?? p.file?.thumbnail;
         const previewUrl = previewSource ? mediaUrl(previewSource) : youtubeThumbnail(p.link);
+        // Same cover image in both languages; only the PDF's own thumbnail differs.
+        const previewSourceAr = p.image?.thumbnail ?? p.image ?? p.fileAr?.thumbnail ?? p.file?.thumbnail;
         return (
           <PublicationCard
             key={p.id}
@@ -105,6 +107,10 @@ export function PublicationGrid({
             previewSrcSet={mediaSrcSet(previewSource)}
             previewWidth={previewSource?.width}
             previewHeight={previewSource?.height}
+            previewUrlAr={previewSourceAr ? mediaUrl(previewSourceAr) : undefined}
+            previewSrcSetAr={mediaSrcSet(previewSourceAr)}
+            previewWidthAr={previewSourceAr?.width}
+            previewHeightAr={previewSourceAr?.height}
             fileUrl={showDownload && p.file ? mediaUrl(p.file) : ""}
             fileMimeType={showDownload ? p.file?.mimeType : undefined}
             fileName={p.file?.filename}

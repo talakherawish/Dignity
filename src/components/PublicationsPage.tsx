@@ -51,6 +51,10 @@ type DisplayPublication = {
   previewSrcSet?: string;
   previewWidth?: number;
   previewHeight?: number;
+  previewUrlAr?: string;
+  previewSrcSetAr?: string;
+  previewWidthAr?: number;
+  previewHeightAr?: number;
   /** External destination (YouTube) for items that aren't uploads. */
   linkUrl: string;
   linkUrlAr: string;
@@ -130,6 +134,8 @@ function fromPayload(item: PayloadPublication): DisplayPublication {
   // cropping it into a fixed box.
   const previewSource = imageIsPhoto ? item.image : (item.image?.thumbnail ?? item.file?.thumbnail);
   const previewUrl = previewSource ? mediaUrl(previewSource) : youtubeThumbnail(item.link);
+  // Same cover image in both languages; only the PDF's own thumbnail differs.
+  const previewSourceAr = imageIsPhoto ? item.image : (item.image?.thumbnail ?? item.fileAr?.thumbnail ?? item.file?.thumbnail);
   return {
     linkUrl: item.link ?? "",
     linkUrlAr: item.linkAr ?? "",
@@ -160,6 +166,10 @@ function fromPayload(item: PayloadPublication): DisplayPublication {
     previewSrcSet: mediaSrcSet(previewSource),
     previewWidth: previewSource?.width,
     previewHeight: previewSource?.height,
+    previewUrlAr: previewSourceAr ? mediaUrl(previewSourceAr) : undefined,
+    previewSrcSetAr: mediaSrcSet(previewSourceAr),
+    previewWidthAr: previewSourceAr?.width,
+    previewHeightAr: previewSourceAr?.height,
     researchLines: populated<PayloadResearchActivity>(item.researchLines).map((r) => ({
       id: r.id,
       title: r.title,
@@ -192,6 +202,10 @@ function PublicationsGrid({ items }: { items: DisplayPublication[] }) {
           previewSrcSet={item.previewSrcSet}
           previewWidth={item.previewWidth}
           previewHeight={item.previewHeight}
+          previewUrlAr={item.previewUrlAr}
+          previewSrcSetAr={item.previewSrcSetAr}
+          previewWidthAr={item.previewWidthAr}
+          previewHeightAr={item.previewHeightAr}
           fileUrl={item.fileUrl}
           fileMimeType={item.fileMimeType}
           fileName={item.fileName}
