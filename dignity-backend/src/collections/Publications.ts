@@ -98,7 +98,7 @@ function publicationFields(slug: CollectionSlug): Field[] {
         label: 'Author(s) from Participants',
         admin: {
           description:
-            "Pick existing people instead of typing a name above. When this is set, these are shown in place of the typed Author field, each linking to that person's profile under About → Participants.",
+            "Pick existing people for any author who has a profile. They are shown first, each linking to that person's profile under About → Participants. Anyone not in the list can still be typed in the Author field above; that name is shown after the picked people, joined by \"and\" (Arabic: \"و\").",
         },
       },
       {

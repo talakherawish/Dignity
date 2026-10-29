@@ -400,9 +400,11 @@ export function PublicationCard({
             {date && <div>{formatDate(date, isAr ? "ar" : "en")}</div>}
             {/* normal-case: a person's name isn't a label like the date above
                 it -- shouting it in caps reads as wrong, not stylised. */}
-            {authorTags ? (
+            {/* Picked participants link to their profile; a typed name that isn't
+                in the Working Group follows them as plain text, joined by "and" / "و". */}
+            {authorTags || displayAuthor ? (
               <div className="normal-case font-serif">
-                {authorTags.map((tag, index) => (
+                {authorTags?.map((tag, index) => (
                   <span key={tag.id}>
                     <ParticipantLink
                       id={tag.id}
@@ -413,10 +415,10 @@ export function PublicationCard({
                     {index < authorTags.length - 1 ? ", " : ""}
                   </span>
                 ))}
+                {authorTags && displayAuthor && (isAr ? " و" : " and ")}
+                {displayAuthor}
               </div>
-            ) : (
-              displayAuthor && <div className="normal-case font-serif">{displayAuthor}</div>
-            )}
+            ) : null}
           </div>
         )}
 

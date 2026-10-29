@@ -112,19 +112,19 @@ function Book({ book }: { book: PayloadPublication }) {
           </h1>
           {(authors.length > 0 || typedAuthor) && (
             <p className="mt-3 font-serif text-lg text-foreground/80">
-              {authors.length > 0
-                ? authors.map((person, index) => (
-                    <span key={person.id}>
-                      <ParticipantLink
-                        id={person.id}
-                        className="hover:text-accent hover:underline underline-offset-2"
-                      >
-                        {isAr ? person.nameAr || person.name : person.name}
-                      </ParticipantLink>
-                      {index < authors.length - 1 ? (isArabic ? "، " : ", ") : ""}
-                    </span>
-                  ))
-                : typedAuthor}
+              {authors.map((person, index) => (
+                <span key={person.id}>
+                  <ParticipantLink
+                    id={person.id}
+                    className="hover:text-accent hover:underline underline-offset-2"
+                  >
+                    {isAr ? person.nameAr || person.name : person.name}
+                  </ParticipantLink>
+                  {index < authors.length - 1 ? (isArabic ? "، " : ", ") : ""}
+                </span>
+              ))}
+              {authors.length > 0 && typedAuthor && (isArabic ? " و" : " and ")}
+              {typedAuthor}
             </p>
           )}
 
