@@ -86,7 +86,8 @@ export function PublicationGrid({
         const previewSource = p.image?.thumbnail ?? p.image ?? p.file?.thumbnail;
         const previewUrl = previewSource ? mediaUrl(previewSource) : youtubeThumbnail(p.link);
         // Same cover image in both languages; only the PDF's own thumbnail differs.
-        const previewSourceAr = p.image?.thumbnail ?? p.image ?? p.fileAr?.thumbnail ?? p.file?.thumbnail;
+        const previewSourceAr =
+          p.image?.thumbnail ?? p.image ?? p.fileAr?.thumbnail ?? p.file?.thumbnail;
         return (
           <PublicationCard
             key={p.id}

@@ -135,7 +135,9 @@ function fromPayload(item: PayloadPublication): DisplayPublication {
   const previewSource = imageIsPhoto ? item.image : (item.image?.thumbnail ?? item.file?.thumbnail);
   const previewUrl = previewSource ? mediaUrl(previewSource) : youtubeThumbnail(item.link);
   // Same cover image in both languages; only the PDF's own thumbnail differs.
-  const previewSourceAr = imageIsPhoto ? item.image : (item.image?.thumbnail ?? item.fileAr?.thumbnail ?? item.file?.thumbnail);
+  const previewSourceAr = imageIsPhoto
+    ? item.image
+    : (item.image?.thumbnail ?? item.fileAr?.thumbnail ?? item.file?.thumbnail);
   return {
     linkUrl: item.link ?? "",
     linkUrlAr: item.linkAr ?? "",
