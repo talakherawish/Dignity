@@ -668,8 +668,8 @@ function HeroVideo() {
       <video
         ref={videoRef}
         className="absolute inset-0 h-full w-full object-cover"
-        src="/landing.mp4?v=3"
-        poster="/landing-poster.jpg?v=3"
+        src="/landing.mp4?v=4"
+        poster="/landing-poster.jpg?v=4"
         preload="auto"
         autoPlay
         muted
