@@ -81,7 +81,15 @@ function BackLink() {
  * Photo, then name, then role, then links -- one card, held in view while the
  * page scrolls. It sticks exactly where it starts (the header's height plus
  * the page's top padding), so it never shifts, and it is never taller than
- * the screen below the header: the photo gives way first.
+ * the screen below the header.
+ *
+ * The photo is shown whole, at its own shape: nothing is ever cut off the top
+ * or the bottom of someone's face. It used to be cropped to a 5:4 box, which
+ * fits a landscape photo and beheads a portrait one -- most people send a
+ * portrait. Its height is capped so the name and links stay in view, and a
+ * photo taller than that cap sits centred against the panel, which shows at
+ * its sides. Same reasoning as a partner's logo (Partners.ts): a picture is
+ * shown whole against a plain panel rather than filled to the edges.
  */
 function ProfileCard({ person }: { person: PayloadParticipant }) {
   const { lang } = useLanguage();
@@ -97,7 +105,7 @@ function ProfileCard({ person }: { person: PayloadParticipant }) {
             srcSet={profile.photoSrcSet}
             sizes="300px"
             alt={profile.name}
-            className="aspect-[5/4] max-h-[32svh] w-full object-cover object-top bg-secondary"
+            className="max-h-[45svh] w-full object-contain bg-secondary"
           />
         )}
         <div className="p-6">

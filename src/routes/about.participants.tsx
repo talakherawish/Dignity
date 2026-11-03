@@ -11,7 +11,7 @@ import {
   type Participant,
 } from "@/components/ParticipantModal";
 import { SECTION_COLORS } from "@/lib/sectionColors";
-import { participantsQuery } from "@/lib/queries";
+import { pageTextQuery, participantsQuery } from "@/lib/queries";
 import { FormattedText } from "@/components/RichText";
 import { Highlighted } from "@/components/Highlighted";
 import {
@@ -25,9 +25,28 @@ import {
  * modal once the list has loaded. */
 type ParticipantsSearch = { participant?: string };
 
+/**
+ * What the top of the page says until someone writes their own wording at the
+ * top of the Working Group list in the CMS (a page-text global, edited there
+ * by PageTextPanel). The admin shows these same words, greyed out, as what the
+ * page says while the fields are empty -- dignity-backend's
+ * collections/Participants.ts holds the other copy, so change one and change
+ * the other.
+ */
+const BUILT_IN_PAGE = {
+  title: { en: "Working Group", ar: "مجموعة العمل" },
+  intro: {
+    en: "These are the people who got us to where we are today.\nResearchers, academics, and affiliates united by a commitment to human dignity.",
+    ar: "هؤلاء هم الأشخاص الذين أوصلونا إلى ما نحن عليه اليوم.\nباحثون وأكاديميون ومنتسبون يجمعهم الالتزام بخدمة الكرامة الإنسانية.",
+  },
+};
+
 export const Route = createFileRoute("/about/participants")({
   loader: async ({ context }) => {
-    await context.queryClient.ensureQueryData(participantsQuery);
+    await Promise.all([
+      context.queryClient.ensureQueryData(participantsQuery),
+      context.queryClient.ensureQueryData(pageTextQuery("working-group-page")),
+    ]);
   },
   validateSearch: (search: Record<string, unknown>): ParticipantsSearch => ({
     participant: typeof search.participant === "string" ? search.participant : undefined,
@@ -123,6 +142,9 @@ function ParticipantsPage() {
   const [selected, setSelected] = useState<Participant | null>(null);
 
   const { data: payloadParticipants = [] } = useQuery(participantsQuery);
+  const { data: page } = useQuery(pageTextQuery("working-group-page"));
+  const pageTitle = (isArabic ? page?.titleAr : page?.title)?.trim();
+  const pageIntro = (isArabic ? page?.introAr : page?.intro)?.trim();
 
   // Opens a tagged person's modal when arriving from a photo's "With: ..."
   // tag. Runs once per deep link -- payloadParticipants is a stable
@@ -161,12 +183,8 @@ function ParticipantsPage() {
       <PageHero
         eyebrow={isArabic ? "عن مبادرة كرامة" : "About the Dignity Initiative"}
         eyebrowColor={SECTION_COLORS.about}
-        title={isArabic ? "مجموعة العمل" : "Working Group"}
-        description={
-          isArabic
-            ? "هؤلاء هم الأشخاص الذين أوصلونا إلى ما نحن عليه اليوم.\nباحثون وأكاديميون ومنتسبون يجمعهم الالتزام بخدمة الكرامة الإنسانية."
-            : "These are the people who got us to where we are today.\nResearchers, academics, and affiliates united by a commitment to human dignity."
-        }
+        title={pageTitle || BUILT_IN_PAGE.title[isArabic ? "ar" : "en"]}
+        description={pageIntro || BUILT_IN_PAGE.intro[isArabic ? "ar" : "en"]}
       />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">

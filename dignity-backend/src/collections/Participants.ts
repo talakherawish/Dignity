@@ -71,6 +71,26 @@ const fillSlug: CollectionBeforeValidateHook = async ({ data, originalDoc, req }
   return data
 }
 
+/**
+ * The heading and introduction the website prints above this list, on About
+ * the Dignity Initiative → Working Group. They are shown greyed out in the
+ * panel at the top of the list (PageTextPanel) as what the page says while the
+ * page-text global is empty, so an editor can see the current wording and
+ * change it there instead of looking for a separate entry for the page.
+ *
+ * The website holds the same words as its own fallback
+ * (src/routes/about.participants.tsx) -- the page has to read right before
+ * anyone has typed anything here. Change one, change the other.
+ */
+const WORKING_GROUP_PAGE = {
+  title: 'Working Group',
+  titleAr: 'مجموعة العمل',
+  intro:
+    'These are the people who got us to where we are today.\nResearchers, academics, and affiliates united by a commitment to human dignity.',
+  introAr:
+    'هؤلاء هم الأشخاص الذين أوصلونا إلى ما نحن عليه اليوم.\nباحثون وأكاديميون ومنتسبون يجمعهم الالتزام بخدمة الكرامة الإنسانية.',
+}
+
 export const Participants: CollectionConfig = {
   slug: 'participants',
   labels: {
@@ -81,6 +101,23 @@ export const Participants: CollectionConfig = {
     group: 'About the Dignity Initiative',
     useAsTitle: 'name',
     defaultColumns: ['name', 'category', 'status'],
+    // The list opens with the words at the top of the website's Working Group
+    // page, edited in place, then the people listed on it -- the same panel
+    // the Information lists use.
+    components: {
+      beforeList: [
+        {
+          path: '/components/admin/PageTextPanel',
+          clientProps: {
+            global: 'working-group-page',
+            pageName: 'Working Group',
+            menu: 'About the Dignity Initiative',
+            listed: 'people',
+            defaults: WORKING_GROUP_PAGE,
+          },
+        },
+      ],
+    },
   },
   // Drag to reorder in the list: the Working Group page shows people in this order.
   orderable: true,

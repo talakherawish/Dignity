@@ -3,11 +3,12 @@ import { Button, Gutter, toast, useConfig } from '@payloadcms/ui'
 import { useEffect, useState } from 'react'
 
 /**
- * Shown above a subject list (Databases, Readings and Documents): the heading
- * and introduction of that website page (a page-text global,
- * src/globals/PageText.ts), edited in place, so the page and the subjects
- * listed on it are managed from one screen. Which global and page is passed
- * in from the collection config as clientProps.
+ * Shown above a list (Databases, Readings and Documents, the Working Group):
+ * the heading and introduction of that website page (a page-text global,
+ * src/globals/PageText.ts), edited in place, so the page and what is listed on
+ * it are managed from one screen. Which global, which page, and where the page
+ * sits in the website's menu are passed in from the collection config as
+ * clientProps.
  */
 
 type Texts = { title: string; titleAr: string; intro: string; introAr: string }
@@ -28,12 +29,15 @@ function Input({
   label,
   value,
   onChange,
+  placeholder,
   rtl,
   multiline,
 }: {
   label: string
   value: string
   onChange: (value: string) => void
+  /** What the website says while this field is empty, shown greyed out. */
+  placeholder?: string
   rtl?: boolean
   multiline?: boolean
 }) {
@@ -45,6 +49,7 @@ function Input({
           rows={4}
           dir={rtl ? 'rtl' : undefined}
           value={value}
+          placeholder={placeholder}
           onChange={(e) => onChange(e.target.value)}
           style={{ ...inputStyle, resize: 'vertical' }}
         />
@@ -53,6 +58,7 @@ function Input({
           type="text"
           dir={rtl ? 'rtl' : undefined}
           value={value}
+          placeholder={placeholder}
           onChange={(e) => onChange(e.target.value)}
           style={inputStyle}
         />
@@ -64,14 +70,25 @@ function Input({
 export default function PageTextPanel({
   global,
   pageName,
+  menu,
   listed,
+  defaults,
 }: {
   /** The page-text global's slug, e.g. 'databases-page'. */
   global: string
   /** The page as the website menu names it, e.g. 'Databases'. */
   pageName: string
+  /** The website menu it sits under, e.g. 'Information'. */
+  menu: string
   /** What the list below holds, e.g. 'databases'. */
   listed: string
+  /**
+   * The wording the website falls back to while a field is empty, shown in the
+   * fields as a grey hint -- for a page that was written into the website
+   * before it was editable here (the Working Group). A page whose heading is
+   * just its menu label passes nothing.
+   */
+  defaults?: Partial<Texts>
 }) {
   const {
     config: {
@@ -142,8 +159,13 @@ export default function PageTextPanel({
             color: 'var(--theme-elevation-500)',
           }}
         >
-          The heading and introduction at the top of Information → {pageName} on the website, above
-          the {listed} listed below. Leave the title empty to keep “{pageName}”.
+          The heading and introduction at the top of {menu} → {pageName} on the website, above the{' '}
+          {listed} listed below.{' '}
+          {defaults ? (
+            'Leave a field empty and the page keeps the wording shown in grey.'
+          ) : (
+            <>Leave the title empty to keep “{pageName}”.</>
+          )}
         </p>
         <fieldset disabled={!loaded || saving} style={{ border: 0, padding: 0, margin: 0 }}>
           <div
@@ -153,18 +175,31 @@ export default function PageTextPanel({
               gap: 'var(--base)',
             }}
           >
-            <Input label="Title (English)" value={texts.title} onChange={set('title')} />
-            <Input label="Title (Arabic)" value={texts.titleAr} onChange={set('titleAr')} rtl />
+            <Input
+              label="Title (English)"
+              value={texts.title}
+              onChange={set('title')}
+              placeholder={defaults?.title}
+            />
+            <Input
+              label="Title (Arabic)"
+              value={texts.titleAr}
+              onChange={set('titleAr')}
+              placeholder={defaults?.titleAr}
+              rtl
+            />
             <Input
               label="Introduction (English)"
               value={texts.intro}
               onChange={set('intro')}
+              placeholder={defaults?.intro}
               multiline
             />
             <Input
               label="Introduction (Arabic)"
               value={texts.introAr}
               onChange={set('introAr')}
+              placeholder={defaults?.introAr}
               rtl
               multiline
             />

@@ -156,11 +156,13 @@ export interface Config {
     'site-settings': SiteSetting;
     'databases-page': DatabasesPage;
     'readings-page': ReadingsPage;
+    'working-group-page': WorkingGroupPage;
   };
   globalsSelect: {
     'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
     'databases-page': DatabasesPageSelect<false> | DatabasesPageSelect<true>;
     'readings-page': ReadingsPageSelect<false> | ReadingsPageSelect<true>;
+    'working-group-page': WorkingGroupPageSelect<false> | WorkingGroupPageSelect<true>;
   };
   locale: null;
   widgets: {
@@ -619,7 +621,7 @@ export interface Book {
   author?: string | null;
   authorAr?: string | null;
   /**
-   * Pick existing people instead of typing a name above. When this is set, these are shown in place of the typed Author field, each linking to that person's profile under About → Participants.
+   * Pick existing people for any author who has a profile. They are shown first, each linking to that person's profile under About → Participants. Anyone not in the list can still be typed in the Author field above; that name is shown after the picked people, joined by "and" (Arabic: "و").
    */
   authorParticipants?: (string | Participant)[] | null;
   /**
@@ -864,7 +866,7 @@ export interface Paper {
   author?: string | null;
   authorAr?: string | null;
   /**
-   * Pick existing people instead of typing a name above. When this is set, these are shown in place of the typed Author field, each linking to that person's profile under About → Participants.
+   * Pick existing people for any author who has a profile. They are shown first, each linking to that person's profile under About → Participants. Anyone not in the list can still be typed in the Author field above; that name is shown after the picked people, joined by "and" (Arabic: "و").
    */
   authorParticipants?: (string | Participant)[] | null;
   /**
@@ -1334,7 +1336,7 @@ export interface Report {
   author?: string | null;
   authorAr?: string | null;
   /**
-   * Pick existing people instead of typing a name above. When this is set, these are shown in place of the typed Author field, each linking to that person's profile under About → Participants.
+   * Pick existing people for any author who has a profile. They are shown first, each linking to that person's profile under About → Participants. Anyone not in the list can still be typed in the Author field above; that name is shown after the picked people, joined by "and" (Arabic: "و").
    */
   authorParticipants?: (string | Participant)[] | null;
   /**
@@ -1559,7 +1561,7 @@ export interface Brochure {
   author?: string | null;
   authorAr?: string | null;
   /**
-   * Pick existing people instead of typing a name above. When this is set, these are shown in place of the typed Author field, each linking to that person's profile under About → Participants.
+   * Pick existing people for any author who has a profile. They are shown first, each linking to that person's profile under About → Participants. Anyone not in the list can still be typed in the Author field above; that name is shown after the picked people, joined by "and" (Arabic: "و").
    */
   authorParticipants?: (string | Participant)[] | null;
   /**
@@ -1694,7 +1696,7 @@ export interface Thesis {
   author?: string | null;
   authorAr?: string | null;
   /**
-   * Pick existing people instead of typing a name above. When this is set, these are shown in place of the typed Author field, each linking to that person's profile under About → Participants.
+   * Pick existing people for any author who has a profile. They are shown first, each linking to that person's profile under About → Participants. Anyone not in the list can still be typed in the Author field above; that name is shown after the picked people, joined by "and" (Arabic: "و").
    */
   authorParticipants?: (string | Participant)[] | null;
   /**
@@ -1829,7 +1831,7 @@ export interface Audiovisual {
   author?: string | null;
   authorAr?: string | null;
   /**
-   * Pick existing people instead of typing a name above. When this is set, these are shown in place of the typed Author field, each linking to that person's profile under About → Participants.
+   * Pick existing people for any author who has a profile. They are shown first, each linking to that person's profile under About → Participants. Anyone not in the list can still be typed in the Author field above; that name is shown after the picked people, joined by "and" (Arabic: "و").
    */
   authorParticipants?: (string | Participant)[] | null;
   /**
@@ -1964,7 +1966,7 @@ export interface Poster {
   author?: string | null;
   authorAr?: string | null;
   /**
-   * Pick existing people instead of typing a name above. When this is set, these are shown in place of the typed Author field, each linking to that person's profile under About → Participants.
+   * Pick existing people for any author who has a profile. They are shown first, each linking to that person's profile under About → Participants. Anyone not in the list can still be typed in the Author field above; that name is shown after the picked people, joined by "and" (Arabic: "و").
    */
   authorParticipants?: (string | Participant)[] | null;
   /**
@@ -4310,6 +4312,20 @@ export interface ReadingsPage {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "working-group-page".
+ */
+export interface WorkingGroupPage {
+  id: string;
+  title?: string | null;
+  titleAr?: string | null;
+  intro?: string | null;
+  introAr?: string | null;
+  updatedBy?: (string | null) | User;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "site-settings_select".
  */
 export interface SiteSettingsSelect<T extends boolean = true> {
@@ -4462,6 +4478,20 @@ export interface DatabasesPageSelect<T extends boolean = true> {
  * via the `definition` "readings-page_select".
  */
 export interface ReadingsPageSelect<T extends boolean = true> {
+  title?: T;
+  titleAr?: T;
+  intro?: T;
+  introAr?: T;
+  updatedBy?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "working-group-page_select".
+ */
+export interface WorkingGroupPageSelect<T extends boolean = true> {
   title?: T;
   titleAr?: T;
   intro?: T;

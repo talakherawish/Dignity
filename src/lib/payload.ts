@@ -1296,6 +1296,9 @@ export async function fetchHomepage(): Promise<PayloadHomepage | null> {
   return (await getJson<PayloadHomepage>(`globals/site-settings?depth=3&${select}`)) ?? null;
 }
 
+/** A page whose heading and introduction are edited at the top of its list. */
+export type PageTextGlobal = "databases-page" | "readings-page" | "working-group-page";
+
 type PayloadPageText = {
   title?: string | null;
   titleAr?: string | null;
@@ -1304,14 +1307,12 @@ type PayloadPageText = {
 };
 
 /**
- * The heading and introduction of a page listing subjects (Databases,
- * Readings and Documents), edited at the top of its list in the CMS. Returns
- * null if unreachable, and every field may be empty -- the page falls back to
- * its built-in title.
+ * The heading and introduction of a page listing things (Databases, Readings
+ * and Documents, the Working Group), edited at the top of that list in the
+ * CMS. Returns null if unreachable, and every field may be empty -- the page
+ * falls back to its own built-in wording.
  */
-export async function fetchPageText(
-  global: "databases-page" | "readings-page",
-): Promise<PayloadPageText | null> {
+export async function fetchPageText(global: PageTextGlobal): Promise<PayloadPageText | null> {
   return (await getJson<PayloadPageText>(`globals/${global}?depth=0`)) ?? null;
 }
 

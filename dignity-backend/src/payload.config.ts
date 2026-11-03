@@ -55,7 +55,7 @@ import { BibliographyEntries, Keywords } from './collections/Bibliography'
 import { BibliographyImports, ReadingImports } from './collections/SpreadsheetImports'
 import { Disclaimer, PrivacyPolicy } from './collections/LegalPages'
 import { SiteSettings } from './globals/SiteSettings'
-import { DatabasesPage, ReadingsPage } from './globals/PageText'
+import { DatabasesPage, ReadingsPage, WorkingGroupPage } from './globals/PageText'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -154,7 +154,7 @@ export default buildConfig({
     .map(enforceBilingual)
     .map(sideBySide)
     .map(withEditTracking),
-  globals: [SiteSettings, DatabasesPage, ReadingsPage]
+  globals: [SiteSettings, DatabasesPage, ReadingsPage, WorkingGroupPage]
     .map(enforceBilingualGlobal)
     .map(sideBySideGlobal)
     .map(withEditTrackingGlobal),

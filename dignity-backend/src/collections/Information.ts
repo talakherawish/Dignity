@@ -119,7 +119,12 @@ function subjectCollection({
         beforeList: [
           {
             path: '/components/admin/PageTextPanel',
-            clientProps: { global: pageText, pageName: plural, listed: plural.toLowerCase() },
+            clientProps: {
+              global: pageText,
+              pageName: plural,
+              menu: 'Information',
+              listed: plural.toLowerCase(),
+            },
           },
         ],
         views: {

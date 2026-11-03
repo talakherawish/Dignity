@@ -29,6 +29,7 @@ import {
   fetchSiteSettings,
   fetchStickers,
   type ActivityLine,
+  type PageTextGlobal,
   type PayloadParticipant,
   type PublicationCollection,
 } from "./payload";
@@ -124,7 +125,7 @@ export const bookQuery = (slugOrId: string) =>
 export const publicationsQuery = (type: PublicationCollection) =>
   queryOptions({ queryKey: ["publications", type], queryFn: () => fetchPublications(type) });
 
-export const pageTextQuery = (global: "databases-page" | "readings-page") =>
+export const pageTextQuery = (global: PageTextGlobal) =>
   queryOptions({ queryKey: [global], queryFn: () => fetchPageText(global) });
 
 export const databasesQuery = queryOptions({ queryKey: ["databases"], queryFn: fetchDatabases });
