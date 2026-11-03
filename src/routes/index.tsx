@@ -42,6 +42,14 @@ const FULL_SCREEN_SECTION =
 const STICK_BELOW_HEADER = "top-[62px] sm:top-[82px] lg:top-[103px]";
 
 /**
+ * The hero video, at the two sizes HeroVideo picks between. Bump the ?v= on
+ * whichever one is replaced: the filenames stay the same, so without it
+ * browsers and the CDN keep serving the cut they already cached.
+ */
+const HERO_VIDEO_LARGE = "/landing.mp4?v=5";
+const HERO_VIDEO_SMALL = "/landing-720.mp4?v=5";
+
+/**
  * Phones: every homepage section is at least one screen, like the hero, so
  * the page reads as a sequence of screens rather than short bands of mixed
  * heights. A minimum, not a fixed height -- see NEWS_SECTION_HEIGHT for why
@@ -605,17 +613,35 @@ function HeroVideo() {
   const eyebrow = tOptional("hero.eyebrow");
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  // Belt-and-suspenders alongside the autoPlay attribute: some mobile
-  // browsers (and some webviews) don't honor autoPlay reliably even for a
-  // muted video, but do accept an explicit play() call once the element has
-  // mounted. This can't do anything about iOS Low Power Mode specifically --
-  // that's an OS-level "no auto-playing video" policy the page has no way
-  // to override, and the native play button it shows instead is WebKit's
-  // own UI, not ours. The .catch is there because play() rejects in exactly
-  // that case, and an unhandled rejection would otherwise be noise in the
-  // console for every visitor who has it on.
+  // The hero ships at two sizes: phones pull a 720p cut roughly a quarter the
+  // size of the 1080p one, which on a phone-sized screen is indistinguishable
+  // but is the difference between playing immediately and sitting on the
+  // poster while it buffers. Both are capped at H.264 level 4.0/3.1 and sized
+  // to standard 1920x1080 / 1280x720, so every hardware decoder accepts them
+  // -- an odd frame size (2562x1440) isn't macroblock-aligned and drops some
+  // devices into software decoding, which stalls at this frame rate.
+  //
+  // src is assigned here rather than as an attribute so the choice happens on
+  // the client, where matchMedia exists: rendering a src server-side would
+  // either hydrate-mismatch or start fetching the desktop cut on a phone
+  // before this effect could switch it. The poster covers the gap.
+  //
+  // The explicit play() is belt-and-suspenders alongside the autoPlay
+  // attribute: some mobile browsers (and some webviews) don't honor autoPlay
+  // reliably even for a muted video, but do accept an explicit play() call
+  // once the element has mounted. This can't do anything about iOS Low Power
+  // Mode specifically -- that's an OS-level "no auto-playing video" policy
+  // the page has no way to override, and the native play button it shows
+  // instead is WebKit's own UI, not ours. The .catch is there because play()
+  // rejects in exactly that case, and an unhandled rejection would otherwise
+  // be noise in the console for every visitor who has it on.
   useEffect(() => {
-    videoRef.current?.play().catch(() => {});
+    const video = videoRef.current;
+    if (!video) return;
+    video.src = window.matchMedia("(max-width: 768px)").matches
+      ? HERO_VIDEO_SMALL
+      : HERO_VIDEO_LARGE;
+    video.play().catch(() => {});
   }, []);
 
   // The video shows a second time through the transparent Posters band; the
@@ -662,14 +688,14 @@ function HeroVideo() {
       ref={sectionRef}
       className={`sticky z-0 w-full overflow-hidden bg-black ${STICK_BELOW_HEADER} ${FULL_SCREEN_SECTION}`}
     >
-      {/* The ?v= on the video and poster is bumped whenever they are replaced:
-          the filenames stay the same, so without it browsers and the CDN keep
-          serving the cut they already cached. */}
+      {/* The ?v= on the poster is bumped whenever it is replaced: the filename
+          stays the same, so without it browsers and the CDN keep serving the
+          frame they already cached. The video's own ?v= lives on HERO_VIDEO_*
+          above, since its src is assigned in the effect rather than here. */}
       <video
         ref={videoRef}
         className="absolute inset-0 h-full w-full object-cover"
-        src="/landing.mp4?v=4"
-        poster="/landing-poster.jpg?v=4"
+        poster="/landing-poster.jpg?v=5"
         preload="auto"
         autoPlay
         muted
