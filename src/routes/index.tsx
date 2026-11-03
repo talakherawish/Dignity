@@ -662,10 +662,13 @@ function HeroVideo() {
       ref={sectionRef}
       className={`sticky z-0 w-full overflow-hidden bg-black ${STICK_BELOW_HEADER} ${FULL_SCREEN_SECTION}`}
     >
+      {/* The ?v= on the video is bumped whenever landing.mp4 is replaced: the
+          filename stays the same, so without it browsers and the CDN keep
+          serving the cut they already cached. */}
       <video
         ref={videoRef}
         className="absolute inset-0 h-full w-full object-cover"
-        src="/landing.mp4"
+        src="/landing.mp4?v=2"
         poster="/landing-poster.jpg"
         preload="auto"
         autoPlay
