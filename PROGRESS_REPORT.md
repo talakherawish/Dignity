@@ -1,6 +1,6 @@
 # Dignity Initiative — Progress Report
-**Updated:** 2026-10-28  
-**Reporting period:** 2026-08-08 to 2026-10-28
+**Updated:** 2026-11-04  
+**Reporting period:** 2026-08-08 to 2026-11-03
 
 ---
 
@@ -13,6 +13,29 @@ Infrastructure work is finished. HTTPS renews itself, backups run nightly and ha
 **Oracle is the permanent home.** The university has no hosting capacity; they will only map a domain to this IP. Backups, uptime and deployment are therefore ours to own.
 
 **Engineering didn't stop after that.** 2026-08-17 to 2026-08-28 added a real content-model consolidation (Seminars/Conferences/Meetings merged into one "Forums" collection, Announcements folded into News), a homepage and navigation redesign, and several new features — mailing-list signup, bidirectional research-to-output linking, photo tagging. See *Website work — 2026-08-17 to 2026-08-28*, below. **Two migration scripts from that work still need to run against production**, and one schema change has no migration at all yet — both flagged at the top of that section, and worth resolving before treating this as settled history.
+
+---
+
+## Website work — 2026-11-03 (~5 hrs, to 23:45)
+
+The landing page's hero video replaced and then made to actually play, a member's photo shown whole instead of cropped, and the Working Group page's own words handed to the editors. 6 code commits, plus the video replaced several times through GitHub's web interface and two profile photos uploaded from the admin. Everything typechecks and builds; the video was watched in the browser — that is how the stall below was found — while the Working Group changes have not yet been tried by hand in the live admin.
+
+- **A new hero cut, at the right size.** The replacement uploaded first was 832×464, which stretched badly across a full-screen hero. It was re-encoded from the 2562×1440 master kept in the repository's history, and the poster image regenerated from the same frame.
+- **Full quality, then playable.** The master was next remuxed straight into MP4 without re-encoding, so the stream was bit-identical to the source — and the hero then sat on its poster and never started. At 19MB it has to buffer before anything happens, and 2562×1440 is an odd frame size that drops some decoders into software at level 5.1. The hero now ships at a standard, level-capped 1080p (10.7MB) with a 720p cut (4MB) served to phones, the choice made where the browser can be asked which it is. The hero stays deliberately exempt from the size reduction applied to uploaded media.
+- **Replacements take effect.** The video and poster addresses carry a version marker, so a new file is picked up instead of the copy the browser already holds.
+- **A member's photo shown whole.** A member's own page cropped their photo into a 5:4 box, which fits a landscape photo and cuts the top and bottom off a portrait one — and most people send a portrait, so faces were being halved. The photo is now shown whole at its own shape, its height capped so the name and links stay in view; a tall one sits centred against the panel, as a partner's logo does.
+- **The Working Group page's words are editable.** The heading and introduction above the list were written into the website and could not be changed. They now come from a page-text global, edited in the panel at the top of the Working Group list in the admin — the same panel the Databases and Readings lists use — so the page's words are managed beside the people on it. The panel also says which website menu the page sits under, and can show what the page says today as a grey hint, so an editor sees the current wording and leaves a field empty to keep it.
+
+---
+
+## Website work — 2026-10-29 (~45 min, 08:15–09:00)
+
+A short morning pass on publication files and author lines. 3 code commits.
+
+- **The Arabic copy gets its own thumbnail.** Where a publication's Arabic version is a different PDF, the Arabic page still showed the English copy's thumbnail. The preview now follows the file the reader is being offered, falling back to the shared thumbnail when the Arabic copy has none of its own.
+- **Downloads from a participant's page.** The publications credited to a person on their own page now carry the download badge, as they do on the publication pages.
+- **Typed authors come after the picked ones.** A name typed into the Author field used to be shown instead of the participants picked from the CMS. Picked people now come first, each linking to their profile, with any typed name after them, joined by "and" (Arabic "و") — so an outside co-author can be credited beside people who have profiles. The admin's field description was rewritten to say so.
+- A formatting fix on the Arabic preview lines, so the deploy's lint check passes.
 
 ---
 
@@ -818,7 +841,9 @@ Eight loose note files were removed from the repo root on 2026-09-21. Six of the
 - **2026-10-14 09:00 → 21:00:** ~12 hours — the Databases admin rebuilt for several subjects (page title and intro edited in place, an entries table per database); duplicate and similar-title/keyword checks in imports, the keyword form and the entry form; merging keywords; Readings and Documents rebuilt as its own section on the same lines (subjects, a readings table per subject, bulk import, both language versions in one reading, an Arabic note) and filled with the two Kant texts and the RELP reference documents; a GitHub storage bug (parallel uploads refused as conflicts) fixed; deploys found blocked since mid-afternoon by a line-ending lint error, and unblocked; PDF previews backfilled; seven dead PDF records traced and deleted; Arabic emphasis set in bold instead of italic; filter dropdown arrow inset. 14 code commits plus server-committed uploads.
 - **2026-10-13:** 3 hours — annotated-bibliography search shows its matches: entries open when their annotation matches, and matches are marked in the annotation, the citation and the keyword tags with an animated highlighter in the logo's blue that sweeps in once and then grows letter by letter, without replaying, as the search is typed; names match in either order ("John Smith" ↔ "Smith, John", English and Arabic); the language filter fixed to English / Arabic / Any; a go-to-source mark on each entry, phones included, and the + kept for entries with an annotation. 10 code commits.
 - **2026-10-27 18:00 → 2026-10-28 14:30:** ~14 hours — a dead-code cleanup; pages rendered on the server from Payload with the last good copy as fallback; Site Settings and the busiest admin forms laid out like the site, English beside Arabic; automatic italics in titles removed and Bold/Italic editors added to titles and short texts; a deploy blocked by an npm 10 lock-file mismatch fixed; landscape-first card order; homepage placement from each news entry; the Working Group as one dragged-to-order group with optional full pages, search by role and bio, brand logos and an in-place pop-up; gendered roles; Stickers & Bookmarks hidden behind a switch; Chicago/APA/MLA citations; PDF/PNG/JPG and other-format downloads; machine translation of one-language annotations; book pages with an in-page preview. 21 code commits.
+- **2026-10-29 08:15 → 09:00:** ~45 min — the Arabic copy's own PDF thumbnail, downloads on the publications credited to a person on their own page, and typed authors shown after the participants picked from the CMS instead of in place of them. 3 code commits.
+- **2026-11-03, to 23:45:** ~5 hours (commit span 22:23–23:44; the earlier part is the video exported and re-encoded from the master, which leaves no commits) — the landing hero replaced and re-encoded, then shipped at a level-capped 1080p with a 720p cut for phones after the full-quality remux stalled on its poster; a member's photo shown whole instead of cropped to 5:4; the Working Group page's heading and introduction moved into an editable page-text global. 6 code commits, plus several video replacements through GitHub's web interface and two profile photos uploaded from the admin.
 
-**Total project time to date: at least ~193¾ hours.** `PROGRESS.md` logs ~80 hours for sessions 1–14 (2026-05-31 → 2026-08-03); this file adds ~113¾ hours for 2026-08-08 → 2026-10-28, now that the 08-09/08-10/08-11-daytime gaps are estimated from the work recorded above instead of left blank. The two logs are reconciled into this one master total.
+**Total project time to date: at least ~199½ hours.** `PROGRESS.md` logs ~80 hours for sessions 1–14 (2026-05-31 → 2026-08-03); this file adds ~119½ hours for 2026-08-08 → 2026-11-03, now that the 08-09/08-10/08-11-daytime gaps are estimated from the work recorded above instead of left blank. The two logs are reconciled into this one master total.
 
-**This is a floor, not a ceiling.** Neither log tracked hours in real time — both were reconstructed after the fact from commits and memory — and there is at least one confirmed dead zone in the reconstruction: **2026-06-07 to 2026-07-05, four weeks, zero commits in either the repo or `PROGRESS.md`.** Whatever happened in that window (and general day-to-day work throughout the project that never produced a commit or a note — research, dead ends, learning Payload/Oracle/nginx/certbot from scratch, coordinating with the team) isn't in the 193¾. The real number is higher; 193¾ is what's actually documented and traceable, not a cap on what was worked.
+**This is a floor, not a ceiling.** Neither log tracked hours in real time — both were reconstructed after the fact from commits and memory — and there is at least one confirmed dead zone in the reconstruction: **2026-06-07 to 2026-07-05, four weeks, zero commits in either the repo or `PROGRESS.md`.** Whatever happened in that window (and general day-to-day work throughout the project that never produced a commit or a note — research, dead ends, learning Payload/Oracle/nginx/certbot from scratch, coordinating with the team) isn't in the 199½. The real number is higher; 199½ is what's actually documented and traceable, not a cap on what was worked.
