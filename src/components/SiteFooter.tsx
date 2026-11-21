@@ -61,26 +61,36 @@ export function SiteFooter() {
         }}
       />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-7 grid gap-x-8 gap-y-7 sm:grid-cols-2">
+      {/* Mobile is one centered column: the two blocks below sit side by side
+          from sm: up, but stacked on a phone a left-aligned contact block
+          followed by a centered bottom bar reads as two different footers.
+          Centring the stack (and separating the blocks with a hairline, since
+          a gap alone doesn't say "new section" in a single column) makes the
+          whole thing read as one. Everything reverts at sm:. */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-7 grid gap-x-8 gap-y-6 sm:gap-y-7 sm:grid-cols-2">
         {/* Contact */}
-        <div>
+        <div className="text-center sm:text-start">
           <h4 className="text-[11px] uppercase tracking-[0.18em] font-semibold text-white/35 mb-3">
             {t("footer.contact")}
           </h4>
-          <address className="not-italic text-xs text-white/60 flex flex-wrap gap-x-10 gap-y-1">
+          <address className="not-italic text-xs text-white/60 flex flex-col items-center gap-y-3 sm:flex-row sm:flex-wrap sm:items-start sm:gap-x-10 sm:gap-y-1">
             <a
               href={ADDRESS_MAP_LINK}
               target="_blank"
               rel="noopener noreferrer"
               className="block space-y-1 hover:text-[color:var(--brand-magenta)] transition-colors"
             >
-              <p className="font-semibold text-white/75">{t("footer.university")}</p>
+              <p className="text-[13px] font-semibold text-white/75 sm:text-xs">
+                {t("footer.university")}
+              </p>
               <p>{t("footer.pobox")}</p>
               <p>{t("footer.zip")}</p>
             </a>
             <div className="space-y-1">
-              {/* Phone + fax share a row — they're short, and it keeps the block compact */}
-              <p className="flex flex-wrap gap-x-3">
+              {/* Phone + fax share a row — they're short, and it keeps the block
+                  compact. Centred on mobile, where the row is the full column
+                  width and would otherwise drift to the leading edge. */}
+              <p className="flex flex-wrap justify-center gap-x-3 sm:justify-start">
                 <a
                   href={PHONE_TEL_HREF}
                   className="hover:text-[color:var(--brand-magenta)] transition-colors"
@@ -100,15 +110,19 @@ export function SiteFooter() {
         </div>
 
         {/* Stay in touch — subscribe + socials */}
-        <div>
+        <div className="border-t border-white/10 pt-6 text-center sm:border-t-0 sm:pt-0 sm:text-start">
           <h4 className="text-[11px] uppercase tracking-[0.18em] font-semibold text-white/35 mb-3">
             {t("footer.subscribe")}
           </h4>
-          <p className="text-xs text-white/55 leading-relaxed max-w-xs mb-3">
+          <p className="text-xs text-white/55 leading-relaxed max-w-xs mx-auto mb-4 sm:mx-0 sm:mb-3">
             {t("footer.subscribe.desc")}
           </p>
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
+          {/* flex-col-reverse on mobile: the socials come first in the DOM (they
+              read as a quieter list beside the button at desktop widths), but
+              stacked on a phone the Subscribe call to action belongs above
+              them, not buried under a row of icons. */}
+          <div className="flex flex-col-reverse items-center gap-4 sm:flex-row">
+            <div className="flex items-center gap-3 sm:gap-2">
               {[
                 {
                   Icon: Facebook,
@@ -129,16 +143,18 @@ export function SiteFooter() {
                   {...(href.startsWith("http")
                     ? { target: "_blank", rel: "noopener noreferrer" }
                     : {})}
-                  className="flex h-8 w-8 items-center justify-center rounded-full border border-white/15 text-white/45 hover:text-white hover:border-white/35 transition-all"
+                  className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 text-white/45 hover:text-white hover:border-white/35 transition-all sm:h-8 sm:w-8"
                 >
-                  <Icon className="h-3.5 w-3.5" />
+                  <Icon className="h-4 w-4 sm:h-3.5 sm:w-3.5" />
                 </a>
               ))}
             </div>
+            {/* Full width and a 44px-tall tap target on mobile; back to the
+                inline chip beside the socials from sm: up. */}
             <button
               type="button"
               onClick={() => setSubscribeOpen(true)}
-              className="shrink-0 inline-flex items-center gap-2 h-9 px-4 rounded-sm bg-[color:var(--brand-magenta)] text-white text-xs font-medium hover:bg-[color:var(--brand-magenta)]/80 transition-colors"
+              className="shrink-0 inline-flex w-full items-center justify-center gap-2 h-11 px-4 rounded-sm bg-[color:var(--brand-magenta)] text-white text-xs font-medium hover:bg-[color:var(--brand-magenta)]/80 transition-colors sm:w-auto sm:h-9 sm:justify-start"
             >
               <Send className="h-3.5 w-3.5" />
               {t("footer.subscribe.btn")}
@@ -161,37 +177,42 @@ export function SiteFooter() {
           min-w-[220px], the other two land on opposite ends of a line that
           no longer has a middle item to justify against, reading as
           scattered rather than stacked. Row layout (and the resources
-          block's own flex-1 growth within it) only kicks back in at sm:. */}
+          block's own flex-1 growth within it) only kicks back in at sm:.
+
+          The mobile stack runs resources -> copyright -> legal links, so the
+          two quietest lines finish the page together instead of the
+          copyright trailing after the links. */}
       <div className="border-t border-white/10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-3 flex flex-col items-center gap-3 text-center sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:text-start">
-          <p className="text-[12px] text-white/35 shrink-0 order-3 sm:order-none">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-3 flex flex-col items-center gap-4 text-center sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-3 sm:text-start">
+          <p className="text-[12px] text-white/35 shrink-0 order-2 sm:order-none">
             {t("footer.copyright")}
           </p>
 
-          {/* Plain text links on mobile -- same footprint as Disclaimer /
-              Privacy beside them, so this stays a compact single row
-              instead of two chunky icon-buttons forcing a wrap. The
-              bordered pill-with-icon treatment only kicks in from sm: up,
-              where there's room for it. */}
-          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 sm:gap-2 min-w-[220px] sm:flex-1">
+          {/* On mobile the label gets its own line above the two links, which
+              become proper tap targets side by side -- the wrapper below is
+              display:contents from sm: up, so at desktop widths the label and
+              both links are still direct children of this one flex row. */}
+          <div className="order-1 flex w-full flex-col items-center gap-2.5 min-w-[220px] sm:order-none sm:w-auto sm:flex-1 sm:flex-row sm:flex-wrap sm:items-center sm:justify-center sm:gap-2">
             <span className="text-[11px] sm:text-[12px] uppercase tracking-[0.18em] text-white/35 font-semibold sm:me-2">
               {t("footer.resources")}
             </span>
-            {RESOURCES.map(({ key, to, Icon }) => (
-              <Link
-                key={key}
-                to={to}
-                className="group flex items-center gap-1.5 rounded-sm text-white/60 transition-all duration-200 hover:text-white/90 sm:gap-2 sm:border sm:border-white/10 sm:bg-white/5 sm:px-3.5 sm:py-2 sm:hover:border-white/20 sm:hover:bg-white/10"
-              >
-                <Icon className="hidden h-3.5 w-3.5 shrink-0 text-white/55 transition-colors group-hover:text-[color:var(--brand-magenta)] sm:block" />
-                <span className="text-[12px] font-medium transition-colors whitespace-nowrap sm:text-xs">
-                  {t(key)}
-                </span>
-              </Link>
-            ))}
+            <div className="flex flex-wrap items-center justify-center gap-2 sm:contents">
+              {RESOURCES.map(({ key, to, Icon }) => (
+                <Link
+                  key={key}
+                  to={to}
+                  className="group flex items-center gap-1.5 rounded-sm border border-white/10 bg-white/5 px-3 py-2 text-white/60 transition-all duration-200 hover:border-white/20 hover:bg-white/10 hover:text-white/90 sm:gap-2 sm:px-3.5"
+                >
+                  <Icon className="h-3.5 w-3.5 shrink-0 text-white/55 transition-colors group-hover:text-[color:var(--brand-magenta)]" />
+                  <span className="text-[12px] font-medium transition-colors whitespace-nowrap sm:text-xs">
+                    {t(key)}
+                  </span>
+                </Link>
+              ))}
+            </div>
           </div>
 
-          <nav className="flex items-center gap-4 shrink-0">
+          <nav className="order-3 flex items-center gap-4 shrink-0 sm:order-none">
             <Link
               to="/disclaimer"
               className="text-[12px] text-white/35 hover:text-white/60 transition-colors"
