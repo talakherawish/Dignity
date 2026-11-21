@@ -3,6 +3,10 @@ import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { subscribeToMailingList } from "@/lib/payload";
+// Reversed lockup: the black type and the black wedge of the disc are white,
+// the cyan/magenta wedges and the Birzeit tree keep their colours, and the
+// white plate behind the header version is transparent here.
+import logoWhite from "@/assets/dignity-logo-white.png";
 
 const PHONE_TEL_HREF = "tel:+97222982169";
 
@@ -68,6 +72,18 @@ export function SiteFooter() {
           a gap alone doesn't say "new section" in a single column) makes the
           whole thing read as one. Everything reverts at sm:. */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-7 grid gap-x-8 gap-y-6 sm:gap-y-7 sm:grid-cols-2">
+        {/* Phones only: the mark heads the centred column, the way the Muwatin
+            conference footer opens. Desktop keeps the two bare columns it
+            already had -- there the header logo is still in view above the
+            fold far more often, and a second lockup would just crowd it. */}
+        <img
+          src={logoWhite}
+          alt="Dignity Initiative — Birzeit University"
+          width={1200}
+          height={492}
+          className="mx-auto mb-1 h-auto w-full max-w-[240px] sm:hidden"
+        />
+
         {/* Contact */}
         <div className="text-center sm:text-start">
           <h4 className="text-[11px] uppercase tracking-[0.18em] font-semibold text-white/35 mb-3">
