@@ -72,16 +72,22 @@ export function SiteFooter() {
           a gap alone doesn't say "new section" in a single column) makes the
           whole thing read as one. Everything reverts at sm:. */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-7 grid gap-x-8 gap-y-6 sm:gap-y-7 sm:grid-cols-2">
-        {/* Phones only: the mark heads the centred column, the way the Muwatin
-            conference footer opens. Desktop keeps the two bare columns it
-            already had -- there the header logo is still in view above the
-            fold far more often, and a second lockup would just crowd it. */}
+        {/* The mark heads the footer the way the Muwatin conference footer
+            opens: centred over the single phone column, and spanning both
+            desktop columns from the leading edge, so it lines up with the
+            header lockup rather than floating in the middle of a block of
+            start-aligned text. No ms-/me- needed for that -- a block box with
+            symmetric margins sits at the inline start on its own, which flips
+            to the right in Arabic along with the document dir.
+
+            Smaller on desktop (210px against the header's ~246px) so the two
+            don't read as the same element printed twice down the page. */}
         <img
           src={logoWhite}
           alt="Dignity Initiative — Birzeit University"
           width={1200}
           height={492}
-          className="mx-auto mb-1 h-auto w-full max-w-[240px] sm:hidden"
+          className="mx-auto mb-1 h-auto w-full max-w-[240px] sm:col-span-2 sm:mx-0 sm:mb-0 sm:max-w-[210px]"
         />
 
         {/* Contact */}
