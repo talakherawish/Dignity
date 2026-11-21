@@ -302,7 +302,14 @@ const translations = {
     "footer.fax": "فاكس: +972 (2) 2982168",
     "footer.email": "البريد الإلكتروني: Dignity@birzeit.edu",
     "footer.subscribe": "اشترك في القائمة البريدية",
-    "footer.subscribe.desc": "احصل على آخر التحديثات حول الأبحاث والفعاليات والمنشورات الجديدة.",
+    // Trimmed to hold one line in the footer: Arabic renders text-xs at 15px
+    // (see the lang-ar type scale in styles.css), so the old wording --
+    // "احصل على آخر التحديثات حول الأبحاث والفعاليات والمنشورات الجديدة." --
+    // spilled its last word onto a second row on every phone. "احصل على" and
+    // "الجديدة" both went, being implied by "آخر" and by the Subscribe button
+    // right beneath it. Unlike the address lines, this string has no Payload
+    // override, so the length is settled here.
+    "footer.subscribe.desc": "آخر التحديثات حول الأبحاث والفعاليات والمنشورات.",
     "footer.subscribe.placeholder": "عنوان بريدك الإلكتروني",
     "footer.subscribe.btn": "اشترك",
     "footer.subscribe.modalTitle": "اشترك في قائمتنا البريدية",

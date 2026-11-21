@@ -73,21 +73,19 @@ export function SiteFooter() {
           whole thing read as one. Everything reverts at sm:. */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-7 grid gap-x-8 gap-y-6 sm:gap-y-7 sm:grid-cols-2">
         {/* The mark heads the footer the way the Muwatin conference footer
-            opens: centred over the single phone column, and spanning both
-            desktop columns from the leading edge, so it lines up with the
-            header lockup rather than floating in the middle of a block of
-            start-aligned text. No ms-/me- needed for that -- a block box with
-            symmetric margins sits at the inline start on its own, which flips
-            to the right in Arabic along with the document dir.
+            opens, centred at every width -- over the single phone column, and
+            over both desktop columns, which it spans. Centred rather than set
+            to the leading edge, so it reads as the footer's own masthead
+            instead of as a second copy of the header lockup.
 
-            Smaller on desktop (210px against the header's ~246px) so the two
-            don't read as the same element printed twice down the page. */}
+            Slightly smaller on desktop (210px against the header's ~246px) so
+            the two don't read as the same element printed twice down a page. */}
         <img
           src={logoWhite}
           alt="Dignity Initiative — Birzeit University"
           width={1200}
           height={492}
-          className="mx-auto mb-1 h-auto w-full max-w-[240px] sm:col-span-2 sm:mx-0 sm:mb-0 sm:max-w-[210px]"
+          className="mx-auto mb-1 h-auto w-full max-w-[240px] sm:col-span-2 sm:mb-0 sm:max-w-[210px]"
         />
 
         {/* Contact */}
@@ -105,8 +103,18 @@ export function SiteFooter() {
               <p className="text-[13px] font-semibold text-white/75 sm:text-xs">
                 {t("footer.university")}
               </p>
-              <p>{t("footer.pobox")}</p>
-              <p>{t("footer.zip")}</p>
+              {/* Street and postal lines share a row instead of stacking, so
+                  the block is two lines rather than three. Both strings come
+                  from Payload, so no length is guaranteed here -- each is kept
+                  nowrap so that if the pair does outgrow the column they break
+                  between the two parts rather than mid-address. */}
+              <p>
+                <span className="whitespace-nowrap">{t("footer.pobox")}</span>
+                <span aria-hidden="true" className="mx-2 text-white/25">
+                  ·
+                </span>
+                <span className="whitespace-nowrap">{t("footer.zip")}</span>
+              </p>
             </a>
             <div className="space-y-1">
               {/* Phone + fax share a row — they're short, and it keeps the block
@@ -136,7 +144,12 @@ export function SiteFooter() {
           <h4 className="text-[11px] uppercase tracking-[0.18em] font-semibold text-white/35 mb-3">
             {t("footer.subscribe")}
           </h4>
-          <p className="text-xs text-white/55 leading-relaxed max-w-xs mx-auto mb-4 sm:mx-0 sm:mb-3">
+          {/* No max-width on a phone: the column is already only ~343px, and
+              capping it at max-w-xs (320px) was pushing the last word of the
+              Arabic line onto a second row for the sake of 23px. The cap
+              stays from sm: up, where the column is wide enough that an
+              uncapped line would run to an unreadable measure. */}
+          <p className="text-xs text-white/55 leading-relaxed max-w-none mx-auto mb-4 sm:max-w-xs sm:mx-0 sm:mb-3">
             {t("footer.subscribe.desc")}
           </p>
           {/* flex-col-reverse on mobile: the socials come first in the DOM (they
